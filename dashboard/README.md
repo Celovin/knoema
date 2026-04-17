@@ -21,3 +21,11 @@ Use one of these sources:
 - Local JSONL path
 
 The dashboard expects one JSON object per line in the format produced by `SimulationLogEntry.to_json_dict()`.
+
+## Realtime Playback
+
+The sidebar playback controls can follow the latest tick, inspect a fixed tick window, or auto-refresh a local JSONL path while a simulation is writing logs.
+
+- `Live tail`: follows the highest tick currently loaded.
+- `Trailing ticks`: limits the visible window for agents, relationships, logs, and realtime summary.
+- `Auto-refresh`: reruns the dashboard every selected interval.

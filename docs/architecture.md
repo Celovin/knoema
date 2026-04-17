@@ -48,6 +48,7 @@ flowchart LR
 | `events/` | Scheduler and dispatcher |
 | `simulator.py` | Main tick loop, action recording, JSONL export |
 | `cli.py` | YAML-driven command line runner for local simulations |
+| `dashboard/components/realtime_view.py` | Streamlit playback, live-tail, and tick summary helpers |
 
 ## Simulation Flow
 

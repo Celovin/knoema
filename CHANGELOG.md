@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 14 multilingual prompt templates for English, Korean, Japanese, and Chinese runs.
 - Phase 14 `knoema run` CLI for YAML-driven deterministic local simulations.
 - Phase 14 semantic-temporal memory reranking with scored retrieval diagnostics and batch inserts.
+- Phase 14 Streamlit dashboard realtime playback with live-tail and auto-refresh controls.
 
 ## [0.1.0] - 2026-04-18
 

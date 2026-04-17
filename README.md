@@ -34,7 +34,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Jupyter notebooks for MVP demo tracks and a 10-agent village scale-up
 - Deterministic benchmark script with JSON and Markdown reports
 - Godot 4 adapter scaffold
-- Streamlit dashboard for inspecting simulation logs
+- Streamlit dashboard for inspecting simulation logs with playback and live-tail controls
 
 ## Install
 

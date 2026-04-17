@@ -6,6 +6,7 @@ import pytest
 
 from dashboard.components.agent_view import build_agent_cards
 from dashboard.components.conversation_log import recent_rows
+from dashboard.components.realtime_view import build_tick_summary, playback_window, tick_bounds
 from dashboard.components.relationship_graph import build_relationship_edges
 from dashboard.data import (
     filter_rows,
@@ -88,3 +89,26 @@ def test_dashboard_builds_agent_cards_relationship_edges_and_recent_rows() -> No
     assert edges[0]["source"] == "alice"
     assert edges[0]["interactions"] == 2
     assert [row.tick for row in recent] == [1, 2]
+
+
+def test_dashboard_builds_realtime_playback_window_and_tick_summary() -> None:
+    rows = normalize_log_records(
+        [
+            _record(0, "alice", "bob", "quiet writing time"),
+            _record(1, "bob", "alice", "morning physics review"),
+            _record(2, "alice", None, "private study"),
+            _record(3, "bob", "alice", "asks about the schedule"),
+        ]
+    )
+
+    window = playback_window(rows, tick_end=3, trailing_ticks=2)
+    summary = build_tick_summary(window.rows)
+
+    assert tick_bounds(rows) == (0, 3)
+    assert window.tick_start == 2
+    assert window.tick_end == 3
+    assert [row.tick for row in window.rows] == [2, 3]
+    assert summary == [
+        {"tick": 2, "actions": 1, "agents": 1, "top_action": "speak", "timestamp": "2026-03-02T09:02:00"},
+        {"tick": 3, "actions": 1, "agents": 1, "top_action": "speak", "timestamp": "2026-03-02T09:03:00"},
+    ]
