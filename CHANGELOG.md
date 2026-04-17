@@ -2,18 +2,24 @@
 
 All notable changes to Knoema Engine will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.1.0] — 2026-04-18
+### Added
+- Core engine modules for personas, memory, relationships, environment, emotion, LLM gateway, decisions, events, and simulation.
+- Three executable Jupyter examples: dormitory simulation, fictional scenario replay, and game NPC persistent memory.
+- Godot 4 adapter scaffold with HTTP/local fallback client and demo scene.
+- Streamlit dashboard MVP for JSONL simulation logs, agent summaries, relationship edges, and conversation inspection.
+- Architecture and research positioning documentation.
+
+## [0.1.0] - 2026-04-18
 
 ### Added
 - Initial repository scaffold (Phase 0 of MVP plan).
-- `pyproject.toml` with core dependencies (Anthropic, OpenAI, FAISS, SQLAlchemy, networkx, pydantic).
-- Dual-language README (English + Korean).
+- `pyproject.toml` with core dependencies.
+- Dual-language README.
 - MIT License, Copyright (c) 2026 Celovin.
-- GitHub Actions CI (ruff + mypy + pytest on Python 3.11 & 3.12).
-- Pre-commit configuration (ruff, formatting).
+- GitHub Actions CI.
+- Pre-commit configuration.
 - Smoke test verifying package import.

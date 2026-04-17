@@ -1,6 +1,6 @@
 # Contributing to Knoema Engine
 
-Thanks for your interest in Knoema! This is an early-stage project under active R&D; contributions of all sizes are welcome — bug reports, docs fixes, example notebooks, and feature PRs.
+Thanks for your interest in Knoema. This is an early-stage project under active R&D. Contributions of all sizes are welcome: bug reports, docs fixes, example notebooks, and feature PRs.
 
 ## Development Setup
 
@@ -13,18 +13,24 @@ pip install -e ".[dev]"
 pre-commit install
 ```
 
+Dashboard work also needs:
+
+```bash
+pip install -e ".[dashboard]"
+```
+
 ## Running Tests
 
 ```bash
-pytest                 # unit tests
-ruff check .           # lint
-mypy src               # type check
+pytest
+ruff check .
+mypy src
 ```
 
-## Branch & Commit Conventions
+## Branch and Commit Conventions
 
-- `main` is protected; all work lands via PRs.
-- Use [Conventional Commits](https://www.conventionalcommits.org/) for messages:
+- `main` is protected; work should land through pull requests once the repository is public.
+- Use Conventional Commits:
   - `feat:` new feature
   - `fix:` bug fix
   - `docs:` documentation only
@@ -34,10 +40,15 @@ mypy src               # type check
 
 ## Code Style
 
-- Python 3.11+, strict type hints (see `tool.mypy` in `pyproject.toml`).
-- `ruff` for lint & formatting.
-- Keep functions small; prefer pure functions over mutation.
-- No comments explaining *what* the code does — prefer expressive names. Comments are for *why* only.
+- Python 3.11+.
+- Strict type hints for source modules under `src/`.
+- `ruff` for linting.
+- Prefer small pure functions where practical.
+- Add comments only when they explain why a non-obvious decision exists.
+
+## Safety Boundary
+
+Public-safety examples must stay fictional, synthetic, and non-identifying. Do not submit real incident data, victim names, suspect names, operational records, or predictive claims.
 
 ## Licensing
 

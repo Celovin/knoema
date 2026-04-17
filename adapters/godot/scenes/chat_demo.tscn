@@ -1,0 +1,49 @@
+[gd_scene load_steps=2 format=3 uid="uid://knoema_chat_demo"]
+
+[ext_resource type="Script" path="res://scripts/npc.gd" id="1_npc"]
+
+[node name="ChatDemo" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_npc")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 32.0
+offset_right = -32.0
+offset_bottom = -32.0
+
+[node name="Layout" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Panel/Layout"]
+layout_mode = 2
+text = "Knoema NPC Chat Demo"
+
+[node name="NpcLine" type="Label" parent="Panel/Layout"]
+layout_mode = 2
+text = "School Nurse: Tell me what happened today."
+autowrap_mode = 3
+
+[node name="Input" type="LineEdit" parent="Panel/Layout"]
+layout_mode = 2
+placeholder_text = "Type a message..."
+
+[node name="SendButton" type="Button" parent="Panel/Layout"]
+layout_mode = 2
+text = "Send"
+
+[node name="History" type="RichTextLabel" parent="Panel/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "[b]Conversation[/b]\n"

@@ -1,6 +1,6 @@
 # Knoema Engine
 
-> **LLM-based multi-agent social simulation engine for games, public safety, and academic research.**
+> LLM-based multi-agent social simulation engine for games, public safety research, and academic simulation.
 
 [![CI](https://github.com/Celovin/knoema/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/knoema/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -8,126 +8,165 @@
 
 Korean: [README.ko.md](README.ko.md)
 
----
+Knoema Engine is an early MVP for modeling persistent agents with memory, relationships, emotions, environment context, and LLM-backed decisions. The same runtime can support narrative NPCs, fictional public-safety replay research, and reproducible agent-based social simulation.
 
-## 🌐 Three Applications, One Engine
+All public-safety examples in this repository are fictional, synthetic, and non-identifying. They are replay and research demos, not crime prediction or suspect scoring tools.
 
-Knoema Engine provides a unified runtime for modeling persistent, emotionally aware, socially connected agents — and then plugs that runtime into three very different production domains:
+## Applications
 
-| Domain | Use | Release Track |
-|--------|-----|---------------|
-| 🎮 **Games** | Persistent-memory NPCs with dynamic narrative branching | Godot/Unity adapters, commercial SDK |
-| 🛡️ **Public Safety** | Criminal behavior *reproduction* for preventive research (no future prediction) | Research PoC, academic collaboration |
-| 🎓 **Academic Research** | Reproducible agent-based social simulation | Python package + web dashboard |
+| Domain | Use | Current MVP Surface |
+| --- | --- | --- |
+| Games | Persistent-memory NPCs and dynamic dialogue | Godot adapter scaffold and NPC notebook |
+| Public safety research | Fictional scenario replay for prevention research | Synthetic replay notebook with milestone coverage |
+| Academic research | Reproducible LLM-based agent simulation | Python package, notebooks, Streamlit dashboard |
 
----
+## Core Features
 
-## ✨ Core Features
+- Personas with Big Five personality traits, values, goals, and prompt rendering
+- Short-term memory buffers and SQLite + FAISS long-term retrieval
+- Relationship graph with directed trust, familiarity, and interaction weight
+- Environment context for time, location, conditions, and recent events
+- PAD emotion state: valence, arousal, dominance
+- LLM gateway with Anthropic, OpenAI, and deterministic local clients
+- Simulation runner with scheduled events and JSONL export
+- Jupyter notebooks for the three MVP demo tracks
+- Godot 4 adapter scaffold
+- Streamlit dashboard for inspecting simulation logs
 
-- **Hierarchical Memory** — short-term buffer, long-term vector store, automatic summarization
-- **Relationship Graph** — agent-to-agent directed relationships with type and weight
-- **Environment Model** — time, place, and conditional world state
-- **Emotion (PAD)** — valence, arousal, dominance driving decisions
-- **LLM Gateway** — Anthropic first, OpenAI fallback, local model (Llama/Gemma) backup
-- **Godot & Unity Adapters** — drop into your game project
-- **Streamlit Dashboard** — visualize simulations, inspect memories, replay runs
+## Install
 
----
-
-## 🚀 Quick Start
-
-### Install
 ```bash
 pip install -e ".[dev]"
 ```
 
-### First Simulation
+Dashboard dependencies are optional:
+
+```bash
+pip install -e ".[dashboard]"
+```
+
+## Minimal Simulation
+
 ```python
-from knoema import Simulator, Persona, Personality
+from datetime import datetime
+
+from knoema import Environment, LocalClient, Persona, Personality, Simulator
 
 alice = Persona(
+    agent_id="alice",
     name="Alice",
     age=17,
-    background="introverted literature student, night owl",
-    personality=Personality(openness=0.8, extraversion=0.2, ...),
-    values=["honesty", "solitude"],
-    goals=["finish novel"],
+    background="Introverted literature student in a dormitory.",
+    personality=Personality(
+        openness=0.8,
+        conscientiousness=0.6,
+        extraversion=0.2,
+        agreeableness=0.7,
+        neuroticism=0.4,
+    ),
+    values=["privacy", "honesty"],
+    goals=["finish a short story"],
 )
 
 bob = Persona(
+    agent_id="bob",
     name="Bob",
     age=17,
-    background="extroverted science student, early bird",
-    personality=Personality(openness=0.6, extraversion=0.9, ...),
-    values=["curiosity", "social"],
-    goals=["top grade in physics"],
+    background="Extroverted science student in the same dormitory.",
+    personality=Personality(
+        openness=0.6,
+        conscientiousness=0.8,
+        extraversion=0.9,
+        agreeableness=0.7,
+        neuroticism=0.3,
+    ),
+    values=["curiosity", "teamwork"],
+    goals=["prepare for a physics contest"],
 )
 
-sim = Simulator(agents=[alice, bob], environment=seoul_dormitory)
-sim.run(duration_days=7)
+environment = Environment(
+    start_time=datetime(2026, 3, 2, 9, 0),
+    location_path=("Korea", "Seoul", "High School Dormitory", "Room 201"),
+)
+
+sim = Simulator(
+    agents=[alice, bob],
+    environment=environment,
+    tick_duration_minutes=30,
+    llm=LocalClient(
+        lambda messages: '{"action_type": "speak", "target": null, "content": "observes the room."}'
+    ),
+)
+
+logs = sim.run(duration_days=1)
 sim.export_logs("runs/dorm_001.jsonl")
 ```
 
-### Example Notebooks
-- [`examples/01_two_agents_dorm.ipynb`](examples/01_two_agents_dorm.ipynb) — two high-schoolers in a dorm, 7 days
-- [`examples/02_crime_scenario_replay.ipynb`](examples/02_crime_scenario_replay.ipynb) — fictional case reproduction (anonymized)
-- [`examples/03_game_npc_demo.ipynb`](examples/03_game_npc_demo.ipynb) — KNOT-style NPC with persistent memory
+## Examples
 
-### Godot Integration
-See [`adapters/godot/README.md`](adapters/godot/README.md) for the plugin and a playable demo scene.
+- [Two-Agent Dormitory](examples/01_two_agents_dorm.ipynb): two students sharing a dorm room over seven simulated days
+- [Fictional Crime Scenario Replay](examples/02_crime_scenario_replay.ipynb): synthetic replay workflow with milestone coverage
+- [Game NPC Persistent Memory Demo](examples/03_game_npc_demo.ipynb): NPC memory retrieval and Godot-style payload
 
----
+Run notebooks top-to-bottom after installing `.[dev]`.
 
-## 🏗️ Architecture
+## Dashboard
 
-```
-┌──────────────────────────────────────────────────────┐
-│              Knoema Engine Core (Python)             │
-│  ┌────────────────────────────────────────────────┐  │
-│  │  Persona      Memory       Relationship        │  │
-│  │  Environment  Emotion      Decision Engine     │  │
-│  └────────────────────────────────────────────────┘  │
-│              ▼           ▼           ▼               │
-│     [LLM Gateway: Anthropic · OpenAI · Local]        │
-└──────────────────────────────────────────────────────┘
-         │              │               │
-         ▼              ▼               ▼
-    [Adapter: Games]  [Adapter: Safety]  [Adapter: Research]
+```bash
+pip install -e ".[dashboard]"
+streamlit run dashboard/app.py
 ```
 
-Full design notes in [`docs/architecture.md`](docs/architecture.md).
+Open `http://localhost:8501`, then load a JSONL file produced by `Simulator.export_logs(...)` or use the bundled sample.
 
----
+## Godot Integration
 
-## 📚 Related Work
+See [adapters/godot/README.md](adapters/godot/README.md) for the Godot 4 scaffold, HTTP/local fallback client, and demo scene structure.
 
-- Park et al., "Generative Agents: Interactive Simulacra of Human Behavior" (Stanford, 2023) — arXiv:2304.03442
-- DeepMind, "Concordia" (2024) — open-source LLM agent research framework
-- Microsoft, "AutoGen" — multi-agent conversation framework
-- Mesa, AnyLogic — classical agent-based modeling (non-LLM)
+## Architecture
 
-Knoema's differentiator: unified engine spanning games, safety research, and academic simulation with Korean-first language support and a dual-licensing model (open MIT core + commercial SDK).
+```mermaid
+flowchart TD
+    Persona --> DecisionEngine
+    ShortTermMemory --> DecisionEngine
+    LongTermMemory --> DecisionEngine
+    RelationshipGraph --> DecisionEngine
+    Environment --> DecisionEngine
+    EmotionState --> DecisionEngine
+    DecisionEngine --> LLMGateway
+    LLMGateway --> Anthropic
+    LLMGateway --> OpenAI
+    LLMGateway --> LocalClient
+    DecisionEngine --> Action
+    Action --> Simulator
+    Simulator --> JSONL
+    JSONL --> Dashboard
+    Action --> GodotAdapter
+```
 
----
+Detailed notes:
 
-## 📈 Roadmap
+- [Architecture](docs/architecture.md)
+- [Research Positioning](docs/research.md)
+
+## Roadmap
 
 | Version | Target | Milestones |
-|---------|--------|-----------|
-| **v0.1** | 2026 Q2 (current) | Core engine prototype, 3 sample notebooks, Godot stub |
-| v0.5 | 2027 Q2 | Production adapters, SaaS beta, first academic paper |
-| v1.0 | 2027 Q4 | Steam-released game using the engine, paid SaaS GA, overseas pilot contracts |
+| --- | --- | --- |
+| v0.1 | 2026 Q2 | Core MVP, notebooks, Godot scaffold, dashboard |
+| v0.5 | 2027 Q2 | Domain adapters, hosted dashboard, research pilots |
+| v1.0 | 2027 Q4 | Production SDK, commercial game integration, SaaS release |
 
----
+## Development
 
-## 🤝 Contributing
+```bash
+pytest
+ruff check .
+mypy src
+```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Pull requests, issues, and discussions welcome.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
----
+## License
 
-## 📜 License
-
-MIT © 2026 Celovin. See [LICENSE](LICENSE).
-
-*Knoema Engine is being developed as part of a Korean government R&D project (중소벤처기업부 창업성장기술개발사업 디딤돌 글로벌 R&D, 2026–2027).*
+MIT License. Copyright (c) 2026 Celovin.
