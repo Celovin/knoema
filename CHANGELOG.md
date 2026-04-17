@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 14 `knoema run` CLI for YAML-driven deterministic local simulations.
 - Phase 14 semantic-temporal memory reranking with scored retrieval diagnostics and batch inserts.
 - Phase 14 Streamlit dashboard realtime playback with live-tail and auto-refresh controls.
+- Phase 14 publish-ready tutorial blog draft for Medium and velog cross-posting.
 
 ## [0.1.0] - 2026-04-18
 
