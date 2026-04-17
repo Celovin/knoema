@@ -1,0 +1,7 @@
+\section{Safety Boundary and Limitations}
+
+The public-safety track is intentionally constrained. The repository must not include real incident records, identifiable persons, or operational decision data. The current replay notebook uses fictional names, fictional locations, and synthetic events. Its milestone coverage metric measures trace consistency against a known synthetic script. It does not estimate risk, identify suspects, or predict future crime.
+
+Several limitations remain. Local deterministic responders are useful for reproducibility but do not measure the behavioral quality of frontier LLMs. The current memory encoder is deterministic and lightweight, not a production semantic encoder. Relationship updates use simple heuristics. The Godot adapter is a scaffold rather than a full game integration. The dashboard is read-only and designed for inspection, not simulation control.
+
+These constraints are appropriate for the first public MVP because they keep the artifact auditable, runnable, and safe to demonstrate before larger experiments.

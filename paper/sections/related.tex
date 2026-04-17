@@ -1,0 +1,11 @@
+\section{Related Work}
+
+\textbf{Generative agents.} Park et al. introduced a sandbox where LLM-backed agents remember, reflect, plan, and interact through natural language \cite{park2023generative}. Knoema adopts the central idea that social simulation quality depends on memory and context, but implements it as a compact package with explicit dataclasses and adapter surfaces.
+
+\textbf{Generative social simulation.} Concordia frames generative agent-based modeling as interactions among entities grounded in physical, social, or digital environments \cite{vezhnevets2023concordia}. Knoema has a smaller MVP scope: it provides personas, memory, relationships, environment, emotion, decisions, and event scheduling, while leaving complex game-master style arbitration to future work.
+
+\textbf{Multi-agent LLM frameworks.} AutoGen emphasizes customizable conversable agents for building LLM applications across many task domains \cite{wu2023autogen}. Knoema is not a general task-automation framework; it is oriented around simulated social behavior, replayable logs, and long-term agent state.
+
+\textbf{Classical ABM.} Mesa 3 provides a modern Python stack for agent-based modeling \cite{terhoeven2025mesa}. Knoema complements this family of systems by adding LLM decision generation and natural-language memory while retaining a conventional tick loop and testable model state.
+
+\textbf{Vector retrieval.} The long-term memory MVP uses FAISS-style vector search concepts for efficient retrieval over stored memories \cite{johnson2017faiss}. Current demos use deterministic hash embeddings for reproducibility; production deployments can replace this with stronger semantic encoders.

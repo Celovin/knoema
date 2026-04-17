@@ -1,0 +1,30 @@
+\section{Implementation Snapshot}
+
+The current repository implements the MVP as an installable Python package named \texttt{knoema-engine}. Source modules live under \texttt{src/knoema}, tests under \texttt{tests}, notebooks under \texttt{examples}, game integration under \texttt{adapters/godot}, and dashboard code under \texttt{dashboard}. The repository also includes dual-language README files, architecture notes, research positioning notes, and GitHub Actions CI.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\toprule
+Area & Files & Verification \\
+\midrule
+Core package & \texttt{src/knoema/*.py} & unit tests, mypy \\
+Memory & \texttt{src/knoema/memory} & retrieval and persistence tests \\
+Decision loop & \texttt{decision.py}, \texttt{llm/} & mock client tests \\
+Simulation & \texttt{simulator.py}, \texttt{events/} & 7-day run test \\
+Examples & \texttt{examples/*.ipynb} & nbconvert execution \\
+Dashboard & \texttt{dashboard/} & pure logic tests, Streamlit smoke test \\
+\bottomrule
+\end{tabular}
+\caption{Repository implementation snapshot.}
+\end{table}
+
+The local verification run before this report passed 52 pytest tests, \texttt{ruff check .}, and \texttt{mypy src}. The GitHub Actions workflow runs the same lint, type, and test gates on Python 3.11 and 3.12. The public repository surface is also scanned to keep private planning documents and unrelated entity references out of committed files.
+
+\subsection{Demonstration Path}
+
+The recommended live demonstration starts with the first notebook, then opens the dashboard with the bundled sample log, and finally shows the Godot adapter directory. This order keeps the narrative concrete: first define agents, then observe exported traces, then show how the same action surface can be consumed by an external runtime.
+
+\subsection{Operational State}
+
+The repository is private during preparation and is intended to be made public after the first notebook, Godot adapter, and documentation are stable. The CI workflow has already been pushed and passes on GitHub Actions. Runtime artifacts such as logs, SQLite databases, FAISS indexes, checkpoints, and private planning documents are ignored by git.

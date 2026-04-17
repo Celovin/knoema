@@ -47,6 +47,17 @@ coverage.xml
 .ipynb_checkpoints/
 *.ipynb.bak
 
+# LaTeX / paper builds
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
 # IDEs
 .vscode/
 .idea/

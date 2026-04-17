@@ -1,0 +1,13 @@
+\section{Introduction}
+
+LLM-based agents have made it practical to represent social behavior as language-rich decisions over memory, goals, and environment state. Prior work on generative agents showed how natural-language memory, planning, and reflection can produce believable social simulations in interactive environments \cite{park2023generative}. At the same time, classical agent-based modeling tools such as Mesa remain valuable because they provide reproducible simulation loops, inspectable model state, and a clear separation between model assumptions and observed outcomes \cite{terhoeven2025mesa}.
+
+Knoema Engine is designed for a narrower engineering goal: provide a small, reusable runtime that can be installed as a Python package, demonstrated in notebooks, inspected through a dashboard, and connected to game engines. The MVP targets three use cases with one core engine:
+
+\begin{itemize}
+  \item persistent-memory NPCs for games,
+  \item fictional public-safety scenario replay for prevention research,
+  \item reproducible LLM-based social simulation for academic workflows.
+\end{itemize}
+
+The first implementation focuses on reliable boundaries instead of scale. All demos run without API keys through deterministic local responders, while the same interfaces can be connected to Anthropic or OpenAI clients. Simulation logs export as JSONL so notebooks, dashboards, and adapters consume the same artifact.

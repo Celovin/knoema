@@ -64,6 +64,11 @@ dashboard = [
     "plotly>=5.24",
     "pandas>=2.2",
 ]
+paper = [
+    "reportlab>=4.4",
+    "pdfplumber>=0.11",
+    "pypdf>=6.0",
+]
 local-llm = [
     "transformers>=4.44",
     "torch>=2.4",

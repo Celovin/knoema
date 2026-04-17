@@ -1,0 +1,32 @@
+\section{Architecture}
+
+Knoema Engine separates state, decision generation, and adapters. The core package exposes dataclasses for \texttt{Personality}, \texttt{Emotion}, \texttt{Memory}, \texttt{Action}, and \texttt{WorldEvent}. Higher-level modules compose these types into personas, memory stores, social relationships, environment context, emotion state, and a simulation loop.
+
+\begin{figure}[h]
+\centering
+\fbox{\begin{minipage}{0.9\linewidth}
+\centering
+\texttt{Persona + Memory + Relationship + Environment + Emotion}\\
+$\downarrow$\\
+\texttt{DecisionEngine}\\
+$\downarrow$\\
+\texttt{LLMGateway: Anthropic / OpenAI / Local}\\
+$\downarrow$\\
+\texttt{Action}\\
+$\downarrow$\\
+\texttt{Simulator -> JSONL -> Notebooks, Dashboard, Godot Adapter}
+\end{minipage}}
+\caption{Knoema MVP data flow.}
+\end{figure}
+
+\subsection{Agent State}
+
+Each persona contains an identifier, demographic description, Big Five personality values, values, and goals. The short-term memory buffer keeps recent episodic events in memory. The long-term memory store persists memory text and metadata in SQLite and indexes embeddings with FAISS. Relationship state is represented as a directed graph with trust, familiarity, relationship type, and interaction weight.
+
+\subsection{Decision Loop}
+
+At each tick, the simulator collects an agent-specific environment context, recent memories, social neighbors, and current emotion. The decision engine renders a prompt and calls an \texttt{LLMClient}. Responses are parsed into strict JSON actions when possible, with fallback parsing for local development.
+
+\subsection{Adapters}
+
+Adapters consume actions rather than internal state. The Godot scaffold demonstrates a client that can call an HTTP endpoint or fall back to local behavior. The Streamlit dashboard consumes exported JSONL logs and derives agent summaries, relationship edges, and conversation tables.

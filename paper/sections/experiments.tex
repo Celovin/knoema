@@ -1,0 +1,38 @@
+\section{MVP Demonstrations}
+
+The MVP includes three executable notebooks and one dashboard. These are demonstrations rather than controlled experiments, but they provide smoke tests for the main architecture.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\toprule
+Demo & Purpose & Verification \\
+\midrule
+Two-agent dormitory & Social coordination over seven days & 672 logged actions \\
+Fictional replay & Synthetic process reconstruction & Milestone coverage above 0.8 \\
+Game NPC & Persistent player-facing memory & Retrieved key and preference memories \\
+Dashboard & JSONL inspection & 52 local tests pass \\
+\bottomrule
+\end{tabular}
+\caption{MVP demonstration surfaces.}
+\end{table}
+
+\subsection{Dormitory Simulation}
+
+The first notebook models two fictional high-school dormitory roommates. A deterministic local responder produces strict JSON actions, allowing the notebook to run without external credentials. The run verifies that actions are logged, short-term memories are populated, and relationship edges are updated after repeated interaction.
+
+\subsection{Fictional Scenario Replay}
+
+The second notebook uses a fully synthetic low-severity property incident. The replay checks whether generated actions mention predefined process milestones such as reporting a missing item, preserving a neutral evidence list, reviewing access logs, reconstructing a checkout timeline, recovering a misplaced item, and closing without suspect labels.
+
+\subsection{Game NPC Memory}
+
+The third notebook stores memories from an earlier game session and retrieves them in a later scene. The NPC response includes both a remembered preference and a remembered object location, then converts the action into a Godot-style payload for dialogue, animation hints, and debugging.
+
+\subsection{Dashboard}
+
+The dashboard loads simulation JSONL, normalizes action rows, summarizes agent and tick counts, derives relationship edges from targeted actions, and renders recent conversation logs. The dashboard logic is tested independently from Streamlit so CI does not require browser automation.
+
+\subsection{Current Evidence Level}
+
+The current results are engineering smoke tests and demonstration traces. They show that the data model is coherent across modules, that notebooks can be executed from a clean state, and that logs can be inspected outside the simulator. They do not yet demonstrate external validity, behavioral realism, cross-model stability, or large-scale simulation performance. Those questions require benchmark scenarios, model comparisons, and human review protocols in later phases.

@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Godot 4 adapter scaffold with HTTP/local fallback client and demo scene.
 - Streamlit dashboard MVP for JSONL simulation logs, agent summaries, relationship edges, and conversation inspection.
 - Architecture and research positioning documentation.
+- Phase 12 technical report draft with LaTeX source, BibTeX references, and a generated PDF preview.
 
 ## [0.1.0] - 2026-04-18
 

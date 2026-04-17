@@ -148,6 +148,7 @@ Detailed notes:
 
 - [Architecture](docs/architecture.md)
 - [Research Positioning](docs/research.md)
+- [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/knoema_technical_report.pdf)
 
 ## Roadmap
 

@@ -68,6 +68,7 @@ Godot 4 스캐폴드, HTTP/local fallback client, 데모 씬 구조는 [adapters
 
 - [Architecture](docs/architecture.md)
 - [Research Positioning](docs/research.md)
+- [기술 리포트 LaTeX 초안](paper/main.tex), [PDF 프리뷰](paper/knoema_technical_report.pdf)
 
 ## 개발
 
