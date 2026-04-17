@@ -29,7 +29,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - PAD emotion state: valence, arousal, dominance
 - LLM gateway with Anthropic, OpenAI, and deterministic local clients
 - Simulation runner with scheduled events and JSONL export
-- Jupyter notebooks for the three MVP demo tracks
+- Jupyter notebooks for MVP demo tracks and a 10-agent village scale-up
 - Godot 4 adapter scaffold
 - Streamlit dashboard for inspecting simulation logs
 
@@ -107,6 +107,7 @@ sim.export_logs("runs/dorm_001.jsonl")
 - [Two-Agent Dormitory](examples/01_two_agents_dorm.ipynb): two students sharing a dorm room over seven simulated days
 - [Fictional Crime Scenario Replay](examples/02_crime_scenario_replay.ipynb): synthetic replay workflow with milestone coverage
 - [Game NPC Persistent Memory Demo](examples/03_game_npc_demo.ipynb): NPC memory retrieval and Godot-style payload
+- [Ten-Agent Village Simulation](examples/04_village.ipynb): deterministic 10-person village run with relationship and JSONL checks
 
 Run notebooks top-to-bottom after installing `.[dev]`.
 

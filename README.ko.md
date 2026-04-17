@@ -29,7 +29,7 @@ Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정�
 - PAD 감정 상태: valence, arousal, dominance
 - Anthropic, OpenAI, deterministic local client를 묶는 LLM gateway
 - scheduled event와 JSONL export를 지원하는 simulation runner
-- MVP 3개 트랙을 보여주는 Jupyter 노트북
+- MVP 데모 트랙과 10명 마을 확장 실험을 보여주는 Jupyter 노트북
 - Godot 4 어댑터 스캐폴드
 - 시뮬레이션 로그를 확인하는 Streamlit 대시보드
 
@@ -50,6 +50,7 @@ pip install -e ".[dashboard]"
 - [2인 기숙사 시뮬레이션](examples/01_two_agents_dorm.ipynb)
 - [가상 범죄 시나리오 리플레이](examples/02_crime_scenario_replay.ipynb)
 - [게임 NPC 지속 기억 데모](examples/03_game_npc_demo.ipynb)
+- [10명 마을 시뮬레이션](examples/04_village.ipynb)
 
 ## 대시보드
 
