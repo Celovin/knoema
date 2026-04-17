@@ -30,6 +30,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - LLM gateway with Anthropic, OpenAI, and deterministic local clients
 - Simulation runner with scheduled events and JSONL export
 - Jupyter notebooks for MVP demo tracks and a 10-agent village scale-up
+- Deterministic benchmark script with JSON and Markdown reports
 - Godot 4 adapter scaffold
 - Streamlit dashboard for inspecting simulation logs
 
@@ -119,6 +120,14 @@ streamlit run dashboard/app.py
 ```
 
 Open `http://localhost:8501`, then load a JSONL file produced by `Simulator.export_logs(...)` or use the bundled sample.
+
+## Benchmarks
+
+```bash
+python benchmarks/run_benchmark.py --json-output runs/benchmark.json --markdown-output runs/benchmark.md
+```
+
+The benchmark report records measured Knoema throughput and transparent `not-measured` comparison slots for Concordia and Mesa. See [benchmarks/README.md](benchmarks/README.md) for comparison discipline.
 
 ## Godot Integration
 

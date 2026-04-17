@@ -3,6 +3,16 @@
 Copyright (c) 2026 Celovin. MIT License.
 """
 
+from knoema.benchmark import (
+    BenchmarkConfig,
+    BenchmarkReport,
+    BenchmarkRun,
+    ComparisonRow,
+    build_comparison_rows,
+    build_village_personas,
+    format_markdown_report,
+    run_knoema_benchmark,
+)
 from knoema.config import KnoemaConfig, load_config
 from knoema.decision import DecisionEngine, decide
 from knoema.emotion import EmotionState, EmotionStimulus
@@ -37,6 +47,10 @@ __all__ = [
     "Action",
     "AgentID",
     "AnthropicClient",
+    "BenchmarkConfig",
+    "BenchmarkReport",
+    "BenchmarkRun",
+    "ComparisonRow",
     "DecisionEngine",
     "Emotion",
     "EmotionState",
@@ -68,6 +82,10 @@ __all__ = [
     "Simulator",
     "WorldEvent",
     "__version__",
+    "build_comparison_rows",
+    "build_village_personas",
     "decide",
+    "format_markdown_report",
     "load_config",
+    "run_knoema_benchmark",
 ]

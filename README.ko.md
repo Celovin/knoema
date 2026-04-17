@@ -30,6 +30,7 @@ Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정�
 - Anthropic, OpenAI, deterministic local client를 묶는 LLM gateway
 - scheduled event와 JSONL export를 지원하는 simulation runner
 - MVP 데모 트랙과 10명 마을 확장 실험을 보여주는 Jupyter 노트북
+- JSON과 Markdown 리포트를 생성하는 deterministic benchmark script
 - Godot 4 어댑터 스캐폴드
 - 시뮬레이션 로그를 확인하는 Streamlit 대시보드
 
@@ -60,6 +61,14 @@ streamlit run dashboard/app.py
 ```
 
 브라우저에서 `http://localhost:8501`을 열고 `Simulator.export_logs(...)`가 만든 JSONL 로그를 불러오면 됩니다. 샘플 로그도 포함되어 있습니다.
+
+## 벤치마크
+
+```bash
+python benchmarks/run_benchmark.py --json-output runs/benchmark.json --markdown-output runs/benchmark.md
+```
+
+벤치마크 리포트는 Knoema 처리량을 실제 측정하고, Concordia와 Mesa는 별도 외부 실행이 필요하다는 `not-measured` 비교 슬롯으로 표시합니다. 자세한 기준은 [benchmarks/README.md](benchmarks/README.md)에 정리했습니다.
 
 ## Godot 연동
 

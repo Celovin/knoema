@@ -25,6 +25,10 @@ The second notebook uses a synthetic low-severity property incident. The metric 
 
 The third notebook shows an NPC retrieving player-facing memories across sessions and producing an engine-friendly payload for dialogue and animation.
 
+### 4. Deterministic Throughput Benchmark
+
+The benchmark script runs a local village scenario and reports wall time, actions/sec, and relationship edge counts. Concordia and Mesa rows are present as transparent comparison slots, but they remain `not-measured` until equivalent external adapter runs are executed in the same environment.
+
 ## Safety Boundary
 
 The repository must keep public-safety examples fictional, synthetic, and non-identifying. Recommended constraints:

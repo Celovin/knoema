@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 12 technical report draft with LaTeX source, BibTeX references, and a generated PDF preview.
 - Phase 13 release preparation: Dockerfile, release workflow, release playbook, and local package artifact checks.
 - Phase 14 ten-agent village simulation notebook with deterministic local decisions and JSONL export checks.
+- Phase 14 benchmark script for deterministic Knoema throughput reports with Concordia and Mesa comparison slots.
 
 ## [0.1.0] - 2026-04-18
 
