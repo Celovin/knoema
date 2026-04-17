@@ -1,0 +1,69 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 720
+  output_path: ../runs/cli_dorm.jsonl
+  prompt_language: en
+
+environment:
+  start_time: "2026-03-02T09:00:00"
+  location_path:
+    - Korea
+    - Seoul
+    - High School Dormitory
+    - Room 201
+  conditions:
+    weather: clear
+    school_day: true
+
+agents:
+  - agent_id: alice
+    name: Alice
+    age: 17
+    background: Introverted literature student in a dormitory.
+    personality:
+      openness: 0.8
+      conscientiousness: 0.6
+      extraversion: 0.2
+      agreeableness: 0.7
+      neuroticism: 0.4
+    values:
+      - privacy
+      - honesty
+    goals:
+      - finish a short story
+    location_path:
+      - Korea
+      - Seoul
+      - High School Dormitory
+      - Room 201
+  - agent_id: bob
+    name: Bob
+    age: 17
+    background: Extroverted science student in the same dormitory.
+    personality:
+      openness: 0.6
+      conscientiousness: 0.8
+      extraversion: 0.9
+      agreeableness: 0.7
+      neuroticism: 0.3
+    values:
+      - curiosity
+      - teamwork
+    goals:
+      - prepare for a physics contest
+    location_path:
+      - Korea
+      - Seoul
+      - High School Dormitory
+      - Room 201
+
+events:
+  - timestamp: "2026-03-02T09:00:00"
+    event_type: dorm.announcement
+    participants:
+      - alice
+      - bob
+    location: Korea > Seoul > High School Dormitory > Room 201
+    description: Morning study period begins.
+
+local_response: '{"action_type": "observe", "target": null, "content": "records the dormitory routine."}'

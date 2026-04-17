@@ -47,6 +47,7 @@ flowchart LR
 | `decision.py` | Prompt construction and action parsing |
 | `events/` | Scheduler and dispatcher |
 | `simulator.py` | Main tick loop, action recording, JSONL export |
+| `cli.py` | YAML-driven command line runner for local simulations |
 
 ## Simulation Flow
 

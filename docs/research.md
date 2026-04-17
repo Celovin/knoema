@@ -33,6 +33,10 @@ The benchmark script runs a local village scenario and reports wall time, action
 
 The prompt layer supports English, Korean, Japanese, and Chinese templates while keeping the JSON action schema stable. This lets researchers compare language-localized agent behavior without changing adapters or dashboard ingestion.
 
+### 6. YAML-Driven CLI Runs
+
+The CLI runs deterministic local simulations from versionable YAML configs. It is intended for reproducible demos, CI smoke checks, and handoff scenarios where notebooks are too interactive.
+
 ## Safety Boundary
 
 The repository must keep public-safety examples fictional, synthetic, and non-identifying. Recommended constraints:

@@ -30,6 +30,7 @@ Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정�
 - Anthropic, OpenAI, deterministic local client를 묶는 LLM gateway
 - 영어, 한국어, 일본어, 중국어 실행을 위한 prompt template
 - scheduled event와 JSONL export를 지원하는 simulation runner
+- YAML 기반 로컬 시뮬레이션을 실행하는 `knoema run` CLI
 - MVP 데모 트랙과 10명 마을 확장 실험을 보여주는 Jupyter 노트북
 - JSON과 Markdown 리포트를 생성하는 deterministic benchmark script
 - Godot 4 어댑터 스캐폴드
@@ -71,6 +72,14 @@ python benchmarks/run_benchmark.py --json-output runs/benchmark.json --markdown-
 
 벤치마크 리포트는 Knoema 처리량을 실제 측정하고, Concordia와 Mesa는 별도 외부 실행이 필요하다는 `not-measured` 비교 슬롯으로 표시합니다. 자세한 기준은 [benchmarks/README.md](benchmarks/README.md)에 정리했습니다.
 
+## CLI
+
+```bash
+knoema run examples/cli_dorm.yaml --json
+```
+
+YAML 설정 형식, 출력 경로 규칙, dry-run 검증은 [CLI](docs/cli.md)를 참고하세요.
+
 ## Godot 연동
 
 Godot 4 스캐폴드, HTTP/local fallback client, 데모 씬 구조는 [adapters/godot/README.md](adapters/godot/README.md)를 참고하세요.
@@ -79,6 +88,7 @@ Godot 4 스캐폴드, HTTP/local fallback client, 데모 씬 구조는 [adapters
 
 - [Architecture](docs/architecture.md)
 - [Research Positioning](docs/research.md)
+- [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [기술 리포트 LaTeX 초안](paper/main.tex), [PDF 프리뷰](paper/knoema_technical_report.pdf)
 

@@ -30,6 +30,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - LLM gateway with Anthropic, OpenAI, and deterministic local clients
 - Prompt templates for English, Korean, Japanese, and Chinese runs
 - Simulation runner with scheduled events and JSONL export
+- `knoema run` CLI for YAML-driven local simulations
 - Jupyter notebooks for MVP demo tracks and a 10-agent village scale-up
 - Deterministic benchmark script with JSON and Markdown reports
 - Godot 4 adapter scaffold
@@ -130,6 +131,14 @@ python benchmarks/run_benchmark.py --json-output runs/benchmark.json --markdown-
 
 The benchmark report records measured Knoema throughput and transparent `not-measured` comparison slots for Concordia and Mesa. See [benchmarks/README.md](benchmarks/README.md) for comparison discipline.
 
+## CLI
+
+```bash
+knoema run examples/cli_dorm.yaml --json
+```
+
+See [CLI](docs/cli.md) for the YAML config shape, output path rules, and dry-run validation.
+
 ## Godot Integration
 
 See [adapters/godot/README.md](adapters/godot/README.md) for the Godot 4 scaffold, HTTP/local fallback client, and demo scene structure.
@@ -159,6 +168,7 @@ Detailed notes:
 
 - [Architecture](docs/architecture.md)
 - [Research Positioning](docs/research.md)
+- [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/knoema_technical_report.pdf)
 

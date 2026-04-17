@@ -83,6 +83,9 @@ Homepage = "https://github.com/Celovin/knoema"
 Repository = "https://github.com/Celovin/knoema"
 Issues = "https://github.com/Celovin/knoema/issues"
 
+[project.scripts]
+knoema = "knoema.cli:main"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/knoema"]
 

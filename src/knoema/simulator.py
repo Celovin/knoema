@@ -15,6 +15,7 @@ from knoema.events import EventDispatcher, EventScheduler
 from knoema.llm import LocalClient
 from knoema.memory import ShortTermMemoryBuffer
 from knoema.persona import Persona
+from knoema.prompts import PromptLanguage
 from knoema.protocols import LLMClient
 from knoema.relationship import RelationshipGraph
 from knoema.types import Action, Memory, WorldEvent
@@ -45,6 +46,7 @@ class Simulator:
         tick_duration_minutes: int = 30,
         start_time: datetime | None = None,
         llm: LLMClient | None = None,
+        language: str | PromptLanguage = "en",
     ) -> None:
         if not agents:
             raise ValueError("agents must not be empty")
@@ -62,7 +64,10 @@ class Simulator:
         }
         self.scheduler = EventScheduler()
         self.dispatcher = EventDispatcher()
-        self.decision_engine = DecisionEngine(llm or LocalClient(_default_action_response))
+        self.decision_engine = DecisionEngine(
+            llm or LocalClient(_default_action_response),
+            language=language,
+        )
         self.logs: list[SimulationLogEntry] = []
         for agent in agents:
             self.relationships.add_agent(agent.agent_id)
