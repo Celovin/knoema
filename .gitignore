@@ -76,6 +76,7 @@ credentials.json
 # Knoema runtime artifacts
 logs/
 runs/
+tmp/
 *.db
 *.sqlite
 *.sqlite3

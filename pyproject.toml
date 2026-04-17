@@ -69,6 +69,10 @@ paper = [
     "pdfplumber>=0.11",
     "pypdf>=6.0",
 ]
+release = [
+    "build>=1.2",
+    "twine>=5.1",
+]
 local-llm = [
     "transformers>=4.44",
     "torch>=2.4",

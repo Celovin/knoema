@@ -168,6 +168,10 @@ mypy src
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Release Prep
+
+Local package and Docker release checks are documented in [RELEASE.md](RELEASE.md). The repository includes a tag-triggered GitHub Release workflow, but PyPI publishing is intentionally left as a manual approval step.
+
 ## License
 
 MIT License. Copyright (c) 2026 Celovin.

@@ -78,6 +78,10 @@ ruff check .
 mypy src
 ```
 
+## 릴리스 준비
+
+로컬 패키지 빌드와 Docker 릴리스 검증 절차는 [RELEASE.md](RELEASE.md)에 정리되어 있습니다. 태그 기반 GitHub Release workflow는 포함되어 있지만, PyPI 업로드는 별도 승인 단계로 남겨두었습니다.
+
 ## 라이선스
 
 MIT License. Copyright (c) 2026 Celovin.

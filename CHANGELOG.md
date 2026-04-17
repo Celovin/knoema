@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Streamlit dashboard MVP for JSONL simulation logs, agent summaries, relationship edges, and conversation inspection.
 - Architecture and research positioning documentation.
 - Phase 12 technical report draft with LaTeX source, BibTeX references, and a generated PDF preview.
+- Phase 13 release preparation: Dockerfile, release workflow, release playbook, and local package artifact checks.
 
 ## [0.1.0] - 2026-04-18
 
