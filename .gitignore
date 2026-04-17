@@ -1,0 +1,90 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Env
+.venv/
+venv/
+env/
+ENV/
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# Type checking
+.mypy_cache/
+.ruff_cache/
+.pytype/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb.bak
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Secrets / Env
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+credentials.json
+
+# Knoema runtime artifacts
+logs/
+runs/
+*.db
+*.sqlite
+*.sqlite3
+.faiss/
+checkpoints/
+*.knoema
+
+# Godot
+.godot/
+.import/
+export.cfg
+export_presets.cfg
+
+# Node (dashboard)
+node_modules/
+.next/
+out/
+
+# OS
+Thumbs.db
+
+# Private planning / R&D proposal docs (not for public repo)
+planning/

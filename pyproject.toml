@@ -1,0 +1,114 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "knoema-engine"
+version = "0.1.0"
+description = "LLM-based multi-agent social simulation engine for games, public safety, and academic research."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Celovin", email = "hello@celovin.com" }]
+keywords = [
+    "llm",
+    "multi-agent",
+    "simulation",
+    "agent-based-modeling",
+    "npc",
+    "generative-agents",
+    "social-simulation",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Games/Entertainment :: Simulation",
+]
+dependencies = [
+    "anthropic>=0.34",
+    "openai>=1.40",
+    "sentence-transformers>=3.0",
+    "faiss-cpu>=1.8",
+    "networkx>=3.3",
+    "sqlalchemy>=2.0",
+    "pydantic>=2.8",
+    "loguru>=0.7",
+    "rich>=13.7",
+    "pyyaml>=6.0",
+    "tenacity>=8.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "black>=24.8",
+    "pre-commit>=3.8",
+    "ipykernel>=6.29",
+    "jupyter>=1.1",
+]
+dashboard = [
+    "streamlit>=1.38",
+    "plotly>=5.24",
+    "pandas>=2.2",
+]
+local-llm = [
+    "transformers>=4.44",
+    "torch>=2.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/Celovin/knoema"
+Repository = "https://github.com/Celovin/knoema"
+Issues = "https://github.com/Celovin/knoema/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/knoema"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+    "RUF", # ruff-specific
+]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["N802", "N803"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-v --cov=knoema --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["src/knoema"]
+omit = ["tests/*"]
