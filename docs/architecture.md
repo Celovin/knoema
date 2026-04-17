@@ -38,7 +38,7 @@ flowchart LR
 | `persona.py` | Persona identity and system prompt rendering |
 | `prompts.py` | English, Korean, Japanese, and Chinese prompt templates |
 | `memory/short_term.py` | FIFO recent memory buffer |
-| `memory/long_term.py` | SQLite metadata plus FAISS vector retrieval |
+| `memory/long_term.py` | SQLite metadata plus FAISS vector retrieval, batch inserts, and semantic-temporal reranking |
 | `memory/summarizer.py` | Compression from event streams to semantic memories |
 | `relationship.py` | Directed relationship graph over agents |
 | `environment.py` | Time, location, conditions, and recent event context |
@@ -78,6 +78,7 @@ The MVP uses two persistence formats:
 
 - SQLite stores long-term memory metadata and text.
 - FAISS stores deterministic hash embeddings for local retrieval.
+- Hybrid reranking combines semantic similarity, temporal recency, and memory importance; `retrieve_with_scores(...)` exposes diagnostics for analysis.
 - JSONL stores simulation actions for replay, notebooks, dashboards, and adapters.
 
 `runs/`, `logs/`, SQLite databases, FAISS indexes, and checkpoints are ignored by git.

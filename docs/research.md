@@ -37,6 +37,10 @@ The prompt layer supports English, Korean, Japanese, and Chinese templates while
 
 The CLI runs deterministic local simulations from versionable YAML configs. It is intended for reproducible demos, CI smoke checks, and handoff scenarios where notebooks are too interactive.
 
+### 7. Semantic-Temporal Memory Retrieval
+
+The long-term memory store now exposes scored retrieval diagnostics. FAISS produces semantic candidates, then Knoema reranks them with configurable semantic, temporal, and importance weights. This keeps the default list-of-memory API simple while giving researchers visibility into why a memory was selected.
+
 ## Safety Boundary
 
 The repository must keep public-safety examples fictional, synthetic, and non-identifying. Recommended constraints:

@@ -20,7 +20,9 @@ from knoema.environment import Environment, EnvironmentContext
 from knoema.llm import AnthropicClient, LLMCallRecord, LLMGateway, LocalClient, OpenAIClient
 from knoema.memory import (
     HashEmbeddingEncoder,
+    MemorySearchResult,
     MemorySummarizer,
+    RetrievalWeights,
     ShortTermMemoryBuffer,
     SQLiteFaissMemoryStore,
 )
@@ -74,6 +76,7 @@ __all__ = [
     "LocalClient",
     "Memory",
     "MemoryRetriever",
+    "MemorySearchResult",
     "MemorySummarizer",
     "MemoryType",
     "MemoryWriter",
@@ -85,6 +88,7 @@ __all__ = [
     "Relationship",
     "RelationshipGraph",
     "RelationshipType",
+    "RetrievalWeights",
     "SQLiteFaissMemoryStore",
     "ShortTermMemoryBuffer",
     "SimulationLogEntry",

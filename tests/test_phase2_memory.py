@@ -11,12 +11,21 @@ import pytest
 from knoema import (
     HashEmbeddingEncoder,
     Memory,
+    MemorySearchResult,
     MemorySummarizer,
     Persona,
     Personality,
+    RetrievalWeights,
     ShortTermMemoryBuffer,
     SQLiteFaissMemoryStore,
 )
+
+
+class _StaticTwoDimensionalEncoder:
+    dimension = 2
+
+    def encode(self, text: str) -> list[float]:
+        return [1.0, 0.0]
 
 
 def _memory_at(index: int, content: str, *, agent_id: str = "alice") -> Memory:
@@ -128,6 +137,80 @@ def test_long_term_store_applies_recency_bias(tmp_path: Path) -> None:
         assert results[0].id == "newer"
     finally:
         store.close()
+
+
+def test_long_term_store_add_many_batches_records_and_rejects_duplicates(
+    tmp_path: Path,
+) -> None:
+    store = SQLiteFaissMemoryStore(tmp_path / "batch.sqlite3")
+    try:
+        memories = [_memory_at(index, f"Batch event {index} about study.") for index in range(3)]
+
+        store.add_many(memories)
+
+        assert len(store) == 3
+        assert len(store.retrieve("study", k=2)) == 2
+
+        with pytest.raises(ValueError, match="memory id already exists: mem-001"):
+            store.add_many([_memory_at(1, "Duplicate existing memory.")])
+        with pytest.raises(ValueError, match="memory id already exists: mem-010"):
+            store.add_many(
+                [
+                    _memory_at(10, "Duplicate within one batch."),
+                    _memory_at(10, "Duplicate within one batch again."),
+                ]
+            )
+    finally:
+        store.close()
+
+
+def test_long_term_store_hybrid_reranking_returns_scored_results(tmp_path: Path) -> None:
+    store = SQLiteFaissMemoryStore(
+        tmp_path / "hybrid.sqlite3",
+        encoder=_StaticTwoDimensionalEncoder(),
+    )
+    try:
+        older_semantic_match = Memory(
+            id="older",
+            agent_id="alice",
+            timestamp=datetime(2026, 4, 8, 9, 0),
+            content="Alice prepared chemistry notes.",
+            memory_type="episodic",
+            importance=0.2,
+            embedding=[1.0, 0.0],
+        )
+        newer_partial_match = Memory(
+            id="newer",
+            agent_id="alice",
+            timestamp=datetime(2026, 4, 18, 9, 0),
+            content="Alice discussed the study schedule this morning.",
+            memory_type="episodic",
+            importance=0.2,
+            embedding=[0.8, 0.6],
+        )
+        store.add_many([older_semantic_match, newer_partial_match])
+
+        results = store.retrieve_with_scores(
+            "chemistry notes",
+            k=2,
+            weights=RetrievalWeights(semantic=0.35, temporal=0.60, importance=0.05),
+            as_of=newer_partial_match.timestamp,
+        )
+
+        assert all(isinstance(result, MemorySearchResult) for result in results)
+        assert [result.memory.id for result in results] == ["newer", "older"]
+        assert results[1].semantic_score > results[0].semantic_score
+        assert results[0].temporal_score > results[1].temporal_score
+        assert results[0].final_score > results[1].final_score
+    finally:
+        store.close()
+
+
+def test_retrieval_weights_reject_invalid_values() -> None:
+    with pytest.raises(ValueError, match="semantic weight"):
+        RetrievalWeights(semantic=-0.1)
+    with pytest.raises(ValueError, match="at least one retrieval weight"):
+        RetrievalWeights(semantic=0.0, temporal=0.0, importance=0.0)
 
 
 def test_long_term_store_persists_records_between_instances(tmp_path: Path) -> None:

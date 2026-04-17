@@ -7,7 +7,8 @@ import json
 import math
 import re
 import sqlite3
-from dataclasses import replace
+from collections.abc import Iterable
+from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
 
@@ -45,6 +46,59 @@ class HashEmbeddingEncoder:
         else:
             vector /= norm
         return vector.tolist()
+
+
+@dataclass(frozen=True, slots=True)
+class RetrievalWeights:
+    """Weights for semantic-temporal memory reranking."""
+
+    semantic: float = 0.65
+    temporal: float = 0.30
+    importance: float = 0.05
+
+    def __post_init__(self) -> None:
+        values = {
+            "semantic": self.semantic,
+            "temporal": self.temporal,
+            "importance": self.importance,
+        }
+        for name, value in values.items():
+            if value < 0.0 or not math.isfinite(value):
+                raise ValueError(f"{name} weight must be a non-negative finite value")
+        if sum(values.values()) == 0.0:
+            raise ValueError("at least one retrieval weight must be positive")
+
+    def normalized(self) -> RetrievalWeights:
+        total = self.semantic + self.temporal + self.importance
+        return RetrievalWeights(
+            semantic=self.semantic / total,
+            temporal=self.temporal / total,
+            importance=self.importance / total,
+        )
+
+    def score(
+        self,
+        *,
+        semantic_score: float,
+        temporal_score: float,
+        importance_score: float,
+    ) -> float:
+        return (
+            self.semantic * semantic_score
+            + self.temporal * temporal_score
+            + self.importance * importance_score
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class MemorySearchResult:
+    """A retrieved memory with reranking diagnostics."""
+
+    memory: Memory
+    semantic_score: float
+    temporal_score: float
+    importance_score: float
+    final_score: float
 
 
 class SQLiteFaissMemoryStore:
@@ -136,6 +190,46 @@ class SQLiteFaissMemoryStore:
         self._memory_ids.append(stored_memory.id)
         self._index.add(np.asarray([stored_memory.embedding], dtype=np.float32))
 
+    def add_many(self, memories: Iterable[Memory]) -> None:
+        pending: list[Memory] = []
+        embeddings: list[list[float]] = []
+        seen_ids: set[str] = set()
+        for memory in memories:
+            if memory.id in self._records or memory.id in seen_ids:
+                raise ValueError(f"memory id already exists: {memory.id}")
+            embedding = memory.embedding or self.encoder.encode(memory.content)
+            stored_memory = replace(memory, embedding=embedding)
+            pending.append(stored_memory)
+            embeddings.append(embedding)
+            seen_ids.add(memory.id)
+
+        if not pending:
+            return
+
+        self._connection.executemany(
+            """
+            INSERT INTO memories (id, agent_id, timestamp, content, memory_type, importance, embedding_json)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            [
+                (
+                    memory.id,
+                    memory.agent_id,
+                    memory.timestamp.isoformat(),
+                    memory.content,
+                    memory.memory_type,
+                    memory.importance,
+                    json.dumps(memory.embedding),
+                )
+                for memory in pending
+            ],
+        )
+        self._connection.commit()
+        for memory in pending:
+            self._records[memory.id] = memory
+            self._memory_ids.append(memory.id)
+        self._index.add(np.asarray(embeddings, dtype=np.float32))
+
     def retrieve(self, query: str, k: int = 5, recency_bias: float = 0.3) -> list[Memory]:
         if k < 1:
             raise ValueError(f"k must be positive, got {k!r}")
@@ -143,14 +237,38 @@ class SQLiteFaissMemoryStore:
             raise ValueError(
                 f"recency_bias must be between 0.0 and 1.0, got {recency_bias!r}"
             )
+        weights = RetrievalWeights(
+            semantic=1.0 - recency_bias,
+            temporal=recency_bias,
+            importance=0.05,
+        )
+        return [result.memory for result in self.retrieve_with_scores(query, k=k, weights=weights)]
+
+    def retrieve_with_scores(
+        self,
+        query: str,
+        k: int = 5,
+        *,
+        weights: RetrievalWeights | None = None,
+        as_of: datetime | None = None,
+        temporal_half_life_hours: float = 24.0,
+        candidate_multiplier: int = 5,
+    ) -> list[MemorySearchResult]:
+        if k < 1:
+            raise ValueError(f"k must be positive, got {k!r}")
+        if temporal_half_life_hours <= 0.0 or not math.isfinite(temporal_half_life_hours):
+            raise ValueError("temporal_half_life_hours must be a positive finite value")
+        if candidate_multiplier < 1:
+            raise ValueError(f"candidate_multiplier must be positive, got {candidate_multiplier!r}")
         if not self._memory_ids:
             return []
 
         query_vector = np.asarray([self.encoder.encode(query)], dtype=np.float32)
-        candidate_count = min(len(self._memory_ids), max(k, k * 5))
+        candidate_count = min(len(self._memory_ids), max(k, k * candidate_multiplier))
         similarities, indices = self._index.search(query_vector, candidate_count)
-        newest_timestamp = max(memory.timestamp for memory in self._records.values())
-        scored_memories: list[tuple[float, Memory]] = []
+        reference_time = as_of or max(memory.timestamp for memory in self._records.values())
+        rerank_weights = (weights or RetrievalWeights()).normalized()
+        scored_memories: list[MemorySearchResult] = []
 
         for similarity, raw_index in zip(
             similarities[0].tolist(),
@@ -161,17 +279,39 @@ class SQLiteFaissMemoryStore:
                 continue
             memory_id = self._memory_ids[raw_index]
             memory = self._records[memory_id]
-            similarity_score = (float(similarity) + 1.0) / 2.0
-            recency_score = self._recency_score(memory.timestamp, newest_timestamp)
-            final_score = (
-                (1.0 - recency_bias) * similarity_score
-                + recency_bias * recency_score
-                + memory.importance * 0.05
+            semantic_score = self._normalize_similarity(float(similarity))
+            temporal_score = self._temporal_score(
+                memory.timestamp,
+                reference_time,
+                temporal_half_life_hours=temporal_half_life_hours,
             )
-            scored_memories.append((final_score, memory))
+            importance_score = memory.importance
+            final_score = rerank_weights.score(
+                semantic_score=semantic_score,
+                temporal_score=temporal_score,
+                importance_score=importance_score,
+            )
+            scored_memories.append(
+                MemorySearchResult(
+                    memory=memory,
+                    semantic_score=semantic_score,
+                    temporal_score=temporal_score,
+                    importance_score=importance_score,
+                    final_score=final_score,
+                )
+            )
 
-        scored_memories.sort(key=lambda item: item[0], reverse=True)
-        return [memory for _, memory in scored_memories[:k]]
+        scored_memories.sort(
+            key=lambda result: (
+                result.final_score,
+                result.semantic_score,
+                result.temporal_score,
+                result.memory.timestamp,
+                result.memory.id,
+            ),
+            reverse=True,
+        )
+        return scored_memories[:k]
 
     def all(self) -> list[Memory]:
         return [self._records[memory_id] for memory_id in self._memory_ids]
@@ -184,8 +324,31 @@ class SQLiteFaissMemoryStore:
 
     @staticmethod
     def _recency_score(timestamp: datetime, newest_timestamp: datetime) -> float:
-        age_seconds = max((newest_timestamp - timestamp).total_seconds(), 0.0)
-        return math.exp(-age_seconds / 86_400.0)
+        return SQLiteFaissMemoryStore._temporal_score(
+            timestamp,
+            newest_timestamp,
+            temporal_half_life_hours=24.0,
+        )
+
+    @staticmethod
+    def _temporal_score(
+        timestamp: datetime,
+        reference_time: datetime,
+        *,
+        temporal_half_life_hours: float,
+    ) -> float:
+        age_seconds = max((reference_time - timestamp).total_seconds(), 0.0)
+        half_life_seconds = temporal_half_life_hours * 3_600.0
+        return math.pow(0.5, age_seconds / half_life_seconds)
+
+    @staticmethod
+    def _normalize_similarity(similarity: float) -> float:
+        return max(0.0, min(1.0, (similarity + 1.0) / 2.0))
 
 
-__all__ = ["HashEmbeddingEncoder", "SQLiteFaissMemoryStore"]
+__all__ = [
+    "HashEmbeddingEncoder",
+    "MemorySearchResult",
+    "RetrievalWeights",
+    "SQLiteFaissMemoryStore",
+]

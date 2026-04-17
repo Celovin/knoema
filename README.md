@@ -23,7 +23,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 ## Core Features
 
 - Personas with Big Five personality traits, values, goals, and prompt rendering
-- Short-term memory buffers and SQLite + FAISS long-term retrieval
+- Short-term memory buffers and SQLite + FAISS long-term retrieval with semantic-temporal reranking
 - Relationship graph with directed trust, familiarity, and interaction weight
 - Environment context for time, location, conditions, and recent events
 - PAD emotion state: valence, arousal, dominance
@@ -130,6 +130,20 @@ python benchmarks/run_benchmark.py --json-output runs/benchmark.json --markdown-
 ```
 
 The benchmark report records measured Knoema throughput and transparent `not-measured` comparison slots for Concordia and Mesa. See [benchmarks/README.md](benchmarks/README.md) for comparison discipline.
+
+## Memory Retrieval
+
+`SQLiteFaissMemoryStore.retrieve(...)` keeps the simple list-of-memory API. Use `retrieve_with_scores(...)` when you need semantic score, temporal score, importance score, and final reranking score for analysis:
+
+```python
+from knoema import RetrievalWeights
+
+results = store.retrieve_with_scores(
+    "shared study routine",
+    k=5,
+    weights=RetrievalWeights(semantic=0.65, temporal=0.30, importance=0.05),
+)
+```
 
 ## CLI
 

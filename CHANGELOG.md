@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 14 benchmark script for deterministic Knoema throughput reports with Concordia and Mesa comparison slots.
 - Phase 14 multilingual prompt templates for English, Korean, Japanese, and Chinese runs.
 - Phase 14 `knoema run` CLI for YAML-driven deterministic local simulations.
+- Phase 14 semantic-temporal memory reranking with scored retrieval diagnostics and batch inserts.
 
 ## [0.1.0] - 2026-04-18
 

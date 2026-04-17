@@ -23,7 +23,7 @@ Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정�
 ## 핵심 기능
 
 - Big Five 성격, 가치, 목표를 가진 Persona
-- 단기기억 버퍼와 SQLite + FAISS 장기기억 검색
+- Semantic-temporal 재랭킹을 포함한 단기기억 버퍼와 SQLite + FAISS 장기기억 검색
 - 신뢰, 친숙도, 상호작용 가중치를 가진 방향성 관계 그래프
 - 시간, 장소, 조건, 최근 이벤트를 포함한 환경 맥락
 - PAD 감정 상태: valence, arousal, dominance
@@ -71,6 +71,20 @@ python benchmarks/run_benchmark.py --json-output runs/benchmark.json --markdown-
 ```
 
 벤치마크 리포트는 Knoema 처리량을 실제 측정하고, Concordia와 Mesa는 별도 외부 실행이 필요하다는 `not-measured` 비교 슬롯으로 표시합니다. 자세한 기준은 [benchmarks/README.md](benchmarks/README.md)에 정리했습니다.
+
+## 메모리 검색
+
+`SQLiteFaissMemoryStore.retrieve(...)`는 단순한 memory list API를 유지합니다. 분석용 점수가 필요하면 `retrieve_with_scores(...)`로 semantic score, temporal score, importance score, final reranking score를 함께 확인할 수 있습니다.
+
+```python
+from knoema import RetrievalWeights
+
+results = store.retrieve_with_scores(
+    'shared study routine',
+    k=5,
+    weights=RetrievalWeights(semantic=0.65, temporal=0.30, importance=0.05),
+)
+```
 
 ## CLI
 
