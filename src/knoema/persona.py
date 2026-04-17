@@ -38,7 +38,11 @@ class Persona:
         _validate_string_list("values", self.values)
         _validate_string_list("goals", self.goals)
 
-    def to_system_prompt(self) -> str:
+    def to_system_prompt(self, language: str = "en") -> str:
+        from knoema.prompts import normalize_prompt_language, render_persona_system_prompt
+
+        if normalize_prompt_language(language) != "en":
+            return render_persona_system_prompt(self, language)
         values_text = ", ".join(self.values) if self.values else "None provided"
         goals_text = ", ".join(self.goals) if self.goals else "None provided"
         return dedent(

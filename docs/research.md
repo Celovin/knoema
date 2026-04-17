@@ -29,6 +29,10 @@ The third notebook shows an NPC retrieving player-facing memories across session
 
 The benchmark script runs a local village scenario and reports wall time, actions/sec, and relationship edge counts. Concordia and Mesa rows are present as transparent comparison slots, but they remain `not-measured` until equivalent external adapter runs are executed in the same environment.
 
+### 5. Multilingual Prompt Templates
+
+The prompt layer supports English, Korean, Japanese, and Chinese templates while keeping the JSON action schema stable. This lets researchers compare language-localized agent behavior without changing adapters or dashboard ingestion.
+
 ## Safety Boundary
 
 The repository must keep public-safety examples fictional, synthetic, and non-identifying. Recommended constraints:

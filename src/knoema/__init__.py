@@ -25,6 +25,13 @@ from knoema.memory import (
     SQLiteFaissMemoryStore,
 )
 from knoema.persona import Persona
+from knoema.prompts import (
+    SUPPORTED_PROMPT_LANGUAGES,
+    PromptLanguage,
+    normalize_prompt_language,
+    render_decision_user_prompt,
+    render_persona_system_prompt,
+)
 from knoema.protocols import LLMClient, MemoryRetriever, MemoryWriter, PromptRenderable
 from knoema.relationship import InteractionOutcome, Relationship, RelationshipGraph
 from knoema.simulator import SimulationLogEntry, Simulator
@@ -44,6 +51,7 @@ __author__ = "Celovin"
 __license__ = "MIT"
 
 __all__ = [
+    "SUPPORTED_PROMPT_LANGUAGES",
     "Action",
     "AgentID",
     "AnthropicClient",
@@ -72,6 +80,7 @@ __all__ = [
     "OpenAIClient",
     "Persona",
     "Personality",
+    "PromptLanguage",
     "PromptRenderable",
     "Relationship",
     "RelationshipGraph",
@@ -87,5 +96,8 @@ __all__ = [
     "decide",
     "format_markdown_report",
     "load_config",
+    "normalize_prompt_language",
+    "render_decision_user_prompt",
+    "render_persona_system_prompt",
     "run_knoema_benchmark",
 ]

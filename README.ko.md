@@ -28,6 +28,7 @@ Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정�
 - 시간, 장소, 조건, 최근 이벤트를 포함한 환경 맥락
 - PAD 감정 상태: valence, arousal, dominance
 - Anthropic, OpenAI, deterministic local client를 묶는 LLM gateway
+- 영어, 한국어, 일본어, 중국어 실행을 위한 prompt template
 - scheduled event와 JSONL export를 지원하는 simulation runner
 - MVP 데모 트랙과 10명 마을 확장 실험을 보여주는 Jupyter 노트북
 - JSON과 Markdown 리포트를 생성하는 deterministic benchmark script
@@ -78,6 +79,7 @@ Godot 4 스캐폴드, HTTP/local fallback client, 데모 씬 구조는 [adapters
 
 - [Architecture](docs/architecture.md)
 - [Research Positioning](docs/research.md)
+- [Prompt Templates](docs/prompts.md)
 - [기술 리포트 LaTeX 초안](paper/main.tex), [PDF 프리뷰](paper/knoema_technical_report.pdf)
 
 ## 개발

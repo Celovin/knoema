@@ -36,6 +36,7 @@ flowchart LR
 | --- | --- |
 | `types.py` | Shared dataclasses: `Personality`, `Emotion`, `Memory`, `Action`, `WorldEvent` |
 | `persona.py` | Persona identity and system prompt rendering |
+| `prompts.py` | English, Korean, Japanese, and Chinese prompt templates |
 | `memory/short_term.py` | FIFO recent memory buffer |
 | `memory/long_term.py` | SQLite metadata plus FAISS vector retrieval |
 | `memory/summarizer.py` | Compression from event streams to semantic memories |

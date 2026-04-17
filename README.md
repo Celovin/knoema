@@ -28,6 +28,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Environment context for time, location, conditions, and recent events
 - PAD emotion state: valence, arousal, dominance
 - LLM gateway with Anthropic, OpenAI, and deterministic local clients
+- Prompt templates for English, Korean, Japanese, and Chinese runs
 - Simulation runner with scheduled events and JSONL export
 - Jupyter notebooks for MVP demo tracks and a 10-agent village scale-up
 - Deterministic benchmark script with JSON and Markdown reports
@@ -158,6 +159,7 @@ Detailed notes:
 
 - [Architecture](docs/architecture.md)
 - [Research Positioning](docs/research.md)
+- [Prompt Templates](docs/prompts.md)
 - [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/knoema_technical_report.pdf)
 
 ## Roadmap

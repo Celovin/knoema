@@ -9,6 +9,7 @@ from typing import Any
 
 from knoema.environment import EnvironmentContext
 from knoema.persona import Persona
+from knoema.prompts import PromptLanguage, normalize_prompt_language, render_decision_user_prompt
 from knoema.protocols import LLMClient, Message
 from knoema.relationship import Relationship
 from knoema.types import Action, AgentID, Emotion, Memory, WorldEvent
@@ -17,8 +18,9 @@ from knoema.types import Action, AgentID, Emotion, Memory, WorldEvent
 class DecisionEngine:
     """Prompt an LLM-like client and parse the selected action."""
 
-    def __init__(self, llm: LLMClient) -> None:
+    def __init__(self, llm: LLMClient, *, language: str | PromptLanguage = "en") -> None:
         self.llm = llm
+        self.language = normalize_prompt_language(language)
 
     def decide(
         self,
@@ -37,6 +39,7 @@ class DecisionEngine:
             environment=environment,
             emotion=emotion,
             trigger=trigger,
+            language=self.language,
         )
         response = self.llm.complete(messages, temperature=0.2, max_tokens=512)
         return parse_action_response(
@@ -55,10 +58,11 @@ def decide(
     emotion: Emotion,
     trigger: WorldEvent | None,
     llm: LLMClient,
+    language: str | PromptLanguage = "en",
 ) -> Action:
     """Functional facade for the decision engine."""
 
-    return DecisionEngine(llm).decide(
+    return DecisionEngine(llm, language=language).decide(
         persona=persona,
         memories=memories,
         relationships=relationships,
@@ -76,6 +80,7 @@ def build_decision_messages(
     environment: EnvironmentContext,
     emotion: Emotion,
     trigger: WorldEvent | None,
+    language: str | PromptLanguage = "en",
 ) -> list[Message]:
     memory_lines = "\n".join(
         f"- {memory.timestamp.isoformat()} [{memory.memory_type}] {memory.content}"
@@ -87,23 +92,34 @@ def build_decision_messages(
         for target, relationship in relationships.items()
     )
     trigger_text = trigger.description if trigger is not None else "No immediate trigger."
-    user_content = "\n".join(
-        [
-            "Choose the next action as strict JSON.",
-            'Schema: {"action_type": str, "target": str | null, "content": str}',
-            f"Time: {environment.timestamp.isoformat()}",
-            f"Location: {environment.location}",
-            f"Conditions: {json.dumps(environment.conditions, ensure_ascii=False, sort_keys=True)}",
-            f"Emotion: valence={emotion.valence:.2f}, arousal={emotion.arousal:.2f}, dominance={emotion.dominance:.2f}",
-            f"Trigger: {trigger_text}",
-            "Memories:",
-            memory_lines or "- None",
-            "Relationships:",
-            relationship_lines or "- None",
-        ]
-    )
+    resolved_language = normalize_prompt_language(language)
+    if resolved_language == "en":
+        user_content = "\n".join(
+            [
+                "Choose the next action as strict JSON.",
+                'Schema: {"action_type": str, "target": str | null, "content": str}',
+                f"Time: {environment.timestamp.isoformat()}",
+                f"Location: {environment.location}",
+                f"Conditions: {json.dumps(environment.conditions, ensure_ascii=False, sort_keys=True)}",
+                f"Emotion: valence={emotion.valence:.2f}, arousal={emotion.arousal:.2f}, dominance={emotion.dominance:.2f}",
+                f"Trigger: {trigger_text}",
+                "Memories:",
+                memory_lines or "- None",
+                "Relationships:",
+                relationship_lines or "- None",
+            ]
+        )
+    else:
+        user_content = render_decision_user_prompt(
+            memories=memories,
+            relationships=relationships,
+            environment=environment,
+            emotion=emotion,
+            trigger=trigger,
+            language=resolved_language,
+        )
     return [
-        {"role": "system", "content": persona.to_system_prompt()},
+        {"role": "system", "content": persona.to_system_prompt(language=resolved_language)},
         {"role": "user", "content": user_content},
     ]
 
