@@ -164,6 +164,12 @@ python benchmarks/formal_report/runner.py
 
 See [Formal Benchmark Report](benchmarks/formal_report/README.md) and [Formal Report PDF](benchmarks/formal_report/report.pdf).
 
+## Reproducibility Guarantees
+
+Knoema deterministic local runs can be replayed from fixed config, seed, and JSONL artifacts. The Phase 21 test suite covers repeated same-seed runs, seed propagation, YAML config round-trip, and JSONL replay summaries.
+
+See [Reproducibility Report](docs/reports/reproducibility.md).
+
 ## Memory Retrieval
 
 `SQLiteFaissMemoryStore.retrieve(...)` keeps the simple list-of-memory API. Use `retrieve_with_scores(...)` when you need semantic score, temporal score, importance score, and final reranking score for analysis:
@@ -230,6 +236,7 @@ Detailed notes:
 - [50-Agent Benchmark Report](docs/reports/50_agent_benchmark.pdf)
 - [Formal Benchmark Report](benchmarks/formal_report/README.md)
 - [Formal Report PDF](benchmarks/formal_report/report.pdf)
+- [Reproducibility Report](docs/reports/reproducibility.md)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)

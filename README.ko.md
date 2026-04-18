@@ -85,6 +85,12 @@ Formal report bundle:
 python benchmarks/formal_report/runner.py
 ```
 
+## Reproducibility Guarantees
+
+Knoema deterministic local run은 fixed config, seed, JSONL artifact로 replay할 수 있습니다. Phase 21 테스트는 same-seed 반복 실행, seed propagation, YAML config round-trip, JSONL replay summary를 검증합니다.
+
+자세한 내용은 [Reproducibility Report](docs/reports/reproducibility.md)를 참고하세요.
+
 자세한 내용은 [Formal Benchmark Report](benchmarks/formal_report/README.md)와 [Formal Report PDF](benchmarks/formal_report/report.pdf)를 참고하세요.
 
 벤치마크 리포트는 Knoema 처리량을 실제 측정하고, Concordia와 Mesa는 별도 외부 실행이 필요하다는 `not-measured` 비교 슬롯으로 표시합니다. 자세한 기준은 [benchmarks/README.md](benchmarks/README.md)에 정리했습니다.
@@ -134,6 +140,7 @@ Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 
 - [50-Agent Benchmark Report](docs/reports/50_agent_benchmark.pdf)
 - [Formal Benchmark Report](benchmarks/formal_report/README.md)
 - [Formal Report PDF](benchmarks/formal_report/report.pdf)
+- [Reproducibility Report](docs/reports/reproducibility.md)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [튜토리얼 블로그 초안](docs/tutorial_blog.md)
