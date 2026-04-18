@@ -64,8 +64,14 @@ def test_phase35_release_please_manifest_is_configured() -> None:
 def test_phase35_release_dry_run_script_and_docs_exist() -> None:
     script = Path("scripts/release_dry_run.py").read_text(encoding="utf-8")
     docs = Path("docs/ci-release-automation.md").read_text(encoding="utf-8")
+    readme = Path("README.md").read_text(encoding="utf-8")
+    status_script = Path("scripts/external_activation_status.py").read_text(encoding="utf-8")
 
     assert '"-m", "build"' in script
     assert "twine" in script
     assert "--version 0.1.1" in docs
     assert "Trusted Publisher" in docs
+    assert "external_activation_status.py" in docs
+    assert "--fail-on-blockers" in docs
+    assert "python scripts/external_activation_status.py" in readme
+    assert "ENABLE_RELEASE_PLEASE" in status_script

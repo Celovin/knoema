@@ -36,6 +36,25 @@ Configuration lives in:
 
 The Python release strategy updates `pyproject.toml`, `CHANGELOG.md`, and `src/knoema/__init__.py`.
 
+## External Activation Status
+
+Use the external activation status script before trying to un-gate release automation or production deployment flows:
+
+```powershell
+cd C:\Users\admin\Projects\knoema
+.venv\Scripts\python scripts\external_activation_status.py
+```
+
+The script prints a JSON snapshot covering:
+
+- GitHub repository visibility and latest release
+- Hugging Face local auth namespace for the Playground target
+- Vercel project link presence for production deployment
+- GitHub Actions workflow permission mode
+- Repository variable state for `ENABLE_RELEASE_PLEASE`
+
+Add `--fail-on-blockers` when you want a non-zero exit code if any activation blocker is still present.
+
 ## Tag Release
 
 The `Release` workflow runs only for tags matching `v*.*.*`.
@@ -60,3 +79,11 @@ cd C:\Users\admin\Projects\knoema
 ```
 
 The script copies the git-visible working tree to a temporary directory, patches the version in that copy, builds the distributions, and runs `twine check`.
+
+Recommended local sequence before a production tag:
+
+```powershell
+cd C:\Users\admin\Projects\knoema
+.venv\Scripts\python scripts\external_activation_status.py --fail-on-blockers
+.venv\Scripts\python scripts\release_dry_run.py --version 0.1.1
+```
