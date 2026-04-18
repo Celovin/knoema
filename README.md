@@ -120,6 +120,7 @@ sim.export_logs("runs/dorm_001.jsonl")
 - [Fictional Crime Scenario Replay](examples/02_crime_scenario_replay.ipynb): synthetic replay workflow with milestone coverage
 - [Game NPC Persistent Memory Demo](examples/03_game_npc_demo.ipynb): NPC memory retrieval and Godot-style payload
 - [Ten-Agent Village Simulation](examples/04_village.ipynb): deterministic 10-person village run with relationship and JSONL checks
+- [Ollama Local LLM Fallback](examples/05_ollama_local_fallback.ipynb): local-first gateway example with deterministic fallback
 
 Run notebooks top-to-bottom after installing `.[dev]`.
 
@@ -322,6 +323,7 @@ Detailed notes:
 - [Security Policy](docs/SECURITY.md) and [Phase 34 Security Audit](docs/security/audit_2026-04-18.md)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
+- [Local vs Cloud LLM Fallback Notes](src/knoema/llm/local/benchmarks/local_vs_cloud.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)
 - [Korean Technical Blog Drafts](docs/blog/ko/01-why-knoema-korean-indie-games.md)
 - [Discord Community Launch Kit](docs/discord_community.md)

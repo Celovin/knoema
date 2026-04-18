@@ -19,7 +19,17 @@ from knoema.dsl import Scenario, load_scenario
 from knoema.emotion import EmotionState, EmotionStimulus
 from knoema.environment import Environment, EnvironmentContext
 from knoema.game import NPC, GameSession, NPCResponse
-from knoema.llm import AnthropicClient, LLMCallRecord, LLMGateway, LocalClient, OpenAIClient
+from knoema.llm import (
+    AnthropicClient,
+    LlamaCppClient,
+    LLMCallRecord,
+    LLMGateway,
+    LocalClient,
+    LocalLLMError,
+    OllamaClient,
+    OpenAIClient,
+    VLLMClient,
+)
 from knoema.memory import (
     HashEmbeddingEncoder,
     MemorySearchResult,
@@ -77,7 +87,9 @@ __all__ = [
     "LLMCallRecord",
     "LLMClient",
     "LLMGateway",
+    "LlamaCppClient",
     "LocalClient",
+    "LocalLLMError",
     "Memory",
     "MemoryRetriever",
     "MemorySearchResult",
@@ -85,6 +97,7 @@ __all__ = [
     "MemoryType",
     "MemoryWriter",
     "NPCResponse",
+    "OllamaClient",
     "OpenAIClient",
     "Persona",
     "Personality",
@@ -99,6 +112,7 @@ __all__ = [
     "ShortTermMemoryBuffer",
     "SimulationLogEntry",
     "Simulator",
+    "VLLMClient",
     "WorldEvent",
     "__version__",
     "build_comparison_rows",
