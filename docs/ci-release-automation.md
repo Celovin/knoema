@@ -87,3 +87,10 @@ cd C:\Users\admin\Projects\knoema
 .venv\Scripts\python scripts\external_activation_status.py --fail-on-blockers
 .venv\Scripts\python scripts\release_dry_run.py --version 0.1.1
 ```
+
+Or run the combined checker:
+
+```powershell
+cd C:\Users\admin\Projects\knoema
+.venv\Scripts\python scripts\pre_release_check.py --version 0.1.1
+```

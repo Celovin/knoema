@@ -71,7 +71,7 @@ def _patch_version(worktree: Path, version: str) -> str:
     return current_version
 
 
-def _dry_run(version: str, keep: bool) -> dict[str, object]:
+def run_release_dry_run(version: str, keep: bool = False) -> dict[str, object]:
     if not SEMVER_RE.match(version):
         raise SystemExit(f"Invalid semantic version: {version}")
 
@@ -110,9 +110,12 @@ def main() -> None:
     parser.add_argument("--keep", action="store_true", help="Keep the temporary build tree for inspection.")
     args = parser.parse_args()
 
-    result = _dry_run(args.version, args.keep)
+    result = run_release_dry_run(args.version, args.keep)
     print(json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
     main()
+
+
+__all__ = ["run_release_dry_run"]
