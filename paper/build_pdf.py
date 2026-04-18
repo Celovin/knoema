@@ -218,7 +218,7 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
                 ],
                 "The local verification run before this report passed 52 pytest tests, ruff check ., and mypy src. The GitHub Actions workflow runs the same lint, type, and test gates on Python 3.11 and 3.12. The public repository surface is scanned to keep private planning documents and unrelated entity references out of committed files.",
                 "The recommended live demonstration starts with the first notebook, then opens the dashboard with the bundled sample log, and finally shows the Godot adapter directory. This order keeps the narrative concrete: first define agents, then observe exported traces, then show how the same action surface can be consumed by an external runtime.",
-                "The repository is private during preparation and is intended to be made public after the first notebook, Godot adapter, and documentation are stable. Runtime artifacts such as logs, SQLite databases, FAISS indexes, checkpoints, and private planning documents are ignored by git.",
+                "The repository is maintained as a public-facing GitHub artifact after the first notebook, Godot adapter, and documentation surface are stable. Runtime artifacts such as logs, SQLite databases, FAISS indexes, checkpoints, and private planning documents are ignored by git.",
             ],
         ),
         (
