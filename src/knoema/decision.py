@@ -12,6 +12,7 @@ from knoema.persona import Persona
 from knoema.prompts import PromptLanguage, normalize_prompt_language, render_decision_user_prompt
 from knoema.protocols import LLMClient, Message
 from knoema.relationship import Relationship
+from knoema.theory_of_mind import TheoryOfMindContext
 from knoema.types import Action, AgentID, Emotion, Memory, WorldEvent
 
 
@@ -31,6 +32,7 @@ class DecisionEngine:
         environment: EnvironmentContext,
         emotion: Emotion,
         trigger: WorldEvent | None = None,
+        theory_of_mind_context: TheoryOfMindContext | None = None,
     ) -> Action:
         messages = build_decision_messages(
             persona=persona,
@@ -39,6 +41,7 @@ class DecisionEngine:
             environment=environment,
             emotion=emotion,
             trigger=trigger,
+            theory_of_mind_context=theory_of_mind_context,
             language=self.language,
         )
         response = self.llm.complete(messages, temperature=0.2, max_tokens=512)
@@ -58,6 +61,7 @@ def decide(
     emotion: Emotion,
     trigger: WorldEvent | None,
     llm: LLMClient,
+    theory_of_mind_context: TheoryOfMindContext | None = None,
     language: str | PromptLanguage = "en",
 ) -> Action:
     """Functional facade for the decision engine."""
@@ -69,6 +73,7 @@ def decide(
         environment=environment,
         emotion=emotion,
         trigger=trigger,
+        theory_of_mind_context=theory_of_mind_context,
     )
 
 
@@ -80,6 +85,7 @@ def build_decision_messages(
     environment: EnvironmentContext,
     emotion: Emotion,
     trigger: WorldEvent | None,
+    theory_of_mind_context: TheoryOfMindContext | None = None,
     language: str | PromptLanguage = "en",
 ) -> list[Message]:
     memory_lines = "\n".join(
@@ -92,23 +98,30 @@ def build_decision_messages(
         for target, relationship in relationships.items()
     )
     trigger_text = trigger.description if trigger is not None else "No immediate trigger."
+    theory_of_mind_lines = None if theory_of_mind_context is None else theory_of_mind_context.render_lines()
     resolved_language = normalize_prompt_language(language)
     if resolved_language == "en":
-        user_content = "\n".join(
-            [
-                "Choose the next action as strict JSON.",
-                'Schema: {"action_type": str, "target": str | null, "content": str}',
-                f"Time: {environment.timestamp.isoformat()}",
-                f"Location: {environment.location}",
-                f"Conditions: {json.dumps(environment.conditions, ensure_ascii=False, sort_keys=True)}",
-                f"Emotion: valence={emotion.valence:.2f}, arousal={emotion.arousal:.2f}, dominance={emotion.dominance:.2f}",
-                f"Trigger: {trigger_text}",
-                "Memories:",
-                memory_lines or "- None",
-                "Relationships:",
-                relationship_lines or "- None",
-            ]
-        )
+        lines = [
+            "Choose the next action as strict JSON.",
+            'Schema: {"action_type": str, "target": str | null, "content": str}',
+            f"Time: {environment.timestamp.isoformat()}",
+            f"Location: {environment.location}",
+            f"Conditions: {json.dumps(environment.conditions, ensure_ascii=False, sort_keys=True)}",
+            f"Emotion: valence={emotion.valence:.2f}, arousal={emotion.arousal:.2f}, dominance={emotion.dominance:.2f}",
+            f"Trigger: {trigger_text}",
+            "Memories:",
+            memory_lines or "- None",
+            "Relationships:",
+            relationship_lines or "- None",
+        ]
+        if theory_of_mind_lines:
+            lines.extend(
+                [
+                    "Theory of mind:",
+                    *theory_of_mind_lines,
+                ]
+            )
+        user_content = "\n".join(lines)
     else:
         user_content = render_decision_user_prompt(
             memories=memories,
@@ -116,6 +129,7 @@ def build_decision_messages(
             environment=environment,
             emotion=emotion,
             trigger=trigger,
+            theory_of_mind_notes=theory_of_mind_lines,
             language=resolved_language,
         )
     return [

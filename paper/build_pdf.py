@@ -184,7 +184,8 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
             "Abstract",
             [
                 "Knoema Engine is an open, MIT-licensed runtime for persistent social agents whose state is inspectable outside of a model prompt. The system combines persona definitions, short-term and long-term memory, directed relationship state, environment context, PAD-style emotion, event scheduling, deterministic logs, and optional LLM-backed decisions.",
-                "This Phase 30 report updates the original MVP technical note with the 50-agent village experiment, formal benchmark bundle, scenario DSL, game SDK facades, documentation infrastructure, and stricter public-safety boundaries.",
+                "This revision extends that runtime with persona opt-in theory-of-mind tracking so belief state remains inspectable without forcing the feature on every agent.",
+                "This Phase 30 report updates the original MVP technical note with the 50-agent village experiment, formal benchmark bundle, scenario DSL, game SDK facades, a deterministic Sally-Anne harness, documentation infrastructure, and stricter public-safety boundaries.",
             ],
         ),
         (
@@ -203,7 +204,7 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
         (
             "2. Related Work",
             [
-                "Generative Agents showed that natural-language memory, planning, and reflection can produce believable behavior in interactive environments. Concordia frames generative agent-based modeling as grounded interaction among entities. AutoGen, CAMEL, MetaGPT, ChatDev, Voyager, Reflexion, ReAct, and Toolformer explore ways to coordinate LLM behavior through roles, tools, self-reflection, or conversational protocols.",
+                "Generative Agents showed that natural-language memory, planning, and reflection can produce believable behavior in interactive environments. Concordia frames generative agent-based modeling as grounded interaction among entities. The Sally-Anne task remains a compact probe for explicit false-belief reasoning. AutoGen, CAMEL, MetaGPT, ChatDev, Voyager, Reflexion, ReAct, and Toolformer explore ways to coordinate LLM behavior through roles, tools, self-reflection, or conversational protocols.",
                 "Classical agent-based modeling systems such as Mesa, NetLogo, MASON, Repast, Swarm, GAMA, and AnyLogic represent a long tradition of explicit model state, scheduling, and reproducible simulation loops. Knoema borrows this inspectable-loop discipline while adding natural-language memory and model-backed decision generation.",
                 "Retrieval-augmented generation, dense passage retrieval, approximate nearest-neighbor indexes, and vector stores provide the substrate for long-term agent context. Knoema currently uses deterministic hash embeddings in tests and examples to keep local runs reproducible.",
             ],
@@ -219,10 +220,11 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
                     ["Relationship", "Directed trust, familiarity, and interaction weight", "Implemented"],
                     ["Environment", "Time, location, conditions, and recent events", "Implemented"],
                     ["Emotion", "PAD state for valence, arousal, and dominance", "Implemented"],
+                    ["Theory of mind", "Persona opt-in symbolic belief tracking", "Implemented"],
                     ["Decision", "Message rendering and strict action parsing", "Implemented"],
                     ["Adapters", "Dashboard, Godot, Unity, and SDK surfaces", "Implemented"],
                 ],
-                "At every tick the simulator gathers persona, memory, relationship, environment, and emotion context for an agent. The decision engine renders messages, calls an LLMClient, and parses a strict action structure when possible. Deterministic local clients are used throughout tests and public demos.",
+                "At every tick the simulator gathers persona, memory, relationship, environment, emotion, and optional theory-of-mind context for an agent. The decision engine renders messages, calls an LLMClient, and parses a strict action structure when possible. Deterministic local clients are used throughout tests and public demos.",
                 "The Scenario DSL expresses agents, environment, events, duration, metrics, and ethics flags in YAML. The parser returns typed scenario objects, the validator rejects unsafe or unsupported public-safety claims, and the serializer supports round trips for reproducibility.",
             ],
         ),
@@ -249,6 +251,12 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
                     ["D scalability", "0.780", "0.487"],
                 ],
                 "Across the deterministic matrix, the Knoema memory policy improves top-k memory recall proxies and token efficiency proxies in every scenario. The paired sign-test over the composite score reports p=0.000244. This is deterministic evidence over the benchmark proxy, not a real-world behavioral claim.",
+                "Phase 43 adds a persona opt-in theory-of-mind module and a deterministic Sally-Anne harness. The harness covers 20 structured cases and reproduces the expected search location in 20 out of 20 cases for an accuracy of 1.000 against a target gate of 0.800.",
+                [
+                    ["Theory-of-mind metric", "Knoema", "Reference status"],
+                    ["Opt-in surface", "Persona opt-in symbolic belief tracker", "Concordia and Stanford are reference only"],
+                    ["Sally-Anne reproduction", "20/20 (1.000)", "No public external score asserted"],
+                ],
             ],
         ),
         (
@@ -332,6 +340,7 @@ def references() -> list[str]:
     return [
         "Park, J. S. et al. (2023). Generative Agents: Interactive Simulacra of Human Behavior. arXiv:2304.03442. https://arxiv.org/abs/2304.03442",
         "Vezhnevets, A. S. et al. (2023). Generative Agent-Based Modeling with Actions Grounded in Physical, Social, or Digital Space Using Concordia. arXiv:2312.03664. https://arxiv.org/abs/2312.03664",
+        "Wimmer, H. and Perner, J. (1983). Beliefs about Beliefs: Representation and Constraining Function of Wrong Beliefs in Young Children's Understanding of Deception. Cognition, 13(1), 103-128.",
         "Wu, Q. et al. (2023). AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation. arXiv:2308.08155. https://arxiv.org/abs/2308.08155",
         "ter Hoeven, E. et al. (2025). Mesa 3: Agent-Based Modeling with Python in 2025. Journal of Open Source Software, 10(107), 7668. https://doi.org/10.21105/joss.07668",
         "Johnson, J., Douze, M., and Jegou, H. (2017). Billion-Scale Similarity Search with GPUs. arXiv:1702.08734. https://arxiv.org/abs/1702.08734",

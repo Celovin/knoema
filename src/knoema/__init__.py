@@ -59,6 +59,14 @@ from knoema.telemetry import (
     load_or_create_anonymous_id,
     telemetry_opt_in_from_env,
 )
+from knoema.theory_of_mind import (
+    SallyAnneBenchmarkResult,
+    SallyAnneCaseResult,
+    TheoryOfMindContext,
+    TheoryOfMindEngine,
+    TheoryOfMindProfile,
+    run_sally_anne_benchmark,
+)
 from knoema.types import (
     Action,
     AgentID,
@@ -119,6 +127,8 @@ __all__ = [
     "RelationshipType",
     "RetrievalWeights",
     "SQLiteFaissMemoryStore",
+    "SallyAnneBenchmarkResult",
+    "SallyAnneCaseResult",
     "Scenario",
     "ShortTermMemoryBuffer",
     "SimulationLogEntry",
@@ -126,6 +136,9 @@ __all__ = [
     "TelemetryClient",
     "TelemetryEvent",
     "TelemetrySettings",
+    "TheoryOfMindContext",
+    "TheoryOfMindEngine",
+    "TheoryOfMindProfile",
     "VLLMClient",
     "WorldEvent",
     "__version__",
@@ -142,5 +155,6 @@ __all__ = [
     "render_decision_user_prompt",
     "render_persona_system_prompt",
     "run_knoema_benchmark",
+    "run_sally_anne_benchmark",
     "telemetry_opt_in_from_env",
 ]

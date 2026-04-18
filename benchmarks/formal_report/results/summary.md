@@ -40,10 +40,11 @@ Composite score compares paired Knoema and naive runs for each scenario or model
 - Concordia is documented as an external reference only in baselines/concordia_reference.md.
 - Stanford Generative Agents is documented as an external reference only in baselines/stanford_reference.md.
 
-## Phase 42 Metropolis Appendix
+## Phase 42 and 43 Appendix
 
 - Summary source: experiments/500_agent_metropolis/results/summary.json
 - Figure source: results/figures/metropolis_scale.svg
+- Theory-of-mind source: deterministic Sally-Anne harness in src/knoema/theory_of_mind.py
 
 | Metric | Knoema 500-Agent Metropolis | Google DeepMind Concordia | Stanford Generative Agents |
 | --- | --- | --- | --- |
@@ -53,3 +54,5 @@ Composite score compares paired Knoema and naive runs for each scenario or model
 | Throughput | mean 1657.527 actions/sec | Equivalent adapter run required | Paper or code reference only |
 | Artifacts | JSONL + summary.json + SVG | Separate appendix needed | Separate appendix needed |
 | Surface | Godot + Unity scaffolds, Korean prompt surface | No packaged game-engine adapter | No packaged game-engine adapter |
+| Theory-of-mind surface | Persona opt-in symbolic belief tracker | No public opt-in ToM API reported | No public opt-in ToM API reported |
+| Sally-Anne reproduction | 1.000 over 20 cases | No public score reported | No public score reported |

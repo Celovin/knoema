@@ -12,6 +12,7 @@ def test_phase17_competitor_matrix_exists_and_positions_knoema() -> None:
 
     assert "Knoema Only" in matrix
     assert "directed relationship graph" in matrix
+    assert "persona opt-in theory-of-mind tracking" in matrix
     assert "Korean-capable prompt templates" in matrix
     assert "Godot plus Unity adapter scaffolds" in matrix
 

@@ -1,6 +1,6 @@
 # Decision API
 
-The decision layer turns persona, memory, relationship, environment, and emotion context into an action.
+The decision layer turns persona, memory, relationship, environment, emotion, and optional theory-of-mind context into an action.
 
 ::: knoema.decision.DecisionEngine
 

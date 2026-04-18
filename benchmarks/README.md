@@ -17,7 +17,7 @@ python benchmarks\run_benchmark.py `
 
 The Markdown report includes explicit comparison slots for Concordia and Mesa. Those rows are marked `not-measured` unless equivalent external adapter runs are performed. This avoids claiming external performance numbers without running the same scenario under the same environment.
 
-The Phase 20 formal bundle expands this into 24 deterministic runs, source SVG figures, a Markdown summary, and a 20-page PDF report. The bundle now also imports the Phase 42 deterministic 500-agent metropolis appendix for scale evidence:
+The Phase 20 formal bundle expands this into 24 deterministic runs, source SVG figures, a Markdown summary, and a 20-page PDF report. The bundle now also imports the Phase 42 deterministic 500-agent metropolis appendix for scale evidence and the Phase 43 Sally-Anne theory-of-mind appendix:
 
 ```powershell
 python benchmarks\formal_report\runner.py

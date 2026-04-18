@@ -18,6 +18,7 @@ from knoema.persona import Persona
 from knoema.prompts import PromptLanguage
 from knoema.protocols import LLMClient
 from knoema.relationship import RelationshipGraph
+from knoema.theory_of_mind import TheoryOfMindEngine
 from knoema.types import Action, Memory, WorldEvent
 
 
@@ -68,6 +69,7 @@ class Simulator:
             llm or LocalClient(_default_action_response),
             language=language,
         )
+        self.theory_of_mind = TheoryOfMindEngine.from_personas(agents)
         self.logs: list[SimulationLogEntry] = []
         for agent in agents:
             self.relationships.add_agent(agent.agent_id)
@@ -105,6 +107,7 @@ class Simulator:
             environment=context,
             emotion=self.emotions[agent.agent_id].current,
             trigger=context.recent_events[-1] if context.recent_events else None,
+            theory_of_mind_context=self.theory_of_mind.context_for(agent.agent_id),
         )
 
     def _record_action(self, tick: int, agent: Persona, action: Action) -> None:

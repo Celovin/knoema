@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from textwrap import dedent
 
+from knoema.theory_of_mind import TheoryOfMindProfile
 from knoema.types import AgentID, Personality
 
 
@@ -28,6 +29,7 @@ class Persona:
     personality: Personality
     values: list[str] = field(default_factory=list)
     goals: list[str] = field(default_factory=list)
+    theory_of_mind: TheoryOfMindProfile = field(default_factory=TheoryOfMindProfile)
 
     def __post_init__(self) -> None:
         _validate_non_empty_string("agent_id", self.agent_id)
@@ -45,6 +47,11 @@ class Persona:
             return render_persona_system_prompt(self, language)
         values_text = ", ".join(self.values) if self.values else "None provided"
         goals_text = ", ".join(self.goals) if self.goals else "None provided"
+        theory_of_mind_text = (
+            "enabled (persona opt-in belief tracking)"
+            if self.theory_of_mind.enabled
+            else "disabled"
+        )
         return dedent(
             f"""
             You are roleplaying as {self.name}.
@@ -62,6 +69,7 @@ class Persona:
 
             Core values: {values_text}
             Active goals: {goals_text}
+            Theory of mind: {theory_of_mind_text}
 
             Stay consistent with this persona, remember prior social context,
             and respond in a way that preserves believable long-term behavior.

@@ -1,6 +1,6 @@
 # Persona API
 
-Persona objects define stable agent identity and the default system-prompt representation.
+Persona objects define stable agent identity, persona-level opt-in theory-of-mind settings, and the default system-prompt representation.
 
 ::: knoema.persona.Persona
 

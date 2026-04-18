@@ -6,14 +6,14 @@ Knoema separates persistent state, decision generation, and adapters. Figure~\re
 
 \subsection{State Model}
 
-The state model uses simple typed objects. A persona stores identity, background, personality, values, and goals. Short-term memory stores recent local events. Long-term memory stores persisted memories in SQLite and retrieves candidates through a FAISS-compatible vector index. Relationships are directed edges with trust, familiarity, relationship type, and interaction weight. Environment context contains time, location, conditions, and recent world events. Emotion state follows the PAD dimensions of valence, arousal, and dominance.
+The state model uses simple typed objects. A persona stores identity, background, personality, values, goals, and an opt-in theory-of-mind profile. Short-term memory stores recent local events. Long-term memory stores persisted memories in SQLite and retrieves candidates through a FAISS-compatible vector index. Relationships are directed edges with trust, familiarity, relationship type, and interaction weight. Environment context contains time, location, conditions, and recent world events. Emotion state follows the PAD dimensions of valence, arousal, and dominance. The theory-of-mind module tracks symbolic first-order beliefs and exposes prompt-ready summaries only for personas that enable the feature.
 
 \input{figures/memory_pipeline}
 \input{figures/relationship_graph}
 
 \subsection{Decision Loop}
 
-At every tick the simulator gathers persona, memory, relationship, environment, and emotion context for an agent. The decision engine renders messages, calls an \texttt{LLMClient}, and parses a strict action structure when possible. Deterministic local clients are used throughout tests and public demos. Provider-backed clients can be added without changing the simulator loop.
+At every tick the simulator gathers persona, memory, relationship, environment, emotion, and optional theory-of-mind context for an agent. The decision engine renders messages, calls an \texttt{LLMClient}, and parses a strict action structure when possible. Deterministic local clients are used throughout tests and public demos. Provider-backed clients can be added without changing the simulator loop.
 
 \input{figures/reproducibility_loop}
 

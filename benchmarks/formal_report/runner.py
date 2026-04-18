@@ -20,6 +20,8 @@ from scenarios import (
     scenario_D_scalability,
 )
 
+from knoema.theory_of_mind import SallyAnneBenchmarkResult, run_sally_anne_benchmark
+
 ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = ROOT / "results"
 FIGURES_DIR = RESULTS_DIR / "figures"
@@ -70,6 +72,7 @@ def write_outputs(
     report_path: Path | None = DEFAULT_REPORT,
 ) -> None:
     metropolis_summary = load_metropolis_summary()
+    theory_of_mind_result = run_sally_anne_benchmark()
     figures_dir = output_dir / "figures"
     output_dir.mkdir(parents=True, exist_ok=True)
     figures_dir.mkdir(parents=True, exist_ok=True)
@@ -77,19 +80,30 @@ def write_outputs(
     raw_text = "\n".join(json.dumps(row, sort_keys=True) for row in runs) + "\n"
     (output_dir / "raw.jsonl").write_text(raw_text, encoding="utf-8")
 
-    summary = build_summary(runs, metropolis_summary=metropolis_summary)
+    summary = build_summary(
+        runs,
+        metropolis_summary=metropolis_summary,
+        theory_of_mind_result=theory_of_mind_result,
+    )
     (output_dir / "summary.md").write_text(summary, encoding="utf-8")
 
     write_figures(runs, figures_dir)
 
     if report_path is not None:
-        build_pdf_report(runs, summary, report_path, metropolis_summary=metropolis_summary)
+        build_pdf_report(
+            runs,
+            summary,
+            report_path,
+            metropolis_summary=metropolis_summary,
+            theory_of_mind_result=theory_of_mind_result,
+        )
 
 
 def build_summary(
     runs: Sequence[Mapping[str, Any]],
     *,
     metropolis_summary: Mapping[str, Any],
+    theory_of_mind_result: SallyAnneBenchmarkResult,
 ) -> str:
     scenario_rows = _scenario_averages(runs)
     p_value = _paired_sign_test_p_value(runs)
@@ -137,16 +151,20 @@ def build_summary(
             "- Concordia is documented as an external reference only in baselines/concordia_reference.md.",
             "- Stanford Generative Agents is documented as an external reference only in baselines/stanford_reference.md.",
             "",
-            "## Phase 42 Metropolis Appendix",
+            "## Phase 42 and 43 Appendix",
             "",
             "- Summary source: experiments/500_agent_metropolis/results/summary.json",
             "- Figure source: results/figures/metropolis_scale.svg",
+            "- Theory-of-mind source: deterministic Sally-Anne harness in src/knoema/theory_of_mind.py",
             "",
             "| Metric | Knoema 500-Agent Metropolis | Google DeepMind Concordia | Stanford Generative Agents |",
             "| --- | --- | --- | --- |",
         ]
     )
-    for metric, knoema, concordia, stanford in _metropolis_markdown_rows(metropolis_summary):
+    for metric, knoema, concordia, stanford in _comparison_markdown_rows(
+        metropolis_summary,
+        theory_of_mind_result,
+    ):
         lines.append(f"| {metric} | {knoema} | {concordia} | {stanford} |")
     return "\n".join(lines) + "\n"
 
@@ -244,6 +262,7 @@ def build_pdf_report(
     path: Path,
     *,
     metropolis_summary: Mapping[str, Any],
+    theory_of_mind_result: SallyAnneBenchmarkResult,
 ) -> None:
     from reportlab.lib.pagesizes import letter
     from reportlab.pdfgen.canvas import Canvas
@@ -253,7 +272,13 @@ def build_pdf_report(
     width, height = letter
     averages = _scenario_averages(runs)
     p_value = _paired_sign_test_p_value(runs)
-    page_specs = _pdf_page_specs(averages, p_value, summary, metropolis_summary)
+    page_specs = _pdf_page_specs(
+        averages,
+        p_value,
+        summary,
+        metropolis_summary,
+        theory_of_mind_result,
+    )
 
     for page_number, spec in enumerate(page_specs, start=1):
         if spec["kind"] == "table":
@@ -368,6 +393,7 @@ def _pdf_page_specs(
     p_value: float,
     summary: str,
     metropolis_summary: Mapping[str, Any],
+    theory_of_mind_result: SallyAnneBenchmarkResult,
 ) -> list[dict[str, Any]]:
     del summary
     scenario_lines = [
@@ -478,13 +504,13 @@ def _pdf_page_specs(
         },
         {
             "kind": "table",
-            "title": "Metropolis Comparison Table",
+            "title": "Scale and Theory of Mind",
             "intro": [
                 "Phase 42 folds the 500-agent metropolis run into the formal bundle.",
-                "Concordia and Stanford remain reference-only until equivalent external runs exist.",
+                "Phase 43 adds persona opt-in theory-of-mind and a deterministic Sally-Anne harness.",
             ],
             "headers": ["Metric", "Knoema 500-Agent", "Concordia", "Stanford"],
-            "rows": _metropolis_pdf_rows(metropolis_summary),
+            "rows": _comparison_pdf_rows(metropolis_summary, theory_of_mind_result),
         },
         {
             "kind": "text",
@@ -525,7 +551,10 @@ def load_metropolis_summary() -> dict[str, Any]:
     return payload
 
 
-def _metropolis_markdown_rows(summary: Mapping[str, Any]) -> list[tuple[str, str, str, str]]:
+def _comparison_markdown_rows(
+    summary: Mapping[str, Any],
+    theory_of_mind_result: SallyAnneBenchmarkResult,
+) -> list[tuple[str, str, str, str]]:
     latency = summary["latency_ms"]
     memory = summary["memory_mb"]
     throughput = summary["throughput_actions_per_second"]
@@ -561,10 +590,25 @@ def _metropolis_markdown_rows(summary: Mapping[str, Any]) -> list[tuple[str, str
             "No packaged game-engine adapter",
             "No packaged game-engine adapter",
         ),
+        (
+            "Theory-of-mind surface",
+            "Persona opt-in symbolic belief tracker",
+            "No public opt-in ToM API reported",
+            "No public opt-in ToM API reported",
+        ),
+        (
+            "Sally-Anne reproduction",
+            f"{theory_of_mind_result.accuracy:.3f} over {theory_of_mind_result.total_cases} cases",
+            "No public score reported",
+            "No public score reported",
+        ),
     ]
 
 
-def _metropolis_pdf_rows(summary: Mapping[str, Any]) -> list[list[str]]:
+def _comparison_pdf_rows(
+    summary: Mapping[str, Any],
+    theory_of_mind_result: SallyAnneBenchmarkResult,
+) -> list[list[str]]:
     latency = summary["latency_ms"]
     memory = summary["memory_mb"]
     throughput = summary["throughput_actions_per_second"]
@@ -575,6 +619,8 @@ def _metropolis_pdf_rows(summary: Mapping[str, Any]) -> list[list[str]]:
         ["Peak memory", f"max {memory['max_peak']:.1f} MB", "adapter run needed", "paper only"],
         ["Throughput", f"mean {throughput['mean']:.1f} act/s", "adapter run needed", "paper only"],
         ["Artifacts", "JSONL + JSON + SVG", "appendix needed", "appendix needed"],
+        ["ToM surface", "persona opt-in", "no public opt-in API", "no public opt-in API"],
+        ["Sally-Anne", f"{theory_of_mind_result.correct_cases}/{theory_of_mind_result.total_cases}", "not reported", "not reported"],
     ]
 
 

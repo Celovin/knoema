@@ -1,6 +1,6 @@
 # Knoema Technical Report
 
-This folder contains the Phase 30 arXiv-oriented technical report draft. It keeps the earlier Phase 12 source files for continuity and adds the v2 preprint structure used by `main.tex`.
+This folder contains the Phase 30 arXiv-oriented technical report draft. It keeps the earlier Phase 12 source files for continuity and adds the v2 preprint structure used by `main.tex`. Phase 43 extends the draft with persona opt-in theory-of-mind notes and a deterministic Sally-Anne comparison table.
 
 ## Files
 

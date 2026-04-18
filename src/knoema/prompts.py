@@ -181,6 +181,12 @@ def render_persona_system_prompt(
     copy = _PERSONA_COPY[resolved]
     values = _join_or_empty(persona.values, copy["empty"])
     goals = _join_or_empty(persona.goals, copy["empty"])
+    theory_of_mind = getattr(persona, "theory_of_mind", None)
+    theory_of_mind_text = (
+        "enabled (persona opt-in belief tracking)"
+        if getattr(theory_of_mind, "enabled", False)
+        else "disabled"
+    )
     return "\n".join(
         [
             copy["role"].format(name=persona.name),
@@ -198,6 +204,7 @@ def render_persona_system_prompt(
             "",
             f"{copy['values']}: {values}",
             f"{copy['goals']}: {goals}",
+            f"{copy.get('tom', 'Theory of mind')}: {theory_of_mind_text}",
             "",
             copy["guidance"],
         ]
@@ -211,6 +218,7 @@ def render_decision_user_prompt(
     environment: DecisionPromptEnvironment,
     emotion: Emotion,
     trigger: WorldEvent | None,
+    theory_of_mind_notes: Sequence[str] | None = None,
     language: str | PromptLanguage = "en",
 ) -> str:
     """Render the user-side decision prompt in a supported language."""
@@ -227,21 +235,27 @@ def render_decision_user_prompt(
         for target, relationship in relationships.items()
     )
     trigger_text = trigger.description if trigger is not None else copy["no_trigger"]
-    return "\n".join(
-        [
-            copy["instruction"],
-            copy["schema"],
-            f"{copy['time']}: {environment.timestamp.isoformat()}",
-            f"{copy['location']}: {environment.location}",
-            f"{copy['conditions']}: {json.dumps(environment.conditions, ensure_ascii=False, sort_keys=True)}",
-            f"{copy['emotion']}: valence={emotion.valence:.2f}, arousal={emotion.arousal:.2f}, dominance={emotion.dominance:.2f}",
-            f"{copy['trigger']}: {trigger_text}",
-            f"{copy['memories']}:",
-            memory_lines or copy["none"],
-            f"{copy['relationships']}:",
-            relationship_lines or copy["none"],
-        ]
-    )
+    lines = [
+        copy["instruction"],
+        copy["schema"],
+        f"{copy['time']}: {environment.timestamp.isoformat()}",
+        f"{copy['location']}: {environment.location}",
+        f"{copy['conditions']}: {json.dumps(environment.conditions, ensure_ascii=False, sort_keys=True)}",
+        f"{copy['emotion']}: valence={emotion.valence:.2f}, arousal={emotion.arousal:.2f}, dominance={emotion.dominance:.2f}",
+        f"{copy['trigger']}: {trigger_text}",
+        f"{copy['memories']}:",
+        memory_lines or copy["none"],
+        f"{copy['relationships']}:",
+        relationship_lines or copy["none"],
+    ]
+    if theory_of_mind_notes:
+        lines.extend(
+            [
+                f"{copy.get('tom', 'Theory of mind')}:",
+                *theory_of_mind_notes,
+            ]
+        )
+    return "\n".join(lines)
 
 
 def _join_or_empty(values: Sequence[str], empty_text: str) -> str:

@@ -62,6 +62,8 @@ def test_phase20_summary_records_statistics_and_baseline_discipline() -> None:
     assert "Stanford Generative Agents is documented as an external reference" in summary
     assert "Knoema 500-Agent Metropolis" in summary
     assert "results/figures/metropolis_scale.svg" in summary
+    assert "Sally-Anne reproduction" in summary
+    assert "Theory-of-mind source" in summary
 
 
 def test_phase20_report_pdf_has_twenty_pages() -> None:

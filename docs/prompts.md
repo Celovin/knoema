@@ -17,6 +17,8 @@ The JSON action schema remains language-neutral across every prompt:
 
 This keeps adapters, notebooks, and dashboard ingestion stable even when the natural-language instruction layer changes.
 
+When `Persona.theory_of_mind.enabled` is true and a belief summary is supplied, decision prompts add a `Theory of mind` section without changing the JSON action schema.
+
 ## Usage
 
 ```python
@@ -32,5 +34,6 @@ Accepted aliases include values such as `ko-KR`, `ja-JP`, and `zh-Hans`; interna
 
 - Keep `Persona ID` unchanged so deterministic local responders and debug tools can parse agent identity.
 - Keep JSON keys unchanged: `action_type`, `target`, and `content`.
+- Keep theory-of-mind prompt notes opt-in at the persona layer so non-ToM agents do not pay prompt overhead.
 - Translate instructions and headings, not data payloads or adapter contracts.
 - Add new languages through `src/knoema/prompts.py` and cover them with tests before using them in examples.
