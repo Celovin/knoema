@@ -25,6 +25,12 @@ Phase 43 adds a persona opt-in theory-of-mind module and a deterministic Sally-A
 
 \input{tables/theory_of_mind_summary}
 
+\subsection{Classic ABM Reproductions}
+
+Phase 45 adds two compact reproductions drawn from classical agent-based modeling literature. The Schelling experiment uses a deterministic 50x50 grid with 2,000 agents and a block-based neighborhood dissimilarity index. The deterministic run lands at 0.548 for a 0.3 similarity threshold and 0.942 for a 0.7 threshold, preserving the expected medium- versus high-segregation contrast. The Axelrod tournament runs 10 strategies for 200 rounds per pairing, with strategy profiles documented as personality-annotated prompt routes rather than hidden heuristics. In deterministic mode, Tit-for-Tat ranks first and remains inside the top three cooperative strategies across all labeled runtime surfaces.
+
+\input{tables/classic_reproductions_summary}
+
 \subsection{Reproducibility Tests}
 
 The reproducibility suite checks same-seed bit-for-bit logs and canonical memories, seed propagation, YAML config serialization, and JSONL replay summaries. These tests are part of the ordinary pytest run, so reproducibility regressions are caught by the same CI path as package regressions.

@@ -223,6 +223,13 @@ Phase 19 scale experiment:
 python experiments/50_agent_village/run.py
 ```
 
+Classic reproductions:
+
+```bash
+python experiments/schelling_segregation/run.py
+python experiments/axelrod_prisoners_dilemma/run.py
+```
+
 See [50-Agent Village Experiment](experiments/50_agent_village/README.md) and [50-Agent Benchmark Report](docs/reports/50_agent_benchmark.pdf).
 
 Formal report bundle:

@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 44 API authentication and in-memory token-bucket rate limiting for demo-safe deployments.
 - Phase 44 Docker Compose bundle for the API server, Streamlit dashboard, and research SaaS dashboard.
 - Phase 44 API usage notebook plus REST and WebSocket reference documentation.
+- Phase 45 classic ABM reproductions for Schelling segregation and Axelrod-style iterated prisoner's dilemma tournaments.
+- Phase 45 reproduction docs, committed JSONL summaries, and SVG artifacts for both classic experiment tracks.
 
 ## [0.1.1] - 2026-04-18
 

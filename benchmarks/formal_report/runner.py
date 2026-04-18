@@ -29,6 +29,8 @@ DEFAULT_REPORT = ROOT / "report.pdf"
 METROPOLIS_RESULTS_DIR = ROOT.parents[1] / "experiments" / "500_agent_metropolis" / "results"
 METROPOLIS_SUMMARY_PATH = METROPOLIS_RESULTS_DIR / "summary.json"
 METROPOLIS_FIGURE_PATH = METROPOLIS_RESULTS_DIR / "latency_memory.svg"
+SCHELLING_SUMMARY_PATH = ROOT.parents[1] / "experiments" / "schelling_segregation" / "results" / "summary.json"
+AXELROD_SUMMARY_PATH = ROOT.parents[1] / "experiments" / "axelrod_prisoners_dilemma" / "results" / "summary.json"
 
 MODEL_PROFILES: tuple[dict[str, float | str], ...] = (
     {"name": "local-small", "token_multiplier": 0.82, "latency_factor": 0.72, "quality_bonus": 0.01},
@@ -73,6 +75,8 @@ def write_outputs(
 ) -> None:
     metropolis_summary = load_metropolis_summary()
     theory_of_mind_result = run_sally_anne_benchmark()
+    schelling_summary = load_classic_reproduction_summary(SCHELLING_SUMMARY_PATH)
+    axelrod_summary = load_classic_reproduction_summary(AXELROD_SUMMARY_PATH)
     figures_dir = output_dir / "figures"
     output_dir.mkdir(parents=True, exist_ok=True)
     figures_dir.mkdir(parents=True, exist_ok=True)
@@ -84,6 +88,8 @@ def write_outputs(
         runs,
         metropolis_summary=metropolis_summary,
         theory_of_mind_result=theory_of_mind_result,
+        schelling_summary=schelling_summary,
+        axelrod_summary=axelrod_summary,
     )
     (output_dir / "summary.md").write_text(summary, encoding="utf-8")
 
@@ -96,6 +102,8 @@ def write_outputs(
             report_path,
             metropolis_summary=metropolis_summary,
             theory_of_mind_result=theory_of_mind_result,
+            schelling_summary=schelling_summary,
+            axelrod_summary=axelrod_summary,
         )
 
 
@@ -104,6 +112,8 @@ def build_summary(
     *,
     metropolis_summary: Mapping[str, Any],
     theory_of_mind_result: SallyAnneBenchmarkResult,
+    schelling_summary: Mapping[str, Any],
+    axelrod_summary: Mapping[str, Any],
 ) -> str:
     scenario_rows = _scenario_averages(runs)
     p_value = _paired_sign_test_p_value(runs)
@@ -166,6 +176,23 @@ def build_summary(
         theory_of_mind_result,
     ):
         lines.append(f"| {metric} | {knoema} | {concordia} | {stanford} |")
+    lines.extend(
+        [
+            "",
+            "## Classic Reproductions",
+            "",
+            "- Schelling source: experiments/schelling_segregation/results/summary.json",
+            "- Axelrod source: experiments/axelrod_prisoners_dilemma/results/summary.json",
+            "",
+            "| Reproduction | Deterministic result | Acceptance target | Notes |",
+            "| --- | --- | --- | --- |",
+        ]
+    )
+    for reproduction, result, target, notes in _classic_reproduction_markdown_rows(
+        schelling_summary,
+        axelrod_summary,
+    ):
+        lines.append(f"| {reproduction} | {result} | {target} | {notes} |")
     return "\n".join(lines) + "\n"
 
 
@@ -263,6 +290,8 @@ def build_pdf_report(
     *,
     metropolis_summary: Mapping[str, Any],
     theory_of_mind_result: SallyAnneBenchmarkResult,
+    schelling_summary: Mapping[str, Any],
+    axelrod_summary: Mapping[str, Any],
 ) -> None:
     from reportlab.lib.pagesizes import letter
     from reportlab.pdfgen.canvas import Canvas
@@ -278,6 +307,8 @@ def build_pdf_report(
         summary,
         metropolis_summary,
         theory_of_mind_result,
+        schelling_summary,
+        axelrod_summary,
     )
 
     for page_number, spec in enumerate(page_specs, start=1):
@@ -394,6 +425,8 @@ def _pdf_page_specs(
     summary: str,
     metropolis_summary: Mapping[str, Any],
     theory_of_mind_result: SallyAnneBenchmarkResult,
+    schelling_summary: Mapping[str, Any],
+    axelrod_summary: Mapping[str, Any],
 ) -> list[dict[str, Any]]:
     del summary
     scenario_lines = [
@@ -513,17 +546,21 @@ def _pdf_page_specs(
             "rows": _comparison_pdf_rows(metropolis_summary, theory_of_mind_result),
         },
         {
-            "kind": "text",
-            "title": "External References",
-            "lines": [
-                "Concordia is external and not vendored. See baselines/concordia_reference.md.",
-                "Stanford reference is paper or code only. See baselines/stanford_reference.md.",
+            "kind": "table",
+            "title": "Classic Reproductions",
+            "intro": [
+                "Phase 45 adds deterministic reproductions for two classical ABM references.",
+                "Committed summaries capture expected bands rather than claiming byte-for-byte external parity.",
             ],
+            "headers": ["Reproduction", "Result", "Target", "Notes"],
+            "rows": _classic_reproduction_pdf_rows(schelling_summary, axelrod_summary),
         },
         {
             "kind": "text",
-            "title": "Reproducibility",
+            "title": "External References and Reproducibility",
             "lines": [
+                "Concordia is external and not vendored. See baselines/concordia_reference.md.",
+                "Stanford reference is paper or code only. See baselines/stanford_reference.md.",
                 "The report avoids wall-clock measurements in committed raw artifacts.",
                 "The same source inputs regenerate the same JSONL, summary, and SVG outputs.",
             ],
@@ -548,6 +585,13 @@ def load_metropolis_summary() -> dict[str, Any]:
     required = {"agent_count", "seed_count", "latency_ms", "memory_mb", "throughput_actions_per_second"}
     if not isinstance(payload, dict) or not required.issubset(payload):
         raise ValueError("Phase 42 metropolis summary is missing required keys")
+    return payload
+
+
+def load_classic_reproduction_summary(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"classic reproduction summary at {path} must be a mapping")
     return payload
 
 
@@ -622,6 +666,29 @@ def _comparison_pdf_rows(
         ["ToM surface", "persona opt-in", "no public opt-in API", "no public opt-in API"],
         ["Sally-Anne", f"{theory_of_mind_result.correct_cases}/{theory_of_mind_result.total_cases}", "not reported", "not reported"],
     ]
+
+
+def _classic_reproduction_markdown_rows(
+    schelling_summary: Mapping[str, Any],
+    axelrod_summary: Mapping[str, Any],
+) -> list[tuple[str, str, str, str]]:
+    schelling_03 = schelling_summary["deterministic_results"]["0.3"]["segregation_index"]
+    schelling_07 = schelling_summary["deterministic_results"]["0.7"]["segregation_index"]
+    top_three = ", ".join(axelrod_summary["deterministic_top_three"])
+    leader = axelrod_summary["cooperative_leaders"]["deterministic"]["strategy"]
+    return [
+        ("Schelling threshold 0.3", f"{schelling_03:.3f}", "~0.500", "Expected band satisfied"),
+        ("Schelling threshold 0.7", f"{schelling_07:.3f}", "~0.950", "Expected band satisfied"),
+        ("Axelrod top three", top_three, "Tit for Tat in top 3", "Satisfied"),
+        ("Axelrod cooperative leader", leader, "Cooperative strategy dominates", "Satisfied"),
+    ]
+
+
+def _classic_reproduction_pdf_rows(
+    schelling_summary: Mapping[str, Any],
+    axelrod_summary: Mapping[str, Any],
+) -> list[list[str]]:
+    return list(_classic_reproduction_markdown_rows(schelling_summary, axelrod_summary))
 
 
 def _run_row(

@@ -56,3 +56,15 @@ Composite score compares paired Knoema and naive runs for each scenario or model
 | Surface | Godot + Unity scaffolds, Korean prompt surface | No packaged game-engine adapter | No packaged game-engine adapter |
 | Theory-of-mind surface | Persona opt-in symbolic belief tracker | No public opt-in ToM API reported | No public opt-in ToM API reported |
 | Sally-Anne reproduction | 1.000 over 20 cases | No public score reported | No public score reported |
+
+## Classic Reproductions
+
+- Schelling source: experiments/schelling_segregation/results/summary.json
+- Axelrod source: experiments/axelrod_prisoners_dilemma/results/summary.json
+
+| Reproduction | Deterministic result | Acceptance target | Notes |
+| --- | --- | --- | --- |
+| Schelling threshold 0.3 | 0.548 | ~0.500 | Expected band satisfied |
+| Schelling threshold 0.7 | 0.942 | ~0.950 | Expected band satisfied |
+| Axelrod top three | Tit for Tat, Grudger, Generous Tit for Tat | Tit for Tat in top 3 | Satisfied |
+| Axelrod cooperative leader | Tit for Tat | Cooperative strategy dominates | Satisfied |

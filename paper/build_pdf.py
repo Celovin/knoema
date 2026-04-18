@@ -257,6 +257,13 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
                     ["Opt-in surface", "Persona opt-in symbolic belief tracker", "Concordia and Stanford are reference only"],
                     ["Sally-Anne reproduction", "20/20 (1.000)", "No public external score asserted"],
                 ],
+                "Phase 45 adds two compact reproductions drawn from classical agent-based modeling literature. The Schelling run preserves the expected medium-versus-high segregation contrast, and the Axelrod tournament keeps Tit-for-Tat inside the top cooperative cluster.",
+                [
+                    ["Classic reproduction", "Deterministic result", "Acceptance note"],
+                    ["Schelling threshold 0.3", "0.548 segregation index", "Expected band satisfied"],
+                    ["Schelling threshold 0.7", "0.942 segregation index", "Expected band satisfied"],
+                    ["Axelrod top three", "Tit for Tat, Grudger, Generous Tit for Tat", "Tit for Tat remains in top three"],
+                ],
             ],
         ),
         (

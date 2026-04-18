@@ -64,6 +64,9 @@ def test_phase20_summary_records_statistics_and_baseline_discipline() -> None:
     assert "results/figures/metropolis_scale.svg" in summary
     assert "Sally-Anne reproduction" in summary
     assert "Theory-of-mind source" in summary
+    assert "Classic Reproductions" in summary
+    assert "Schelling threshold 0.3" in summary
+    assert "Axelrod cooperative leader" in summary
 
 
 def test_phase20_report_pdf_has_twenty_pages() -> None:
