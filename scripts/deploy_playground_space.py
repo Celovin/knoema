@@ -66,6 +66,13 @@ def _parse_hf_user(output: str) -> str | None:
     return stripped or None
 
 
+def _repo_namespace(repo_id: str) -> str:
+    parts = repo_id.split("/", 1)
+    if len(parts) != 2 or not all(parts):
+        raise SystemExit(f"Invalid Hugging Face Space repository id: {repo_id}")
+    return parts[0]
+
+
 def run_playground_space_deploy(
     *,
     run_command: CommandRunner = _run_command,
@@ -85,10 +92,13 @@ def run_playground_space_deploy(
         raise SystemExit(f"Hugging Face CLI authentication is unavailable: {detail}")
 
     authenticated_user = _parse_hf_user(auth_result.stdout)
-    if authenticated_user != HF_NAMESPACE:
+    if authenticated_user is None:
+        raise SystemExit("Hugging Face auth is active but `hf auth whoami` did not report a user.")
+
+    target_namespace = _repo_namespace(repo_id)
+    if target_namespace != HF_NAMESPACE:
         raise SystemExit(
-            "Hugging Face auth must resolve to "
-            f"{HF_NAMESPACE}; current user is {authenticated_user or 'unknown'}."
+            f"Playground deploys must target the {HF_NAMESPACE} namespace; got {repo_id}."
         )
 
     commands = [

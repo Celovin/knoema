@@ -117,7 +117,19 @@ def _load_json(result: CommandResult) -> dict[str, Any] | None:
 def _load_json_file(path: Path) -> dict[str, Any] | None:
     if not path.exists():
         return None
-    return json.loads(path.read_text(encoding="utf-8"))
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"JSON file must contain an object: {path}")
+    return payload
+
+
+def _load_optional_json_file(path: Path) -> tuple[dict[str, Any] | None, str | None]:
+    if not path.exists():
+        return None, None
+    try:
+        return _load_json_file(path), None
+    except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as exc:
+        return None, str(exc)
 
 
 def _resolve_vercel_auth_file(*, env: Mapping[str, str], home_dir: Path) -> Path | None:
@@ -187,8 +199,10 @@ def collect_external_activation_status(
     else:
         auth_home = Path.home()
     vercel_auth_file = _resolve_vercel_auth_file(env=env, home_dir=auth_home)
-    vercel_auth = _load_json_file(vercel_auth_file) if vercel_auth_file is not None else None
-    website_project_link_data = _load_json_file(website_project_link)
+    _vercel_auth, vercel_auth_error = (
+        _load_optional_json_file(vercel_auth_file) if vercel_auth_file is not None else (None, None)
+    )
+    website_project_link_data, website_project_link_error = _load_optional_json_file(website_project_link)
 
     repo_view = _load_json(
         run_command(
@@ -227,7 +241,12 @@ def collect_external_activation_status(
     hf_has_stored_tokens = (
         hf_tokens_result.exit_code == 0 and _hf_has_stored_tokens(hf_tokens_result.stdout)
     )
-    vercel_identity = vercel_result.stdout.strip() or None
+    vercel_identity = vercel_result.stdout.strip() if vercel_result.exit_code == 0 else None
+    vercel_login_error = (
+        None
+        if vercel_result.exit_code == 0
+        else vercel_result.stderr.strip() or vercel_result.stdout.strip() or "unknown error"
+    )
     variable_names = _parse_variable_names(variables_result.stdout)
 
     github_actions_status = {
@@ -260,7 +279,7 @@ def collect_external_activation_status(
         },
         "vercel": {
             "whoami": vercel_identity,
-            "is_logged_in": vercel_identity is not None or bool(vercel_auth and vercel_auth.get("token")),
+            "is_logged_in": vercel_identity is not None,
             "website_project_link_exists": website_project_link.exists(),
             "auth_file_exists": vercel_auth_file is not None,
             "auth_source": (
@@ -268,6 +287,9 @@ def collect_external_activation_status(
                 if vercel_auth_file == auth_home / ".vercel" / "auth.json"
                 else "appdata_auth_file" if vercel_auth_file is not None else None
             ),
+            "login_check_error": vercel_login_error,
+            "auth_file_error": vercel_auth_error,
+            "project_link_error": website_project_link_error,
             "linked_project_name": (
                 website_project_link_data.get("projectName")
                 if website_project_link_data is not None
@@ -286,6 +308,12 @@ def collect_external_activation_status(
         blockers.append("Hugging Face local auth is not using the celovin namespace.")
     if not website_project_link.exists():
         blockers.append("website/.vercel/project.json is missing, so production deploy is not linked.")
+    elif website_project_link_error is not None:
+        blockers.append("website/.vercel/project.json is unreadable or invalid JSON.")
+    if vercel_identity is None:
+        blockers.append("Vercel CLI login could not be verified for the website production deploy.")
+    if vercel_auth_file is not None and vercel_auth_error is not None and vercel_identity is None:
+        blockers.append("The local Vercel auth file is unreadable or invalid JSON.")
     if github_actions_status["default_workflow_permissions"] != "write":
         blockers.append("GitHub Actions default workflow permissions are not set to write.")
     if not github_actions_status["release_please_enabled"]:

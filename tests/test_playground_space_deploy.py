@@ -15,13 +15,34 @@ def test_playground_space_deploy_requires_celovin_namespace(tmp_path) -> None:
 
             return CommandResult(
                 exit_code=0,
-                stdout="\x1b[1muser: \x1b[0m iruhana25\n",
+                stdout="\x1b[1muser: \x1b[0m celovin-ci-bot\n",
                 stderr="",
             )
         raise AssertionError(f"Unexpected command: {command}")
 
-    with pytest.raises(SystemExit, match="Hugging Face auth must resolve to celovin"):
-        run_playground_space_deploy(run_command=fake_runner, repo_root=tmp_path)
+    result = run_playground_space_deploy(run_command=fake_runner, repo_root=tmp_path, dry_run=True)
+
+    assert result["authenticated_user"] == "celovin-ci-bot"
+
+
+def test_playground_space_deploy_rejects_non_celovin_target_namespace(tmp_path) -> None:
+    (tmp_path / "playground").mkdir()
+
+    def fake_runner(command: list[str], *, cwd=None):
+        del cwd
+        if command == ["hf", "auth", "whoami"]:
+            from scripts.deploy_playground_space import CommandResult
+
+            return CommandResult(exit_code=0, stdout="user: celovin\n", stderr="")
+        raise AssertionError(f"Unexpected command: {command}")
+
+    with pytest.raises(SystemExit, match="must target the celovin namespace"):
+        run_playground_space_deploy(
+            run_command=fake_runner,
+            repo_root=tmp_path,
+            repo_id="someone-else/knoema-playground",
+            dry_run=True,
+        )
 
 
 def test_playground_space_deploy_runs_create_and_upload_commands(tmp_path) -> None:

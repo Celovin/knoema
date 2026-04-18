@@ -193,3 +193,162 @@ def test_external_activation_status_reports_ready_state_when_all_checks_pass(tmp
     assert report["deployment"]["vercel"]["linked_org_id"] == "team_123"
     assert report["deployment"]["vercel"]["is_logged_in"] is True
     assert report["suggested_actions"] == []
+
+
+def test_external_activation_status_requires_verified_vercel_login(tmp_path: Path) -> None:
+    website_link = tmp_path / "website" / ".vercel"
+    website_link.mkdir(parents=True)
+    (website_link / "project.json").write_text(
+        '{"projectId":"p123","orgId":"team_123","projectName":"knoema"}',
+        encoding="utf-8",
+    )
+    auth_dir = tmp_path / "appdata" / "com.vercel.cli" / "Data"
+    auth_dir.mkdir(parents=True)
+    (auth_dir / "auth.json").write_text('{"token":"stale"}', encoding="utf-8")
+
+    responses = {
+        _command_key(
+            [
+                "gh",
+                "repo",
+                "view",
+                "Celovin/knoema",
+                "--json",
+                "name,visibility,isPrivate,defaultBranchRef,url",
+            ]
+        ): CommandResult(
+            exit_code=0,
+            stdout=(
+                '{"name":"knoema","visibility":"PUBLIC","isPrivate":false,'
+                '"defaultBranchRef":{"name":"main"},"url":"https://github.com/Celovin/knoema"}'
+            ),
+            stderr="",
+        ),
+        _command_key(
+            ["gh", "api", "repos/Celovin/knoema/actions/permissions/workflow"]
+        ): CommandResult(
+            exit_code=0,
+            stdout='{"default_workflow_permissions":"write","can_approve_pull_request_reviews":true}',
+            stderr="",
+        ),
+        _command_key(["gh", "variable", "list", "--repo", "Celovin/knoema"]): CommandResult(
+            exit_code=0,
+            stdout="ENABLE_RELEASE_PLEASE\t1\t2026-04-18T12:00:00Z\n",
+            stderr="",
+        ),
+        _command_key(
+            ["gh", "release", "list", "--repo", "Celovin/knoema", "--limit", "1"]
+        ): CommandResult(
+            exit_code=0,
+            stdout="Knoema Engine v0.1.0\tLatest\tv0.1.0\t2026-04-18T00:14:14Z\n",
+            stderr="",
+        ),
+        _command_key(["hf", "auth", "whoami"]): CommandResult(
+            exit_code=0,
+            stdout="user: celovin\n",
+            stderr="",
+        ),
+        _command_key(["hf", "auth", "list"]): CommandResult(
+            exit_code=0,
+            stdout="active: default\n",
+            stderr="",
+        ),
+        _command_key(["vercel", "whoami"]): CommandResult(
+            exit_code=1,
+            stdout="",
+            stderr="Not logged in\n",
+        ),
+    }
+
+    def fake_runner(command: list[str], *, cwd: Path | None = None) -> CommandResult:
+        del cwd
+        return responses[_command_key(command)]
+
+    report = collect_external_activation_status(
+        run_command=fake_runner,
+        repo_root=tmp_path,
+        environment={"APPDATA": str(tmp_path / "appdata")},
+        home_dir=tmp_path,
+    )
+
+    assert report["ready_for_external_activation"] is False
+    assert report["deployment"]["vercel"]["is_logged_in"] is False
+    assert report["deployment"]["vercel"]["auth_file_exists"] is True
+    assert report["deployment"]["vercel"]["login_check_error"] == "Not logged in"
+    assert "Vercel CLI login could not be verified for the website production deploy." in report["blockers"]
+
+
+def test_external_activation_status_handles_invalid_project_link_json(tmp_path: Path) -> None:
+    website_link = tmp_path / "website" / ".vercel"
+    website_link.mkdir(parents=True)
+    (website_link / "project.json").write_text("{bad-json", encoding="utf-8")
+
+    responses = {
+        _command_key(
+            [
+                "gh",
+                "repo",
+                "view",
+                "Celovin/knoema",
+                "--json",
+                "name,visibility,isPrivate,defaultBranchRef,url",
+            ]
+        ): CommandResult(
+            exit_code=0,
+            stdout=(
+                '{"name":"knoema","visibility":"PUBLIC","isPrivate":false,'
+                '"defaultBranchRef":{"name":"main"},"url":"https://github.com/Celovin/knoema"}'
+            ),
+            stderr="",
+        ),
+        _command_key(
+            ["gh", "api", "repos/Celovin/knoema/actions/permissions/workflow"]
+        ): CommandResult(
+            exit_code=0,
+            stdout='{"default_workflow_permissions":"write","can_approve_pull_request_reviews":true}',
+            stderr="",
+        ),
+        _command_key(["gh", "variable", "list", "--repo", "Celovin/knoema"]): CommandResult(
+            exit_code=0,
+            stdout="ENABLE_RELEASE_PLEASE\t1\t2026-04-18T12:00:00Z\n",
+            stderr="",
+        ),
+        _command_key(
+            ["gh", "release", "list", "--repo", "Celovin/knoema", "--limit", "1"]
+        ): CommandResult(
+            exit_code=0,
+            stdout="Knoema Engine v0.1.0\tLatest\tv0.1.0\t2026-04-18T00:14:14Z\n",
+            stderr="",
+        ),
+        _command_key(["hf", "auth", "whoami"]): CommandResult(
+            exit_code=0,
+            stdout="user: celovin\n",
+            stderr="",
+        ),
+        _command_key(["hf", "auth", "list"]): CommandResult(
+            exit_code=0,
+            stdout="active: default\n",
+            stderr="",
+        ),
+        _command_key(["vercel", "whoami"]): CommandResult(
+            exit_code=0,
+            stdout="celovin-production\n",
+            stderr="",
+        ),
+    }
+
+    def fake_runner(command: list[str], *, cwd: Path | None = None) -> CommandResult:
+        del cwd
+        return responses[_command_key(command)]
+
+    report = collect_external_activation_status(
+        run_command=fake_runner,
+        repo_root=tmp_path,
+        environment={},
+        home_dir=tmp_path,
+    )
+
+    assert report["ready_for_external_activation"] is False
+    assert report["deployment"]["vercel"]["project_link_error"] is not None
+    assert report["deployment"]["vercel"]["linked_project_name"] is None
+    assert "website/.vercel/project.json is unreadable or invalid JSON." in report["blockers"]
