@@ -5,7 +5,7 @@
 [![CI](https://github.com/Celovin/knoema/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/knoema/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/Celovin/knoema-playground)
+[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/knoema-playground)
 
 ## 언어
 
@@ -218,7 +218,7 @@ mypy src
 
 ## Playground
 
-[Knoema Playground](https://huggingface.co/spaces/Celovin/knoema-playground)에서 브라우저 기반 데모를 실행할 수 있습니다. API 키가 없는 사용자는 replay-only 모드로 3개 기본 시나리오를 확인할 수 있고, OpenAI 또는 Anthropic 키를 입력하면 현재 세션에서만 live LLM 실행을 사용할 수 있습니다.
+[Knoema Playground](https://huggingface.co/spaces/celovin/knoema-playground)에서 브라우저 기반 데모를 실행할 수 있습니다. API 키가 없는 사용자는 replay-only 모드로 3개 기본 시나리오를 확인할 수 있고, OpenAI 또는 Anthropic 키를 입력하면 현재 세션에서만 live LLM 실행을 사용할 수 있습니다.
 
 ```bash
 pip install -r playground/requirements.txt

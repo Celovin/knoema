@@ -23,7 +23,7 @@ LLM NPC가 자연스럽게 느껴지는 순간은 모델이 긴 문장을 생성
 ## Links
 
 - GitHub: https://github.com/Celovin/knoema
-- Playground: https://huggingface.co/spaces/Celovin/knoema-playground
+- Playground: https://huggingface.co/spaces/celovin/knoema-playground
 - Memory architecture: https://github.com/Celovin/knoema/blob/main/docs/architecture.md
 - Reproducibility report: https://github.com/Celovin/knoema/blob/main/docs/reports/reproducibility.md
 - Python SDK: https://github.com/Celovin/knoema/blob/main/docs/sdk/python-api.md

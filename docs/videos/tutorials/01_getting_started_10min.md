@@ -109,7 +109,7 @@ Knoema Engine을 설치하고 deterministic local simulation을 실행하는 10�
 
 Links:
 - GitHub: https://github.com/Celovin/knoema
-- Playground: https://huggingface.co/spaces/Celovin/knoema-playground
+- Playground: https://huggingface.co/spaces/celovin/knoema-playground
 - CLI docs: https://github.com/Celovin/knoema/blob/main/docs/cli.md
 - Dashboard app: https://github.com/Celovin/knoema/tree/main/dashboard
 

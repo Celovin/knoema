@@ -9,9 +9,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
-OWNER = "Celovin"
+HF_NAMESPACE = "celovin"
 SPACE_NAME = "knoema-playground"
-SPACE_REPO_ID = f"{OWNER}/{SPACE_NAME}"
+SPACE_REPO_ID = f"{HF_NAMESPACE}/{SPACE_NAME}"
 SPACE_URL = f"https://huggingface.co/spaces/{SPACE_REPO_ID}"
 DEFAULT_COMMIT_MESSAGE = "Deploy Knoema Playground"
 
@@ -85,9 +85,10 @@ def run_playground_space_deploy(
         raise SystemExit(f"Hugging Face CLI authentication is unavailable: {detail}")
 
     authenticated_user = _parse_hf_user(auth_result.stdout)
-    if authenticated_user != OWNER:
+    if authenticated_user != HF_NAMESPACE:
         raise SystemExit(
-            f"Hugging Face auth must resolve to {OWNER}; current user is {authenticated_user or 'unknown'}."
+            "Hugging Face auth must resolve to "
+            f"{HF_NAMESPACE}; current user is {authenticated_user or 'unknown'}."
         )
 
     commands = [

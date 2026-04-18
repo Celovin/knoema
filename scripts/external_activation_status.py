@@ -10,10 +10,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
 
-OWNER = "Celovin"
+GITHUB_OWNER = "Celovin"
+HF_NAMESPACE = "celovin"
 REPO = "knoema"
-FULL_REPO = f"{OWNER}/{REPO}"
-TARGET_SPACE = f"{OWNER}/knoema-playground"
+FULL_REPO = f"{GITHUB_OWNER}/{REPO}"
+TARGET_SPACE = f"{HF_NAMESPACE}/knoema-playground"
 HF_ENV_TOKEN_NAMES = ("HF_TOKEN", "HUGGINGFACE_HUB_TOKEN", "HUGGING_FACE_HUB_TOKEN")
 VERCEL_APPDATA_AUTH_PATH = Path("com.vercel.cli") / "Data" / "auth.json"
 
@@ -140,14 +141,14 @@ def _suggested_actions(
     latest_release: dict[str, str] | None,
 ) -> list[str]:
     actions: list[str] = []
-    if hf_user != OWNER:
+    if hf_user != HF_NAMESPACE:
         if hf_env_token_names:
             actions.append(
-                "Replace the current Hugging Face environment token with a Celovin-scoped token, verify with `hf auth whoami`, then run `python scripts/deploy_playground_space.py`."
+                "Replace the current Hugging Face environment token with a celovin-scoped token, verify with `hf auth whoami`, then run `python scripts/deploy_playground_space.py`."
             )
         else:
             actions.append(
-                "Authenticate Hugging Face as Celovin with `hf auth login`, verify with `hf auth whoami`, then run `python scripts/deploy_playground_space.py`."
+                "Authenticate Hugging Face as celovin with `hf auth login`, verify with `hf auth whoami`, then run `python scripts/deploy_playground_space.py`."
             )
     if not website_project_link_exists:
         if vercel_identity is None:
@@ -247,7 +248,7 @@ def collect_external_activation_status(
     deployment_status = {
         "hugging_face": {
             "authenticated_user": hf_user,
-            "matches_target_namespace": hf_user == OWNER,
+            "matches_target_namespace": hf_user == HF_NAMESPACE,
             "target_space": TARGET_SPACE,
             "auth_source": (
                 f"env:{hf_env_token_names[0]}"
@@ -281,8 +282,8 @@ def collect_external_activation_status(
     blockers: list[str] = []
     if not repo_status["is_public"]:
         blockers.append("GitHub repository is not public.")
-    if hf_user != OWNER:
-        blockers.append("Hugging Face local auth is not using the Celovin namespace.")
+    if hf_user != HF_NAMESPACE:
+        blockers.append("Hugging Face local auth is not using the celovin namespace.")
     if not website_project_link.exists():
         blockers.append("website/.vercel/project.json is missing, so production deploy is not linked.")
     if github_actions_status["default_workflow_permissions"] != "write":

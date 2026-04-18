@@ -40,6 +40,6 @@ Use this common shot list for the 30-second, 3-minute, and 10-minute recordings.
 ```text
 Knoema Engine
 https://github.com/Celovin/knoema
-Playground: https://huggingface.co/spaces/Celovin/knoema-playground
+Playground: https://huggingface.co/spaces/celovin/knoema-playground
 MIT License - Copyright (c) 2026 Celovin
 ```

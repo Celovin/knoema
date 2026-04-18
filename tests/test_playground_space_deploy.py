@@ -20,7 +20,7 @@ def test_playground_space_deploy_requires_celovin_namespace(tmp_path) -> None:
             )
         raise AssertionError(f"Unexpected command: {command}")
 
-    with pytest.raises(SystemExit, match="Hugging Face auth must resolve to Celovin"):
+    with pytest.raises(SystemExit, match="Hugging Face auth must resolve to celovin"):
         run_playground_space_deploy(run_command=fake_runner, repo_root=tmp_path)
 
 
@@ -34,16 +34,16 @@ def test_playground_space_deploy_runs_create_and_upload_commands(tmp_path) -> No
 
         calls.append((command, cwd))
         if command == ["hf", "auth", "whoami"]:
-            return CommandResult(exit_code=0, stdout="user: Celovin\n", stderr="")
+            return CommandResult(exit_code=0, stdout="user: celovin\n", stderr="")
         return CommandResult(exit_code=0, stdout="ok\n", stderr="")
 
     result = run_playground_space_deploy(run_command=fake_runner, repo_root=tmp_path)
 
     assert result["status"] == "ok"
-    assert result["authenticated_user"] == "Celovin"
+    assert result["authenticated_user"] == "celovin"
     assert result["commit_message"] == DEFAULT_COMMIT_MESSAGE
-    assert result["repo_id"] == "Celovin/knoema-playground"
-    assert result["space_url"] == "https://huggingface.co/spaces/Celovin/knoema-playground"
+    assert result["repo_id"] == "celovin/knoema-playground"
+    assert result["space_url"] == "https://huggingface.co/spaces/celovin/knoema-playground"
     assert calls == [
         (["hf", "auth", "whoami"], tmp_path),
         (
@@ -51,7 +51,7 @@ def test_playground_space_deploy_runs_create_and_upload_commands(tmp_path) -> No
                 "hf",
                 "repo",
                 "create",
-                "Celovin/knoema-playground",
+                "celovin/knoema-playground",
                 "--repo-type",
                 "space",
                 "--space_sdk",
@@ -64,7 +64,7 @@ def test_playground_space_deploy_runs_create_and_upload_commands(tmp_path) -> No
             [
                 "hf",
                 "upload",
-                "Celovin/knoema-playground",
+                "celovin/knoema-playground",
                 ".",
                 ".",
                 "--repo-type",
@@ -87,7 +87,7 @@ def test_playground_space_deploy_dry_run_skips_repo_mutation(tmp_path) -> None:
         del cwd
         calls.append(command)
         if command == ["hf", "auth", "whoami"]:
-            return CommandResult(exit_code=0, stdout="user: Celovin\n", stderr="")
+            return CommandResult(exit_code=0, stdout="user: celovin\n", stderr="")
         raise AssertionError(f"Unexpected command in dry run: {command}")
 
     result = run_playground_space_deploy(
@@ -98,4 +98,4 @@ def test_playground_space_deploy_dry_run_skips_repo_mutation(tmp_path) -> None:
 
     assert result["status"] == "dry-run"
     assert calls == [["hf", "auth", "whoami"]]
-    assert "hf repo create Celovin/knoema-playground" in result["commands"][0]
+    assert "hf repo create celovin/knoema-playground" in result["commands"][0]

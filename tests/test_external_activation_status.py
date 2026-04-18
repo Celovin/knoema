@@ -96,11 +96,13 @@ def test_external_activation_status_reports_current_blockers(tmp_path: Path) -> 
     assert report["suggested_actions"][0].startswith(
         "Replace the current Hugging Face environment token"
     )
+    assert "celovin-scoped token" in report["suggested_actions"][0]
     assert report["suggested_actions"][1].startswith(
         "Set GitHub Actions default workflow permissions to `Read and write`"
     )
     assert report["suggested_actions"][2] == "Set the repository variable `ENABLE_RELEASE_PLEASE=1`."
     assert "Repository variable ENABLE_RELEASE_PLEASE is not set." in report["blockers"]
+    assert "Hugging Face local auth is not using the celovin namespace." in report["blockers"]
 
 
 def test_external_activation_status_reports_ready_state_when_all_checks_pass(tmp_path: Path) -> None:
@@ -153,7 +155,7 @@ def test_external_activation_status_reports_ready_state_when_all_checks_pass(tmp
         ),
         _command_key(["hf", "auth", "whoami"]): CommandResult(
             exit_code=0,
-            stdout="user: Celovin\n",
+            stdout="user: celovin\n",
             stderr="",
         ),
         _command_key(["hf", "auth", "list"]): CommandResult(

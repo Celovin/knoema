@@ -15,7 +15,7 @@ def test_phase15_playground_distribution_files_exist() -> None:
     assert (playground / "assets" / "cover.png").stat().st_size > 1000
     assert (playground / "assets" / "examples.gif").stat().st_size > 0
     assert "gradio" in (playground / "requirements.txt").read_text(encoding="utf-8")
-    assert "Celovin/knoema-playground" in Path("README.md").read_text(encoding="utf-8")
+    assert "celovin/knoema-playground" in Path("README.md").read_text(encoding="utf-8")
     assert "deploy_playground_space.py" in (playground / "README.md").read_text(encoding="utf-8")
     assert Path("scripts/deploy_playground_space.py").exists()
 

@@ -21,7 +21,7 @@ Knoema는 게임의 재미를 자동으로 만들어주는 도구가 아니다. 
 ## Links
 
 - GitHub: https://github.com/Celovin/knoema
-- Playground: https://huggingface.co/spaces/Celovin/knoema-playground
+- Playground: https://huggingface.co/spaces/celovin/knoema-playground
 - Game SDK: https://github.com/Celovin/knoema/blob/main/docs/sdk/integration_patterns.md
 - Unity adapter: https://github.com/Celovin/knoema/tree/main/adapters/unity
 

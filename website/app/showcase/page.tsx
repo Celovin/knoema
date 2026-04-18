@@ -31,7 +31,7 @@ export default function ShowcasePage() {
           </article>
         ))}
       </div>
-      <a className="primary-link" href="https://huggingface.co/spaces/Celovin/knoema-playground">
+      <a className="primary-link" href="https://huggingface.co/spaces/celovin/knoema-playground">
         Open Playground
       </a>
     </main>

@@ -1,6 +1,6 @@
 const links = [
   ["GitHub", "https://github.com/Celovin/knoema"],
-  ["Playground", "https://huggingface.co/spaces/Celovin/knoema-playground"],
+  ["Playground", "https://huggingface.co/spaces/celovin/knoema-playground"],
   ["Formal Report", "https://github.com/Celovin/knoema/blob/main/benchmarks/formal_report/report.pdf"],
   ["Discord Kit", "https://github.com/Celovin/knoema/blob/main/docs/discord_community.md"],
 ];

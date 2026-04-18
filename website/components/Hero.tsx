@@ -33,7 +33,7 @@ export function Hero() {
         </p>
         <div className="hero-actions" aria-label="Primary actions">
           <a href="https://github.com/Celovin/knoema">GitHub</a>
-          <a href="https://huggingface.co/spaces/Celovin/knoema-playground">Playground</a>
+          <a href="https://huggingface.co/spaces/celovin/knoema-playground">Playground</a>
         </div>
         <ul className="proof-list" aria-label="Project proof points">
           {proofItems.map((item) => (

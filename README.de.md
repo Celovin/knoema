@@ -5,7 +5,7 @@
 [![CI](https://github.com/Celovin/knoema/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/knoema/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/Celovin/knoema-playground)
+[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/knoema-playground)
 
 ## Sprachen
 
@@ -64,7 +64,7 @@ streamlit run dashboard/app.py
 
 ## Wichtige Links
 
-- [Knoema Playground](https://huggingface.co/spaces/Celovin/knoema-playground)
+- [Knoema Playground](https://huggingface.co/spaces/celovin/knoema-playground)
 - [Scenario Marketplace Beta](scenarios_hub/README.md)
 - [DSL Tutorial](docs/dsl/tutorial.md)
 - [Game SDK Docs](docs/sdk/python-api.md)
