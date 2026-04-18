@@ -9,6 +9,7 @@ from typing import Any
 
 from knoema.environment import EnvironmentContext
 from knoema.persona import Persona
+from knoema.planning import Task
 from knoema.prompts import PromptLanguage, normalize_prompt_language, render_decision_user_prompt
 from knoema.protocols import LLMClient, Message
 from knoema.relationship import Relationship
@@ -33,6 +34,7 @@ class DecisionEngine:
         emotion: Emotion,
         trigger: WorldEvent | None = None,
         theory_of_mind_context: TheoryOfMindContext | None = None,
+        current_task: Task | None = None,
     ) -> Action:
         messages = build_decision_messages(
             persona=persona,
@@ -42,6 +44,7 @@ class DecisionEngine:
             emotion=emotion,
             trigger=trigger,
             theory_of_mind_context=theory_of_mind_context,
+            current_task=current_task,
             language=self.language,
         )
         response = self.llm.complete(messages, temperature=0.2, max_tokens=512)
@@ -62,6 +65,7 @@ def decide(
     trigger: WorldEvent | None,
     llm: LLMClient,
     theory_of_mind_context: TheoryOfMindContext | None = None,
+    current_task: Task | None = None,
     language: str | PromptLanguage = "en",
 ) -> Action:
     """Functional facade for the decision engine."""
@@ -74,6 +78,7 @@ def decide(
         emotion=emotion,
         trigger=trigger,
         theory_of_mind_context=theory_of_mind_context,
+        current_task=current_task,
     )
 
 
@@ -86,6 +91,7 @@ def build_decision_messages(
     emotion: Emotion,
     trigger: WorldEvent | None,
     theory_of_mind_context: TheoryOfMindContext | None = None,
+    current_task: Task | None = None,
     language: str | PromptLanguage = "en",
 ) -> list[Message]:
     memory_lines = "\n".join(
@@ -121,15 +127,33 @@ def build_decision_messages(
                     *theory_of_mind_lines,
                 ]
             )
+        if current_task is not None:
+            lines.extend(
+                [
+                    "Current hierarchical task:",
+                    f"- {current_task.description}",
+                    f"- priority={current_task.priority:.2f}, status={current_task.status}",
+                ]
+            )
         user_content = "\n".join(lines)
     else:
+        task_notes = []
+        if current_task is not None:
+            task_notes = [
+                "Current hierarchical task:",
+                f"- {current_task.description}",
+                f"- priority={current_task.priority:.2f}, status={current_task.status}",
+            ]
         user_content = render_decision_user_prompt(
             memories=memories,
             relationships=relationships,
             environment=environment,
             emotion=emotion,
             trigger=trigger,
-            theory_of_mind_notes=theory_of_mind_lines,
+            theory_of_mind_notes=[
+                *(theory_of_mind_lines or []),
+                *task_notes,
+            ],
             language=resolved_language,
         )
     return [

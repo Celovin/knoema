@@ -15,6 +15,7 @@ from knoema.events import EventDispatcher, EventScheduler
 from knoema.llm import LocalClient
 from knoema.memory import ShortTermMemoryBuffer
 from knoema.persona import Persona
+from knoema.planning import AgentContext, HierarchicalPlanner, WorldState
 from knoema.prompts import PromptLanguage
 from knoema.protocols import LLMClient
 from knoema.relationship import RelationshipGraph
@@ -70,9 +71,19 @@ class Simulator:
             language=language,
         )
         self.theory_of_mind = TheoryOfMindEngine.from_personas(agents)
+        self.planner = HierarchicalPlanner()
         self.logs: list[SimulationLogEntry] = []
         for agent in agents:
             self.relationships.add_agent(agent.agent_id)
+            if agent.planning and agent.goals:
+                self.planner.decompose(
+                    agent.goals[0],
+                    AgentContext(
+                        agent_id=agent.agent_id,
+                        location=" > ".join(self.environment.location_path),
+                        active_goals=tuple(agent.goals),
+                    ),
+                )
 
     def run(self, *, duration_days: int) -> list[SimulationLogEntry]:
         if duration_days < 1:
@@ -117,6 +128,12 @@ class Simulator:
 
     def _decide_for_agent(self, agent: Persona) -> Action:
         context = self.environment.get_context(agent.agent_id)
+        current_task = None
+        if agent.planning:
+            current_task = self.planner.select_next_task(
+                agent.agent_id,
+                WorldState(tick=len(self.logs), facts={"planning_enabled": True}),
+            )
         return self.decision_engine.decide(
             persona=agent,
             memories=self.short_term_memories[agent.agent_id].recent(8),
@@ -125,6 +142,7 @@ class Simulator:
             emotion=self.emotions[agent.agent_id].current,
             trigger=context.recent_events[-1] if context.recent_events else None,
             theory_of_mind_context=self.theory_of_mind.context_for(agent.agent_id),
+            current_task=current_task,
         )
 
     def _record_action(self, tick: int, agent: Persona, action: Action) -> None:
@@ -156,6 +174,8 @@ class Simulator:
         )
         if action.target is not None:
             self.relationships.update_after_interaction(agent.agent_id, action.target, action, "neutral")
+        if agent.planning:
+            self.planner.complete_active_task(agent.agent_id)
 
 
 def _default_action_response(messages: object) -> str:

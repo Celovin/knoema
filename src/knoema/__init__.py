@@ -40,6 +40,7 @@ from knoema.memory import (
 )
 from knoema.metrics import compute_pcs, compute_rcs, score_log
 from knoema.persona import Persona
+from knoema.planning import AgentContext, HierarchicalPlanner, Task, WorldState
 from knoema.prompts import (
     SUPPORTED_PROMPT_LANGUAGES,
     PromptLanguage,
@@ -87,6 +88,7 @@ __all__ = [
     "NPC",
     "SUPPORTED_PROMPT_LANGUAGES",
     "Action",
+    "AgentContext",
     "AgentID",
     "AnthropicClient",
     "BenchmarkConfig",
@@ -101,6 +103,7 @@ __all__ = [
     "EnvironmentContext",
     "GameSession",
     "HashEmbeddingEncoder",
+    "HierarchicalPlanner",
     "InteractionOutcome",
     "KnoemaConfig",
     "LLMCallRecord",
@@ -134,6 +137,7 @@ __all__ = [
     "ShortTermMemoryBuffer",
     "SimulationLogEntry",
     "Simulator",
+    "Task",
     "TelemetryClient",
     "TelemetryEvent",
     "TelemetrySettings",
@@ -142,6 +146,7 @@ __all__ = [
     "TheoryOfMindProfile",
     "VLLMClient",
     "WorldEvent",
+    "WorldState",
     "__version__",
     "build_cli_properties",
     "build_comparison_rows",

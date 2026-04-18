@@ -62,6 +62,7 @@ class ApiAgentConfig(BaseModel):
     goals: list[str] = Field(default_factory=list)
     location_path: tuple[str, ...] | None = None
     theory_of_mind: TheoryOfMindConfig = Field(default_factory=TheoryOfMindConfig)
+    planning: bool = False
 
     def to_domain(self) -> Persona:
         return Persona(
@@ -73,6 +74,7 @@ class ApiAgentConfig(BaseModel):
             values=list(self.values),
             goals=list(self.goals),
             theory_of_mind=self.theory_of_mind.to_domain(),
+            planning=self.planning,
         )
 
 

@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 50 arXiv v2 paper finalization with 500-agent, Theory of Mind, classic reproduction, PCS/RCS, reproducibility, and scenario-library sections.
 - Phase 50 Papers with Code submission packet with machine-readable JSON metadata and result rows.
 - Phase 50 technical report PDF regenerated as a 30+ page preview.
+- Phase 51 hierarchical task-network planner with persona opt-in goal decomposition and planning-depth evidence.
 
 ## [0.1.1] - 2026-04-18
 

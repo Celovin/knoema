@@ -52,6 +52,7 @@ nav:
       - Architecture: architecture.md
       - Research Positioning: research.md
       - Prompt Templates: prompts.md
+      - Hierarchical Planning: cognition/hierarchical_planning.md
       - Scenario DSL Tutorial: dsl/tutorial.md
       - Scenario DSL Reference: dsl/reference.md
   - API:
