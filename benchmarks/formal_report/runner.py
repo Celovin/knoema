@@ -6,6 +6,7 @@ import argparse
 import html
 import json
 import math
+import shutil
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
@@ -23,6 +24,9 @@ ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = ROOT / "results"
 FIGURES_DIR = RESULTS_DIR / "figures"
 DEFAULT_REPORT = ROOT / "report.pdf"
+METROPOLIS_RESULTS_DIR = ROOT.parents[1] / "experiments" / "500_agent_metropolis" / "results"
+METROPOLIS_SUMMARY_PATH = METROPOLIS_RESULTS_DIR / "summary.json"
+METROPOLIS_FIGURE_PATH = METROPOLIS_RESULTS_DIR / "latency_memory.svg"
 
 MODEL_PROFILES: tuple[dict[str, float | str], ...] = (
     {"name": "local-small", "token_multiplier": 0.82, "latency_factor": 0.72, "quality_bonus": 0.01},
@@ -65,6 +69,7 @@ def write_outputs(
     output_dir: Path = RESULTS_DIR,
     report_path: Path | None = DEFAULT_REPORT,
 ) -> None:
+    metropolis_summary = load_metropolis_summary()
     figures_dir = output_dir / "figures"
     output_dir.mkdir(parents=True, exist_ok=True)
     figures_dir.mkdir(parents=True, exist_ok=True)
@@ -72,16 +77,20 @@ def write_outputs(
     raw_text = "\n".join(json.dumps(row, sort_keys=True) for row in runs) + "\n"
     (output_dir / "raw.jsonl").write_text(raw_text, encoding="utf-8")
 
-    summary = build_summary(runs)
+    summary = build_summary(runs, metropolis_summary=metropolis_summary)
     (output_dir / "summary.md").write_text(summary, encoding="utf-8")
 
     write_figures(runs, figures_dir)
 
     if report_path is not None:
-        build_pdf_report(runs, summary, report_path)
+        build_pdf_report(runs, summary, report_path, metropolis_summary=metropolis_summary)
 
 
-def build_summary(runs: Sequence[Mapping[str, Any]]) -> str:
+def build_summary(
+    runs: Sequence[Mapping[str, Any]],
+    *,
+    metropolis_summary: Mapping[str, Any],
+) -> str:
     scenario_rows = _scenario_averages(runs)
     p_value = _paired_sign_test_p_value(runs)
     mesa_notes = mesa_stub.reference_notes()
@@ -110,7 +119,7 @@ def build_summary(runs: Sequence[Mapping[str, Any]]) -> str:
             "",
             "## Significance",
             "",
-            "Composite score compares paired Knoema and naive runs for each scenario/model profile.",
+            "Composite score compares paired Knoema and naive runs for each scenario or model profile.",
             f"- Paired sign-test p-value: {p_value:.6f}",
             "- Interpretation: deterministic evidence favors the Knoema memory policy across all paired profiles.",
             "",
@@ -118,7 +127,7 @@ def build_summary(runs: Sequence[Mapping[str, Any]]) -> str:
             "",
             "- Memory recall accuracy: deterministic top-k proxy for preserving scenario facts.",
             "- Token efficiency ratio: naive prompt tokens divided by approach prompt tokens.",
-            "- Scalability curve: estimated actions/sec at 5, 10, 25, and 50 agents.",
+            "- Scalability curve: estimated actions/sec at 5, 10, 25, and 50 agents, plus a 500-agent metropolis appendix.",
             "- Narrative branching count: branch flags normalized per 100 turns.",
             "",
             "## Baseline Discipline",
@@ -126,8 +135,19 @@ def build_summary(runs: Sequence[Mapping[str, Any]]) -> str:
             "- Naive LLM baseline receives full-history prompt context every turn.",
             f"- Mesa stub status: {mesa_notes['status']}; {mesa_notes['reason']}",
             "- Concordia is documented as an external reference only in baselines/concordia_reference.md.",
+            "- Stanford Generative Agents is documented as an external reference only in baselines/stanford_reference.md.",
+            "",
+            "## Phase 42 Metropolis Appendix",
+            "",
+            "- Summary source: experiments/500_agent_metropolis/results/summary.json",
+            "- Figure source: results/figures/metropolis_scale.svg",
+            "",
+            "| Metric | Knoema 500-Agent Metropolis | Google DeepMind Concordia | Stanford Generative Agents |",
+            "| --- | --- | --- | --- |",
         ]
     )
+    for metric, knoema, concordia, stanford in _metropolis_markdown_rows(metropolis_summary):
+        lines.append(f"| {metric} | {knoema} | {concordia} | {stanford} |")
     return "\n".join(lines) + "\n"
 
 
@@ -153,6 +173,7 @@ def write_figures(runs: Sequence[Mapping[str, Any]], figures_dir: Path) -> None:
         "Scalability Actions/sec",
         _scalability_points(runs),
     )
+    shutil.copyfile(METROPOLIS_FIGURE_PATH, figures_dir / "metropolis_scale.svg")
 
 
 def write_bar_svg(path: Path, title: str, values: Sequence[tuple[str, float]]) -> None:
@@ -217,8 +238,13 @@ def write_line_svg(path: Path, title: str, points: Sequence[tuple[int, float]]) 
     path.write_text(svg, encoding="utf-8")
 
 
-def build_pdf_report(runs: Sequence[Mapping[str, Any]], summary: str, path: Path) -> None:
-    from reportlab.lib import colors
+def build_pdf_report(
+    runs: Sequence[Mapping[str, Any]],
+    summary: str,
+    path: Path,
+    *,
+    metropolis_summary: Mapping[str, Any],
+) -> None:
     from reportlab.lib.pagesizes import letter
     from reportlab.pdfgen.canvas import Canvas
 
@@ -227,61 +253,329 @@ def build_pdf_report(runs: Sequence[Mapping[str, Any]], summary: str, path: Path
     width, height = letter
     averages = _scenario_averages(runs)
     p_value = _paired_sign_test_p_value(runs)
-    page_specs = _pdf_page_specs(averages, p_value, summary)
+    page_specs = _pdf_page_specs(averages, p_value, summary, metropolis_summary)
 
-    for page_number, (title, lines) in enumerate(page_specs, start=1):
-        pdf.setFillColor(colors.HexColor("#0f172a"))
-        pdf.setFont("Helvetica-Bold", 17)
-        pdf.drawString(42, height - 48, title)
-        pdf.setFillColor(colors.HexColor("#0f172a"))
-        pdf.setFont("Helvetica", 9)
-        cursor = height - 86
-        for line in lines:
-            pdf.drawString(52, cursor, line[:108])
-            cursor -= 15
-        pdf.setFont("Helvetica", 8)
-        pdf.setFillColor(colors.HexColor("#64748b"))
-        pdf.drawRightString(width - 42, 30, f"Page {page_number} / 20")
+    for page_number, spec in enumerate(page_specs, start=1):
+        if spec["kind"] == "table":
+            _draw_table_page(
+                pdf,
+                width,
+                height,
+                page_number=page_number,
+                total_pages=len(page_specs),
+                title=str(spec["title"]),
+                intro_lines=[str(line) for line in spec["intro"]],
+                headers=[str(item) for item in spec["headers"]],
+                rows=[[str(item) for item in row] for row in spec["rows"]],
+            )
+        else:
+            _draw_text_page(
+                pdf,
+                width,
+                height,
+                title=str(spec["title"]),
+                lines=[str(line) for line in spec["lines"]],
+                page_number=page_number,
+                total_pages=len(page_specs),
+            )
         pdf.showPage()
     pdf.save()
+
+
+def _draw_text_page(
+    pdf: Any,
+    width: float,
+    height: float,
+    *,
+    title: str,
+    lines: Sequence[str],
+    page_number: int,
+    total_pages: int,
+) -> None:
+    from reportlab.lib import colors
+
+    pdf.setFillColor(colors.HexColor("#0f172a"))
+    pdf.setFont("Helvetica-Bold", 17)
+    pdf.drawString(42, height - 48, title)
+    pdf.setFillColor(colors.HexColor("#0f172a"))
+    pdf.setFont("Helvetica", 9)
+    cursor = height - 86
+    for line in lines:
+        pdf.drawString(52, cursor, line[:108])
+        cursor -= 15
+    pdf.setFont("Helvetica", 8)
+    pdf.setFillColor(colors.HexColor("#64748b"))
+    pdf.drawRightString(width - 42, 30, f"Page {page_number} / {total_pages}")
+
+
+def _draw_table_page(
+    pdf: Any,
+    width: float,
+    height: float,
+    *,
+    page_number: int,
+    total_pages: int,
+    title: str,
+    intro_lines: Sequence[str],
+    headers: Sequence[str],
+    rows: Sequence[Sequence[str]],
+) -> None:
+    from reportlab.lib import colors
+    from reportlab.platypus import Table, TableStyle
+
+    pdf.setFillColor(colors.HexColor("#0f172a"))
+    pdf.setFont("Helvetica-Bold", 17)
+    pdf.drawString(42, height - 48, title)
+    pdf.setFont("Helvetica", 9)
+    cursor = height - 84
+    for line in intro_lines:
+        pdf.drawString(52, cursor, line[:108])
+        cursor -= 14
+
+    table = Table(
+        [list(headers), *[list(row) for row in rows]],
+        colWidths=[86, 150, 136, 136],
+        repeatRows=1,
+    )
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e2e8f0")),
+                ("TEXTCOLOR", (0, 0), (-1, -1), colors.HexColor("#0f172a")),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),
+                ("FONTSIZE", (0, 0), (-1, -1), 8),
+                ("LEADING", (0, 0), (-1, -1), 10),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ("TOPPADDING", (0, 0), (-1, -1), 5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+            ]
+        )
+    )
+    _, table_height = table.wrap(width - 104, cursor - 90)
+    table.drawOn(pdf, 52, max(90, cursor - table_height - 18))
+
+    pdf.setFont("Helvetica", 8)
+    pdf.setFillColor(colors.HexColor("#64748b"))
+    pdf.drawRightString(width - 42, 30, f"Page {page_number} / {total_pages}")
 
 
 def _pdf_page_specs(
     averages: Sequence[Mapping[str, Any]],
     p_value: float,
     summary: str,
-) -> list[tuple[str, list[str]]]:
+    metropolis_summary: Mapping[str, Any],
+) -> list[dict[str, Any]]:
+    del summary
     scenario_lines = [
         f"{row['scenario_id']} {row['scenario_name']} {row['approach']}: "
         f"recall {row['recall']:.3f}, efficiency {row['tokens']:.3f}, "
         f"throughput {row['throughput']:.1f}, branches {row['branches']:.2f}"
         for row in averages
     ]
-    pages = [
-        ("Formal Benchmark Report v1", ["Knoema Engine Phase 20", "24 deterministic runs", "4 scenarios x 2 approaches x 3 local model profiles"]),
-        ("Methodology", ["Runs use deterministic local scoring formulas.", "No external LLM API or external framework is invoked.", "Artifacts can be regenerated with runner.py."]),
-        ("Run Matrix", ["Scenario A: memory recall", "Scenario B: relationship dynamics", "Scenario C: narrative branching", "Scenario D: scalability"]),
-        ("Metric Definitions", ["Recall@k, token efficiency, scalability actions/sec, branches per 100 turns.", "Composite score is used only for paired sign testing."]),
-        ("Scenario A", scenario_lines[0:2]),
-        ("Scenario B", scenario_lines[2:4]),
-        ("Scenario C", scenario_lines[4:6]),
-        ("Scenario D", scenario_lines[6:8]),
-        ("Memory Recall Figure", ["Source figure: results/figures/memory_recall.svg", *scenario_lines[0:4]]),
-        ("Token Efficiency Figure", ["Source figure: results/figures/token_efficiency.svg", *scenario_lines[4:8]]),
-        ("Scalability Figure", ["Source figure: results/figures/scalability.svg", "Agent counts: 5, 10, 25, 50."]),
-        ("Narrative Branching Figure", ["Source figure: results/figures/branching.svg", "Branching is normalized per 100 turns."]),
-        ("Significance", [f"Paired sign-test p-value: {p_value:.6f}", "All paired scenario/model profiles favor the Knoema memory policy."]),
-        ("Raw Artifacts", ["results/raw.jsonl has 24 rows.", "results/summary.md contains aggregate tables.", "results/figures contains 4 SVG figures."]),
-        ("Naive Baseline", ["Naive LLM receives full-history prompt context every turn.", "This is intentionally transparent and token-heavy."]),
-        ("Mesa Reference", ["Mesa is documented as a capability boundary.", "No Mesa performance numbers are claimed in this report."]),
-        ("Concordia Reference", ["Concordia is external and not vendored.", "Use baselines/concordia_reference.md for comparison discipline."]),
-        ("Reproducibility", ["The report avoids wall-clock measurements in committed raw artifacts.", "The same source inputs regenerate the same JSONL and summary."]),
-        ("Limitations", ["Metrics are deterministic proxies, not field trial results.", "External baselines require separately executed adapters."]),
-        ("Next Steps", ["Add external adapter runs when equivalent scenarios are available.", "Fold Phase 19 50-agent log replay into the next report revision."]),
+    pages: list[dict[str, Any]] = [
+        {
+            "kind": "text",
+            "title": "Formal Benchmark Report v1",
+            "lines": [
+                "Knoema Engine Phase 20",
+                "24 deterministic runs",
+                "4 scenarios x 2 approaches x 3 local model profiles",
+            ],
+        },
+        {
+            "kind": "text",
+            "title": "Methodology",
+            "lines": [
+                "Runs use deterministic local scoring formulas.",
+                "No external LLM API or external framework is invoked.",
+                "Artifacts can be regenerated with runner.py.",
+            ],
+        },
+        {
+            "kind": "text",
+            "title": "Run Matrix",
+            "lines": [
+                "Scenario A: memory recall",
+                "Scenario B: relationship dynamics",
+                "Scenario C: narrative branching",
+                "Scenario D: scalability",
+            ],
+        },
+        {
+            "kind": "text",
+            "title": "Metric Definitions",
+            "lines": [
+                "Recall@k, token efficiency, scalability actions/sec, branches per 100 turns.",
+                "Composite score is used only for paired sign testing.",
+            ],
+        },
+        {"kind": "text", "title": "Scenario A", "lines": scenario_lines[0:2]},
+        {"kind": "text", "title": "Scenario B", "lines": scenario_lines[2:4]},
+        {"kind": "text", "title": "Scenario C", "lines": scenario_lines[4:6]},
+        {"kind": "text", "title": "Scenario D", "lines": scenario_lines[6:8]},
+        {
+            "kind": "text",
+            "title": "Memory Recall Figure",
+            "lines": ["Source figure: results/figures/memory_recall.svg", *scenario_lines[0:4]],
+        },
+        {
+            "kind": "text",
+            "title": "Token Efficiency Figure",
+            "lines": ["Source figure: results/figures/token_efficiency.svg", *scenario_lines[4:8]],
+        },
+        {
+            "kind": "text",
+            "title": "Scalability Figure",
+            "lines": [
+                "Source figure: results/figures/scalability.svg",
+                "Agent counts: 5, 10, 25, 50.",
+            ],
+        },
+        {
+            "kind": "text",
+            "title": "Narrative Branching Figure",
+            "lines": [
+                "Source figure: results/figures/branching.svg",
+                "Branching is normalized per 100 turns.",
+            ],
+        },
+        {
+            "kind": "text",
+            "title": "Significance",
+            "lines": [
+                f"Paired sign-test p-value: {p_value:.6f}",
+                "All paired scenario/model profiles favor the Knoema memory policy.",
+            ],
+        },
+        {
+            "kind": "text",
+            "title": "Raw Artifacts",
+            "lines": [
+                "results/raw.jsonl has 24 rows.",
+                "results/summary.md contains aggregate tables.",
+                "results/figures contains 5 SVG figures.",
+            ],
+        },
+        {
+            "kind": "text",
+            "title": "Naive Baseline",
+            "lines": [
+                "Naive LLM receives full-history prompt context every turn.",
+                "This is intentionally transparent and token-heavy.",
+            ],
+        },
+        {
+            "kind": "text",
+            "title": "Mesa Reference",
+            "lines": [
+                "Mesa is documented as a capability boundary.",
+                "No Mesa performance numbers are claimed in this report.",
+            ],
+        },
+        {
+            "kind": "table",
+            "title": "Metropolis Comparison Table",
+            "intro": [
+                "Phase 42 folds the 500-agent metropolis run into the formal bundle.",
+                "Concordia and Stanford remain reference-only until equivalent external runs exist.",
+            ],
+            "headers": ["Metric", "Knoema 500-Agent", "Concordia", "Stanford"],
+            "rows": _metropolis_pdf_rows(metropolis_summary),
+        },
+        {
+            "kind": "text",
+            "title": "External References",
+            "lines": [
+                "Concordia is external and not vendored. See baselines/concordia_reference.md.",
+                "Stanford reference is paper or code only. See baselines/stanford_reference.md.",
+            ],
+        },
+        {
+            "kind": "text",
+            "title": "Reproducibility",
+            "lines": [
+                "The report avoids wall-clock measurements in committed raw artifacts.",
+                "The same source inputs regenerate the same JSONL, summary, and SVG outputs.",
+            ],
+        },
+        {
+            "kind": "text",
+            "title": "Limitations and Next Steps",
+            "lines": [
+                "Metrics are deterministic proxies, not field trial results.",
+                "External baselines require separately executed adapters.",
+                "Next: equivalent external adapters for Concordia and Stanford-style scenarios.",
+            ],
+        },
     ]
     if len(pages) != 20:
         raise RuntimeError(f"expected 20 PDF pages, got {len(pages)}")
     return pages
+
+
+def load_metropolis_summary() -> dict[str, Any]:
+    payload = json.loads(METROPOLIS_SUMMARY_PATH.read_text(encoding="utf-8"))
+    required = {"agent_count", "seed_count", "latency_ms", "memory_mb", "throughput_actions_per_second"}
+    if not isinstance(payload, dict) or not required.issubset(payload):
+        raise ValueError("Phase 42 metropolis summary is missing required keys")
+    return payload
+
+
+def _metropolis_markdown_rows(summary: Mapping[str, Any]) -> list[tuple[str, str, str, str]]:
+    latency = summary["latency_ms"]
+    memory = summary["memory_mb"]
+    throughput = summary["throughput_actions_per_second"]
+    return [
+        ("Comparison status", "Measured local deterministic run", "External reference only", "External reference only"),
+        (
+            "Agent scale",
+            f"{summary['agent_count']} agents x {summary['seed_count']} seeds",
+            "Not measured in this repo",
+            "25-agent sandbox in paper",
+        ),
+        (
+            "Latency / memory",
+            f"p95 {latency['mean_p95']:.3f} ms / max {memory['max_peak']:.3f} MB",
+            "Equivalent adapter run required",
+            "Equivalent adapter run required",
+        ),
+        (
+            "Throughput",
+            f"mean {throughput['mean']:.3f} actions/sec",
+            "Equivalent adapter run required",
+            "Paper or code reference only",
+        ),
+        (
+            "Artifacts",
+            "JSONL + summary.json + SVG",
+            "Separate appendix needed",
+            "Separate appendix needed",
+        ),
+        (
+            "Surface",
+            "Godot + Unity scaffolds, Korean prompt surface",
+            "No packaged game-engine adapter",
+            "No packaged game-engine adapter",
+        ),
+    ]
+
+
+def _metropolis_pdf_rows(summary: Mapping[str, Any]) -> list[list[str]]:
+    latency = summary["latency_ms"]
+    memory = summary["memory_mb"]
+    throughput = summary["throughput_actions_per_second"]
+    return [
+        ["Status", "local run", "reference only", "reference only"],
+        ["Scale", f"{summary['agent_count']} x {summary['seed_count']} seeds", "not measured here", "25-agent paper"],
+        ["Latency", f"p95 {latency['mean_p95']:.1f} ms", "adapter run needed", "paper only"],
+        ["Peak memory", f"max {memory['max_peak']:.1f} MB", "adapter run needed", "paper only"],
+        ["Throughput", f"mean {throughput['mean']:.1f} act/s", "adapter run needed", "paper only"],
+        ["Artifacts", "JSONL + JSON + SVG", "appendix needed", "appendix needed"],
+    ]
 
 
 def _run_row(

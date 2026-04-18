@@ -1,0 +1,53 @@
+scenario_name: 500_agent_metropolis_rush_hour
+agent_count: 500
+ticks_per_run: 6
+tick_duration_minutes: 30
+environment:
+  start_time: "2026-06-15T06:30:00"
+  location_path: ["Knoema Demo World", "Seoul Metropolis", "Transit Spine"]
+  conditions:
+    weather: clear
+    rush_window: morning
+    transit_pressure: high
+districts:
+  - Jongno
+  - Mapo
+  - Yongsan
+  - Seongsu
+  - Gangnam
+  - Songpa
+  - Yeouido
+  - Euljiro
+  - Hongdae
+  - Digital Media City
+roles:
+  - dispatcher
+  - platform steward
+  - route analyst
+  - emergency coordinator
+  - logistics operator
+  - station guide
+  - energy monitor
+  - fleet planner
+  - maintenance lead
+  - community liaison
+actions:
+  - commute
+  - coordinate
+  - handoff
+  - assist
+  - reroute
+  - observe
+latency_model:
+  base_ms: 44.0
+  tick_step_ms: 1.8
+  district_step_ms: 0.9
+  agent_step_ms: 0.4
+  seed_step_ms: 0.7
+  parallel_workers: 96
+memory_model:
+  base_mb: 128.0
+  per_agent_mb: 0.34
+  per_edge_mb: 0.018
+  per_tick_mb: 6.5
+  seed_step_mb: 0.9

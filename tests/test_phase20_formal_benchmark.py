@@ -21,12 +21,14 @@ def test_phase20_formal_report_files_exist() -> None:
         "baselines/naive_llm.py",
         "baselines/mesa_stub.py",
         "baselines/concordia_reference.md",
+        "baselines/stanford_reference.md",
         "results/raw.jsonl",
         "results/summary.md",
         "results/figures/memory_recall.svg",
         "results/figures/token_efficiency.svg",
         "results/figures/scalability.svg",
         "results/figures/branching.svg",
+        "results/figures/metropolis_scale.svg",
         "report.pdf",
     ]
 
@@ -57,6 +59,9 @@ def test_phase20_summary_records_statistics_and_baseline_discipline() -> None:
     assert "Paired sign-test p-value: 0.000244" in summary
     assert "Mesa stub status: not-measured" in summary
     assert "Concordia is documented as an external reference" in summary
+    assert "Stanford Generative Agents is documented as an external reference" in summary
+    assert "Knoema 500-Agent Metropolis" in summary
+    assert "results/figures/metropolis_scale.svg" in summary
 
 
 def test_phase20_report_pdf_has_twenty_pages() -> None:
@@ -88,6 +93,7 @@ def test_phase20_runner_regenerates_deterministic_text_outputs(tmp_path: Path) -
         "figures/token_efficiency.svg",
         "figures/scalability.svg",
         "figures/branching.svg",
+        "figures/metropolis_scale.svg",
     ]:
         assert (output_dir / relative_path).read_bytes() == (
             ROOT / "results" / relative_path

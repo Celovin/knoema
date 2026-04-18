@@ -15,7 +15,7 @@ Outputs:
 
 - `results/raw.jsonl`: 24 deterministic runs across 4 scenarios, 2 approaches, and 3 local model profiles.
 - `results/summary.md`: aggregate tables, metric definitions, and paired sign-test p-value.
-- `results/figures/*.svg`: four source figures for recall, token efficiency, scalability, and branching.
+- `results/figures/*.svg`: five source figures for recall, token efficiency, scalability, branching, and the Phase 42 metropolis appendix.
 - `report.pdf`: 20-page formal benchmark report.
 
 Use `--skip-pdf` when running in environments without the optional `paper` dependencies.

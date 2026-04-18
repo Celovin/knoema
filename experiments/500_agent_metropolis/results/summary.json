@@ -1,0 +1,33 @@
+{
+  "actions_per_seed": 3000,
+  "agent_count": 500,
+  "latency_ms": {
+    "max_p95": 67.6,
+    "mean_p95": 65.055
+  },
+  "memory_mb": {
+    "max_peak": 436.0,
+    "mean_peak": 431.725
+  },
+  "relationship_edges": {
+    "max": 5000,
+    "mean": 5000.0,
+    "min": 5000
+  },
+  "reproducibility": {
+    "bit_for_bit_artifacts": true,
+    "config_fingerprint": "91596de1e2ae709373e858827b0fbdcc5780234e8fcae181d5a9afc1f9b6b1bb",
+    "runs_jsonl_sha256": "800193de6d9a038418a758a9b11e85b2daa869664826c63732cf3af2d8e053fb",
+    "seed_manifest_sha256": "99ae242167065fdd313b2eb372c1506b37fd246b188d7d98649722301a4eeb52"
+  },
+  "scenario_name": "500_agent_metropolis_rush_hour",
+  "seed_count": 20,
+  "throughput_actions_per_second": {
+    "max": 1747.577,
+    "mean": 1657.527,
+    "min": 1585.907
+  },
+  "tick_duration_minutes": 30,
+  "ticks_per_run": 6,
+  "total_actions": 60000
+}

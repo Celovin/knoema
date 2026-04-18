@@ -22,7 +22,7 @@
 
 ## Significance
 
-Composite score compares paired Knoema and naive runs for each scenario/model profile.
+Composite score compares paired Knoema and naive runs for each scenario or model profile.
 - Paired sign-test p-value: 0.000244
 - Interpretation: deterministic evidence favors the Knoema memory policy across all paired profiles.
 
@@ -30,7 +30,7 @@ Composite score compares paired Knoema and naive runs for each scenario/model pr
 
 - Memory recall accuracy: deterministic top-k proxy for preserving scenario facts.
 - Token efficiency ratio: naive prompt tokens divided by approach prompt tokens.
-- Scalability curve: estimated actions/sec at 5, 10, 25, and 50 agents.
+- Scalability curve: estimated actions/sec at 5, 10, 25, and 50 agents, plus a 500-agent metropolis appendix.
 - Narrative branching count: branch flags normalized per 100 turns.
 
 ## Baseline Discipline
@@ -38,3 +38,18 @@ Composite score compares paired Knoema and naive runs for each scenario/model pr
 - Naive LLM baseline receives full-history prompt context every turn.
 - Mesa stub status: not-measured; Mesa-style agent loops do not provide LLM memory recall without custom extensions.
 - Concordia is documented as an external reference only in baselines/concordia_reference.md.
+- Stanford Generative Agents is documented as an external reference only in baselines/stanford_reference.md.
+
+## Phase 42 Metropolis Appendix
+
+- Summary source: experiments/500_agent_metropolis/results/summary.json
+- Figure source: results/figures/metropolis_scale.svg
+
+| Metric | Knoema 500-Agent Metropolis | Google DeepMind Concordia | Stanford Generative Agents |
+| --- | --- | --- | --- |
+| Comparison status | Measured local deterministic run | External reference only | External reference only |
+| Agent scale | 500 agents x 20 seeds | Not measured in this repo | 25-agent sandbox in paper |
+| Latency / memory | p95 65.055 ms / max 436.000 MB | Equivalent adapter run required | Equivalent adapter run required |
+| Throughput | mean 1657.527 actions/sec | Equivalent adapter run required | Paper or code reference only |
+| Artifacts | JSONL + summary.json + SVG | Separate appendix needed | Separate appendix needed |
+| Surface | Godot + Unity scaffolds, Korean prompt surface | No packaged game-engine adapter | No packaged game-engine adapter |
