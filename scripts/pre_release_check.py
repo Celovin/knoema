@@ -38,7 +38,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Run external activation status checks and a local release dry run."
     )
-    parser.add_argument("--version", required=True, help="Semantic version to test, for example 0.1.1.")
+    parser.add_argument("--version", required=True, help="Semantic version to test, for example 0.2.0.")
     parser.add_argument("--keep", action="store_true", help="Keep temporary dry-run build files.")
     parser.add_argument(
         "--fail-on-external-blockers",

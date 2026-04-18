@@ -1,7 +1,7 @@
 {
   "FileVersion": 3,
   "Version": 1,
-  "VersionName": "0.1.1",
+  "VersionName": "0.2.0",
   "FriendlyName": "Knoema Unreal",
   "Description": "Unreal Engine 5 plugin scaffold for connecting actors to the Knoema REST API.",
   "Category": "Artificial Intelligence",

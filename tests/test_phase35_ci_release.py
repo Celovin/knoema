@@ -17,7 +17,7 @@ def test_phase35_default_ci_uses_fast_cached_quality_gate() -> None:
     assert "python -m pip install -e \".[dev,release]\"" in workflow
     assert "mypy src" in workflow
     assert "pytest --cov-fail-under=90" in workflow
-    assert "python scripts/release_dry_run.py --version 0.1.1" in workflow
+    assert "python scripts/release_dry_run.py --version 0.2.0" in workflow
 
 
 def test_phase35_compatibility_workflow_declares_cross_platform_matrix() -> None:
@@ -57,7 +57,7 @@ def test_phase35_release_please_manifest_is_configured() -> None:
     assert package["package-name"] == "knoema-engine"
     assert package["changelog-path"] == "CHANGELOG.md"
     assert "src/knoema/__init__.py" in package["extra-files"]
-    assert manifest["."] == "0.1.1"
+    assert manifest["."] == "0.2.0"
     assert "vars.ENABLE_RELEASE_PLEASE == '1'" in workflow
 
 
@@ -71,7 +71,7 @@ def test_phase35_release_dry_run_script_and_docs_exist() -> None:
 
     assert '"-m", "build"' in script
     assert "twine" in script
-    assert "--version 0.1.1" in docs
+    assert "--version 0.2.0" in docs
     assert "Trusted Publisher" in docs
     assert "external_activation_status.py" in docs
     assert "pre_release_check.py" in docs
@@ -79,7 +79,7 @@ def test_phase35_release_dry_run_script_and_docs_exist() -> None:
     assert "Suggested next actions" in docs
     assert "--fail-on-blockers" in docs
     assert "python scripts/external_activation_status.py" in readme
-    assert "python scripts/pre_release_check.py --version 0.1.1" in readme
+    assert "python scripts/pre_release_check.py --version 0.2.0" in readme
     assert "python scripts/deploy_playground_space.py" in readme
     assert "ENABLE_RELEASE_PLEASE" in status_script
     assert "suggested_actions" in status_script

@@ -23,7 +23,7 @@ def test_phase31_citation_metadata_is_machine_readable() -> None:
 
     assert citation["cff-version"] == "1.2.0"
     assert citation["type"] == "software"
-    assert citation["version"] == "0.1.1"
+    assert citation["version"] == "0.2.0"
     assert citation["license"] == "MIT"
     assert citation["repository-code"] == "https://github.com/Celovin/knoema"
     assert citation["authors"][0]["name"] == "Celovin"
@@ -36,7 +36,7 @@ def test_phase31_zenodo_metadata_is_valid_json() -> None:
     assert metadata["upload_type"] == "software"
     assert metadata["access_right"] == "open"
     assert metadata["license"] == "mit"
-    assert metadata["version"] == "0.1.1"
+    assert metadata["version"] == "0.2.0"
     assert metadata["creators"][0]["name"] == "Celovin"
     assert any(
         item["identifier"] == "https://github.com/Celovin/knoema"
@@ -53,5 +53,6 @@ def test_phase31_readme_and_docs_surface_indexing_status() -> None:
     assert "doi.org/10.5281/zenodo.19643410" in readme
     assert "Papers%20with%20Code-submission%20packet" in readme
     assert "10.5281/zenodo.19643410" in docs
+    assert "v0.2.0 DOI | Pending Zenodo webhook wire-in" in docs
     assert "Papers with Code entry | Pending external submission" in docs
     assert "Academic Indexing: research/academic-indexing.md" in mkdocs

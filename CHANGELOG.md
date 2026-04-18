@@ -6,7 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-04-19
+
 ### Added
+- Phase 41 live Ollama five-agent demo notebook with deterministic seeded fallback and recording cue sheet.
+- Phase 42 deterministic 500-agent metropolis experiment with 20 seeds, JSONL evidence, summary JSON, and latency/memory SVG artifacts.
+- Phase 43 persona opt-in Theory of Mind module with deterministic Sally-Anne false-belief benchmark evidence.
 - Phase 44 FastAPI server for REST simulation management, agent inspection, event injection, and live WebSocket streaming.
 - Phase 44 API authentication and in-memory token-bucket rate limiting for demo-safe deployments.
 - Phase 44 Docker Compose bundle for the API server, Streamlit dashboard, and research SaaS dashboard.
@@ -24,7 +29,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 50 technical report PDF regenerated as a 30+ page preview.
 - Phase 51 hierarchical task-network planner with persona opt-in goal decomposition and planning-depth evidence.
 - Phase 52 distributed 1000-agent city experiment with Ray-compatible fallback, location sharding, SVG evidence, and formal report integration.
-- Phase 53 red-team safety suite with opt-in content filtering, PII checks, scenario-abuse rejection, JSONL audit logging, and safety policy docs.
 - Phase 54 browser-side TypeScript static runtime with 2-agent, 5-agent, and Sally-Anne demos plus Playwright smoke coverage.
 - Phase 55 social learning module with opt-in observational imitation and deterministic cascade evidence.
 - Phase 56 VS Code Scenario DSL extension with syntax highlighting, schema validation, commands, and VSIX packaging support.
@@ -33,6 +37,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 59 cloud deployment templates for AWS, GCP, and Azure with static validation and cost comparison documentation.
 - Phase 60 mobile SDK scaffolds for iOS Swift Package Manager and Android Kotlin clients with REST, WebSocket, cache, and offline surfaces.
 - Phase 61 interactive 5-chapter tutorial website with embedded code editing, chapter quizzes, local progress, and Playwright coverage.
+
+### Changed
+- Updated repository release metadata, README current-version sections, CI dry-run targets, academic indexing notes, and the paper version marker to `0.2.0`.
+- Expanded the formal evidence layer from MVP scaffolding into cognitive, distributed, safety, SDK, deployment, benchmark, evaluation, and tutorial surfaces.
+
+### Deprecated
+- None.
+
+### Removed
+- None.
+
+### Fixed
+- Synchronized API, package, adapter, Release Please, Citation File Format, and Zenodo metadata versions for the `v0.2.0` release.
+
+### Security
+- Phase 53 red-team safety suite with opt-in content filtering, PII checks, scenario-abuse rejection, JSONL audit logging, and safety policy docs.
 
 ## [0.1.1] - 2026-04-18
 

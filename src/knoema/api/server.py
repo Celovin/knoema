@@ -32,7 +32,7 @@ def create_app(
 
     app = FastAPI(
         title="Knoema Engine API",
-        version="0.1.1",
+        version="0.2.0",
         description="REST and WebSocket surface for Knoema simulations.",
         lifespan=lifespan,
     )

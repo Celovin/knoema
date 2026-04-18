@@ -1,13 +1,13 @@
 # Academic Indexing
 
-Phase 31 prepared Knoema Engine for archival citation and research indexing. Phase 50 adds the arXiv v2 and Papers with Code packet. The repository now carries machine-readable citation metadata, Zenodo metadata, the final local paper source, a generated PDF preview, and a structured Papers with Code submission packet. External account steps still need to be completed by the project owner.
+Phase 31 prepared Knoema Engine for archival citation and research indexing. Phase 50 adds the arXiv v2 and Papers with Code packet. Phase 62 promotes the repository metadata to `v0.2.0`. The repository now carries machine-readable citation metadata, Zenodo metadata, the final local paper source, a generated PDF preview, and a structured Papers with Code submission packet. External account steps still need to be completed by the project owner.
 
 ## Repository Record
 
 | Field | Value |
 | --- | --- |
 | Repository | `https://github.com/Celovin/knoema` |
-| Release | `v0.1.1` |
+| Release | `v0.2.0` |
 | DOI | [`10.5281/zenodo.19643410`](https://doi.org/10.5281/zenodo.19643410) |
 | License | MIT |
 | Software metadata | `CITATION.cff` |
@@ -27,8 +27,8 @@ Use this packet when connecting the repository to Zenodo:
 - Creator: `Celovin`
 - Contact: `hello@celovin.com`
 - Upload type: `software`
-- Version: `0.1.1`
-- Issued DOI: `10.5281/zenodo.19643410`
+- Version: `0.2.0`
+- Latest issued DOI evidence: `10.5281/zenodo.19643410` (v0.1.1)
 - License: MIT, encoded for Zenodo as `mit`
 - Repository: `https://github.com/Celovin/knoema`
 - Related paper source: `https://github.com/Celovin/knoema/blob/main/paper/main.tex`
@@ -38,7 +38,7 @@ Recommended owner steps:
 
 1. Sign in to Zenodo with the Celovin-controlled account.
 2. Enable GitHub integration for `Celovin/knoema`.
-3. Import or archive the `v0.1.1` release. If the integration cannot backfill existing releases, archive the next patch release and keep `v0.1.1` as the GitHub release evidence.
+3. Import or archive the `v0.2.0` release. Keep `v0.1.1` as the first issued DOI evidence until Zenodo assigns the new release DOI.
 4. Confirm Zenodo imported `.zenodo.json` and `CITATION.cff`.
 5. Copy the assigned DOI into `CITATION.cff`, `.zenodo.json`, `README.md`, `README.ko.md`, `paper/README.md`, and the website research page.
 
@@ -87,6 +87,7 @@ Knoema Engine is an open runtime for persistent social agents. It exposes memory
 | `CITATION.cff` | Prepared |
 | `.zenodo.json` | Prepared |
 | Zenodo DOI | Issued: `10.5281/zenodo.19643410` (2026-04-19, v0.1.1) |
+| v0.2.0 DOI | Pending Zenodo webhook wire-in |
 | Papers with Code packet | Prepared locally with `ARXIV_ID_PENDING` |
 | Papers with Code entry | Pending external submission after arXiv ID |
 | README badges | DOI badge live (all eight language variants) |

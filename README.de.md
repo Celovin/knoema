@@ -8,6 +8,10 @@
 [![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/knoema-playground)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19643410.svg)](https://doi.org/10.5281/zenodo.19643410)
 
+## Current version
+
+0.2.0
+
 ## Sprachen
 
 | English | 한국어 | 日本語 | 简体中文 | 繁體中文 | Deutsch | Français | Español |

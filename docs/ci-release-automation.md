@@ -10,7 +10,7 @@ The `CI` workflow runs on every push to `main` and every pull request.
 - pip cache through `actions/setup-python`.
 - pre-commit hook cache warmed through `PRE_COMMIT_HOME`.
 - pytest cache restored between runs.
-- hard gates: Ruff, mypy, pytest with 90% coverage, and the `v0.1.1` release dry run.
+- hard gates: Ruff, mypy, pytest with 90% coverage, and the `v0.2.0` release dry run.
 
 The previous default CI duplicated the full coverage suite on Python 3.11 and 3.12. The new default path runs the coverage gate once and moves cross-platform checks to the compatibility workflow, cutting duplicate full-suite work before cache effects.
 
@@ -85,7 +85,7 @@ Run the patch-release dry run before tagging:
 
 ```powershell
 cd C:\Users\admin\Projects\knoema
-.venv\Scripts\python scripts\release_dry_run.py --version 0.1.1
+.venv\Scripts\python scripts\release_dry_run.py --version 0.2.0
 ```
 
 The script copies the git-visible working tree to a temporary directory, patches the version in that copy, builds the distributions, and runs `twine check`.
@@ -95,12 +95,12 @@ Recommended local sequence before a production tag:
 ```powershell
 cd C:\Users\admin\Projects\knoema
 .venv\Scripts\python scripts\external_activation_status.py --fail-on-blockers
-.venv\Scripts\python scripts\release_dry_run.py --version 0.1.1
+.venv\Scripts\python scripts\release_dry_run.py --version 0.2.0
 ```
 
 Or run the combined checker:
 
 ```powershell
 cd C:\Users\admin\Projects\knoema
-.venv\Scripts\python scripts\pre_release_check.py --version 0.1.1
+.venv\Scripts\python scripts\pre_release_check.py --version 0.2.0
 ```

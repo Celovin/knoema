@@ -10,8 +10,8 @@
   ],
   "access_right": "open",
   "license": "mit",
-  "publication_date": "2026-04-18",
-  "version": "0.1.1",
+  "publication_date": "2026-04-19",
+  "version": "0.2.0",
   "keywords": [
     "large language models",
     "multi-agent simulation",
@@ -33,5 +33,5 @@
       "resource_type": "publication-preprint"
     }
   ],
-  "notes": "Release metadata prepared during Phase 31. A DOI is assigned only after the repository or release archive is connected to Zenodo under the Celovin account."
+  "notes": "Release metadata prepared during Phase 62 for v0.2.0. The v0.2.0 DOI is assigned only after the GitHub release archive is ingested by Zenodo under the Celovin account."
 }

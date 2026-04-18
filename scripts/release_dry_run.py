@@ -106,7 +106,7 @@ def run_release_dry_run(version: str, keep: bool = False) -> dict[str, object]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build and twine-check a temporary release version.")
-    parser.add_argument("--version", required=True, help="Semantic version to test, for example 0.1.1.")
+    parser.add_argument("--version", required=True, help="Semantic version to test, for example 0.2.0.")
     parser.add_argument("--keep", action="store_true", help="Keep the temporary build tree for inspection.")
     args = parser.parse_args()
 
