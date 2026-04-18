@@ -95,6 +95,8 @@ node_modules/
 .next/
 out/
 .vercel/
+website/test-results/
+website/playwright-report/
 
 # Swift Package Manager
 sdk/ios/KnoemaMobile/.build/

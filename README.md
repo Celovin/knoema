@@ -55,6 +55,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Game SDK facades for Python, TypeScript, and GDScript NPC integrations
 - Mobile SDK scaffolds for iOS Swift Package Manager and Android Kotlin clients
 - Browser-side static runtime for no-server 2-agent, 5-agent, and Sally-Anne demos
+- Interactive 5-chapter tutorial website with embedded code editing and progress tracking
 - VS Code Scenario DSL extension scaffold with syntax highlighting and validation
 - Streamlit dashboard for inspecting simulation logs with playback and live-tail controls
 - Research SaaS dashboard scaffold for experiment comparison, memory inspection, cost budget, and citation export

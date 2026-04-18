@@ -1,0 +1,288 @@
+.tutorialShell {
+  background: #f7fbf8;
+  color: #10231b;
+  min-height: 100vh;
+}
+
+.topNav {
+  align-items: center;
+  border-bottom: 1px solid #cfddd5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: space-between;
+  margin: 0 auto;
+  padding: 18px 24px;
+  width: min(1180px, 100%);
+}
+
+.topNav a {
+  color: #0c6b4d;
+  font-weight: 800;
+}
+
+.workspace {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: minmax(260px, 0.42fr) minmax(0, 1fr);
+  margin: 0 auto;
+  padding: 36px 24px 72px;
+  width: min(1180px, 100%);
+}
+
+.chapterRail {
+  align-self: start;
+  position: sticky;
+  top: 18px;
+}
+
+.eyebrow {
+  color: #a83225;
+  font-size: 0.82rem;
+  font-weight: 900;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+.chapterRail h1,
+.lessonHeader h2 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.02;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.chapterRail h1 {
+  font-size: 3.1rem;
+}
+
+.lessonHeader h2 {
+  font-size: 3rem;
+}
+
+.progressShell {
+  background: #dce9e2;
+  border-radius: 8px;
+  height: 12px;
+  margin: 24px 0;
+  overflow: hidden;
+}
+
+.progressShell span {
+  background: #c8dc58;
+  display: block;
+  height: 100%;
+  transition: width 180ms ease;
+}
+
+.chapterRail ol {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chapterRail button,
+.runRow button {
+  border: 2px solid #0c6b4d;
+  border-radius: 8px;
+  color: #10231b;
+  cursor: pointer;
+  font: inherit;
+}
+
+.chapterRail button {
+  align-items: center;
+  background: #ffffff;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 34px 1fr auto;
+  min-height: 62px;
+  padding: 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.chapterRail button span {
+  align-items: center;
+  background: #0c6b4d;
+  border-radius: 8px;
+  color: #ffffff;
+  display: inline-flex;
+  font-weight: 900;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
+}
+
+.chapterRail button small {
+  color: #51625a;
+  font-weight: 800;
+}
+
+.chapterRail .activeChapter {
+  background: #e6f1eb;
+  border-color: #a83225;
+}
+
+.lessonPanel {
+  display: grid;
+  gap: 22px;
+}
+
+.lessonHeader {
+  align-items: end;
+  border-bottom: 1px solid #cfddd5;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr minmax(180px, 280px);
+  padding-bottom: 26px;
+}
+
+.lessonHeader p {
+  color: #51625a;
+  font-size: 1.08rem;
+  line-height: 1.65;
+  max-width: 680px;
+}
+
+.lessonHeader img {
+  background: #ffffff;
+  border: 1px solid #cfddd5;
+  border-radius: 8px;
+  height: 170px;
+  object-fit: contain;
+  padding: 12px;
+  width: 100%;
+}
+
+.stepGrid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stepGrid article {
+  border-left: 4px solid #0c6b4d;
+  min-height: 104px;
+  padding: 12px 14px;
+}
+
+.stepGrid span {
+  color: #a83225;
+  font-weight: 900;
+}
+
+.stepGrid p {
+  color: #10231b;
+  line-height: 1.55;
+  margin: 6px 0 0;
+}
+
+.editorLabel {
+  font-weight: 900;
+}
+
+.monacoEditor {
+  background: #14251d;
+  border: 1px solid #254638;
+  border-radius: 8px;
+  color: #e8f5ee;
+  font-family: "Cascadia Code", "IBM Plex Mono", monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  min-height: 360px;
+  padding: 18px;
+  resize: vertical;
+  width: 100%;
+}
+
+.runRow {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.runRow button {
+  background: #0c6b4d;
+  color: #ffffff;
+  font-weight: 900;
+  min-height: 44px;
+  padding: 10px 16px;
+}
+
+.runRow button:disabled {
+  background: #dce9e2;
+  border-color: #b8cbc1;
+  color: #51625a;
+  cursor: not-allowed;
+}
+
+.runRow output {
+  color: #51625a;
+  font-weight: 800;
+}
+
+.quizBox {
+  border: 1px solid #cfddd5;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 18px;
+}
+
+.quizBox legend {
+  color: #10231b;
+  font-weight: 900;
+  padding: 0 8px;
+}
+
+.quizBox label {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  min-height: 34px;
+}
+
+@media (max-width: 900px) {
+  .workspace,
+  .lessonHeader,
+  .stepGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .chapterRail {
+    position: static;
+  }
+
+  .chapterRail h1,
+  .lessonHeader h2 {
+    font-size: 2.45rem;
+  }
+}
+
+@media (max-width: 540px) {
+  .workspace,
+  .topNav {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .chapterRail h1,
+  .lessonHeader h2 {
+    font-size: 2rem;
+  }
+
+  .chapterRail button {
+    grid-template-columns: 34px 1fr;
+  }
+
+  .chapterRail button small {
+    grid-column: 2;
+  }
+}
