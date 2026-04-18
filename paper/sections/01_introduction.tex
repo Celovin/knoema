@@ -2,7 +2,7 @@
 
 LLM-based agents make it easy to generate plausible language, but a prompt-only design often hides the state that a simulation, game, or research workflow needs to inspect. Persistent NPCs need memory and relationship state that a game can test. Research simulations need fixed configuration, deterministic replay, and exportable logs. Synthetic replay workflows need explicit safety boundaries around data use and claims.
 
-Knoema Engine addresses this engineering layer. It is not a general task-automation framework and it is not a hosted model service. It is a small runtime for building agents whose state is represented by ordinary package objects: persona, memory, relationships, environment, emotion, events, decisions, and logs. Model providers are optional decision backends rather than the only store of behavioral context.
+Knoema Engine addresses this engineering layer. It is not a general task-automation framework and it is not a hosted model service. It is a small runtime for building agents whose state is represented by ordinary package objects: persona, memory, relationships, environment, emotion, events, decisions, theory-of-mind belief state, API sessions, and logs. Model providers are optional decision backends rather than the only store of behavioral context.
 
 This paper updates the initial technical report into an arXiv-oriented draft. The current repository includes the following public artifacts:
 
@@ -11,13 +11,18 @@ This paper updates the initial technical report into an arXiv-oriented draft. Th
   \item deterministic local clients and optional Anthropic/OpenAI clients,
   \item YAML scenario DSL and JSON Schema artifacts,
   \item Jupyter examples, CLI runs, Streamlit dashboards, and JSONL replay,
-  \item Godot and Unity adapter scaffolds,
+  \item Godot, Unity, and Unreal adapter scaffolds,
   \item Python, TypeScript, and Godot GDScript game SDK facades,
   \item a 50-agent deterministic village experiment,
+  \item a 500-agent deterministic metropolis experiment with 20 seeds and 60,000 actions,
   \item a formal benchmark bundle with deterministic baseline discipline,
+  \item classic Schelling and Axelrod reproductions,
+  \item persona opt-in theory-of-mind evaluation with a Sally-Anne harness,
+  \item PCS/RCS scoring utilities for committed JSONL artifacts,
+  \item a 50-scenario marketplace library and web scenario editor,
   \item a MkDocs API reference site and public website scaffold.
 \end{itemize}
 
 \input{figures/application_tracks}
 
-The contribution is practical: a public repository showing how to keep agent state explicit while spanning game, research, and documentation surfaces. The evaluation is correspondingly scoped. The reported experiments measure reproducibility, artifact consistency, memory-policy proxies, token-efficiency proxies, and scalability of deterministic local runs. They do not claim external validity over real populations.
+The contribution is practical: a public repository showing how to keep agent state explicit while spanning game, research, API, website, and documentation surfaces. The evaluation is correspondingly scoped. The reported experiments measure reproducibility, artifact consistency, memory-policy proxies, token-efficiency proxies, theory-of-mind task behavior, classic ABM reproduction checks, and scalability of deterministic local runs. They do not claim external validity over real populations.

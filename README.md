@@ -7,7 +7,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/knoema-playground)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19643410.svg)](https://doi.org/10.5281/zenodo.19643410)
-[![Papers with Code: submission packet](https://img.shields.io/badge/Papers%20with%20Code-submission%20packet-blue)](docs/research/academic-indexing.md)
+[![Papers with Code: submission packet](https://img.shields.io/badge/Papers%20with%20Code-submission%20packet-blue)](docs/research/papers_with_code_submission.md)
 
 ## Languages
 
@@ -404,7 +404,8 @@ Detailed notes:
 - [Hugging Face Playground Guide](playground/README.md)
 - [Website App](website/app/page.tsx)
 - [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/knoema_technical_report.pdf)
-- [arXiv-oriented Phase 30 Preprint Source](paper/main.tex), [Appendix](paper/appendix.tex), and [Expanded References](paper/references.bib)
+- [arXiv v2 Preprint Source](paper/main.tex), [Appendix](paper/appendix.tex), and [80+ References](paper/references.bib)
+- [Papers with Code Submission Packet](docs/research/papers_with_code_submission.md) and [machine-readable packet](docs/research/papers_with_code_submission.json)
 - [Academic Indexing Packet](docs/research/academic-indexing.md), [Citation Metadata](CITATION.cff), and [Zenodo Metadata](.zenodo.json)
 
 ## Roadmap

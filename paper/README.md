@@ -1,6 +1,6 @@
 # Knoema Technical Report
 
-This folder contains the Phase 30 arXiv-oriented technical report draft. It keeps the earlier Phase 12 source files for continuity and adds the v2 preprint structure used by `main.tex`. Phase 43 extends the draft with persona opt-in theory-of-mind notes and a deterministic Sally-Anne comparison table.
+This folder contains the arXiv v2 technical report draft. It keeps the earlier Phase 12 source files for continuity and adds the v2 preprint structure used by `main.tex`. Phase 50 consolidates the Phase 43-46 evidence layer: persona opt-in theory-of-mind notes, deterministic Sally-Anne results, classic ABM reproductions, 500-agent metropolis evidence, PCS/RCS metrics, a scenario-library appendix, and the Papers with Code result table.
 
 ## Files
 
@@ -10,7 +10,7 @@ This folder contains the Phase 30 arXiv-oriented technical report draft. It keep
 - `figures/`: LaTeX figure blocks for architecture, DSL, SDK, benchmark, and safety diagrams.
 - `tables/`: LaTeX tables for benchmark and release-artifact summaries.
 - `appendix.tex`: artifact and reproducibility appendix.
-- `references.bib`: expanded BibTeX references for the preprint.
+- `references.bib`: 80+ BibTeX references for the preprint.
 - `build_pdf.py`: local PDF preview builder using ReportLab.
 - `knoema_technical_report.pdf`: generated preview PDF for meetings.
 

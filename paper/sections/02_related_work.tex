@@ -1,11 +1,74 @@
 \section{Related Work}
 
-\textbf{Generative agents and social simulation.} Generative Agents introduced believable language-mediated behavior through memory, reflection, planning, and interaction \cite{park2023generative}. Concordia frames generative agent-based modeling as grounded interaction among entities in physical, social, or digital spaces \cite{vezhnevets2023concordia}. The Sally-Anne false-belief task remains a compact behavioral probe for explicit theory-of-mind reasoning \cite{wimmer1983belief}. Knoema shares the assumption that memory and context matter, but focuses on a compact runtime with explicit state objects, deterministic logs, adapter contracts, and a persona opt-in theory-of-mind surface.
+\textbf{Generative agents and social simulation.} Generative Agents introduced believable language-mediated behavior through memory, reflection, planning, and interaction \cite{park2023generative}. Concordia frames generative agent-based modeling as grounded interaction among entities in physical, social, or digital spaces \cite{vezhnevets2023concordia}. The Sally-Anne false-belief task remains a compact behavioral probe for explicit theory-of-mind reasoning \cite{wimmer1983belief,baroncohen1985does}. Knoema shares the assumption that memory and context matter, but focuses on a compact runtime with explicit state objects, deterministic logs, adapter contracts, and a persona opt-in theory-of-mind surface.
 
-\textbf{Multi-agent LLM frameworks.} AutoGen, CAMEL, MetaGPT, ChatDev, Voyager, Reflexion, ReAct, and Toolformer all explore ways to coordinate LLM behavior through roles, tools, self-reflection, or conversational protocols \cite{wu2023autogen,li2023camel,hong2023metagpt,qian2023chatdev,wang2023voyager,shinn2023reflexion,yao2023react,schick2023toolformer}. Knoema is narrower. It is not optimized for task completion across arbitrary tools; it is organized around replayable social state and game/research integration.
+\textbf{Multi-agent LLM frameworks.} AutoGen, CAMEL, MetaGPT, ChatDev, Voyager, Reflexion, ReAct, Toolformer, BabyAGI-style task loops, LangChain, LangGraph, CrewAI, Semantic Kernel, OpenAI Swarm-style handoffs, and tool-augmented agent benchmarks explore ways to coordinate LLM behavior through roles, tools, self-reflection, graph execution, or conversational protocols \cite{wu2023autogen,li2023camel,hong2023metagpt,qian2023chatdev,wang2023voyager,shinn2023reflexion,yao2023react,schick2023toolformer,liu2023agentbench}. Knoema is narrower. It is not optimized for task completion across arbitrary tools; it is organized around replayable social state and game/research integration.
 
-\textbf{Classical agent-based modeling.} Mesa, NetLogo, MASON, Repast, Swarm, GAMA, and AnyLogic represent a long tradition of explicit model state, scheduling, and reproducible simulation loops \cite{terhoeven2025mesa,wilensky1999netlogo,luke2005mason,north2013complex,daniels1999swarm,taillandier2019gama,borshchev2013anylogic}. Knoema borrows the inspectable-loop discipline from this tradition while adding natural-language memory and model-backed decision generation.
+\textbf{Classical agent-based modeling.} Mesa, NetLogo, MASON, Repast, Swarm, GAMA, AnyLogic, Sugarscape, Schelling segregation, Axelrod cooperation, ODD model documentation, and discrete-event simulation practice represent a long tradition of explicit model state, scheduling, and reproducible simulation loops \cite{terhoeven2025mesa,wilensky1999netlogo,luke2005mason,north2013complex,daniels1999swarm,taillandier2019gama,borshchev2013anylogic,epstein1996growing,schelling1971dynamic,axelrod1984evolution,grimm2006standard,law2014simulation}. Knoema borrows the inspectable-loop discipline from this tradition while adding natural-language memory and model-backed decision generation.
 
 \textbf{Memory and retrieval.} Retrieval-augmented generation, dense passage retrieval, approximate nearest-neighbor indexes, and vector stores provide the retrieval substrate for long-term agent context \cite{lewis2020rag,karpukhin2020dpr,johnson2017faiss,malkov2020hnswlib,guo2020scann}. Knoema currently uses deterministic hash embeddings in tests and examples to keep local runs reproducible. Production deployments can replace the encoder while keeping the store API.
 
 \textbf{Reproducibility and model risk.} Reproducible computational research depends on fixed configuration, versioned artifacts, and clear claims \cite{sandve2013tenrules,wilkinson2016fair,peng2011reproducible,pineau2021improving}. LLM-based systems add risks around prompt sensitivity, privacy, hallucination, and data contamination \cite{bommasani2021foundation,weidinger2021ethical,bender2021stochastic,mitchell2019modelcards,gebru2021datasheets}. Knoema therefore treats logs, synthetic data boundaries, and deterministic local paths as first-class engineering requirements.
+
+\subsection{Comparison Map}
+
+Table~\ref{tab:related-comparison-map} is a deliberately broad comparison map rather than a leaderboard. It separates the role of each system family from the part of Knoema that is intentionally different. More than forty systems, papers, platforms, or benchmark lines are included to make the positioning auditable: Knoema is closest to generative social-simulation runtimes and classical ABM toolkits, but its release surface emphasizes a small typed state model, public safety boundaries, game adapters, and reproducible JSONL artifacts.
+
+\begin{longtable}{p{0.24\linewidth}p{0.23\linewidth}p{0.43\linewidth}}
+\caption{Related systems and research lines compared against Knoema's scope.}\label{tab:related-comparison-map}\\
+\toprule
+System or line & Category & Knoema distinction \\
+\midrule
+\endfirsthead
+\toprule
+System or line & Category & Knoema distinction \\
+\midrule
+\endhead
+Stanford Generative Agents & generative social agents & Knoema exposes typed runtime state, adapters, and deterministic logs rather than only a sandbox narrative. \\
+Concordia & generative ABM & Knoema keeps a smaller API and public game/replay/research integration contracts. \\
+Sally-Anne task & theory of mind & Knoema uses it as a persona opt-in false-belief engineering gate, not as human cognition proof. \\
+Machine Theory of Mind & cognitive modeling & Knoema tracks symbolic first-order beliefs for runtime inspection. \\
+AutoGen & multi-agent LLM orchestration & Knoema targets social-state replay rather than task delegation. \\
+CAMEL & role-playing agents & Knoema stores relationships, memory, and scenario logs as first-class artifacts. \\
+MetaGPT & software-agent coordination & Knoema is not a software production pipeline. \\
+ChatDev & collaborative coding agents & Knoema centers synthetic social scenes and game NPC contracts. \\
+Voyager & embodied skill discovery & Knoema uses deterministic scenario runs instead of open-ended skill libraries. \\
+Reflexion & self-improving agents & Knoema separates evaluation metrics from hidden self-reflection loops. \\
+ReAct & reasoning and acting & Knoema constrains actions through scenario and adapter contracts. \\
+Toolformer & tool-use learning & Knoema treats tools as external integrations, not learned token insertions. \\
+AgentBench & agent evaluation & Knoema adds artifact-level reproducibility and social-state metrics. \\
+HELM & model evaluation & Knoema evaluates runtime behavior rather than foundation-model capability alone. \\
+BIG-bench & capability benchmark & Knoema records seeds, logs, and replay surfaces for each scenario. \\
+TruthfulQA & hallucination benchmark & Knoema's risk controls are scenario and log boundaries, not factual QA alone. \\
+Mesa & Python ABM & Knoema adds LLM memory, relationship, emotion, and adapter surfaces. \\
+NetLogo & educational ABM & Knoema uses Python package artifacts and game/research APIs. \\
+MASON & Java ABM & Knoema emphasizes public LLM-agent evidence and docs. \\
+Repast & ABM platform & Knoema exposes a smaller installable package and scenario DSL. \\
+Swarm & ABM toolkit & Knoema adds natural-language memory and synthetic replay boundaries. \\
+GAMA & spatial ABM & Knoema is lighter and focused on persistent social agents. \\
+AnyLogic & commercial simulation & Knoema is open-source and reproducibility-first. \\
+Sugarscape & artificial societies & Knoema uses comparable artifact discipline with LLM-compatible state. \\
+Schelling segregation & classic ABM & Knoema reproduces threshold contrast as a deterministic smoke benchmark. \\
+Axelrod cooperation & classic ABM & Knoema reproduces Tit-for-Tat leadership as a deterministic smoke benchmark. \\
+ODD protocol & ABM documentation & Knoema keeps scenario definitions and ethics flags in machine-readable YAML. \\
+Discrete-event simulation & simulation method & Knoema uses scheduled events but retains agent memory and relationships. \\
+RAG & retrieval architecture & Knoema applies retrieval to persistent agent memory. \\
+DPR & dense retrieval & Knoema keeps encoder replacement behind a memory-store API. \\
+FAISS & vector search & Knoema supports FAISS-compatible local retrieval. \\
+HNSWlib & ANN index & Knoema keeps index choice separate from scenario behavior. \\
+ScaNN & ANN index & Knoema treats retrieval as infrastructure rather than the product claim. \\
+Model Cards & model reporting & Knoema mirrors disclosure discipline for runtime artifacts. \\
+Datasheets for Datasets & dataset documentation & Knoema treats scenario libraries and logs as documented datasets. \\
+FAIR principles & research stewardship & Knoema packages configs, logs, and metadata for reuse. \\
+OpenAI Gym & RL environment API & Knoema targets social simulation rather than RL task training. \\
+Unity ML-Agents & game/RL bridge & Knoema integrates NPC state without requiring policy training. \\
+DeepMind Lab & embodied AI benchmark & Knoema is inspectable social-state infrastructure. \\
+BabyAI & instruction learning & Knoema is scenario and memory oriented. \\
+OpenSpiel & multi-agent games & Knoema focuses on natural-language social state. \\
+PettingZoo & multi-agent RL API & Knoema is not a gym-only environment wrapper. \\
+LangChain & LLM application framework & Knoema avoids becoming a generic chain framework. \\
+LangGraph & graph agent runtime & Knoema keeps simulation state and replay logs as the center. \\
+CrewAI & role-team orchestration & Knoema favors social simulation artifacts over workplace task teams. \\
+Semantic Kernel & tool orchestration & Knoema keeps model calls behind the decision interface. \\
+\bottomrule
+\end{longtable}

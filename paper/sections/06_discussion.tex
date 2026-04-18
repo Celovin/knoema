@@ -2,15 +2,19 @@
 
 \subsection{What The Current Evidence Supports}
 
-The current evidence supports an engineering claim: explicit state, deterministic logs, and adapter contracts make persistent-agent systems easier to inspect and test. The repository demonstrates this through 136 local tests, benchmark artifacts, a public Playground, dashboards, SDK facades, and generated documentation.
+The current evidence supports an engineering claim: explicit state, deterministic logs, and adapter contracts make persistent-agent systems easier to inspect and test. The repository demonstrates this through a 250+ test gate, benchmark artifacts, API routes, dashboards, SDK facades, game-engine adapters, a scenario editor, reproducibility reports, and generated documentation. The evidence is strongest where the artifact chain is complete: fixed seeds, config files, JSONL logs, summaries, figures, and tests.
 
 \subsection{What It Does Not Support}
 
-The current evidence does not establish real-world behavioral validity, general human simulation accuracy, production game quality, or safe deployment in operational public-safety environments. The public-safety track is limited to synthetic replay and prevention-oriented analysis.
+The current evidence does not establish real-world behavioral validity, general human simulation accuracy, production game quality, or safe deployment in operational public-safety environments. The public-safety track is limited to synthetic replay and prevention-oriented analysis. Criminal or sensitive scenarios in the repository are replay and education artifacts, not used for prediction: they may encode fictional event sequences, safeguards, and process milestones, but they must not be used for suspect scoring, investigative prioritization, surveillance, enforcement automation, or profiling of identifiable people.
 
 \subsection{Threats To Validity}
 
-Deterministic local clients understate the variability of live LLM providers. Hash embeddings are useful for reproducible tests but weaker than production semantic encoders. The naive baseline is intentionally simple. Human evaluation has not yet been run. Larger-scale experiments need memory-store stress tests, model comparisons, and independent review.
+Deterministic local clients understate the variability of live LLM providers. Hash embeddings are useful for reproducible tests but weaker than production semantic encoders. The naive baseline is intentionally simple. Human evaluation has not yet been run. Larger-scale experiments need memory-store stress tests, model comparisons, independent review, and explicit cross-framework reproduction before external performance claims are made about Stanford Generative Agents, Concordia, Mesa, NetLogo, GAMA, or commercial simulation products.
+
+\subsection{Ethics and Safety Limits}
+
+Knoema keeps a strict boundary between replayable synthetic scenarios and claims about real people. The scenario DSL requires ethics and non-use notes for sensitive examples. The public scenario library uses fictional characters and explicitly excludes real personal data. The Papers with Code packet preserves the same boundary by listing datasets as synthetic logs, benchmark summaries, and curated scenario definitions rather than real-world public-safety records.
 
 \subsection{Release Discipline}
 

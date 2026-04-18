@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -40,7 +41,7 @@ def build_pdf() -> None:
             "An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation",
             styles["Subtitle"],
         ),
-        Paragraph("Celovin | hello@celovin.com | Phase 30 draft | April 2026", styles["Meta"]),
+        Paragraph("Celovin | hello@celovin.com | arXiv v2 draft | April 2026", styles["Meta"]),
         Spacer(1, 0.2 * inch),
     ]
 
@@ -52,20 +53,7 @@ def build_pdf() -> None:
             else:
                 story.append(Paragraph(paragraph, styles["Body"]))
             story.append(Spacer(1, 0.08 * inch))
-        if heading in {
-            "Abstract",
-            "1. Introduction",
-            "2. Related Work",
-            "3. Architecture",
-            "4. Experiments and Evidence",
-            "5. Applications",
-            "6. Discussion",
-            "7. Safety Boundary",
-            "8. Conclusion",
-            "Appendix A. Artifact Map",
-            "Appendix B. Reproducibility Checklist",
-        }:
-            story.append(PageBreak())
+        story.append(PageBreak())
 
     story.append(Paragraph("References", styles["Heading2"]))
     for reference in references():
@@ -183,9 +171,9 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
         (
             "Abstract",
             [
-                "Knoema Engine is an open, MIT-licensed runtime for persistent social agents whose state is inspectable outside of a model prompt. The system combines persona definitions, short-term and long-term memory, directed relationship state, environment context, PAD-style emotion, event scheduling, deterministic logs, and optional LLM-backed decisions.",
-                "This revision extends that runtime with persona opt-in theory-of-mind tracking so belief state remains inspectable without forcing the feature on every agent.",
-                "This Phase 30 report updates the original MVP technical note with the 50-agent village experiment, formal benchmark bundle, scenario DSL, game SDK facades, a deterministic Sally-Anne harness, evaluation metrics for persona and relationship quality, documentation infrastructure, and stricter public-safety boundaries.",
+                "Knoema Engine is an open, MIT-licensed runtime for persistent social agents whose state is inspectable outside of a model prompt. The system combines persona definitions, short-term and long-term memory, directed relationship state, environment context, PAD-style emotion, event scheduling, deterministic logs, REST and WebSocket interfaces, game adapters, and optional LLM-backed decisions.",
+                "This arXiv v2 revision extends that runtime with persona opt-in theory-of-mind tracking, classic ABM reproductions, a 500-agent metropolis run, PCS/RCS scoring, a scenario-library catalog, and a Papers with Code submission packet.",
+                "The report keeps the central claim modest: persistent-agent applications need explicit runtime state, replayable artifacts, adapter contracts, and safety-bounded scenario definitions before they need larger prompts.",
             ],
         ),
         (
@@ -194,10 +182,10 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
                 "LLM-based agents can generate plausible language, but prompt-only designs often hide the state that a simulation, game, or research workflow needs to inspect. Persistent NPCs need memory and relationship state that a game can test. Research simulations need fixed configuration, deterministic replay, and exportable logs. Synthetic replay workflows need explicit safety boundaries around data use and claims.",
                 "Knoema addresses this engineering layer. It is not a general task-automation framework and it is not a hosted model service. It is a small runtime for building agents whose state is represented by ordinary package objects: persona, memory, relationships, environment, emotion, events, decisions, and logs.",
                 [
-                    ["Track", "Primary surface", "Phase 30 status"],
-                    ["Games", "Python, TypeScript, and GDScript NPC SDKs", "Implemented"],
-                    ["Synthetic replay", "Scenario DSL and safety validator", "Implemented"],
-                    ["Academic simulation", "Reproducible configs, logs, reports, and docs", "Implemented"],
+                    ["Track", "Primary surface", "arXiv v2 status"],
+                    ["Games", "Python, TypeScript, GDScript, Unity, Godot, and Unreal surfaces", "Implemented"],
+                    ["Synthetic replay", "Scenario DSL, safety validator, and 50-scenario library", "Implemented"],
+                    ["Academic simulation", "Reproducible configs, logs, reports, docs, and PWC packet", "Implemented"],
                 ],
             ],
         ),
@@ -231,7 +219,7 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
         (
             "4. Experiments and Evidence",
             [
-                "Knoema's Phase 30 evidence is engineering-oriented. The experiments answer whether the runtime can generate reproducible artifacts, whether the memory policy improves deterministic proxy metrics over a naive full-context baseline, and whether a 50-agent scenario can be committed and replayed as a public artifact.",
+                "Knoema's arXiv v2 evidence is engineering-oriented. The experiments answer whether the runtime can generate reproducible artifacts, whether the memory policy improves deterministic proxy metrics over a naive full-context baseline, whether theory-of-mind behavior can be tested in an opt-in module, and whether larger deterministic runs can be committed and replayed as public artifacts.",
                 "The 50-agent village experiment runs a deterministic week with 50 synthetic agents, 42 ticks, and 2,100 committed actions. Each agent contributes 42 actions. The run records 100 relationship edges, a deterministic seed of 20260418, a bit-for-bit artifact check, and zero provider cost because it uses local deterministic decisions.",
                 [
                     ["50-agent metric", "Value", "Artifact"],
@@ -291,7 +279,7 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
         (
             "6. Discussion",
             [
-                "The current evidence supports an engineering claim: explicit state, deterministic logs, and adapter contracts make persistent-agent systems easier to inspect and test. The repository demonstrates this through 136 local tests, benchmark artifacts, a public Playground, dashboards, SDK facades, and generated documentation.",
+                "The current evidence supports an engineering claim: explicit state, deterministic logs, and adapter contracts make persistent-agent systems easier to inspect and test. The repository demonstrates this through a 250+ test gate, benchmark artifacts, API routes, dashboards, SDK facades, game-engine adapters, a scenario editor, and generated documentation.",
                 "The current evidence does not establish real-world behavioral validity, general human simulation accuracy, production game quality, or safe deployment in operational public-safety environments. The public-safety track is limited to synthetic replay and prevention-oriented analysis.",
                 "Threats to validity include deterministic local clients, lightweight hash embeddings, a simple naive baseline, and the absence of human evaluation. Larger-scale experiments need memory-store stress tests, model comparisons, and independent review.",
                 "Knoema uses repository-level checks to prevent private planning documents and unrelated entity references from entering public files. Runtime artifacts such as logs, SQLite databases, FAISS indexes, checkpoints, and documentation build output are ignored by git.",
@@ -312,7 +300,7 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
         (
             "8. Conclusion",
             [
-                "Knoema Engine demonstrates a compact open runtime for persistent social agents. The Phase 30 version expands the original technical report with scenario DSL artifacts, SDK surfaces, a formal benchmark bundle, a 50-agent deterministic experiment, documentation infrastructure, and a stricter safety boundary.",
+                "Knoema Engine demonstrates a compact open runtime for persistent social agents. The arXiv v2 version expands the original technical report with scenario DSL artifacts, SDK surfaces, API surfaces, a formal benchmark bundle, a 50-agent village experiment, a 500-agent metropolis run, classic reproductions, theory-of-mind tests, documentation infrastructure, and a stricter safety boundary.",
                 "The next research step is to replace deterministic proxy evaluation with controlled provider-backed runs, stronger semantic retrieval, human review of plausibility and safety, and fairer external baseline reproduction.",
             ],
         ),
@@ -348,36 +336,254 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
                 "Provider keys are not committed or persisted in public demos. The public Playground supports replay-only mode without a key and accepts optional user-supplied keys only for the current session.",
             ],
         ),
+        *phase50_annex_sections(),
+    ]
+
+
+def phase50_annex_sections() -> list[tuple[str, list[str | list[list[str]]]]]:
+    return [
+        (
+            "9. 500-Agent Metropolis Evidence",
+            [
+                "The Phase 42 metropolis run is the largest deterministic artifact included in the arXiv v2 packet. It uses 500 synthetic agents, 20 fixed seeds, six 30-minute ticks per seed, and 60,000 total committed actions.",
+                [
+                    ["Metric", "Value", "Source"],
+                    ["Mean throughput", "1,657.527 actions/sec", "summary.json"],
+                    ["Mean p95 latency", "65.055 ms", "summary.json"],
+                    ["Mean peak memory", "431.725 MB", "summary.json"],
+                    ["Relationship edges", "5,000 mean", "summary.json"],
+                    ["Reproducibility", "Bit-for-bit artifacts true", "summary.json"],
+                ],
+                "The scale evidence is not presented as an external benchmark victory. It is presented as a local envelope check with committed configuration, seed manifest, JSONL output, summary JSON, representative log, and SVG plot.",
+            ],
+        ),
+        (
+            "10. Theory-of-Mind Evidence",
+            [
+                "The theory-of-mind module is opt-in at the persona level. Disabled personas preserve the prior behavior and do not receive belief-state prompt sections.",
+                "The Sally-Anne harness alternates false-belief and witnessed-move cases. Knoema returns the expected search location in 20 out of 20 deterministic cases, clearing the 0.800 acceptance gate.",
+                [
+                    ["Comparison point", "Knoema", "External reference"],
+                    ["Opt-in ToM API", "Yes", "No public equivalent asserted for Stanford or Concordia"],
+                    ["Sally-Anne score", "1.000", "No external score asserted"],
+                    ["Claim boundary", "Symbolic false-belief check", "Not human-level cognition"],
+                ],
+            ],
+        ),
+        (
+            "11. Classic ABM Reproductions",
+            [
+                "The Schelling reproduction checks whether deterministic agents preserve the expected threshold contrast. Threshold 0.3 lands at a segregation index of 0.548, while threshold 0.7 lands at 0.942.",
+                "The Axelrod reproduction runs 10 strategy profiles over 200 rounds per pairing. Tit-for-Tat ranks first in deterministic, Ollama-labeled, and API-labeled summaries, with deterministic top three entries of Tit for Tat, Grudger, and Generous Tit for Tat.",
+                [
+                    ["Experiment", "Result", "Interpretation"],
+                    ["Schelling 0.3", "0.548", "Expected medium segregation band"],
+                    ["Schelling 0.7", "0.942", "Expected high segregation band"],
+                    ["Axelrod", "Tit-for-Tat rank 1", "Classic cooperative pattern preserved"],
+                ],
+            ],
+        ),
+        (
+            "12. Persona and Relationship Metrics",
+            [
+                "Persona Consistency Score summarizes action recurrence, location stability, normalized content stability, and target focus for a single agent. Relationship Coherence Score summarizes reciprocal interaction coverage, pairwise location alignment, action alignment, and interaction density for an agent pair.",
+                [
+                    ["Metric", "Artifact", "Value"],
+                    ["PCS average", "50-agent village log", "0.948"],
+                    ["PCS range", "50-agent village log", "0.948 to 0.948"],
+                    ["RCS average", "500-agent representative log", "0.760"],
+                    ["RCS range", "500-agent representative log", "0.760 to 0.760"],
+                ],
+                "These metrics are quality proxies for committed logs. They do not replace human evaluation and should not be used as evidence of real-world behavioral validity.",
+            ],
+        ),
+        (
+            "13. Scenario Library Catalog",
+            [
+                "The Phase 48 library contains 50 fictional scenarios across school, workplace, family, community, and social-experiment categories. Each scenario has a YAML DSL file and a one-page Markdown description.",
+                [
+                    ["Category", "Count", "Primary use"],
+                    ["School", "10", "Education and mentoring scenes"],
+                    ["Workplace", "10", "Coordination and conflict scenes"],
+                    ["Family", "10", "Household relationship scenes"],
+                    ["Community", "10", "Civic and mutual-aid scenes"],
+                    ["Social experiment", "10", "Ethics-first fictional variants"],
+                ],
+                "The library is a marketplace seed corpus and a validation target. Sensitive examples must include non-use language and fictional participants.",
+            ],
+        ),
+        (
+            "14. Web Scenario Editor",
+            [
+                "The Phase 49 editor provides a browser surface for arranging agents, editing relationships, scheduling events, previewing YAML, and exporting a scenario definition. The editor is implemented under website/app/editor and verified with Playwright.",
+                "The UI is not a marketing page. It is a functional scenario-authoring surface that supports drag-and-drop placement, stable property editing, live YAML preview, and an export path that is compatible with the Scenario DSL validator.",
+                [
+                    ["Gate", "Result", "Scope"],
+                    ["Next build", "Pass", "Production static build"],
+                    ["Playwright", "3 tests pass", "Editor flow"],
+                    ["Lighthouse", "Performance 100, accessibility 100", "Desktop/provided throttle"],
+                ],
+            ],
+        ),
+        (
+            "15. API and Deployment Surface",
+            [
+                "The FastAPI layer wraps the simulator behind REST and WebSocket routes. The API can create simulations, inspect agents, retrieve memory, inject events, and stream tick-by-tick JSON envelopes.",
+                "Docker Compose packages the API server with the Streamlit dashboard and research dashboard so a reviewer can inspect the deployment shape locally without external provider credentials.",
+                [
+                    ["Surface", "Route or artifact", "Purpose"],
+                    ["Create run", "POST /simulations", "Start an in-memory simulation"],
+                    ["Inspect agents", "GET /simulations/{id}/agents", "View state"],
+                    ["Stream ticks", "WebSocket /simulations/{id}/stream", "Live JSON events"],
+                    ["Health", "GET /healthz", "Deployment smoke check"],
+                ],
+            ],
+        ),
+        (
+            "16. Game Adapter Coverage",
+            [
+                "Knoema now covers the three major indie and professional engine paths at scaffold level: Godot, Unity, and Unreal Engine 5. The adapters consume action contracts and REST/log surfaces rather than private simulator internals.",
+                [
+                    ["Adapter", "Status", "Contract"],
+                    ["Godot", "Scaffold and GDScript SDK", "Local fallback and HTTP client path"],
+                    ["Unity", "UPM package scaffold", "Runtime HTTP/fallback client"],
+                    ["Unreal", "UE5 plugin scaffold", "REST API client and tick component"],
+                ],
+                "The Unreal plugin intentionally keeps the Blueprint asset as a text placeholder because a full UE build environment is not assumed in the Python CI path.",
+            ],
+        ),
+        (
+            "17. Papers with Code Packet",
+            [
+                "The Papers with Code packet is split into a human-readable Markdown file and a JSON companion. Both files use ARXIV_ID_PENDING until the arXiv identifier is available.",
+                [
+                    ["Field", "Value", "File"],
+                    ["Tasks", "Multi-agent RL, Agent-based modeling, Social simulation, Theory of mind", "Markdown and JSON"],
+                    ["Datasets", "Metropolis logs, Sally-Anne benchmark, scenario library", "Markdown and JSON"],
+                    ["Results", "Throughput, latency, ToM, Schelling, Axelrod, PCS, RCS", "Markdown and JSON"],
+                ],
+                "The packet avoids unmeasured external baseline rows. External rows can be added only after controlled re-runs with recorded commits, dependencies, prompts, and seeds.",
+            ],
+        ),
+        (
+            "18. Reproducibility Checklist",
+            [
+                "The repository follows a practical reproducibility checklist: code, configuration, seeds, logs, summaries, figures, citations, license, and test gates are all represented as versioned artifacts.",
+                [
+                    ["Checklist item", "Status", "Evidence"],
+                    ["Code availability", "Ready", "GitHub repository"],
+                    ["Fixed seeds", "Ready", "Experiment configs and seed files"],
+                    ["Raw outputs", "Ready", "JSONL logs"],
+                    ["Summary metrics", "Ready", "summary.json and metrics.json"],
+                    ["Citation metadata", "Ready", "CITATION.cff and .zenodo.json"],
+                    ["External submission", "Blocked", "arXiv and PWC account actions"],
+                ],
+            ],
+        ),
+        (
+            "19. Safety Boundary",
+            [
+                "Criminal or sensitive scenarios are replay artifacts, not prediction instruments. They may encode fictional event sequences, safeguards, and process milestones, but they must not be used for suspect scoring, investigative prioritization, surveillance, enforcement automation, or profiling of identifiable people.",
+                [
+                    ["Allowed", "Rejected", "Reason"],
+                    ["Fictional replay", "Real personal data", "No consent or validation basis"],
+                    ["Education demo", "Prediction claim", "No external validity established"],
+                    ["Prevention analysis", "Enforcement automation", "Unacceptable operational risk"],
+                ],
+                "This boundary is repeated in the paper, docs, scenario library, security policy, and Papers with Code packet.",
+            ],
+        ),
+        (
+            "20. External Baseline Discipline",
+            [
+                "Stanford Generative Agents, Concordia, Mesa, NetLogo, GAMA, AnyLogic, AutoGen, CrewAI, and LangGraph are comparison references, not measured baselines in this report.",
+                "A fair baseline would require a recorded external commit, equivalent scenario translation, dependency lockfile, provider/model setting, prompt policy, seed set, and artifact storage. Until that exists, Knoema reports only local deterministic results.",
+                [
+                    ["External system", "Current treatment", "Future requirement"],
+                    ["Stanford", "Architecture reference", "Controlled equivalent scenario"],
+                    ["Concordia", "Architecture reference", "Controlled equivalent scenario"],
+                    ["ABM platforms", "Design lineage", "Equivalent model translation"],
+                ],
+            ],
+        ),
+        (
+            "21. Package and Quality Gate",
+            [
+                "The Phase 50 acceptance gate keeps the same repository discipline as prior phases: full pytest without coverage, ruff, mypy over src, PDF page-count verification, BibTeX shape checks, and Papers with Code JSON validation.",
+                "The gate is designed to fail before a commit if a report artifact drifts from the code artifacts it cites.",
+                [
+                    ["Gate", "Command or test", "Purpose"],
+                    ["Tests", "pytest --no-cov", "Behavioral regression guard"],
+                    ["Lint", "ruff check .", "Style and static hygiene"],
+                    ["Types", "mypy src", "Typed package surface"],
+                    ["Paper packet", "tests/test_phase50_arxiv_packet.py", "Report and PWC checks"],
+                ],
+            ],
+        ),
+        (
+            "22. Limitations",
+            [
+                "The strongest limitation is that deterministic local clients understate provider variability. Live model runs can change with provider version, latency, context handling, and refusal behavior.",
+                "The current semantic path uses deterministic hash embeddings for local reproducibility. Production semantic encoders can improve retrieval but also introduce versioning and privacy questions.",
+                "Human evaluation has not yet been performed. PCS, RCS, and Sally-Anne scores are engineering checks, not substitutes for external review.",
+            ],
+        ),
+        (
+            "23. arXiv Submission Notes",
+            [
+                "The paper source is ready for a TeX distribution, but this Windows environment uses ReportLab for the committed preview PDF because pdflatex and bibtex are not installed locally.",
+                "After arXiv accepts the paper, the assigned identifier should be wired into paper metadata and the Papers with Code packet. The blockers file records these account-dependent actions.",
+                [
+                    ["Action", "Owner", "Repository state"],
+                    ["arXiv account and endorsement", "Human", "Blocked externally"],
+                    ["arXiv submission", "Human", "Packet ready"],
+                    ["Papers with Code entry", "Human", "Wait for arXiv ID"],
+                ],
+            ],
+        ),
+        (
+            "24. Conclusion for Reviewers",
+            [
+                "Knoema should be evaluated as an inspectable runtime, not as a claim that LLM agents accurately model real people. Its value is the integration of typed state, deterministic artifacts, scenario safety rules, adapters, and reproducible reports.",
+                "The v2 packet gives reviewers a direct path from claims to files: code, configs, logs, summaries, figures, tables, paper source, PDF preview, citation metadata, and external-submission packet.",
+            ],
+        ),
     ]
 
 
 def references() -> list[str]:
-    return [
-        "Park, J. S. et al. (2023). Generative Agents: Interactive Simulacra of Human Behavior. arXiv:2304.03442. https://arxiv.org/abs/2304.03442",
-        "Vezhnevets, A. S. et al. (2023). Generative Agent-Based Modeling with Actions Grounded in Physical, Social, or Digital Space Using Concordia. arXiv:2312.03664. https://arxiv.org/abs/2312.03664",
-        "Wimmer, H. and Perner, J. (1983). Beliefs about Beliefs: Representation and Constraining Function of Wrong Beliefs in Young Children's Understanding of Deception. Cognition, 13(1), 103-128.",
-        "Wu, Q. et al. (2023). AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation. arXiv:2308.08155. https://arxiv.org/abs/2308.08155",
-        "ter Hoeven, E. et al. (2025). Mesa 3: Agent-Based Modeling with Python in 2025. Journal of Open Source Software, 10(107), 7668. https://doi.org/10.21105/joss.07668",
-        "Johnson, J., Douze, M., and Jegou, H. (2017). Billion-Scale Similarity Search with GPUs. arXiv:1702.08734. https://arxiv.org/abs/1702.08734",
-        "Lewis, P. et al. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. NeurIPS.",
-        "Sandve, G. K. et al. (2013). Ten Simple Rules for Reproducible Computational Research. PLoS Computational Biology.",
-        "Wilkinson, M. D. et al. (2016). The FAIR Guiding Principles for Scientific Data Management and Stewardship. Scientific Data.",
-        "Mitchell, M. et al. (2019). Model Cards for Model Reporting. FAccT.",
-        "Gebru, T. et al. (2021). Datasheets for Datasets. Communications of the ACM.",
-        "Bommasani, R. et al. (2021). On the Opportunities and Risks of Foundation Models. arXiv:2108.07258.",
-        "Bender, E. M. et al. (2021). On the Dangers of Stochastic Parrots. FAccT.",
-        "Brown, T. B. et al. (2020). Language Models are Few-Shot Learners. NeurIPS.",
-        "Ouyang, L. et al. (2022). Training Language Models to Follow Instructions with Human Feedback. NeurIPS.",
-        "Vaswani, A. et al. (2017). Attention Is All You Need. NeurIPS.",
-        "Reimers, N. and Gurevych, I. (2019). Sentence-BERT. EMNLP-IJCNLP.",
-        "Bonabeau, E. (2002). Agent-Based Modeling. PNAS.",
-        "Epstein, J. M. and Axtell, R. (1996). Growing Artificial Societies. Brookings Institution Press.",
-        "Railsback, S. F. et al. (2006). Agent-based Simulation Platforms. Simulation.",
-        "Liu, X. et al. (2023). AgentBench: Evaluating LLMs as Agents. arXiv:2308.03688.",
-        "Liang, P. et al. (2022). Holistic Evaluation of Language Models. arXiv:2211.09110.",
-        "Gao, Y. et al. (2023). Retrieval-Augmented Generation for Large Language Models: A Survey. arXiv:2312.10997.",
-        "Sumers, T. R. et al. (2023). Cognitive Architectures for Language Agents. arXiv:2309.02427.",
-    ]
+    text = (ROOT / "references.bib").read_text(encoding="utf-8")
+    parsed: list[str] = []
+    for match in re.finditer(r"@\w+\{([^,]+),(.*?)(?=\n@|\Z)", text, flags=re.DOTALL):
+        key = match.group(1).strip()
+        body = match.group(2)
+        author = _bib_field(body, "author") or key
+        title = _bib_field(body, "title") or "Untitled"
+        year = _bib_field(body, "year") or "n.d."
+        venue = (
+            _bib_field(body, "journal")
+            or _bib_field(body, "booktitle")
+            or _bib_field(body, "publisher")
+            or "Reference"
+        )
+        parsed.append(f"{author} ({year}). {title}. {venue}.")
+    return parsed
+
+
+def _bib_field(body: str, field: str) -> str | None:
+    match = re.search(rf"\b{field}\s*=\s*\{{(.*?)\}}\s*,?", body, flags=re.DOTALL)
+    if match is None:
+        return None
+    return _clean_bib_value(match.group(1))
+
+
+def _clean_bib_value(value: str) -> str:
+    value = re.sub(r"\s+", " ", value)
+    value = value.replace("{", "").replace("}", "")
+    value = value.replace("--", "-")
+    value = re.sub(r"\\[`'\"~=^.][A-Za-z]?", "", value)
+    value = value.replace("\\", "")
+    return value.strip()
 
 
 if __name__ == "__main__":

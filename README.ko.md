@@ -204,6 +204,7 @@ Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 
 - [YouTube 튜토리얼 스크립트](docs/videos/tutorials/01_getting_started_10min.md)
 - [Website App](website/app/page.tsx)
 - [기술 리포트 LaTeX 초안](paper/main.tex), [PDF 프리뷰](paper/knoema_technical_report.pdf)
+- [Papers with Code 제출 패킷](docs/research/papers_with_code_submission.md), [JSON 패킷](docs/research/papers_with_code_submission.json)
 
 ## 개발
 

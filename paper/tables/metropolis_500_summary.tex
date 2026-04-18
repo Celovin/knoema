@@ -1,0 +1,20 @@
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\toprule
+Metric & Value & Artifact \\
+\midrule
+Agents & 500 & \texttt{experiments/500\_agent\_metropolis/config.yaml} \\
+Seeds & 20 & \texttt{seeds/seed\_01.txt}--\texttt{seed\_20.txt} \\
+Actions & 60,000 total; 3,000 per seed & \texttt{results/runs.jsonl} \\
+Ticks & 6 per run, 30 minutes per tick & \texttt{results/summary.json} \\
+Throughput & 1,657.527 actions/s mean & \texttt{results/summary.json} \\
+Latency & 65.055 ms mean p95; 67.600 ms max p95 & \texttt{results/summary.json} \\
+Memory & 431.725 MB mean peak; 436.000 MB max peak & \texttt{results/summary.json} \\
+Relationship edges & 5,000 mean & \texttt{results/summary.json} \\
+Reproducibility & Bit-for-bit artifacts true & \texttt{results/summary.json} \\
+\bottomrule
+\end{tabular}
+\caption{Phase 42 deterministic 500-agent metropolis evidence integrated into the arXiv v2 report.}
+\label{tab:metropolis-500-summary}
+\end{table}

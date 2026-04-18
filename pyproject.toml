@@ -63,6 +63,7 @@ dev = [
     "ipykernel>=6.29",
     "httpx>=0.28",
     "jupyter>=1.1",
+    "pypdf>=6.0",
 ]
 api = [
     "fastapi>=0.115",

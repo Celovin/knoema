@@ -1,6 +1,6 @@
 # Academic Indexing
 
-Phase 31 prepares Knoema Engine for archival citation and research indexing. The repository now carries machine-readable citation metadata, Zenodo metadata, and a submission packet for Papers with Code. External account steps still need to be completed by the project owner.
+Phase 31 prepared Knoema Engine for archival citation and research indexing. Phase 50 adds the arXiv v2 and Papers with Code packet. The repository now carries machine-readable citation metadata, Zenodo metadata, the final local paper source, a generated PDF preview, and a structured Papers with Code submission packet. External account steps still need to be completed by the project owner.
 
 ## Repository Record
 
@@ -14,6 +14,8 @@ Phase 31 prepares Knoema Engine for archival citation and research indexing. The
 | Zenodo metadata | `.zenodo.json` |
 | Paper source | `paper/main.tex` |
 | PDF preview | `paper/knoema_technical_report.pdf` |
+| Papers with Code packet | `docs/research/papers_with_code_submission.md` |
+| Papers with Code JSON | `docs/research/papers_with_code_submission.json` |
 
 Zenodo reads `.zenodo.json` as the authoritative GitHub integration metadata when both `.zenodo.json` and `CITATION.cff` are present. The repository therefore keeps the fuller deposit metadata in `.zenodo.json` and the general citation metadata in `CITATION.cff`.
 
@@ -36,7 +38,7 @@ Recommended owner steps:
 
 1. Sign in to Zenodo with the Celovin-controlled account.
 2. Enable GitHub integration for `Celovin/knoema`.
-3. Import or archive the `v0.1.0` release. If the integration cannot backfill existing releases, archive the next patch release and keep `v0.1.0` as the GitHub release evidence.
+3. Import or archive the `v0.1.1` release. If the integration cannot backfill existing releases, archive the next patch release and keep `v0.1.1` as the GitHub release evidence.
 4. Confirm Zenodo imported `.zenodo.json` and `CITATION.cff`.
 5. Copy the assigned DOI into `CITATION.cff`, `.zenodo.json`, `README.md`, `README.ko.md`, `paper/README.md`, and the website research page.
 
@@ -48,7 +50,7 @@ README badge replacement after DOI assignment:
 
 ## Papers With Code Packet
 
-Use this packet when creating a Papers with Code entry:
+Use `docs/research/papers_with_code_submission.md` as the primary operator packet and `docs/research/papers_with_code_submission.json` as the machine-readable companion. The packet uses `ARXIV_ID_PENDING` until arXiv assigns the accepted identifier.
 
 - Paper title: `Knoema Engine: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation`
 - Abstract source: `paper/abstract.tex`
@@ -56,16 +58,20 @@ Use this packet when creating a Papers with Code entry:
 - Framework: Python
 - License: MIT
 - Primary tasks:
-  - Multi-agent simulation
+  - Multi-agent RL
   - Agent-based modeling
   - Social simulation
-  - Game NPC behavior
-  - Reproducible LLM agent evaluation
+  - Theory of mind
 - Evaluation artifacts:
+  - `experiments/500_agent_metropolis/results/summary.json`
+  - `experiments/500_agent_metropolis/results/runs.jsonl`
   - `experiments/50_agent_village/results/metrics.json`
+  - `tests/test_phase43_theory_of_mind.py`
+  - `experiments/schelling_segregation/results/summary.json`
+  - `experiments/axelrod_prisoners_dilemma/results/summary.json`
+  - `benchmarks/scoring/results/metrics.json`
   - `benchmarks/formal_report/results/summary.md`
-  - `benchmarks/formal_report/results/raw.jsonl`
-  - `docs/reports/reproducibility.md`
+  - `scenarios/library/INDEX.md`
 - Public-safety boundary: fictional, synthetic, non-identifying replay only; no prediction, suspect scoring, surveillance, or enforcement automation.
 
 Suggested short description:
@@ -81,5 +87,6 @@ Knoema Engine is an open runtime for persistent social agents. It exposes memory
 | `CITATION.cff` | Prepared |
 | `.zenodo.json` | Prepared |
 | Zenodo DOI | Issued: `10.5281/zenodo.19643410` (2026-04-19, v0.1.1) |
-| Papers with Code entry | Pending external submission |
+| Papers with Code packet | Prepared locally with `ARXIV_ID_PENDING` |
+| Papers with Code entry | Pending external submission after arXiv ID |
 | README badges | DOI badge live (all eight language variants) |

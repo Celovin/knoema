@@ -8,6 +8,12 @@ The 50-agent village experiment runs a deterministic week with 50 synthetic agen
 
 \input{figures/fifty_agent_trace}
 
+\subsection{500-Agent Metropolis Experiment}
+
+Phase 42 extends the scale envelope with a deterministic metropolis rush-hour experiment. The run uses 500 synthetic agents, 20 fixed seeds, six 30-minute ticks per seed, and 60,000 total committed actions. The committed summary reports 1,657.527 mean actions per second, 65.055 ms mean p95 latency, 431.725 MB mean peak memory, and 5,000 relationship edges. The seed manifest, config fingerprint, JSONL hash, summary JSON, representative log, and latency/memory SVG are all committed so the scale claim is tied to concrete artifacts rather than an unversioned benchmark note.
+
+\input{tables/metropolis_500_summary}
+
 \subsection{Formal Benchmark Bundle}
 
 The formal benchmark bundle runs four scenarios across two approaches and three local model profiles, producing 24 deterministic runs. The scenarios measure memory recall, relationship dynamics, narrative branching, and scalability. The comparison baseline is a naive full-context prompt policy. Mesa and Concordia are documented as external references rather than misrepresented as exact reimplementations.
@@ -44,6 +50,12 @@ where $R$ is reciprocal interaction coverage, $L$ is pairwise location alignment
 The committed Phase 46 artifacts compute PCS over the 50-agent village log and RCS over a representative log from the 500-agent metropolis benchmark. The current scores clear the acceptance gates of PCS $\geq 0.75$ and RCS $\geq 0.70$, giving the report a compact, reproducible quality layer above throughput-only evidence.
 
 \input{tables/metrics_summary}
+
+\subsection{Papers with Code Result Rows}
+
+The Phase 50 submission packet exports the same evidence into result rows that can be copied into Papers with Code after the arXiv identifier is assigned. These rows avoid external baseline claims that have not been reproduced locally. Stanford Generative Agents and Concordia remain comparison references for architecture and scope; their throughput, Sally-Anne, PCS, and RCS values are not filled in as measured baselines because this repository has not run equivalent external code under controlled conditions.
+
+\input{tables/papers_with_code_results}
 
 \subsection{Reproducibility Tests}
 

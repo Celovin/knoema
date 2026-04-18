@@ -1,0 +1,155 @@
+{
+  "schema_version": "knoema.papers_with_code.packet.v1",
+  "paper": {
+    "title": "Knoema Engine: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation",
+    "arxiv_id": "ARXIV_ID_PENDING",
+    "doi": "10.5281/zenodo.19643410",
+    "repository": "https://github.com/Celovin/knoema",
+    "license": "MIT",
+    "framework": "Python",
+    "contact": "hello@celovin.com"
+  },
+  "tasks": [
+    {
+      "name": "Multi-agent RL",
+      "positioning": "Runtime and evaluation substrate for multi-agent environments; no policy-training result is claimed."
+    },
+    {
+      "name": "Agent-based modeling",
+      "positioning": "Typed agent state, scenario DSL, classic ABM reproduction artifacts, and deterministic replay logs."
+    },
+    {
+      "name": "Social simulation",
+      "positioning": "Persistent social-agent runtime with memory, relationships, emotion, and synthetic scenario logs."
+    },
+    {
+      "name": "Theory of mind",
+      "positioning": "Persona opt-in symbolic belief tracker evaluated with a deterministic Sally-Anne false-belief harness."
+    }
+  ],
+  "datasets": [
+    {
+      "name": "500-agent metropolis logs",
+      "path": "experiments/500_agent_metropolis/results/runs.jsonl",
+      "summary_path": "experiments/500_agent_metropolis/results/summary.json",
+      "split": "20 fixed seeds",
+      "synthetic": true,
+      "metrics": {
+        "agent_count": 500,
+        "seed_count": 20,
+        "total_actions": 60000,
+        "mean_throughput_actions_per_second": 1657.527,
+        "mean_p95_latency_ms": 65.055,
+        "mean_peak_memory_mb": 431.725
+      }
+    },
+    {
+      "name": "Sally-Anne benchmark",
+      "path": "src/knoema/theory_of_mind.py",
+      "synthetic": true,
+      "metrics": {
+        "cases": 20,
+        "success_rate": 1.0
+      }
+    },
+    {
+      "name": "Scenario marketplace library",
+      "path": "scenarios/library/INDEX.md",
+      "synthetic": true,
+      "metrics": {
+        "scenario_count": 50,
+        "category_count": 5
+      }
+    },
+    {
+      "name": "Classic ABM reproductions",
+      "path": "experiments/",
+      "synthetic": true,
+      "metrics": {
+        "schelling_threshold_0_3_index": 0.548,
+        "schelling_threshold_0_7_index": 0.942,
+        "axelrod_tit_for_tat_rank": 1
+      }
+    }
+  ],
+  "results": [
+    {
+      "task": "Social simulation",
+      "dataset": "500-agent metropolis logs",
+      "model": "Knoema deterministic local runtime",
+      "metric": "mean_throughput_actions_per_second",
+      "value": 1657.527,
+      "higher_is_better": true,
+      "source": "experiments/500_agent_metropolis/results/summary.json"
+    },
+    {
+      "task": "Social simulation",
+      "dataset": "500-agent metropolis logs",
+      "model": "Knoema deterministic local runtime",
+      "metric": "mean_p95_latency_ms",
+      "value": 65.055,
+      "higher_is_better": false,
+      "source": "experiments/500_agent_metropolis/results/summary.json"
+    },
+    {
+      "task": "Theory of mind",
+      "dataset": "Sally-Anne benchmark",
+      "model": "Knoema persona opt-in ToM",
+      "metric": "success_rate",
+      "value": 1.0,
+      "higher_is_better": true,
+      "source": "tests/test_phase43_theory_of_mind.py"
+    },
+    {
+      "task": "Agent-based modeling",
+      "dataset": "Classic ABM reproductions",
+      "model": "Knoema deterministic local runtime",
+      "metric": "schelling_threshold_0_3_index",
+      "value": 0.548,
+      "higher_is_better": null,
+      "source": "experiments/schelling_segregation/results/summary.json"
+    },
+    {
+      "task": "Agent-based modeling",
+      "dataset": "Classic ABM reproductions",
+      "model": "Knoema deterministic local runtime",
+      "metric": "schelling_threshold_0_7_index",
+      "value": 0.942,
+      "higher_is_better": null,
+      "source": "experiments/schelling_segregation/results/summary.json"
+    },
+    {
+      "task": "Multi-agent RL",
+      "dataset": "Classic ABM reproductions",
+      "model": "Knoema deterministic local runtime",
+      "metric": "axelrod_tit_for_tat_rank",
+      "value": 1,
+      "higher_is_better": false,
+      "source": "experiments/axelrod_prisoners_dilemma/results/summary.json"
+    },
+    {
+      "task": "Social simulation",
+      "dataset": "50-agent village log",
+      "model": "Knoema scoring utilities",
+      "metric": "persona_consistency_score_average",
+      "value": 0.948,
+      "higher_is_better": true,
+      "source": "benchmarks/scoring/results/metrics.json"
+    },
+    {
+      "task": "Social simulation",
+      "dataset": "500-agent metropolis representative log",
+      "model": "Knoema scoring utilities",
+      "metric": "relationship_coherence_score_average",
+      "value": 0.76,
+      "higher_is_better": true,
+      "source": "benchmarks/scoring/results/metrics.json"
+    }
+  ],
+  "external_actions": [
+    "Create or verify arXiv account and endorsement.",
+    "Submit paper to arXiv and replace ARXIV_ID_PENDING after acceptance.",
+    "Submit Papers with Code entry after arXiv ID is available."
+  ],
+  "safety_boundary": "All public-safety examples are fictional, synthetic, and non-identifying. The project does not support prediction, suspect scoring, surveillance, enforcement automation, or profiling of identifiable people."
+}

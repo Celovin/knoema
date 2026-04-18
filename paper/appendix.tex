@@ -1,20 +1,62 @@
-\section{Artifact Appendix}
+\section{Reproducibility Checklist}
 
-\subsection{Repository Layout}
+This appendix follows the spirit of the Papers with Code ML reproducibility checklist while keeping the scope aligned with a runtime-engine preprint rather than a new model-training paper.
 
-The public repository contains the Python package in \texttt{src/knoema}, notebooks in \texttt{examples}, game adapters under \texttt{adapters}, SDK facades under \texttt{sdk}, dashboards under \texttt{dashboard} and \texttt{saas}, benchmark bundles under \texttt{benchmarks}, and documentation under \texttt{docs}.
+\subsection{Artifacts and Access}
 
-\subsection{Reproducibility Checklist}
+\begin{itemize}
+  \item Code is public under the MIT license at \texttt{https://github.com/Celovin/knoema}.
+  \item The package source is under \texttt{src/knoema}; tests are under \texttt{tests}.
+  \item Paper source is under \texttt{paper}; the generated preview PDF is \texttt{paper/knoema\_technical\_report.pdf}.
+  \item Citation metadata is stored in \texttt{CITATION.cff}; archival metadata is stored in \texttt{.zenodo.json}.
+  \item The Papers with Code packet is stored in \texttt{docs/research/papers\_with\_code\_submission.md} and \texttt{docs/research/papers\_with\_code\_submission.json}.
+\end{itemize}
+
+\subsection{Configuration and Seeds}
 
 \begin{itemize}
   \item Fixed seeds are part of scenario and experiment configuration.
-  \item JSONL logs are committed for formal experiments where appropriate.
-  \item Dashboard inspection consumes exported logs rather than simulator internals.
-  \item Public-safety examples are fictional, synthetic, and non-identifying.
-  \item Provider keys are not committed or persisted in public demos.
-  \item CI runs lint, type checks, and pytest on Python 3.11 and 3.12.
+  \item The 500-agent metropolis experiment stores 20 seed files under \texttt{experiments/500\_agent\_metropolis/seeds}.
+  \item Scenario DSL files are validated through \texttt{knoema validate}.
+  \item Config fingerprints and JSONL hashes are recorded in experiment summaries where appropriate.
+  \item Deterministic local clients are used for reproducibility gates; live provider runs are optional and separately labeled.
 \end{itemize}
 
-\subsection{Build Notes}
+\subsection{Evaluation Reporting}
 
-The LaTeX source is intended for an arXiv-style preprint build with a local TeX distribution. The repository also includes \texttt{paper/build\_pdf.py}, a ReportLab preview builder used when a LaTeX engine is not present in the local Windows environment.
+\begin{itemize}
+  \item Same-seed determinism, seed propagation, config serialization, and JSONL replay are covered by pytest.
+  \item The 50-agent village run reports agent count, ticks, actions, relationship edges, and provider cost.
+  \item The formal benchmark bundle reports deterministic memory-policy proxy metrics and keeps external frameworks as references unless re-run locally.
+  \item The 500-agent metropolis run reports throughput, p95 latency, memory peak, action count, relationship edges, and artifact hashes.
+  \item The theory-of-mind harness reports Sally-Anne success rate and keeps the claim limited to symbolic false-belief reproduction.
+  \item The classic ABM reproductions report Schelling segregation indices and Axelrod tournament rank checks.
+  \item PCS and RCS are computed from committed JSONL artifacts and are not substituted for human evaluation.
+\end{itemize}
+
+\subsection{Compute and Environment}
+
+\begin{itemize}
+  \item The default verification gate is \texttt{pytest --no-cov}, \texttt{ruff check .}, and \texttt{mypy src}.
+  \item Optional paper preview generation uses ReportLab, pdfplumber, and pypdf.
+  \item A LaTeX engine such as TeX Live, MiKTeX, or Tectonic can build \texttt{main.tex}; the local Windows preview path uses ReportLab when no TeX engine is present.
+  \item No provider API key is required for deterministic tests, benchmark summaries, or the committed PDF preview.
+\end{itemize}
+
+\section{Scenario Library Catalog Summary}
+
+Phase 48 adds 50 fictional scenarios across five categories. Each scenario has a YAML DSL file and a one-page Markdown description. The library is designed as a marketplace seed corpus and as a regression target for the validator.
+
+\input{tables/scenario_library_summary}
+
+\begin{itemize}
+  \item School scenarios cover classroom, club, mentoring, and exam-period coordination.
+  \item Workplace scenarios cover sprint planning, onboarding, retro, deadline, and team-conflict patterns.
+  \item Family scenarios cover household planning, sibling conflict, elder-care coordination, and moving-day scenes.
+  \item Community scenarios cover neighborhood governance, volunteer coordination, shared resources, and civic events.
+  \item Social-experiment scenarios use fictional participants and require explicit ethical framing, non-use notes, and debrief language.
+\end{itemize}
+
+\section{External Submission Notes}
+
+arXiv and Papers with Code require external account actions after the local repository artifacts are ready. The current draft therefore uses \texttt{ARXIV\_ID\_PENDING} in the Papers with Code packet. After arXiv accepts the submission, the assigned identifier should be wired into \texttt{paper/main.tex}, \texttt{paper/README.md}, \texttt{docs/research/papers\_with\_code\_submission.md}, and \texttt{docs/research/papers\_with\_code\_submission.json}.
