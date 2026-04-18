@@ -39,6 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 30 arXiv-oriented technical report v2 with expanded LaTeX structure, appendix, figure/table sources, benchmark evidence, 50-agent experiment summary, and 50+ BibTeX references.
 - Phase 31 academic indexing packet with citation metadata, Zenodo release metadata, Papers with Code submission guidance, and pending-state README badges.
 - Phase 33 quality gate with property, integration, fuzzing, and adapter contract tests plus an explicit 90% coverage threshold.
+- Phase 34 security audit package with Bandit, pip-audit, Safety, npm audit, Dependabot config, disclosure policy, and CycloneDX SBOM evidence.
 
 ### Changed
 - Hardened Phase 24 SDK facades with required input validation, defensive dictionary copies, TypeScript package build configuration, and safer Godot missing-NPC responses.

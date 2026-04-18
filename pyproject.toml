@@ -78,6 +78,12 @@ docs = [
     "mkdocs-material>=9.5,<9.7",
     "mkdocstrings[python]>=0.26",
 ]
+security = [
+    "bandit>=1.9",
+    "pip-audit>=2.10",
+    "safety>=3.7",
+    "cyclonedx-bom>=7.3",
+]
 local-llm = [
     "transformers>=4.44",
     "torch>=2.4",

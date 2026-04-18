@@ -64,6 +64,8 @@ nav:
       - Safety Scenarios: guides/safety-scenarios.md
   - Reference:
       - CLI: reference/cli.md
+      - Security Policy: SECURITY.md
+      - Security Audit: security/audit_2026-04-18.md
   - Community:
       - Discord: community/discord.md
       - Contributing: community/contributing.md

@@ -319,6 +319,7 @@ Detailed notes:
 - [Godot GDScript Game SDK](docs/sdk/godot-api.md)
 - [Game SDK Integration Patterns](docs/sdk/integration_patterns.md)
 - [Research SaaS App](saas/app.py)
+- [Security Policy](docs/SECURITY.md) and [Phase 34 Security Audit](docs/security/audit_2026-04-18.md)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)
