@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: apartment_board_meeting
+title: Apartment Board Meeting
+domain: academic_research
+description: Fictional resident meeting replay for testing facilitation and agenda discipline.
+seed: 20260504
+tick_duration_minutes: 360
+duration_days: 1
+environment:
+  start_time: "2026-07-14T19:00:00"
+  location_path: [Knoema Demo World, Harbor Apartments, Common Room]
+  conditions:
+    agenda_items: 3
+    translation_support: true
+agents:
+  - agent_id: chair
+    name: Bora
+    age: 45
+    background: Synthetic resident chair managing a short building meeting.
+    personality:
+      openness: 0.59
+      conscientiousness: 0.81
+      extraversion: 0.61
+      agreeableness: 0.72
+      neuroticism: 0.19
+    values: [shared understanding, fairness]
+    goals: [keep the agenda moving, surface quiet concerns]
+    synthetic: true
+  - agent_id: resident
+    name: Minho
+    age: 38
+    background: Synthetic resident bringing a maintenance concern to the board.
+    personality:
+      openness: 0.54
+      conscientiousness: 0.67
+      extraversion: 0.43
+      agreeableness: 0.64
+      neuroticism: 0.28
+    values: [predictability, respect]
+    goals: [get a clear follow-up date, avoid talking over others]
+    synthetic: true
+events:
+  - timestamp: "2026-07-14T20:30:00"
+    event_type: meeting.followup_checkpoint
+    participants: [chair, resident]
+    location: Knoema Demo World > Harbor Apartments > Common Room
+    description: Chair restates the next action owner and follow-up date before closing.
+metrics:
+  - name: agenda_completion
+    kind: ratio
+    description: Share of agenda items that close with an owner and next step.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null

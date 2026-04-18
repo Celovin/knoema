@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: tavern_rumor_exchange
+title: Tavern Rumor Exchange
+domain: game
+description: Fictional tavern interaction replay for testing lightweight memory and dialog continuity.
+seed: 20260508
+tick_duration_minutes: 360
+duration_days: 1
+environment:
+  start_time: "2026-05-12T18:00:00"
+  location_path: [Knoema Demo World, Old Port, Lantern Tavern]
+  conditions:
+    evening_rush: true
+    bard_on_stage: true
+agents:
+  - agent_id: innkeeper
+    name: Rhea
+    age: 36
+    background: Synthetic innkeeper filtering playful rumors from useful travel tips.
+    personality:
+      openness: 0.68
+      conscientiousness: 0.73
+      extraversion: 0.66
+      agreeableness: 0.71
+      neuroticism: 0.14
+    values: [hospitality, signal over noise]
+    goals: [keep the room friendly, pass along one useful lead]
+    synthetic: true
+  - agent_id: ranger
+    name: Kade
+    age: 28
+    background: Synthetic ranger returning from the hills with fresh route notes.
+    personality:
+      openness: 0.59
+      conscientiousness: 0.77
+      extraversion: 0.42
+      agreeableness: 0.67
+      neuroticism: 0.23
+    values: [accuracy, efficient travel]
+    goals: [share one reliable path update, avoid overstating danger]
+    synthetic: true
+events:
+  - timestamp: "2026-05-12T21:00:00"
+    event_type: game.rumor_checkpoint
+    participants: [innkeeper, ranger]
+    location: Knoema Demo World > Old Port > Lantern Tavern
+    description: Innkeeper repeats the useful route note after dismissing a playful exaggeration.
+metrics:
+  - name: memory_carryover
+    kind: ratio
+    description: Share of useful facts preserved into the next NPC exchange.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null

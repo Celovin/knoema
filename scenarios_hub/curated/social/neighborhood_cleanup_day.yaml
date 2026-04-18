@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: neighborhood_cleanup_day
+title: Neighborhood Cleanup Day
+domain: academic_research
+description: Fictional volunteer coordination replay for studying role rotation and group momentum.
+seed: 20260506
+tick_duration_minutes: 360
+duration_days: 1
+environment:
+  start_time: "2026-04-18T08:00:00"
+  location_path: [Knoema Demo World, Maple District, Community Park]
+  conditions:
+    volunteers_expected: 12
+    weather: clear
+agents:
+  - agent_id: organizer
+    name: Jae
+    age: 41
+    background: Synthetic organizer assigning cleanup zones and rest breaks.
+    personality:
+      openness: 0.66
+      conscientiousness: 0.77
+      extraversion: 0.64
+      agreeableness: 0.75
+      neuroticism: 0.18
+    values: [shared effort, pacing]
+    goals: [keep volunteers aligned, prevent confusion at handoff points]
+    synthetic: true
+  - agent_id: volunteer
+    name: Nari
+    age: 24
+    background: Synthetic volunteer joining the event for the first time.
+    personality:
+      openness: 0.71
+      conscientiousness: 0.58
+      extraversion: 0.52
+      agreeableness: 0.78
+      neuroticism: 0.24
+    values: [community, clarity]
+    goals: [help productively, learn the rotation pattern]
+    synthetic: true
+events:
+  - timestamp: "2026-04-18T11:00:00"
+    event_type: volunteer.rotation_checkpoint
+    participants: [organizer, volunteer]
+    location: Knoema Demo World > Maple District > Community Park
+    description: Organizer moves a small team to the next zone and repeats the rest plan.
+metrics:
+  - name: rotation_alignment
+    kind: count
+    description: Count of clean handoff moments that keep volunteers synchronized.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null

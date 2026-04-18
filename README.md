@@ -315,6 +315,7 @@ Detailed notes:
 - [Reproducibility Report](docs/reports/reproducibility.md)
 - [DSL Tutorial](docs/dsl/tutorial.md)
 - [DSL Reference](docs/dsl/reference.md)
+- [Scenario Marketplace Beta](scenarios_hub/README.md)
 - [Python Game SDK](docs/sdk/python-api.md)
 - [TypeScript Game SDK](docs/sdk/typescript-api.md)
 - [Godot GDScript Game SDK](docs/sdk/godot-api.md)

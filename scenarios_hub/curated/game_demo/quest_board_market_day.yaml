@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: quest_board_market_day
+title: Quest Board Market Day
+domain: game
+description: Fictional town-square quest board replay for testing NPC memory carryover and task clarity.
+seed: 20260507
+tick_duration_minutes: 360
+duration_days: 1
+environment:
+  start_time: "2026-05-11T09:00:00"
+  location_path: [Knoema Demo World, Sunfield Town, Market Square]
+  conditions:
+    market_day: true
+    quest_board_slots: 6
+agents:
+  - agent_id: steward
+    name: Elio
+    age: 31
+    background: Synthetic quest steward curating requests on the town board.
+    personality:
+      openness: 0.63
+      conscientiousness: 0.79
+      extraversion: 0.57
+      agreeableness: 0.68
+      neuroticism: 0.19
+    values: [clarity, fair rewards]
+    goals: [post readable quests, prevent duplicate claims]
+    synthetic: true
+  - agent_id: courier
+    name: Tavi
+    age: 22
+    background: Synthetic courier comparing errands before choosing a route.
+    personality:
+      openness: 0.74
+      conscientiousness: 0.61
+      extraversion: 0.49
+      agreeableness: 0.64
+      neuroticism: 0.27
+    values: [momentum, useful maps]
+    goals: [select one clear errand, avoid wasting daylight]
+    synthetic: true
+events:
+  - timestamp: "2026-05-11T12:00:00"
+    event_type: game.quest_selection_checkpoint
+    participants: [steward, courier]
+    location: Knoema Demo World > Sunfield Town > Market Square
+    description: Steward groups similar errands and points the courier to the shortest loop.
+metrics:
+  - name: quest_choice_confidence
+    kind: score
+    description: Confidence that the selected errand remains clear after the interaction.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null

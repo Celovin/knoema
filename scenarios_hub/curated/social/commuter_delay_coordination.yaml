@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: commuter_delay_coordination
+title: Commuter Delay Coordination
+domain: academic_research
+description: Fictional transit delay replay for studying calm passenger guidance in crowded conditions.
+seed: 20260505
+tick_duration_minutes: 360
+duration_days: 1
+environment:
+  start_time: "2026-06-03T17:00:00"
+  location_path: [Knoema Demo World, Riverside Station, Platform 2]
+  conditions:
+    service_delay_minutes: 20
+    announcements_active: true
+agents:
+  - agent_id: dispatcher
+    name: Hyun
+    age: 33
+    background: Synthetic station dispatcher updating passengers during a delay.
+    personality:
+      openness: 0.62
+      conscientiousness: 0.79
+      extraversion: 0.58
+      agreeableness: 0.73
+      neuroticism: 0.17
+    values: [clarity, steady pacing]
+    goals: [reduce uncertainty, route people safely]
+    synthetic: true
+  - agent_id: commuter
+    name: Sia
+    age: 29
+    background: Synthetic commuter trying to coordinate an evening pickup.
+    personality:
+      openness: 0.57
+      conscientiousness: 0.68
+      extraversion: 0.37
+      agreeableness: 0.65
+      neuroticism: 0.35
+    values: [time certainty, courtesy]
+    goals: [get one reliable estimate, avoid crowding the gate]
+    synthetic: true
+events:
+  - timestamp: "2026-06-03T18:00:00"
+    event_type: transit.announcement_checkpoint
+    participants: [dispatcher, commuter]
+    location: Knoema Demo World > Riverside Station > Platform 2
+    description: Dispatcher repeats the revised boarding order and next announcement time.
+metrics:
+  - name: uncertainty_reduction
+    kind: score
+    description: Replay score for reducing ambiguity after the delay notice.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null

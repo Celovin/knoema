@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: dorm_orientation_stress
+title: Dorm Orientation Stress
+domain: academic_research
+description: Fictional campus orientation replay for studying first-day support handoffs.
+seed: 20260502
+tick_duration_minutes: 360
+duration_days: 1
+environment:
+  start_time: "2026-08-25T10:00:00"
+  location_path: [Knoema Demo World, Campus Housing, Orientation Hall]
+  conditions:
+    move_in_week: true
+    crowd_level: busy
+agents:
+  - agent_id: resident
+    name: Seon
+    age: 18
+    background: Synthetic first-year resident navigating a dense orientation schedule.
+    personality:
+      openness: 0.58
+      conscientiousness: 0.63
+      extraversion: 0.39
+      agreeableness: 0.71
+      neuroticism: 0.41
+    values: [belonging, stability]
+    goals: [find the right desk, ask for help early]
+    synthetic: true
+  - agent_id: advisor
+    name: Jisoo
+    age: 27
+    background: Synthetic housing advisor coordinating check-in support.
+    personality:
+      openness: 0.65
+      conscientiousness: 0.82
+      extraversion: 0.57
+      agreeableness: 0.79
+      neuroticism: 0.16
+    values: [calm guidance, pacing]
+    goals: [notice overload, route the resident correctly]
+    synthetic: true
+events:
+  - timestamp: "2026-08-25T14:00:00"
+    event_type: housing.support_handoff
+    participants: [resident, advisor]
+    location: Knoema Demo World > Campus Housing > Orientation Hall
+    description: Advisor pauses the queue briefly and gives a two-step check-in plan.
+metrics:
+  - name: support_handoff_latency
+    kind: latency
+    description: Simulated time until the resident receives a clear next step.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null

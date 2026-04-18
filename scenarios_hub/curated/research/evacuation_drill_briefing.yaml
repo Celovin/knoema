@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: evacuation_drill_briefing
+title: Evacuation Drill Briefing
+domain: public_safety_research
+description: Fictional facility drill replay for studying instruction clarity before a planned exercise.
+seed: 20260510
+tick_duration_minutes: 360
+duration_days: 1
+environment:
+  start_time: "2026-03-21T08:00:00"
+  location_path: [Knoema Demo World, Civic Annex, Briefing Room]
+  conditions:
+    drill_scheduled: true
+    weather: rainy
+agents:
+  - agent_id: coordinator
+    name: Theo
+    age: 43
+    background: Synthetic drill coordinator reviewing the route and assembly instructions.
+    personality:
+      openness: 0.58
+      conscientiousness: 0.88
+      extraversion: 0.52
+      agreeableness: 0.69
+      neuroticism: 0.15
+    values: [explicit steps, repeatable drills]
+    goals: [brief clearly, reduce route confusion]
+    synthetic: true
+  - agent_id: observer
+    name: Lena
+    age: 35
+    background: Synthetic observer checking whether the instructions stay consistent across teams.
+    personality:
+      openness: 0.64
+      conscientiousness: 0.8
+      extraversion: 0.41
+      agreeableness: 0.72
+      neuroticism: 0.2
+    values: [consistency, readable notes]
+    goals: [record clarity gaps, keep the replay useful]
+    synthetic: true
+events:
+  - timestamp: "2026-03-21T10:00:00"
+    event_type: drill.route_checkpoint
+    participants: [coordinator, observer]
+    location: Knoema Demo World > Civic Annex > Briefing Room
+    description: Observer repeats the route summary and notes one phrasing improvement.
+metrics:
+  - name: briefing_alignment
+    kind: score
+    description: Replay score for instruction consistency before the drill begins.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: true
+  irb_notes: Synthetic preparedness drill; use for rehearsal design only.

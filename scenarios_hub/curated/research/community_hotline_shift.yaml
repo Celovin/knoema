@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: community_hotline_shift
+title: Community Hotline Shift
+domain: public_safety_research
+description: Fictional support-line replay for studying calm handoff language in a sensitive service setting.
+seed: 20260509
+tick_duration_minutes: 360
+duration_days: 1
+environment:
+  start_time: "2026-02-14T17:00:00"
+  location_path: [Knoema Demo World, Support Center, Intake Desk]
+  conditions:
+    shift_overlap: true
+    callback_queue: moderate
+agents:
+  - agent_id: operator
+    name: Ara
+    age: 32
+    background: Synthetic intake operator summarizing next steps before a handoff.
+    personality:
+      openness: 0.57
+      conscientiousness: 0.86
+      extraversion: 0.46
+      agreeableness: 0.81
+      neuroticism: 0.18
+    values: [clarity, calm pacing]
+    goals: [state one next action, reduce ambiguity]
+    synthetic: true
+  - agent_id: supervisor
+    name: Iden
+    age: 40
+    background: Synthetic supervisor reviewing whether the handoff note is complete.
+    personality:
+      openness: 0.62
+      conscientiousness: 0.84
+      extraversion: 0.38
+      agreeableness: 0.74
+      neuroticism: 0.17
+    values: [precision, review discipline]
+    goals: [confirm the note quality, protect the service boundary]
+    synthetic: true
+events:
+  - timestamp: "2026-02-14T20:00:00"
+    event_type: hotline.handoff_checkpoint
+    participants: [operator, supervisor]
+    location: Knoema Demo World > Support Center > Intake Desk
+    description: Supervisor confirms the handoff note uses clear, non-speculative language.
+metrics:
+  - name: handoff_completeness
+    kind: ratio
+    description: Share of replay checkpoints that end with one explicit next step.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: true
+  irb_notes: Synthetic support-service replay for workflow review only.

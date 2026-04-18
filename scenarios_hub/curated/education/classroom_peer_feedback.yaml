@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: classroom_peer_feedback
+title: Classroom Peer Feedback
+domain: academic_research
+description: Fictional seminar replay for studying supportive peer feedback timing.
+seed: 20260501
+tick_duration_minutes: 360
+duration_days: 1
+environment:
+  start_time: "2026-09-01T09:00:00"
+  location_path: [Knoema Demo World, Education Lab, Seminar Room A]
+  conditions:
+    class_size: 18
+    instructor_present: true
+agents:
+  - agent_id: presenter
+    name: Haneul
+    age: 19
+    background: Synthetic undergraduate preparing a first draft presentation.
+    personality:
+      openness: 0.72
+      conscientiousness: 0.61
+      extraversion: 0.44
+      agreeableness: 0.69
+      neuroticism: 0.33
+    values: [fairness, preparation]
+    goals: [finish the draft, understand the feedback]
+    synthetic: true
+  - agent_id: reviewer
+    name: Mira
+    age: 20
+    background: Synthetic classmate assigned to provide structured comments.
+    personality:
+      openness: 0.67
+      conscientiousness: 0.76
+      extraversion: 0.48
+      agreeableness: 0.74
+      neuroticism: 0.21
+    values: [clarity, support]
+    goals: [give useful notes, keep the tone constructive]
+    synthetic: true
+events:
+  - timestamp: "2026-09-01T13:00:00"
+    event_type: classroom.feedback_checkpoint
+    participants: [presenter, reviewer]
+    location: Knoema Demo World > Education Lab > Seminar Room A
+    description: Reviewer summarizes two strengths before suggesting one revision.
+metrics:
+  - name: feedback_clarity
+    kind: score
+    description: Quality of supportive cues in the replay.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null
