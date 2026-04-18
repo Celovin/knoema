@@ -1,0 +1,57 @@
+schema_version: "1.0"
+scenario_id: editor_school_lab
+title: "School Lab Handoff"
+domain: academic_research
+description: "Fictional school scenario exported from the web editor."
+seed: 20260649
+tick_duration_minutes: 720
+duration_days: 1
+environment:
+  start_time: "2026-06-01T08:00:00"
+  location_path: [Knoema Demo World, Scenario Editor, school]
+  conditions:
+    editor_export: true
+agents:
+  - agent_id: mentor_1
+    name: "Mentor"
+    age: 24
+    background: "Synthetic editor agent. Guides the next step"
+    personality:
+      openness: 0.62
+      conscientiousness: 0.70
+      extraversion: 0.48
+      agreeableness: 0.72
+      neuroticism: 0.24
+    values: [clarity, patience]
+    goals: [ask one useful question, summarize the handoff]
+    synthetic: true
+  - agent_id: newcomer_1
+    name: "Newcomer"
+    age: 25
+    background: "Synthetic editor agent. Needs orientation"
+    personality:
+      openness: 0.62
+      conscientiousness: 0.70
+      extraversion: 0.48
+      agreeableness: 0.72
+      neuroticism: 0.24
+    values: [confidence, belonging]
+    goals: [state one need, choose a first task]
+    synthetic: true
+events:
+  - timestamp: "2026-06-01T09:00:00"
+    event_type: editor.lab_station_opens
+    participants: [mentor_1, newcomer_1]
+    location: "Knoema Demo World > Scenario Editor > School Lab"
+    description: "The mentor explains the first measurement and checks readiness."
+metrics:
+  - name: editor_review_score
+    kind: score
+    description: "Quality of the exported fictional scenario structure."
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null

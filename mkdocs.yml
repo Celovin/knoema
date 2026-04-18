@@ -68,6 +68,7 @@ nav:
   - Guides:
       - Game Integration: guides/game-integration.md
       - Unreal Adapter: adapters/unreal.md
+      - Web Scenario Editor: website/scenario-editor.md
       - Research Workflow: guides/research-workflow.md
       - Academic Indexing: research/academic-indexing.md
       - Safety Scenarios: guides/safety-scenarios.md

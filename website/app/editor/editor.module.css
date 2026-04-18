@@ -1,0 +1,334 @@
+.editorShell {
+  background:
+    linear-gradient(180deg, rgba(230, 241, 235, 0.88), rgba(247, 251, 248, 0.98)),
+    var(--paper);
+  min-height: 100vh;
+}
+
+.headerBand {
+  width: min(1320px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 28px 0 20px;
+  display: grid;
+  grid-template-columns: auto 1fr minmax(220px, 300px);
+  gap: 28px;
+  align-items: end;
+}
+
+.backLink {
+  border: 2px solid var(--green);
+  border-radius: 8px;
+  color: var(--green);
+  font-weight: 900;
+  padding: 10px 14px;
+}
+
+.headerBand h1 {
+  color: var(--ink);
+  font-size: 3.4rem;
+  line-height: 0.98;
+  max-width: 820px;
+}
+
+.eyebrow {
+  color: var(--coral);
+  font-size: 0.78rem;
+  font-weight: 900;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.templatePicker,
+.inspector label,
+.eventItem,
+.exportRow {
+  color: var(--ink);
+  display: grid;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.templatePicker select,
+.inspector input,
+.inspector textarea,
+.eventItem input,
+.eventItem textarea {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  font: inherit;
+  min-width: 0;
+  padding: 11px 12px;
+  width: 100%;
+}
+
+.workbench {
+  width: min(1320px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 18px 0 44px;
+  display: grid;
+  grid-template-columns: 230px minmax(380px, 1fr) 320px;
+  grid-template-areas:
+    "palette scene inspector"
+    "timeline timeline yaml";
+  gap: 18px;
+}
+
+.palette,
+.inspector,
+.timeline,
+.yamlPanel {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 10px 32px rgba(16, 35, 27, 0.08);
+}
+
+.palette {
+  grid-area: palette;
+  padding: 18px;
+  align-self: stretch;
+}
+
+.palette h2,
+.timeline h2,
+.yamlPanel h2 {
+  font-size: 1.45rem;
+}
+
+.paletteList {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.paletteAgent,
+.eventItem,
+.exportRow button,
+.exportRow a,
+.timelineHeader button {
+  border-radius: 8px;
+}
+
+.paletteAgent {
+  background: #f7fbf8;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  cursor: grab;
+  display: grid;
+  gap: 4px;
+  min-height: 78px;
+  padding: 12px;
+  text-align: left;
+}
+
+.paletteAgent span,
+.sceneAgent small,
+.sceneLegend span,
+.exportRow span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.scene {
+  grid-area: scene;
+  background:
+    linear-gradient(135deg, rgba(200, 220, 88, 0.32), transparent 35%),
+    linear-gradient(180deg, #ffffff, #eef7f2);
+  border: 2px solid var(--green);
+  border-radius: 8px;
+  min-height: 520px;
+  overflow: hidden;
+  position: relative;
+}
+
+.sceneGrid {
+  background-image:
+    linear-gradient(rgba(12, 107, 77, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(12, 107, 77, 0.11) 1px, transparent 1px);
+  background-size: 44px 44px;
+  inset: 0;
+  position: absolute;
+}
+
+.sceneLegend {
+  background: #10231b;
+  border-radius: 0 0 8px 0;
+  color: var(--paper);
+  display: flex;
+  gap: 10px;
+  left: 0;
+  padding: 12px 14px;
+  position: absolute;
+  top: 0;
+  z-index: 2;
+}
+
+.sceneLegend span {
+  color: var(--lime);
+}
+
+.sceneAgent {
+  background: #ffffff;
+  border: 2px solid var(--teal);
+  border-radius: 8px;
+  box-shadow: 0 14px 26px rgba(8, 127, 122, 0.14);
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  min-height: 72px;
+  padding: 12px;
+  position: absolute;
+  text-align: left;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  z-index: 3;
+}
+
+.sceneAgentSelected {
+  border-color: var(--coral);
+  box-shadow: 0 18px 32px rgba(168, 50, 37, 0.18);
+}
+
+.inspector {
+  grid-area: inspector;
+  padding: 18px;
+  align-self: stretch;
+}
+
+.inspector,
+.agentFields {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+.inspector textarea,
+.eventItem textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.timeline {
+  grid-area: timeline;
+  padding: 18px;
+}
+
+.timelineHeader {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.timelineHeader button,
+.exportRow button,
+.exportRow a {
+  background: var(--green);
+  border: 2px solid var(--green);
+  color: var(--paper);
+  cursor: pointer;
+  font-weight: 900;
+  padding: 11px 14px;
+}
+
+.eventRail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.eventItem {
+  background: #f7fbf8;
+  border: 1px solid var(--line);
+  padding: 12px;
+}
+
+.eventItem span {
+  color: var(--teal);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.yamlPanel {
+  grid-area: yaml;
+  min-width: 0;
+  padding: 18px;
+}
+
+.yamlHeader {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 116px;
+  gap: 12px;
+}
+
+.evidenceFigure {
+  background: #f7fbf8;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  height: 82px;
+  object-fit: contain;
+  padding: 8px;
+  width: 116px;
+}
+
+.yamlPanel pre {
+  margin-top: 14px;
+  max-height: 380px;
+  min-height: 300px;
+}
+
+.exportRow {
+  grid-template-columns: 1fr 1fr;
+  margin-top: 12px;
+}
+
+.exportRow span {
+  align-self: center;
+  grid-column: 1 / -1;
+  min-height: 20px;
+}
+
+@media (max-width: 1040px) {
+  .headerBand {
+    grid-template-columns: 1fr;
+  }
+
+  .workbench {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "palette"
+      "scene"
+      "inspector"
+      "timeline"
+      "yaml";
+  }
+
+  .paletteList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .headerBand h1 {
+    font-size: 2.4rem;
+  }
+
+  .paletteList,
+  .eventRail,
+  .exportRow {
+    grid-template-columns: 1fr;
+  }
+
+  .scene {
+    min-height: 430px;
+  }
+
+  .sceneAgent {
+    width: min(168px, 44vw);
+  }
+}

@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 47 Unreal Engine 5 plugin scaffold with a REST API client, tick-based NPC component, placeholder Blueprint asset, and adapter documentation.
 - Phase 48 scenario marketplace library with 50 fictional Scenario DSL examples across school, workplace, family, community, and social-experiment categories.
 - `knoema validate` CLI command for Scenario DSL file or directory validation.
+- Phase 49 web scenario editor with drag-and-drop agent placement, timeline editing, live YAML preview, and Playwright e2e coverage.
 
 ## [0.1.1] - 2026-04-18
 

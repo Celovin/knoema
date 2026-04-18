@@ -159,6 +159,8 @@ npm run dev
 
 The website is a Next.js app for the public project surface: application tracks, SDK entry points, research reports, and launch links.
 
+The scenario editor is available at `/editor` and supports drag-and-drop agents, timeline edits, live YAML preview, and Scenario DSL export.
+
 ## API Server
 
 ```bash
