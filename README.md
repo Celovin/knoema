@@ -213,6 +213,7 @@ Detailed notes:
 - [Prompt Templates](docs/prompts.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)
 - [Discord Community Launch Kit](docs/discord_community.md)
+- [Demo Video Scripts](docs/videos/shotlist.md)
 - [Hugging Face Playground Guide](playground/README.md)
 - [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/knoema_technical_report.pdf)
 
