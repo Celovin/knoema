@@ -38,6 +38,7 @@ from knoema.memory import (
     ShortTermMemoryBuffer,
     SQLiteFaissMemoryStore,
 )
+from knoema.metrics import compute_pcs, compute_rcs, score_log
 from knoema.persona import Persona
 from knoema.prompts import (
     SUPPORTED_PROMPT_LANGUAGES,
@@ -146,6 +147,8 @@ __all__ = [
     "build_comparison_rows",
     "build_env_telemetry_client",
     "build_village_personas",
+    "compute_pcs",
+    "compute_rcs",
     "decide",
     "format_markdown_report",
     "load_config",
@@ -156,5 +159,6 @@ __all__ = [
     "render_persona_system_prompt",
     "run_knoema_benchmark",
     "run_sally_anne_benchmark",
+    "score_log",
     "telemetry_opt_in_from_env",
 ]

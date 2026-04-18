@@ -240,6 +240,14 @@ python benchmarks/formal_report/runner.py
 
 See [Formal Benchmark Report](benchmarks/formal_report/README.md) and [Formal Report PDF](benchmarks/formal_report/report.pdf).
 
+Phase 46 scoring bundle:
+
+```bash
+python benchmarks/scoring/runner.py
+```
+
+See [Scoring Benchmarks](benchmarks/scoring/README.md).
+
 ## Reproducibility Guarantees
 
 Knoema deterministic local runs can be replayed from fixed config, seed, and JSONL artifacts. The Phase 21 test suite covers repeated same-seed runs, seed propagation, YAML config round-trip, and JSONL replay summaries.
@@ -264,9 +272,12 @@ results = store.retrieve_with_scores(
 
 ```bash
 knoema run examples/cli_dorm.yaml --json
+knoema score experiments/50_agent_village/results/sim_log.jsonl
 ```
 
-See [CLI](docs/cli.md) for the YAML config shape, output path rules, and dry-run validation.
+`knoema score` emits JSON summaries for Persona Consistency Score (PCS) and Relationship Coherence Score (RCS) from a committed JSONL log.
+
+See [CLI](docs/cli.md) for the YAML config shape, output path rules, dry-run validation, and scoring mode.
 
 ## Scenario DSL
 

@@ -1,0 +1,18 @@
+{
+  "acceptance": {
+    "pcs_average_at_least_0_75": true,
+    "rcs_average_at_least_0_70": true
+  },
+  "metropolis_500": {
+    "pair_count": 2500,
+    "rcs_average": 0.76,
+    "rcs_max": 0.76,
+    "rcs_min": 0.76
+  },
+  "village_50": {
+    "agent_count": 50,
+    "pcs_average": 0.948,
+    "pcs_max": 0.948,
+    "pcs_min": 0.948
+  }
+}

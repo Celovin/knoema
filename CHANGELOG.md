@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 44 API usage notebook plus REST and WebSocket reference documentation.
 - Phase 45 classic ABM reproductions for Schelling segregation and Axelrod-style iterated prisoner's dilemma tournaments.
 - Phase 45 reproduction docs, committed JSONL summaries, and SVG artifacts for both classic experiment tracks.
+- Phase 46 Persona Consistency Score and Relationship Coherence Score utilities with a `knoema score` CLI surface.
+- Phase 46 scoring benchmark bundle with committed JSON and SVG artifacts for the 50-agent village and 500-agent metropolis logs.
 
 ## [0.1.1] - 2026-04-18
 

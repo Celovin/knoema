@@ -23,6 +23,7 @@ REPO_ROOT = EXPERIMENT_ROOT.parents[1]
 DEFAULT_CONFIG = EXPERIMENT_ROOT / "config.yaml"
 DEFAULT_SEEDS_DIR = EXPERIMENT_ROOT / "seeds"
 DEFAULT_OUTPUT_DIR = EXPERIMENT_ROOT / "results"
+DEFAULT_SAMPLE_LOG_NAME = "representative_log.jsonl"
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -51,11 +52,20 @@ def run_experiment(
     output_dir: Path = DEFAULT_OUTPUT_DIR,
 ) -> dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
-    rows = [_run_seed(config, seed) for seed in seeds]
+    representative_log_path = output_dir / DEFAULT_SAMPLE_LOG_NAME
+    rows = []
+    representative_log = ""
+    for index, seed in enumerate(seeds):
+        row, log_text = _run_seed(config, seed, capture_log=index == 0)
+        rows.append(row)
+        if index == 0:
+            representative_log = log_text
 
     jsonl_text = "\n".join(json.dumps(row, sort_keys=True) for row in rows) + "\n"
     runs_path = output_dir / "runs.jsonl"
     runs_path.write_text(jsonl_text, encoding="utf-8")
+    if representative_log:
+        representative_log_path.write_text(representative_log, encoding="utf-8")
 
     summary = _build_summary(config=config, rows=rows, seeds=seeds, jsonl_text=jsonl_text)
     summary_path = output_dir / "summary.json"
@@ -72,6 +82,7 @@ def run_experiment(
         "runs_path": runs_path,
         "summary_path": summary_path,
         "figure_path": figure_path,
+        "representative_log_path": representative_log_path,
         "summary": summary,
     }
 
@@ -108,7 +119,12 @@ def _load_seeds(path: Path) -> list[int]:
     return seeds
 
 
-def _run_seed(config: Mapping[str, Any], seed: int) -> dict[str, Any]:
+def _run_seed(
+    config: Mapping[str, Any],
+    seed: int,
+    *,
+    capture_log: bool = False,
+) -> tuple[dict[str, Any], str]:
     simulator, district_by_agent = _build_simulator(config, seed)
     action_cycle = _action_cycle(config)
     start_time = simulator.environment.current_time
@@ -135,7 +151,7 @@ def _run_seed(config: Mapping[str, Any], seed: int) -> dict[str, Any]:
     action_mix = Counter(entry.action.action_type for entry in logs)
     peak_memory_mb = _peak_memory_mb(config=config, seed=seed, relationship_edges=relationship_edges)
     throughput = _actions_per_second(latencies=latencies, action_count=len(logs), config=config)
-    return {
+    row = {
         "seed": seed,
         "agent_count": len(simulator.agents),
         "tick_count": int(config["ticks_per_run"]),
@@ -154,6 +170,13 @@ def _run_seed(config: Mapping[str, Any], seed: int) -> dict[str, Any]:
         "peak_memory_mb": peak_memory_mb,
         "actions_per_second": throughput,
     }
+    log_text = ""
+    if capture_log:
+        log_text = "\n".join(
+            json.dumps(entry.to_json_dict(), ensure_ascii=False, sort_keys=True)
+            for entry in logs
+        ) + "\n"
+    return row, log_text
 
 
 def _build_simulator(config: Mapping[str, Any], seed: int) -> tuple[Simulator, dict[str, str]]:

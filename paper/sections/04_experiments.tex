@@ -31,6 +31,20 @@ Phase 45 adds two compact reproductions drawn from classical agent-based modelin
 
 \input{tables/classic_reproductions_summary}
 
+\subsection{Evaluation Metrics}
+
+Phase 46 adds two lightweight behavioral scoring functions so committed JSONL artifacts can be graded without re-running the simulator. Persona Consistency Score (PCS) summarizes whether one agent keeps a stable action mix, location pattern, normalized content signature, and target focus across a run. The current implementation uses
+$\mathrm{PCS} = 0.25A + 0.25L + 0.30C + 0.20T$,
+where $A$ is action recurrence, $L$ is location stability, $C$ is normalized content stability, and $T$ is target focus.
+
+Relationship Coherence Score (RCS) summarizes whether interactions between two agents remain mutually directed, location-consistent, action-consistent, and dense enough to form a stable edge rather than a single accidental contact. The current implementation uses
+$\mathrm{RCS} = 0.35R + 0.25L + 0.20A + 0.20D$,
+where $R$ is reciprocal interaction coverage, $L$ is pairwise location alignment, $A$ is action alignment, and $D$ is interaction density.
+
+The committed Phase 46 artifacts compute PCS over the 50-agent village log and RCS over a representative log from the 500-agent metropolis benchmark. The current scores clear the acceptance gates of PCS $\geq 0.75$ and RCS $\geq 0.70$, giving the report a compact, reproducible quality layer above throughput-only evidence.
+
+\input{tables/metrics_summary}
+
 \subsection{Reproducibility Tests}
 
 The reproducibility suite checks same-seed bit-for-bit logs and canonical memories, seed propagation, YAML config serialization, and JSONL replay summaries. These tests are part of the ordinary pytest run, so reproducibility regressions are caught by the same CI path as package regressions.

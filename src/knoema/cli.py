@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from knoema.environment import Environment
 from knoema.llm import LocalClient
+from knoema.metrics import score_log
 from knoema.persona import Persona
 from knoema.prompts import PromptLanguage, normalize_prompt_language
 from knoema.simulator import Simulator
@@ -224,6 +225,9 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Opt in to anonymous usage telemetry for this command.",
     )
+
+    score_parser = subparsers.add_parser("score", help="Score a JSONL simulation log.")
+    score_parser.add_argument("logfile", type=Path, help="Path to a JSONL simulation log.")
     return parser
 
 
@@ -268,6 +272,10 @@ def main(
                 f"to {summary.output_path}"
             )
         telemetry.capture("cli_summary_emitted", properties=summary_properties)
+        return 0
+    if args.command == "score":
+        payload = score_log(args.logfile)
+        print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
         return 0
     parser.error(f"Unknown command: {args.command}")
     return 2

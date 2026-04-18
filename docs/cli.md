@@ -56,3 +56,13 @@ knoema run examples\cli_dorm.yaml --dry-run --json
 ```
 
 The CLI is intentionally local-first. It uses `LocalClient` and the configured `local_response`, so it does not need API keys.
+
+## Scoring
+
+Use `score` to compute Persona Consistency Score (PCS) and Relationship Coherence Score (RCS) from a JSONL log:
+
+```powershell
+knoema score experiments\50_agent_village\results\sim_log.jsonl
+```
+
+The command prints JSON with PCS summary statistics, per-agent PCS values, RCS pair counts, and an RCS sample for quick inspection.

@@ -185,7 +185,7 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
             [
                 "Knoema Engine is an open, MIT-licensed runtime for persistent social agents whose state is inspectable outside of a model prompt. The system combines persona definitions, short-term and long-term memory, directed relationship state, environment context, PAD-style emotion, event scheduling, deterministic logs, and optional LLM-backed decisions.",
                 "This revision extends that runtime with persona opt-in theory-of-mind tracking so belief state remains inspectable without forcing the feature on every agent.",
-                "This Phase 30 report updates the original MVP technical note with the 50-agent village experiment, formal benchmark bundle, scenario DSL, game SDK facades, a deterministic Sally-Anne harness, documentation infrastructure, and stricter public-safety boundaries.",
+                "This Phase 30 report updates the original MVP technical note with the 50-agent village experiment, formal benchmark bundle, scenario DSL, game SDK facades, a deterministic Sally-Anne harness, evaluation metrics for persona and relationship quality, documentation infrastructure, and stricter public-safety boundaries.",
             ],
         ),
         (
@@ -263,6 +263,14 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
                     ["Schelling threshold 0.3", "0.548 segregation index", "Expected band satisfied"],
                     ["Schelling threshold 0.7", "0.942 segregation index", "Expected band satisfied"],
                     ["Axelrod top three", "Tit for Tat, Grudger, Generous Tit for Tat", "Tit for Tat remains in top three"],
+                ],
+                "Phase 46 adds two lightweight behavioral metrics that can be computed directly from committed JSONL logs. Persona Consistency Score uses a weighted mix of action recurrence, location stability, normalized content stability, and target focus. Relationship Coherence Score uses reciprocal coverage, pairwise location alignment, action alignment, and interaction density.",
+                [
+                    ["Evaluation metric", "Result", "Acceptance note"],
+                    ["Village PCS average", "0.948", "Passes >= 0.75 gate"],
+                    ["Village PCS range", "0.948 to 0.948", "Stable across 50 agents"],
+                    ["Metropolis RCS average", "0.760", "Passes >= 0.70 gate"],
+                    ["Metropolis RCS range", "0.760 to 0.760", "Stable across 2,500 pairs"],
                 ],
             ],
         ),
