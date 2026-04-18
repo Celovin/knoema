@@ -1,0 +1,11 @@
+{
+  "name": "@celovin/knoema-wasm-demo",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "npm run build && node tests/wasm-runtime.test.mjs",
+    "e2e": "npm run build && node tests/e2e.mjs"
+  }
+}

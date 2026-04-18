@@ -1,0 +1,10 @@
+{
+  "name": "Knoema Browser Runtime Demo",
+  "bundle": "knoema-core.js",
+  "bundle_bytes": 3350,
+  "pages": [
+    "2-agent.html",
+    "5-agent.html",
+    "sally-anne.html"
+  ]
+}

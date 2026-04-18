@@ -69,6 +69,7 @@ nav:
       - WebSocket Guide: api/websocket-guide.md
   - Guides:
       - Game Integration: guides/game-integration.md
+      - Browser WASM Runtime: adapters/wasm.md
       - Unreal Adapter: adapters/unreal.md
       - Web Scenario Editor: website/scenario-editor.md
       - Research Workflow: guides/research-workflow.md

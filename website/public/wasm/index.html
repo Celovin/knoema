@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Knoema Browser Runtime</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f8fafc;
+        color: #102018;
+      }
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 32px 20px;
+      }
+      h1 {
+        font-size: 34px;
+        line-height: 1.15;
+        margin: 0 0 12px;
+      }
+      p {
+        line-height: 1.6;
+      }
+      button,
+      a {
+        border-radius: 6px;
+      }
+      button {
+        border: 0;
+        padding: 10px 14px;
+        background: #15803d;
+        color: white;
+        cursor: pointer;
+      }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 20px 0;
+      }
+      nav a {
+        color: #064e3b;
+        border: 1px solid #94a3b8;
+        padding: 8px 10px;
+        text-decoration: none;
+      }
+      pre {
+        min-height: 180px;
+        overflow: auto;
+        padding: 16px;
+        border: 1px solid #cbd5e1;
+        background: white;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Knoema Browser Runtime</h1>
+      <p>Run deterministic agent simulations directly in the browser with no API key.</p>
+      <nav>
+        <a href="./demo/2-agent.html">2-agent demo</a>
+        <a href="./demo/5-agent.html">5-agent demo</a>
+        <a href="./demo/sally-anne.html">Sally-Anne demo</a>
+      </nav>
+      <button id="runDemo">Run 100 ticks</button>
+      <pre id="output" aria-live="polite">Ready.</pre>
+    </main>
+    <script type="module">
+      import { Environment, LocalClient, createDormAgents, runSimulation } from "./demo/knoema-core.js";
+
+      const output = document.querySelector("#output");
+      document.querySelector("#runDemo").addEventListener("click", () => {
+        const result = runSimulation({
+          personas: createDormAgents(2),
+          environment: new Environment({ locationPath: ["Browser", "Dorm"] }),
+          ticks: 100,
+          client: new LocalClient(),
+        });
+        output.textContent = JSON.stringify(
+          {
+            agents: result.agents,
+            ticks: result.ticks,
+            actions: result.actions,
+            elapsed_ms: result.elapsed_ms,
+            first: result.logs[0],
+            last: result.logs.at(-1),
+          },
+          null,
+          2,
+        );
+      });
+    </script>
+  </body>
+</html>

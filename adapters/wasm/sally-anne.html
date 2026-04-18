@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Knoema Sally-Anne Browser Demo</title>
+  </head>
+  <body>
+    <main>
+      <h1>Sally-Anne Browser Demo</h1>
+      <button id="run">Run false-belief case</button>
+      <pre id="result">Ready.</pre>
+    </main>
+    <script type="module">
+      import { runSallyAnneDemo } from "./knoema-core.js";
+
+      document.querySelector("#run").addEventListener("click", () => {
+        document.querySelector("#result").textContent = JSON.stringify(runSallyAnneDemo(), null, 2);
+      });
+    </script>
+  </body>
+</html>
