@@ -8,9 +8,10 @@ def test_phase35_default_ci_uses_fast_cached_quality_gate() -> None:
     workflow = Path(".github/workflows/ci.yml").read_text(encoding="utf-8")
 
     assert "concurrency:" in workflow
-    assert "PRE_COMMIT_HOME: ~/.cache/pre-commit" in workflow
+    assert "PRE_COMMIT_HOME: ${{ runner.temp }}/pre-commit-cache" in workflow
     assert "cache-dependency-path: pyproject.toml" in workflow
-    assert "path: ~/.cache/pre-commit" in workflow
+    assert "path: ${{ runner.temp }}/pre-commit-cache" in workflow
+    assert "actions/cache@v5" in workflow
     assert "path: .pytest_cache" in workflow
     assert 'python-version: "3.12"' in workflow
     assert "python -m pip install -e \".[dev,release]\"" in workflow
@@ -26,6 +27,7 @@ def test_phase35_compatibility_workflow_declares_cross_platform_matrix() -> None
     assert "macos-latest" in workflow
     assert "windows-latest" in workflow
     assert "ubuntu-latest" in workflow
+    assert "actions/cache@v5" in workflow
     assert 'python-version: ["3.11", "3.12"]' in workflow
     assert "pytest tests/test_version.py tests/test_phase1_types.py --no-cov -q" in workflow
 

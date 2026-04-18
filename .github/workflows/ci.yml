@@ -15,7 +15,7 @@ concurrency:
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
-  PRE_COMMIT_HOME: ~/.cache/pre-commit
+  PRE_COMMIT_HOME: ${{ runner.temp }}/pre-commit-cache
 
 jobs:
   quality:
@@ -31,15 +31,15 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Cache pre-commit hooks
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
-          path: ~/.cache/pre-commit
+          path: ${{ runner.temp }}/pre-commit-cache
           key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pre-commit-
 
       - name: Cache pytest state
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .pytest_cache
           key: ${{ runner.os }}-pytest-${{ hashFiles('pyproject.toml', 'src/**/*.py', 'tests/**/*.py') }}
