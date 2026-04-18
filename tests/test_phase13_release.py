@@ -24,9 +24,12 @@ def test_phase13_release_extra_includes_build_tools() -> None:
     assert any(dep.startswith("twine>=") for dep in release_deps)
 
 
-def test_phase13_release_workflow_does_not_publish_to_pypi_yet() -> None:
+def test_phase13_release_workflow_uses_tag_gated_trusted_publishing() -> None:
     workflow = Path(".github/workflows/release.yml").read_text(encoding="utf-8")
 
-    assert "pypa/gh-action-pypi-publish" not in workflow
+    assert "tags:" in workflow
+    assert "id-token: write" in workflow
+    assert "pypa/gh-action-pypi-publish@release/v1" in workflow
+    assert "PYPI_TOKEN" not in workflow
     assert "twine upload" not in workflow
     assert "twine check dist/*" in workflow

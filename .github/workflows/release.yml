@@ -6,11 +6,13 @@ on:
       - "v*.*.*"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v6
 
@@ -45,3 +47,21 @@ jobs:
             --repo "${GITHUB_REPOSITORY}" \
             --title "Knoema Engine ${GITHUB_REF_NAME}" \
             --notes "Knoema Engine ${GITHUB_REF_NAME} distribution artifacts."
+
+  publish-pypi:
+    runs-on: ubuntu-latest
+    needs: build-release
+    environment:
+      name: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download distribution artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: knoema-engine-distributions
+          path: dist/
+
+      - name: Publish distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

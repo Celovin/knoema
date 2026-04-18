@@ -20,5 +20,5 @@ Knoema is an early MVP. The current roadmap keeps three tracks aligned.
 
 - Publish docs site.
 - Improve website and Playground.
-- Add release automation after manual approval gates are clear.
+- Maintain Release Please PRs and tag-gated PyPI Trusted Publishing.
 - Prepare academic and community launch materials.

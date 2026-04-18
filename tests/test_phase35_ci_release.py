@@ -1,0 +1,67 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+
+def test_phase35_default_ci_uses_fast_cached_quality_gate() -> None:
+    workflow = Path(".github/workflows/ci.yml").read_text(encoding="utf-8")
+
+    assert "concurrency:" in workflow
+    assert "PRE_COMMIT_HOME: ~/.cache/pre-commit" in workflow
+    assert "cache-dependency-path: pyproject.toml" in workflow
+    assert "path: ~/.cache/pre-commit" in workflow
+    assert "path: .pytest_cache" in workflow
+    assert 'python-version: "3.12"' in workflow
+    assert "python -m pip install -e \".[dev,release]\"" in workflow
+    assert "mypy src" in workflow
+    assert "pytest --cov-fail-under=90" in workflow
+    assert "python scripts/release_dry_run.py --version 0.1.1" in workflow
+
+
+def test_phase35_compatibility_workflow_declares_cross_platform_matrix() -> None:
+    workflow = Path(".github/workflows/compatibility.yml").read_text(encoding="utf-8")
+
+    assert "workflow_dispatch:" in workflow
+    assert "macos-latest" in workflow
+    assert "windows-latest" in workflow
+    assert "ubuntu-latest" in workflow
+    assert 'python-version: ["3.11", "3.12"]' in workflow
+    assert "pytest tests/test_version.py tests/test_phase1_types.py --no-cov -q" in workflow
+
+
+def test_phase35_release_workflow_uses_oidc_pypi_publish() -> None:
+    workflow = Path(".github/workflows/release.yml").read_text(encoding="utf-8")
+
+    assert "tags:" in workflow
+    assert '"v*.*.*"' in workflow
+    assert "twine check dist/*" in workflow
+    assert "actions/download-artifact@v7" in workflow
+    assert "environment:" in workflow
+    assert "name: pypi" in workflow
+    assert "id-token: write" in workflow
+    assert "pypa/gh-action-pypi-publish@release/v1" in workflow
+    assert "twine upload" not in workflow
+    assert "PYPI_TOKEN" not in workflow
+
+
+def test_phase35_release_please_manifest_is_configured() -> None:
+    config = json.loads(Path(".github/release-please-config.json").read_text(encoding="utf-8"))
+    manifest = json.loads(Path(".release-please-manifest.json").read_text(encoding="utf-8"))
+
+    package = config["packages"]["."]
+    assert package["release-type"] == "python"
+    assert package["package-name"] == "knoema-engine"
+    assert package["changelog-path"] == "CHANGELOG.md"
+    assert "src/knoema/__init__.py" in package["extra-files"]
+    assert manifest["."] == "0.1.0"
+
+
+def test_phase35_release_dry_run_script_and_docs_exist() -> None:
+    script = Path("scripts/release_dry_run.py").read_text(encoding="utf-8")
+    docs = Path("docs/ci-release-automation.md").read_text(encoding="utf-8")
+
+    assert '"-m", "build"' in script
+    assert "twine" in script
+    assert "--version 0.1.1" in docs
+    assert "Trusted Publisher" in docs

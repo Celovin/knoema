@@ -353,7 +353,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Release Prep
 
-Local package and Docker release checks are documented in [RELEASE.md](RELEASE.md). The repository includes a tag-triggered GitHub Release workflow, but PyPI publishing is intentionally left as a manual approval step.
+Local package and Docker release checks are documented in [RELEASE.md](RELEASE.md). CI and release automation are documented in [CI and Release Automation](docs/ci-release-automation.md). The repository includes Release Please version PRs and a tag-triggered GitHub Release workflow with PyPI Trusted Publishing gated by the `pypi` environment.
 
 ## License
 
