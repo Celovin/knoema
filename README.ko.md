@@ -193,6 +193,7 @@ Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [튜토리얼 블로그 초안](docs/tutorial_blog.md)
+- [한국어 기술 블로그 초안](docs/blog/ko/01-why-knoema-korean-indie-games.md)
 - [Discord 커뮤니티 런치 키트](docs/discord_community.md)
 - [Demo Video Scripts](docs/videos/shotlist.md)
 - [Website App](website/app/page.tsx)

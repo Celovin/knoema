@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Synthetic replay ethics thumbnail">
+  <rect width="1200" height="630" fill="#e6f1eb" />
+  <rect x="168" y="86" width="864" height="458" rx="8" fill="#ffffff" stroke="#0c6b4d" stroke-width="8" />
+  <path d="M600 170l220 86v118c0 94-74 142-220 186-146-44-220-92-220-186V256z" fill="#0c6b4d" />
+  <path d="M510 352l62 62 126-154" stroke="#c8dc58" stroke-width="30" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+  <text x="600" y="124" fill="#10231b" font-family="Georgia, serif" font-size="48" font-weight="800" text-anchor="middle">Synthetic Replay Guards</text>
+  <text x="600" y="594" fill="#10231b" font-family="Segoe UI, sans-serif" font-size="30" font-weight="700" text-anchor="middle">No real people. No scoring. No prediction claims.</text>
+</svg>

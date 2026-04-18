@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Research reproducibility thumbnail">
+  <rect width="1200" height="630" fill="#f7fbf8" />
+  <path d="M120 470h960" stroke="#cfddd5" stroke-width="8" />
+  <path d="M170 425l180-120 160 70 210-170 300 110" stroke="#087f7a" stroke-width="18" fill="none" />
+  <circle cx="350" cy="305" r="24" fill="#a83225" />
+  <circle cx="720" cy="205" r="24" fill="#a83225" />
+  <rect x="142" y="90" width="916" height="92" rx="8" fill="#0c6b4d" />
+  <text x="600" y="153" fill="#f7fbf8" font-family="Georgia, serif" font-size="56" font-weight="800" text-anchor="middle">Reproducible Agent Research</text>
+  <text x="600" y="548" fill="#10231b" font-family="Segoe UI, sans-serif" font-size="34" font-weight="700" text-anchor="middle">Seed, config, log, report</text>
+</svg>

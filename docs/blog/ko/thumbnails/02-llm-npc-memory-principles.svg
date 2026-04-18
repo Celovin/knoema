@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="NPC memory principles thumbnail">
+  <rect width="1200" height="630" fill="#e6f1eb" />
+  <rect x="86" y="88" width="270" height="160" rx="8" fill="#ffffff" stroke="#0c6b4d" stroke-width="6" />
+  <rect x="466" y="88" width="270" height="160" rx="8" fill="#ffffff" stroke="#087f7a" stroke-width="6" />
+  <rect x="846" y="88" width="270" height="160" rx="8" fill="#ffffff" stroke="#a83225" stroke-width="6" />
+  <path d="M356 168h110M736 168h110M600 248v112" stroke="#10231b" stroke-width="10" fill="none" />
+  <rect x="400" y="360" width="400" height="150" rx="8" fill="#0c6b4d" />
+  <text x="600" y="452" fill="#f7fbf8" font-family="Georgia, serif" font-size="62" font-weight="800" text-anchor="middle">Memory That Explains</text>
+</svg>

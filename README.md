@@ -310,6 +310,7 @@ Detailed notes:
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)
+- [Korean Technical Blog Drafts](docs/blog/ko/01-why-knoema-korean-indie-games.md)
 - [Discord Community Launch Kit](docs/discord_community.md)
 - [Demo Video Scripts](docs/videos/shotlist.md)
 - [Hugging Face Playground Guide](playground/README.md)
