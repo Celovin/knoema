@@ -28,3 +28,7 @@ The Scenario DSL expresses agents, environment, events, duration, metrics, and e
 Adapters consume action contracts and logs rather than private runtime internals. The game SDK exposes deterministic NPC responses in Python, TypeScript, and GDScript. Godot and Unity scaffolds demonstrate engine integration paths. Dashboards consume JSONL logs for inspection and replay.
 
 \input{figures/game_sdk_flow}
+
+\subsection{Deployment Architecture}
+
+Phase 44 adds a FastAPI server that wraps the simulator pool behind REST and WebSocket interfaces. \texttt{POST /simulations} creates an in-memory run, agent and memory routes expose inspectable state, and \texttt{/simulations/\{id\}/stream} emits JSON log envelopes as ticks complete. Optional bearer-token authentication and an in-memory token-bucket limiter keep the demo surface bounded, while Docker Compose packages the API server with the Streamlit dashboard and research dashboard for a reproducible local deployment story.

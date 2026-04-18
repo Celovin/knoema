@@ -159,6 +159,28 @@ npm run dev
 
 The website is a Next.js app for the public project surface: application tracks, SDK entry points, research reports, and launch links.
 
+## API Server
+
+```bash
+pip install -e ".[api]"
+uvicorn knoema.api.server:app --host 127.0.0.1 --port 8000
+```
+
+The API server provides REST routes for simulation lifecycle management, agent inspection, event injection, and a WebSocket log stream for live tick delivery.
+
+API references:
+
+- [REST Reference](docs/api/rest-reference.md)
+- [WebSocket Guide](docs/api/websocket-guide.md)
+- [Example Notebook](examples/07_api_usage.ipynb)
+
+Docker Compose example:
+
+```bash
+docker compose -f deploy/docker/docker-compose.yml --env-file deploy/docker/.env.example up -d
+curl http://localhost:8000/healthz
+```
+
 ## Documentation Site
 
 ```bash

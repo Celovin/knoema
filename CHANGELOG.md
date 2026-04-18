@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+- Phase 44 FastAPI server for REST simulation management, agent inspection, event injection, and live WebSocket streaming.
+- Phase 44 API authentication and in-memory token-bucket rate limiting for demo-safe deployments.
+- Phase 44 Docker Compose bundle for the API server, Streamlit dashboard, and research SaaS dashboard.
+- Phase 44 API usage notebook plus REST and WebSocket reference documentation.
+
 ## [0.1.1] - 2026-04-18
 
 ### Added

@@ -77,11 +77,28 @@ class Simulator:
     def run(self, *, duration_days: int) -> list[SimulationLogEntry]:
         if duration_days < 1:
             raise ValueError("duration_days must be positive")
-        ticks = int((duration_days * 24 * 60) / (self.tick_duration.total_seconds() / 60))
-        for tick in range(ticks):
-            self._run_tick(tick)
-            self.environment.advance_time(self.tick_duration)
+        self.run_ticks(self.ticks_for_days(duration_days))
         return list(self.logs)
+
+    def run_ticks(self, tick_count: int, *, start_tick: int = 0) -> list[SimulationLogEntry]:
+        if tick_count < 0:
+            raise ValueError("tick_count must not be negative")
+        if start_tick < 0:
+            raise ValueError("start_tick must not be negative")
+        for offset in range(tick_count):
+            self.step(start_tick + offset)
+        return list(self.logs)
+
+    def step(self, tick: int) -> None:
+        if tick < 0:
+            raise ValueError("tick must not be negative")
+        self._run_tick(tick)
+        self.environment.advance_time(self.tick_duration)
+
+    def ticks_for_days(self, duration_days: int) -> int:
+        if duration_days < 1:
+            raise ValueError("duration_days must be positive")
+        return int((duration_days * 24 * 60) / (self.tick_duration.total_seconds() / 60))
 
     def export_logs(self, path: str | Path) -> None:
         output_path = Path(path)

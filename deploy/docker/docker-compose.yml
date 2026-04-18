@@ -1,0 +1,44 @@
+services:
+  engine-api:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.api
+    env_file:
+      - .env.example
+    ports:
+      - "8000:8000"
+    command: ["uvicorn", "knoema.api.server:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  streamlit-dashboard:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.api
+    env_file:
+      - .env.example
+    ports:
+      - "8501:8501"
+    command:
+      [
+        "streamlit",
+        "run",
+        "dashboard/app.py",
+        "--server.address=0.0.0.0",
+        "--server.port=8501",
+      ]
+
+  research-saas-dashboard:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.api
+    env_file:
+      - .env.example
+    ports:
+      - "8502:8502"
+    command:
+      [
+        "streamlit",
+        "run",
+        "saas/app.py",
+        "--server.address=0.0.0.0",
+        "--server.port=8502",
+      ]

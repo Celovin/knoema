@@ -33,9 +33,11 @@ classifiers = [
 ]
 dependencies = [
     "anthropic>=0.34",
+    "fastapi>=0.115",
     "openai>=1.40",
     "sentence-transformers>=3.0",
     "faiss-cpu>=1.8",
+    "httpx>=0.28",
     "networkx>=3.3",
     "sqlalchemy>=2.0",
     "pydantic>=2.8",
@@ -43,6 +45,7 @@ dependencies = [
     "rich>=13.7",
     "pyyaml>=6.0",
     "tenacity>=8.5",
+    "uvicorn[standard]>=0.32",
 ]
 
 [project.optional-dependencies]
@@ -58,7 +61,13 @@ dev = [
     "black>=24.8",
     "pre-commit>=3.8",
     "ipykernel>=6.29",
+    "httpx>=0.28",
     "jupyter>=1.1",
+]
+api = [
+    "fastapi>=0.115",
+    "httpx>=0.28",
+    "uvicorn[standard]>=0.32",
 ]
 dashboard = [
     "streamlit>=1.38",

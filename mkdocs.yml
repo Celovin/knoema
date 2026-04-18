@@ -63,6 +63,8 @@ nav:
       - Decision: api/decision.md
       - Simulator: api/simulator.md
       - LLM Gateway: api/llm-gateway.md
+      - REST Reference: api/rest-reference.md
+      - WebSocket Guide: api/websocket-guide.md
   - Guides:
       - Game Integration: guides/game-integration.md
       - Research Workflow: guides/research-workflow.md
