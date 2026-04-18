@@ -145,6 +145,16 @@ npm run dev
 
 The website is a Next.js app for the public project surface: application tracks, SDK entry points, research reports, and launch links.
 
+## Documentation Site
+
+```bash
+pip install -e ".[docs]"
+mkdocs build
+mkdocs serve
+```
+
+The MkDocs site organizes getting-started guides, API reference pages, game and research workflows, CLI reference, and community docs. Start at [docs/index.md](docs/index.md).
+
 ## Dashboard
 
 ```bash

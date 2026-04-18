@@ -1,0 +1,69 @@
+site_name: Knoema Engine
+site_description: Persistent-agent simulation engine documentation for games, synthetic replay research, and academic workflows.
+site_url: https://knoema.celovin.com/docs/
+repo_url: https://github.com/Celovin/knoema
+repo_name: Celovin/knoema
+edit_uri: edit/main/docs/
+strict: true
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+  palette:
+    scheme: default
+    primary: green
+    accent: lime
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths:
+            - src
+          options:
+            docstring_style: google
+            show_source: true
+            separate_signature: true
+            show_signature_annotations: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - First Simulation: getting-started/first-simulation.md
+      - Configuration: getting-started/configuration.md
+  - API:
+      - Persona: api/persona.md
+      - Memory: api/memory.md
+      - Relationship: api/relationship.md
+      - Environment: api/environment.md
+      - Emotion: api/emotion.md
+      - Decision: api/decision.md
+      - Simulator: api/simulator.md
+      - LLM Gateway: api/llm-gateway.md
+  - Guides:
+      - Game Integration: guides/game-integration.md
+      - Research Workflow: guides/research-workflow.md
+      - Safety Scenarios: guides/safety-scenarios.md
+  - Reference:
+      - CLI: reference/cli.md
+  - Community:
+      - Discord: community/discord.md
+      - Contributing: community/contributing.md
+      - Roadmap: community/roadmap.md

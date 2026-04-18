@@ -95,6 +95,9 @@ node_modules/
 .next/
 out/
 
+# Documentation builds
+site/
+
 # OS
 Thumbs.db
 

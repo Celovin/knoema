@@ -36,4 +36,4 @@ It also blocks phrases that indicate prediction, identification, suspect ranking
 
 ## JSON Schema
 
-The generated schema is available at [schemas/scenario_v1.json](../../schemas/scenario_v1.json).
+The generated schema is available at [schemas/scenario_v1.json](https://github.com/Celovin/knoema/blob/main/schemas/scenario_v1.json).

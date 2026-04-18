@@ -73,6 +73,10 @@ release = [
     "build>=1.2",
     "twine>=5.1",
 ]
+docs = [
+    "mkdocs-material>=9.5,<9.7",
+    "mkdocstrings[python]>=0.26",
+]
 local-llm = [
     "transformers>=4.44",
     "torch>=2.4",
