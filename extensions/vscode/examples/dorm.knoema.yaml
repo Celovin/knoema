@@ -1,0 +1,25 @@
+schema_version: "1.0"
+scenario_id: dorm_handoff
+title: Dorm handoff
+domain: game
+description: Fictional dorm routine handoff.
+seed: 56
+environment:
+  start_time: "2026-04-19T09:00:00"
+  location_path: [Demo, Dorm]
+agents:
+  - agent_id: alice
+    name: Alice
+    age: 19
+    background: Synthetic student.
+    personality:
+      openness: 0.7
+      conscientiousness: 0.6
+      extraversion: 0.4
+      agreeableness: 0.8
+      neuroticism: 0.3
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true

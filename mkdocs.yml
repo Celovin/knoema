@@ -71,6 +71,7 @@ nav:
   - Guides:
       - Game Integration: guides/game-integration.md
       - Browser WASM Runtime: adapters/wasm.md
+      - VS Code Extension: extensions/vscode.md
       - Unreal Adapter: adapters/unreal.md
       - Web Scenario Editor: website/scenario-editor.md
       - Research Workflow: guides/research-workflow.md

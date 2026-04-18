@@ -1,0 +1,90 @@
+{
+  "name": "knoema-scenario-tools",
+  "displayName": "Knoema Scenario Tools",
+  "description": "Scenario DSL authoring support for Knoema Engine.",
+  "version": "0.2.0",
+  "publisher": "celovin",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Celovin/knoema.git",
+    "directory": "extensions/vscode"
+  },
+  "files": [
+    "compiled",
+    "syntaxes",
+    "schemas",
+    "examples",
+    "media",
+    "language-configuration.json",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:knoema-scenario",
+    "onCommand:knoema.validateScenario",
+    "onCommand:knoema.runScenario",
+    "onCommand:knoema.previewTimeline"
+  ],
+  "main": "./compiled/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "knoema.validateScenario",
+        "title": "Knoema: Validate Scenario"
+      },
+      {
+        "command": "knoema.runScenario",
+        "title": "Knoema: Run Scenario"
+      },
+      {
+        "command": "knoema.previewTimeline",
+        "title": "Knoema: Preview Timeline"
+      }
+    ],
+    "languages": [
+      {
+        "id": "knoema-scenario",
+        "aliases": [
+          "Knoema Scenario",
+          "knoema-scenario"
+        ],
+        "extensions": [
+          ".knoema.yaml",
+          ".knoema.yml"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "knoema-scenario",
+        "scopeName": "source.knoema-scenario",
+        "path": "./syntaxes/knoema-scenario.tmLanguage.json"
+      }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": [
+          "*.knoema.yaml",
+          "*.knoema.yml",
+          "scenarios/**/*.yaml",
+          "scenarios/**/*.yml"
+        ],
+        "url": "./schemas/scenario.schema.json"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "node scripts/compile.mjs",
+    "package": "vsce package --no-dependencies"
+  }
+}

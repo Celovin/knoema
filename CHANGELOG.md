@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 53 red-team safety suite with opt-in content filtering, PII checks, scenario-abuse rejection, JSONL audit logging, and safety policy docs.
 - Phase 54 browser-side TypeScript static runtime with 2-agent, 5-agent, and Sally-Anne demos plus Playwright smoke coverage.
 - Phase 55 social learning module with opt-in observational imitation and deterministic cascade evidence.
+- Phase 56 VS Code Scenario DSL extension with syntax highlighting, schema validation, commands, and VSIX packaging support.
 
 ## [0.1.1] - 2026-04-18
 

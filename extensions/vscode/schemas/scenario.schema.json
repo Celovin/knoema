@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://knoema.celovin.com/schemas/scenario.schema.json",
+  "title": "Knoema Scenario DSL",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "scenario_id",
+    "title",
+    "domain",
+    "description",
+    "seed",
+    "environment",
+    "agents",
+    "ethics"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "scenario_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "domain": {
+      "enum": ["game", "public_safety_research", "academic_research"]
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "environment": {
+      "type": "object",
+      "required": ["start_time", "location_path"],
+      "properties": {
+        "start_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "location_path": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "agents": {
+      "type": "array",
+      "minItems": 1
+    },
+    "ethics": {
+      "type": "object",
+      "properties": {
+        "fictional": {
+          "type": "boolean",
+          "default": true
+        },
+        "no_real_people": {
+          "type": "boolean",
+          "default": true
+        },
+        "no_prediction": {
+          "type": "boolean",
+          "default": true
+        },
+        "no_suspect_scoring": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    }
+  }
+}

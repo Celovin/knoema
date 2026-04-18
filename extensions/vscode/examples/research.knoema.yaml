@@ -1,0 +1,25 @@
+schema_version: "1.0"
+scenario_id: research_queue
+title: Research queue
+domain: academic_research
+description: Synthetic lab queue reset.
+seed: 57
+environment:
+  start_time: "2026-04-19T10:00:00"
+  location_path: [Demo, Lab]
+agents:
+  - agent_id: reviewer
+    name: Reviewer
+    age: 31
+    background: Synthetic reviewer.
+    personality:
+      openness: 0.6
+      conscientiousness: 0.8
+      extraversion: 0.4
+      agreeableness: 0.7
+      neuroticism: 0.2
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true

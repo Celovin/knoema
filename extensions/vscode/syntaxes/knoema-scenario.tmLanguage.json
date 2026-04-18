@@ -1,0 +1,22 @@
+{
+  "scopeName": "source.knoema-scenario",
+  "patterns": [
+    {
+      "name": "keyword.control.knoema",
+      "match": "^(schema_version|scenario_id|title|domain|description|seed|environment|agents|events|metrics|ethics):"
+    },
+    {
+      "name": "constant.language.knoema",
+      "match": "\\b(game|public_safety_research|academic_research|true|false)\\b"
+    },
+    {
+      "name": "string.quoted.double.knoema",
+      "begin": "\"",
+      "end": "\""
+    },
+    {
+      "name": "comment.line.number-sign.knoema",
+      "match": "#.*$"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+schema_version: "1.0"
+scenario_id: community_queue
+title: Community queue
+domain: public_safety_research
+description: Fictional queue de-escalation replay.
+seed: 58
+environment:
+  start_time: "2026-04-19T11:00:00"
+  location_path: [Demo, Community Center]
+agents:
+  - agent_id: coordinator
+    name: Coordinator
+    age: 35
+    background: Synthetic coordinator.
+    personality:
+      openness: 0.6
+      conscientiousness: 0.7
+      extraversion: 0.5
+      agreeableness: 0.8
+      neuroticism: 0.2
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: true
+  irb_notes: Synthetic internal review only.
