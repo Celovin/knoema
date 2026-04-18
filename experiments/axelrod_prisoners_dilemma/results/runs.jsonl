@@ -1,0 +1,30 @@
+{"average_score": 2.651, "cooperation_rate": 0.77, "encounters": 11, "mode": "deterministic", "prompt_route": "reciprocity", "rank": 1, "scenario": "axelrod", "strategy": "Tit for Tat"}
+{"average_score": 2.636, "cooperation_rate": 0.641, "encounters": 11, "mode": "deterministic", "prompt_route": "long_memory", "rank": 2, "scenario": "axelrod", "strategy": "Grudger"}
+{"average_score": 2.625, "cooperation_rate": 0.875, "encounters": 11, "mode": "deterministic", "prompt_route": "repair", "rank": 3, "scenario": "axelrod", "strategy": "Generous Tit for Tat"}
+{"average_score": 2.533, "cooperation_rate": 0.802, "encounters": 11, "mode": "deterministic", "prompt_route": "win_stay_lose_shift", "rank": 4, "scenario": "axelrod", "strategy": "Pavlov"}
+{"average_score": 2.53, "cooperation_rate": 0.844, "encounters": 11, "mode": "deterministic", "prompt_route": "evidence_balance", "rank": 5, "scenario": "axelrod", "strategy": "Soft Majority"}
+{"average_score": 2.46, "cooperation_rate": 1.0, "encounters": 11, "mode": "deterministic", "prompt_route": "unconditional_cooperation", "rank": 6, "scenario": "axelrod", "strategy": "Always Cooperate"}
+{"average_score": 2.318, "cooperation_rate": 0.5, "encounters": 11, "mode": "deterministic", "prompt_route": "scripted_cycle", "rank": 7, "scenario": "axelrod", "strategy": "Alternating"}
+{"average_score": 2.259, "cooperation_rate": 0.513, "encounters": 11, "mode": "deterministic", "prompt_route": "coin_flip", "rank": 8, "scenario": "axelrod", "strategy": "Random"}
+{"average_score": 2.047, "cooperation_rate": 0.0, "encounters": 11, "mode": "deterministic", "prompt_route": "exploit", "rank": 9, "scenario": "axelrod", "strategy": "Always Defect"}
+{"average_score": 1.993, "cooperation_rate": 0.399, "encounters": 11, "mode": "deterministic", "prompt_route": "guarded_reciprocity", "rank": 10, "scenario": "axelrod", "strategy": "Suspicious Tit for Tat"}
+{"average_score": 2.658, "cooperation_rate": 0.774, "encounters": 11, "mode": "ollama", "prompt_route": "reciprocity", "rank": 1, "scenario": "axelrod", "strategy": "Tit for Tat"}
+{"average_score": 2.641, "cooperation_rate": 0.87, "encounters": 11, "mode": "ollama", "prompt_route": "repair", "rank": 2, "scenario": "axelrod", "strategy": "Generous Tit for Tat"}
+{"average_score": 2.625, "cooperation_rate": 0.639, "encounters": 11, "mode": "ollama", "prompt_route": "long_memory", "rank": 3, "scenario": "axelrod", "strategy": "Grudger"}
+{"average_score": 2.56, "cooperation_rate": 0.829, "encounters": 11, "mode": "ollama", "prompt_route": "evidence_balance", "rank": 4, "scenario": "axelrod", "strategy": "Soft Majority"}
+{"average_score": 2.54, "cooperation_rate": 0.801, "encounters": 11, "mode": "ollama", "prompt_route": "win_stay_lose_shift", "rank": 5, "scenario": "axelrod", "strategy": "Pavlov"}
+{"average_score": 2.452, "cooperation_rate": 1.0, "encounters": 11, "mode": "ollama", "prompt_route": "unconditional_cooperation", "rank": 6, "scenario": "axelrod", "strategy": "Always Cooperate"}
+{"average_score": 2.32, "cooperation_rate": 0.5, "encounters": 11, "mode": "ollama", "prompt_route": "scripted_cycle", "rank": 7, "scenario": "axelrod", "strategy": "Alternating"}
+{"average_score": 2.184, "cooperation_rate": 0.51, "encounters": 11, "mode": "ollama", "prompt_route": "coin_flip", "rank": 8, "scenario": "axelrod", "strategy": "Random"}
+{"average_score": 2.031, "cooperation_rate": 0.0, "encounters": 11, "mode": "ollama", "prompt_route": "exploit", "rank": 9, "scenario": "axelrod", "strategy": "Always Defect"}
+{"average_score": 1.984, "cooperation_rate": 0.394, "encounters": 11, "mode": "ollama", "prompt_route": "guarded_reciprocity", "rank": 10, "scenario": "axelrod", "strategy": "Suspicious Tit for Tat"}
+{"average_score": 2.666, "cooperation_rate": 0.778, "encounters": 11, "mode": "api", "prompt_route": "reciprocity", "rank": 1, "scenario": "axelrod", "strategy": "Tit for Tat"}
+{"average_score": 2.629, "cooperation_rate": 0.871, "encounters": 11, "mode": "api", "prompt_route": "repair", "rank": 2, "scenario": "axelrod", "strategy": "Generous Tit for Tat"}
+{"average_score": 2.616, "cooperation_rate": 0.64, "encounters": 11, "mode": "api", "prompt_route": "long_memory", "rank": 3, "scenario": "axelrod", "strategy": "Grudger"}
+{"average_score": 2.59, "cooperation_rate": 0.796, "encounters": 11, "mode": "api", "prompt_route": "evidence_balance", "rank": 4, "scenario": "axelrod", "strategy": "Soft Majority"}
+{"average_score": 2.543, "cooperation_rate": 0.802, "encounters": 11, "mode": "api", "prompt_route": "win_stay_lose_shift", "rank": 5, "scenario": "axelrod", "strategy": "Pavlov"}
+{"average_score": 2.45, "cooperation_rate": 1.0, "encounters": 11, "mode": "api", "prompt_route": "unconditional_cooperation", "rank": 6, "scenario": "axelrod", "strategy": "Always Cooperate"}
+{"average_score": 2.329, "cooperation_rate": 0.5, "encounters": 11, "mode": "api", "prompt_route": "scripted_cycle", "rank": 7, "scenario": "axelrod", "strategy": "Alternating"}
+{"average_score": 2.096, "cooperation_rate": 0.494, "encounters": 11, "mode": "api", "prompt_route": "coin_flip", "rank": 8, "scenario": "axelrod", "strategy": "Random"}
+{"average_score": 1.993, "cooperation_rate": 0.0, "encounters": 11, "mode": "api", "prompt_route": "exploit", "rank": 9, "scenario": "axelrod", "strategy": "Always Defect"}
+{"average_score": 1.987, "cooperation_rate": 0.395, "encounters": 11, "mode": "api", "prompt_route": "guarded_reciprocity", "rank": 10, "scenario": "axelrod", "strategy": "Suspicious Tit for Tat"}

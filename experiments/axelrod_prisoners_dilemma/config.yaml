@@ -1,0 +1,109 @@
+scenario_name: Axelrod Prisoner's Dilemma Reproduction
+seed: 20260419
+rounds: 200
+payoff:
+  reward: 3
+  temptation: 5
+  sucker: 0
+  punishment: 1
+modes:
+  - name: deterministic
+    seed_offset: 0
+    note: Fixed-rule baseline for paper-aligned reproduction.
+  - name: ollama
+    seed_offset: 101
+    note: Local-runtime label using the same seeded policy without external inference.
+  - name: api
+    seed_offset: 202
+    note: Cloud-runtime label using the same seeded policy without external inference.
+strategies:
+  - name: Tit for Tat
+    rule: tit_for_tat
+    prompt_route: reciprocity
+    personality:
+      openness: 0.55
+      conscientiousness: 0.72
+      extraversion: 0.45
+      agreeableness: 0.74
+      neuroticism: 0.24
+  - name: Grudger
+    rule: grudger
+    prompt_route: long_memory
+    personality:
+      openness: 0.48
+      conscientiousness: 0.68
+      extraversion: 0.36
+      agreeableness: 0.64
+      neuroticism: 0.29
+  - name: Generous Tit for Tat
+    rule: generous_tit_for_tat
+    prompt_route: repair
+    personality:
+      openness: 0.62
+      conscientiousness: 0.61
+      extraversion: 0.52
+      agreeableness: 0.81
+      neuroticism: 0.21
+  - name: Soft Majority
+    rule: soft_majority
+    prompt_route: evidence_balance
+    personality:
+      openness: 0.57
+      conscientiousness: 0.66
+      extraversion: 0.41
+      agreeableness: 0.69
+      neuroticism: 0.23
+  - name: Pavlov
+    rule: pavlov
+    prompt_route: win_stay_lose_shift
+    personality:
+      openness: 0.59
+      conscientiousness: 0.58
+      extraversion: 0.49
+      agreeableness: 0.55
+      neuroticism: 0.27
+  - name: Always Cooperate
+    rule: always_cooperate
+    prompt_route: unconditional_cooperation
+    personality:
+      openness: 0.51
+      conscientiousness: 0.47
+      extraversion: 0.33
+      agreeableness: 0.88
+      neuroticism: 0.19
+  - name: Always Defect
+    rule: always_defect
+    prompt_route: exploit
+    personality:
+      openness: 0.35
+      conscientiousness: 0.54
+      extraversion: 0.52
+      agreeableness: 0.18
+      neuroticism: 0.34
+  - name: Random
+    rule: random
+    prompt_route: coin_flip
+    personality:
+      openness: 0.46
+      conscientiousness: 0.41
+      extraversion: 0.57
+      agreeableness: 0.44
+      neuroticism: 0.31
+  - name: Suspicious Tit for Tat
+    rule: suspicious_tit_for_tat
+    prompt_route: guarded_reciprocity
+    personality:
+      openness: 0.43
+      conscientiousness: 0.63
+      extraversion: 0.39
+      agreeableness: 0.38
+      neuroticism: 0.36
+  - name: Alternating
+    rule: alternating
+    prompt_route: scripted_cycle
+    personality:
+      openness: 0.52
+      conscientiousness: 0.45
+      extraversion: 0.42
+      agreeableness: 0.47
+      neuroticism: 0.28

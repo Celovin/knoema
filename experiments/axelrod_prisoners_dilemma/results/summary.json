@@ -1,0 +1,42 @@
+{
+  "cooperative_leaders": {
+    "api": {
+      "average_score": 2.666,
+      "rank": 1,
+      "strategy": "Tit for Tat"
+    },
+    "deterministic": {
+      "average_score": 2.651,
+      "rank": 1,
+      "strategy": "Tit for Tat"
+    },
+    "ollama": {
+      "average_score": 2.658,
+      "rank": 1,
+      "strategy": "Tit for Tat"
+    }
+  },
+  "deterministic_alignment": {
+    "cooperative_leader": "Tit for Tat",
+    "tit_for_tat_in_top_three": true,
+    "tit_for_tat_rank": 1
+  },
+  "deterministic_top_three": [
+    "Tit for Tat",
+    "Grudger",
+    "Generous Tit for Tat"
+  ],
+  "modes": [
+    "deterministic",
+    "ollama",
+    "api"
+  ],
+  "reproducibility": {
+    "bit_for_bit_artifacts": true,
+    "config_fingerprint": "60308efe18577296b83002b43bd9c2b05a2a6740459abb03f96d693742dca6cd",
+    "runs_jsonl_sha256": "f582fb10112789a73e12b7dc7978570f10a30ad1a0cbb7883e3e2de998e36488"
+  },
+  "rounds": 200,
+  "scenario_name": "Axelrod Prisoner's Dilemma Reproduction",
+  "strategy_count": 10
+}
