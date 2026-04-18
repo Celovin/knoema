@@ -333,6 +333,12 @@ https://github.com/Celovin/knoema.git?path=adapters/unity
 
 See [adapters/unity/README.md](adapters/unity/README.md) for the Unity 2022.3 LTS package scaffold, HTTP/local fallback client, `NPCAgent` component, and Basic NPC sample.
 
+## Unreal Integration
+
+Copy [adapters/unreal](adapters/unreal) into either your project `Plugins` folder or the UE 5.3 engine `Marketplace` plugins folder, then enable the `Knoema Unreal` plugin in the editor.
+
+See [adapters/unreal/README.md](adapters/unreal/README.md) for the UE5 source plugin scaffold, REST API client, `NPCAgentComponent`, and `BP_BasicNPC` placeholder flow.
+
 ## Architecture
 
 ```mermaid

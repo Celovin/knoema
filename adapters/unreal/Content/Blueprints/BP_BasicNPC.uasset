@@ -1,0 +1,5 @@
+UE5_PLACEHOLDER_ASSET
+BlueprintName=BP_BasicNPC
+ParentClass=Actor
+RequiredComponent=NPCAgentComponent
+Note=Replace this placeholder with a real Blueprint saved from Unreal Editor when binary assets are allowed in the review process.

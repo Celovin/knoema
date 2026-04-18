@@ -9,6 +9,7 @@ Use the game SDK when you need a stable NPC contract before committing to a host
 - Godot GDScript facade: `sdk/godot-gdscript/knoema.gd`
 - Godot adapter scaffold: `adapters/godot`
 - Unity Package Manager scaffold: `adapters/unity`
+- Unreal Engine 5 plugin scaffold: `adapters/unreal`
 
 ## Minimal Python NPC
 

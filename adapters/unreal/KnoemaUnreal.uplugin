@@ -1,0 +1,34 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "0.1.1",
+  "FriendlyName": "Knoema Unreal",
+  "Description": "Unreal Engine 5 plugin scaffold for connecting actors to the Knoema REST API.",
+  "Category": "Artificial Intelligence",
+  "CreatedBy": "Celovin",
+  "CreatedByURL": "https://github.com/Celovin/knoema",
+  "DocsURL": "https://github.com/Celovin/knoema/tree/main/adapters/unreal",
+  "CanContainContent": true,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "KnoemaUnreal",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "HTTP",
+      "Enabled": true
+    },
+    {
+      "Name": "Json",
+      "Enabled": true
+    },
+    {
+      "Name": "JsonUtilities",
+      "Enabled": true
+    }
+  ]
+}
