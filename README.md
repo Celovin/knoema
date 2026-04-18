@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/knoema-playground)
-[![DOI: pending](https://img.shields.io/badge/DOI-pending-lightgrey)](docs/research/academic-indexing.md)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19643410.svg)](https://doi.org/10.5281/zenodo.19643410)
 [![Papers with Code: submission packet](https://img.shields.io/badge/Papers%20with%20Code-submission%20packet-blue)](docs/research/academic-indexing.md)
 
 ## Languages

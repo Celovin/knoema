@@ -7,7 +7,8 @@ Phase 31 prepares Knoema Engine for archival citation and research indexing. The
 | Field | Value |
 | --- | --- |
 | Repository | `https://github.com/Celovin/knoema` |
-| Release | `v0.1.0` |
+| Release | `v0.1.1` |
+| DOI | [`10.5281/zenodo.19643410`](https://doi.org/10.5281/zenodo.19643410) |
 | License | MIT |
 | Software metadata | `CITATION.cff` |
 | Zenodo metadata | `.zenodo.json` |
@@ -24,7 +25,8 @@ Use this packet when connecting the repository to Zenodo:
 - Creator: `Celovin`
 - Contact: `hello@celovin.com`
 - Upload type: `software`
-- Version: `0.1.0`
+- Version: `0.1.1`
+- Issued DOI: `10.5281/zenodo.19643410`
 - License: MIT, encoded for Zenodo as `mit`
 - Repository: `https://github.com/Celovin/knoema`
 - Related paper source: `https://github.com/Celovin/knoema/blob/main/paper/main.tex`
@@ -78,6 +80,6 @@ Knoema Engine is an open runtime for persistent social agents. It exposes memory
 | --- | --- |
 | `CITATION.cff` | Prepared |
 | `.zenodo.json` | Prepared |
-| Zenodo DOI | Pending external account integration |
+| Zenodo DOI | Issued: `10.5281/zenodo.19643410` (2026-04-19, v0.1.1) |
 | Papers with Code entry | Pending external submission |
-| README badges | Pending-state badges added |
+| README badges | DOI badge live (all eight language variants) |
