@@ -80,6 +80,7 @@ nav:
       - Audit Log Schema: safety/audit_log_schema.md
       - Human Study Protocol: evaluation/human_study_protocol.md
       - Human Evaluation Pilot Results: evaluation/pilot_results.md
+      - Cloud Deployment Comparison: deployment/cloud-comparison.md
       - Academic Indexing: research/academic-indexing.md
       - Papers with Code Packet: research/papers_with_code_submission.md
       - Safety Scenarios: guides/safety-scenarios.md

@@ -49,6 +49,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Deterministic benchmark scripts with JSON, Markdown, SVG figures, and PDF reports
 - Cross-framework comparison benchmark against AutoGen, CrewAI, LangGraph, Mesa, and NetLogo
 - Human evaluation framework with survey templates, a static review UI, and reliability metrics
+- Cloud deployment templates for AWS, GCP, and Azure production planning
 - Godot 4 adapter scaffold
 - Unity 2022 LTS adapter scaffold for Package Manager Git installs
 - Game SDK facades for Python, TypeScript, and GDScript NPC integrations
