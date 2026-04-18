@@ -195,6 +195,7 @@ Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 
 - [튜토리얼 블로그 초안](docs/tutorial_blog.md)
 - [Discord 커뮤니티 런치 키트](docs/discord_community.md)
 - [Demo Video Scripts](docs/videos/shotlist.md)
+- [Website App](website/app/page.tsx)
 - [기술 리포트 LaTeX 초안](paper/main.tex), [PDF 프리뷰](paper/knoema_technical_report.pdf)
 
 ## 개발
@@ -217,6 +218,17 @@ mypy src
 pip install -r playground/requirements.txt
 python playground/app.py
 ```
+
+## Website
+
+```bash
+cd website
+npm install
+npm run build
+npm run dev
+```
+
+Next.js 기반 공식 프로젝트 페이지입니다. 적용 영역, SDK 진입점, 연구 리포트, 공개 링크를 한 화면에서 확인할 수 있게 구성했습니다.
 
 ## 라이선스
 

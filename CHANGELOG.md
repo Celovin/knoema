@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 22 Scenario DSL v1 with Pydantic schema, YAML parser, ethics validator, serializer, JSON Schema, three sample scenarios, and DSL documentation.
 - Phase 23 Research SaaS dashboard scaffold with six Streamlit pages, A/B comparison services, memory and relationship inspectors, cost budget, and citation export helpers.
 - Phase 24 Game NPC SDK API facades for Python, TypeScript, and Godot GDScript with examples and integration documentation.
+- Phase 25 Next.js website scaffold with application tracks, SDK code demo, research report links, benchmark figures, and public launch routes.
 
 ## [0.1.0] - 2026-04-18
 

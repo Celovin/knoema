@@ -134,6 +134,17 @@ pip install -r playground/requirements.txt
 python playground/app.py
 ```
 
+## Website
+
+```bash
+cd website
+npm install
+npm run build
+npm run dev
+```
+
+The website is a Next.js app for the public project surface: application tracks, SDK entry points, research reports, and launch links.
+
 ## Dashboard
 
 ```bash
@@ -302,6 +313,7 @@ Detailed notes:
 - [Discord Community Launch Kit](docs/discord_community.md)
 - [Demo Video Scripts](docs/videos/shotlist.md)
 - [Hugging Face Playground Guide](playground/README.md)
+- [Website App](website/app/page.tsx)
 - [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/knoema_technical_report.pdf)
 
 ## Roadmap
