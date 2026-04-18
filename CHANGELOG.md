@@ -46,6 +46,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 38 multilingual README pack for English, Korean, Japanese, Simplified Chinese, Traditional Chinese, German, French, and Spanish navigation.
 - Phase 39 anonymous opt-in telemetry for CLI usage, privacy documentation, and safe event-delivery tests.
 - Phase 40 public case-study pack for KNOT integration, a Korean university pilot, and indie studio adoption planning.
+- External activation status script for reporting remaining Hugging Face, Vercel, GitHub Actions, and release blockers in one JSON snapshot.
 
 ### Changed
 - Hardened Phase 24 SDK facades with required input validation, defensive dictionary copies, TypeScript package build configuration, and safer Godot missing-NPC responses.
