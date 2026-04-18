@@ -196,6 +196,7 @@ Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 
 - [한국어 기술 블로그 초안](docs/blog/ko/01-why-knoema-korean-indie-games.md)
 - [Discord 커뮤니티 런치 키트](docs/discord_community.md)
 - [Demo Video Scripts](docs/videos/shotlist.md)
+- [YouTube 튜토리얼 스크립트](docs/videos/tutorials/01_getting_started_10min.md)
 - [Website App](website/app/page.tsx)
 - [기술 리포트 LaTeX 초안](paper/main.tex), [PDF 프리뷰](paper/knoema_technical_report.pdf)
 

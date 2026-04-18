@@ -313,6 +313,7 @@ Detailed notes:
 - [Korean Technical Blog Drafts](docs/blog/ko/01-why-knoema-korean-indie-games.md)
 - [Discord Community Launch Kit](docs/discord_community.md)
 - [Demo Video Scripts](docs/videos/shotlist.md)
+- [YouTube Tutorial Scripts](docs/videos/tutorials/01_getting_started_10min.md)
 - [Hugging Face Playground Guide](playground/README.md)
 - [Website App](website/app/page.tsx)
 - [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/knoema_technical_report.pdf)
