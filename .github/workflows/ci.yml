@@ -15,7 +15,7 @@ concurrency:
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
-  PRE_COMMIT_HOME: ${{ runner.temp }}/pre-commit-cache
+  PRE_COMMIT_HOME: /tmp/knoema-pre-commit-cache
 
 jobs:
   quality:
@@ -33,7 +33,7 @@ jobs:
       - name: Cache pre-commit hooks
         uses: actions/cache@v5
         with:
-          path: ${{ runner.temp }}/pre-commit-cache
+          path: /tmp/knoema-pre-commit-cache
           key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pre-commit-

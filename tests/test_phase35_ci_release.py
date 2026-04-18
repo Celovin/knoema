@@ -8,9 +8,9 @@ def test_phase35_default_ci_uses_fast_cached_quality_gate() -> None:
     workflow = Path(".github/workflows/ci.yml").read_text(encoding="utf-8")
 
     assert "concurrency:" in workflow
-    assert "PRE_COMMIT_HOME: ${{ runner.temp }}/pre-commit-cache" in workflow
+    assert "PRE_COMMIT_HOME: /tmp/knoema-pre-commit-cache" in workflow
     assert "cache-dependency-path: pyproject.toml" in workflow
-    assert "path: ${{ runner.temp }}/pre-commit-cache" in workflow
+    assert "path: /tmp/knoema-pre-commit-cache" in workflow
     assert "actions/cache@v5" in workflow
     assert "path: .pytest_cache" in workflow
     assert 'python-version: "3.12"' in workflow
