@@ -15,6 +15,7 @@ REPO = "knoema"
 FULL_REPO = f"{OWNER}/{REPO}"
 TARGET_SPACE = f"{OWNER}/knoema-playground"
 HF_ENV_TOKEN_NAMES = ("HF_TOKEN", "HUGGINGFACE_HUB_TOKEN", "HUGGING_FACE_HUB_TOKEN")
+VERCEL_APPDATA_AUTH_PATH = Path("com.vercel.cli") / "Data" / "auth.json"
 
 
 @dataclass(frozen=True, slots=True)
@@ -112,6 +113,23 @@ def _load_json(result: CommandResult) -> dict[str, Any] | None:
     return json.loads(payload)
 
 
+def _load_json_file(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _resolve_vercel_auth_file(*, env: Mapping[str, str], home_dir: Path) -> Path | None:
+    candidates = [home_dir / ".vercel" / "auth.json"]
+    appdata = env.get("APPDATA")
+    if appdata:
+        candidates.append(Path(appdata) / VERCEL_APPDATA_AUTH_PATH)
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return None
+
+
 def _suggested_actions(
     *,
     hf_user: str | None,
@@ -167,7 +185,9 @@ def collect_external_activation_status(
         auth_home = Path(env["USERPROFILE"])
     else:
         auth_home = Path.home()
-    vercel_auth_file = auth_home / ".vercel" / "auth.json"
+    vercel_auth_file = _resolve_vercel_auth_file(env=env, home_dir=auth_home)
+    vercel_auth = _load_json_file(vercel_auth_file) if vercel_auth_file is not None else None
+    website_project_link_data = _load_json_file(website_project_link)
 
     repo_view = _load_json(
         run_command(
@@ -239,9 +259,22 @@ def collect_external_activation_status(
         },
         "vercel": {
             "whoami": vercel_identity,
-            "is_logged_in": vercel_identity is not None,
+            "is_logged_in": vercel_identity is not None or bool(vercel_auth and vercel_auth.get("token")),
             "website_project_link_exists": website_project_link.exists(),
-            "auth_file_exists": vercel_auth_file.exists(),
+            "auth_file_exists": vercel_auth_file is not None,
+            "auth_source": (
+                "home_auth_file"
+                if vercel_auth_file == auth_home / ".vercel" / "auth.json"
+                else "appdata_auth_file" if vercel_auth_file is not None else None
+            ),
+            "linked_project_name": (
+                website_project_link_data.get("projectName")
+                if website_project_link_data is not None
+                else None
+            ),
+            "linked_org_id": (
+                website_project_link_data.get("orgId") if website_project_link_data is not None else None
+            ),
         },
     }
 

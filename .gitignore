@@ -94,6 +94,7 @@ export_presets.cfg
 node_modules/
 .next/
 out/
+.vercel/
 
 # Documentation builds
 site/

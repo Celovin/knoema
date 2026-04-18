@@ -54,6 +54,8 @@ The script prints a JSON snapshot covering:
 - Repository variable state for `ENABLE_RELEASE_PLEASE`
 - Suggested next actions when any blocker is still present
 
+The local `website/.vercel/project.json` link file is machine-specific and is ignored by git.
+
 Add `--fail-on-blockers` when you want a non-zero exit code if any activation blocker is still present.
 
 ## Tag Release

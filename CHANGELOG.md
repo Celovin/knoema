@@ -49,6 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - External activation status script for reporting remaining Hugging Face, Vercel, GitHub Actions, and release blockers in one JSON snapshot.
 - Combined pre-release checker that runs activation status and local release dry run in one step.
 - Suggested remediation actions in the external activation status report for remaining operator-side blockers.
+- Vercel local project link files are now git-ignored, and activation status detection recognizes the current Vercel auth file layout.
 
 ### Changed
 - Hardened Phase 24 SDK facades with required input validation, defensive dictionary copies, TypeScript package build configuration, and safer Godot missing-NPC responses.

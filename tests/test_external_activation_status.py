@@ -12,6 +12,15 @@ def _command_key(command: list[str]) -> tuple[str, ...]:
 def test_external_activation_status_reports_current_blockers(tmp_path: Path) -> None:
     website_dir = tmp_path / "website"
     website_dir.mkdir()
+    website_link = website_dir / ".vercel"
+    website_link.mkdir()
+    (website_link / "project.json").write_text(
+        '{"projectId":"prj_demo","orgId":"team_demo","projectName":"knoema"}',
+        encoding="utf-8",
+    )
+    appdata_auth_dir = tmp_path / "appdata" / "com.vercel.cli" / "Data"
+    appdata_auth_dir.mkdir(parents=True)
+    (appdata_auth_dir / "auth.json").write_text('{"token":"masked"}', encoding="utf-8")
 
     responses = {
         _command_key(
@@ -70,7 +79,7 @@ def test_external_activation_status_reports_current_blockers(tmp_path: Path) -> 
     report = collect_external_activation_status(
         run_command=fake_runner,
         repo_root=tmp_path,
-        environment={"HF_TOKEN": "set"},
+        environment={"HF_TOKEN": "set", "APPDATA": str(tmp_path / "appdata")},
         home_dir=tmp_path,
     )
 
@@ -78,22 +87,31 @@ def test_external_activation_status_reports_current_blockers(tmp_path: Path) -> 
     assert report["repo"]["is_public"] is True
     assert report["deployment"]["hugging_face"]["authenticated_user"] == "iruhana25"
     assert report["deployment"]["hugging_face"]["auth_source"] == "env:HF_TOKEN"
-    assert report["deployment"]["vercel"]["website_project_link_exists"] is False
-    assert report["deployment"]["vercel"]["auth_file_exists"] is False
+    assert report["deployment"]["vercel"]["website_project_link_exists"] is True
+    assert report["deployment"]["vercel"]["auth_file_exists"] is True
+    assert report["deployment"]["vercel"]["auth_source"] == "appdata_auth_file"
+    assert report["deployment"]["vercel"]["linked_project_name"] == "knoema"
+    assert report["deployment"]["vercel"]["is_logged_in"] is True
     assert report["github_actions"]["release_please_enabled"] is False
     assert report["suggested_actions"][0].startswith(
         "Replace the current Hugging Face environment token"
     )
-    assert report["suggested_actions"][1].startswith("From `website/`, run `vercel link`")
+    assert report["suggested_actions"][1].startswith(
+        "Set GitHub Actions default workflow permissions to `Read and write`"
+    )
+    assert report["suggested_actions"][2] == "Set the repository variable `ENABLE_RELEASE_PLEASE=1`."
     assert "Repository variable ENABLE_RELEASE_PLEASE is not set." in report["blockers"]
 
 
 def test_external_activation_status_reports_ready_state_when_all_checks_pass(tmp_path: Path) -> None:
     website_link = tmp_path / "website" / ".vercel"
     website_link.mkdir(parents=True)
-    (website_link / "project.json").write_text('{"projectId":"p123"}', encoding="utf-8")
-    auth_dir = tmp_path / ".vercel"
-    auth_dir.mkdir()
+    (website_link / "project.json").write_text(
+        '{"projectId":"p123","orgId":"team_123","projectName":"knoema"}',
+        encoding="utf-8",
+    )
+    auth_dir = tmp_path / "appdata" / "com.vercel.cli" / "Data"
+    auth_dir.mkdir(parents=True)
     (auth_dir / "auth.json").write_text('{"token":"masked"}', encoding="utf-8")
 
     responses = {
@@ -157,7 +175,7 @@ def test_external_activation_status_reports_ready_state_when_all_checks_pass(tmp
     report = collect_external_activation_status(
         run_command=fake_runner,
         repo_root=tmp_path,
-        environment={},
+        environment={"APPDATA": str(tmp_path / "appdata")},
         home_dir=tmp_path,
     )
 
@@ -168,4 +186,8 @@ def test_external_activation_status_reports_ready_state_when_all_checks_pass(tmp
     assert report["github_actions"]["default_workflow_permissions"] == "write"
     assert report["github_actions"]["release_please_enabled"] is True
     assert report["deployment"]["vercel"]["auth_file_exists"] is True
+    assert report["deployment"]["vercel"]["auth_source"] == "appdata_auth_file"
+    assert report["deployment"]["vercel"]["linked_project_name"] == "knoema"
+    assert report["deployment"]["vercel"]["linked_org_id"] == "team_123"
+    assert report["deployment"]["vercel"]["is_logged_in"] is True
     assert report["suggested_actions"] == []
