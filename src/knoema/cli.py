@@ -13,6 +13,7 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
+from knoema.dsl import collect_validation_issues, load_scenario
 from knoema.environment import Environment
 from knoema.llm import LocalClient
 from knoema.metrics import score_log
@@ -228,6 +229,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     score_parser = subparsers.add_parser("score", help="Score a JSONL simulation log.")
     score_parser.add_argument("logfile", type=Path, help="Path to a JSONL simulation log.")
+
+    validate_parser = subparsers.add_parser("validate", help="Validate Scenario DSL YAML files.")
+    validate_parser.add_argument("path", type=Path, help="Scenario YAML file or directory.")
+    validate_parser.add_argument("--json", action="store_true", help="Print validation results as JSON.")
     return parser
 
 
@@ -277,6 +282,16 @@ def main(
         payload = score_log(args.logfile)
         print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
         return 0
+    if args.command == "validate":
+        payload = validate_scenario_path(args.path)
+        if args.json:
+            print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+        else:
+            print(
+                f"Validated {payload['validated']} scenario files; "
+                f"{payload['failed']} failed."
+            )
+        return 0 if payload["failed"] == 0 else 1
     parser.error(f"Unknown command: {args.command}")
     return 2
 
@@ -293,6 +308,50 @@ def _resolve_output_path(
     if output_path is not None:
         return Path.cwd() / selected
     return config_dir / selected
+
+
+def validate_scenario_path(path: str | Path) -> dict[str, Any]:
+    """Validate a Scenario DSL file or all YAML files under a directory."""
+
+    target = Path(path)
+    scenario_files = _discover_scenario_files(target)
+    results: list[dict[str, Any]] = []
+    failed = 0
+    for scenario_file in scenario_files:
+        try:
+            scenario = load_scenario(scenario_file)
+            issues = [
+                {"path": issue.path, "message": issue.message, "code": issue.code}
+                for issue in collect_validation_issues(scenario)
+            ]
+        except Exception as exc:  # pragma: no cover - defensive CLI surface
+            issues = [{"path": str(scenario_file), "message": str(exc), "code": "load_error"}]
+        if issues:
+            failed += 1
+        results.append(
+            {
+                "path": str(scenario_file),
+                "ok": not issues,
+                "issues": issues,
+            }
+        )
+    return {
+        "path": str(target),
+        "validated": len(scenario_files),
+        "failed": failed,
+        "results": results,
+    }
+
+
+def _discover_scenario_files(path: Path) -> list[Path]:
+    if path.is_file():
+        return [path]
+    if not path.exists():
+        raise FileNotFoundError(f"scenario path does not exist: {path}")
+    files = sorted({*path.rglob("*.yaml"), *path.rglob("*.yml")})
+    if not files:
+        raise ValueError(f"no scenario YAML files found under: {path}")
+    return files
 
 
 def _resolve_telemetry_client(
@@ -318,4 +377,5 @@ __all__ = [
     "load_run_config",
     "main",
     "run_config",
+    "validate_scenario_path",
 ]

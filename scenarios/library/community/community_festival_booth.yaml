@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: community_festival_booth
+title: "Neighborhood Festival Booth"
+domain: academic_research
+description: "Fictional festival planning scenario for booth assignments."
+seed: 20260902
+tick_duration_minutes: 720
+duration_days: 1
+environment:
+  start_time: "2026-06-03T09:00:00"
+  location_path: [Knoema Demo World, Scenario Library, Community]
+  conditions:
+    mode: deterministic
+    category: community
+agents:
+  - agent_id: agent_a
+    name: Ari
+    age: 26
+    background: "Synthetic community participant preparing a calm first response."
+    personality:
+      openness: 0.59
+      conscientiousness: 0.67
+      extraversion: 0.35
+      agreeableness: 0.68
+      neuroticism: 0.28
+    values: [clarity, care]
+    goals: [state one need, listen before deciding]
+    synthetic: true
+  - agent_id: agent_b
+    name: Bora
+    age: 26
+    background: "Synthetic community participant tracking shared constraints."
+    personality:
+      openness: 0.73
+      conscientiousness: 0.61
+      extraversion: 0.41
+      agreeableness: 0.78
+      neuroticism: 0.23
+    values: [fairness, follow-through]
+    goals: [summarize the context, offer one next step]
+    synthetic: true
+events:
+  - timestamp: "2026-06-03T13:00:00"
+    event_type: community.festival_checkpoint
+    participants: [agent_a, agent_b]
+    location: Knoema Demo World > Scenario Library > Community
+    description: "Volunteers choose time slots and backup contacts."
+metrics:
+  - name: slot_coverage
+    kind: score
+    description: "Scenario-specific score computed from fictional synthetic replay cues."
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null

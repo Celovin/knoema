@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: family_shared_device_rules
+title: "Shared Device Rules"
+domain: academic_research
+description: "Fictional household tech scenario for setting fair usage norms."
+seed: 20260807
+tick_duration_minutes: 720
+duration_days: 1
+environment:
+  start_time: "2026-06-08T09:00:00"
+  location_path: [Knoema Demo World, Scenario Library, Family]
+  conditions:
+    mode: deterministic
+    category: family
+agents:
+  - agent_id: agent_a
+    name: Ari
+    age: 31
+    background: "Synthetic family participant preparing a calm first response."
+    personality:
+      openness: 0.59
+      conscientiousness: 0.73
+      extraversion: 0.41
+      agreeableness: 0.68
+      neuroticism: 0.33
+    values: [clarity, care]
+    goals: [state one need, listen before deciding]
+    synthetic: true
+  - agent_id: agent_b
+    name: Bora
+    age: 31
+    background: "Synthetic family participant tracking shared constraints."
+    personality:
+      openness: 0.73
+      conscientiousness: 0.67
+      extraversion: 0.47
+      agreeableness: 0.78
+      neuroticism: 0.28
+    values: [fairness, follow-through]
+    goals: [summarize the context, offer one next step]
+    synthetic: true
+events:
+  - timestamp: "2026-06-08T13:00:00"
+    event_type: family.device_checkpoint
+    participants: [agent_a, agent_b]
+    location: Knoema Demo World > Scenario Library > Family
+    description: "The family agrees on a shared tablet schedule."
+metrics:
+  - name: rule_fairness
+    kind: score
+    description: "Scenario-specific score computed from fictional synthetic replay cues."
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null

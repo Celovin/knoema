@@ -290,6 +290,14 @@ logs = scenario.to_simulator().run(duration_days=scenario.duration_days)
 
 See [DSL Tutorial](docs/dsl/tutorial.md), [DSL Reference](docs/dsl/reference.md), and [Scenario JSON Schema](schemas/scenario_v1.json).
 
+The Phase 48 marketplace library includes 50 fictional Scenario DSL examples across school, workplace, family, community, and social-experiment categories:
+
+```bash
+knoema validate scenarios/library --json
+```
+
+See [Scenario Library](scenarios/library/INDEX.md).
+
 ## Game SDK
 
 Knoema includes deterministic NPC SDK facades for installed Python packages, TypeScript tooling, and direct Godot GDScript prototypes.

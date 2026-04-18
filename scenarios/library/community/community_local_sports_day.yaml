@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: community_local_sports_day
+title: "Local Sports Day Setup"
+domain: academic_research
+description: "Fictional sports day scenario for arranging equipment roles."
+seed: 20260906
+tick_duration_minutes: 720
+duration_days: 1
+environment:
+  start_time: "2026-06-07T09:00:00"
+  location_path: [Knoema Demo World, Scenario Library, Community]
+  conditions:
+    mode: deterministic
+    category: community
+agents:
+  - agent_id: agent_a
+    name: Ari
+    age: 30
+    background: "Synthetic community participant preparing a calm first response."
+    personality:
+      openness: 0.52
+      conscientiousness: 0.67
+      extraversion: 0.59
+      agreeableness: 0.63
+      neuroticism: 0.28
+    values: [clarity, care]
+    goals: [state one need, listen before deciding]
+    synthetic: true
+  - agent_id: agent_b
+    name: Bora
+    age: 30
+    background: "Synthetic community participant tracking shared constraints."
+    personality:
+      openness: 0.66
+      conscientiousness: 0.61
+      extraversion: 0.65
+      agreeableness: 0.73
+      neuroticism: 0.23
+    values: [fairness, follow-through]
+    goals: [summarize the context, offer one next step]
+    synthetic: true
+events:
+  - timestamp: "2026-06-07T13:00:00"
+    event_type: community.sports_checkpoint
+    participants: [agent_a, agent_b]
+    location: Knoema Demo World > Scenario Library > Community
+    description: "Neighbors assign setup, scoring, and cleanup roles."
+metrics:
+  - name: event_readiness
+    kind: score
+    description: "Scenario-specific score computed from fictional synthetic replay cues."
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null

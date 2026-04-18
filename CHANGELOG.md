@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 46 Persona Consistency Score and Relationship Coherence Score utilities with a `knoema score` CLI surface.
 - Phase 46 scoring benchmark bundle with committed JSON and SVG artifacts for the 50-agent village and 500-agent metropolis logs.
 - Phase 47 Unreal Engine 5 plugin scaffold with a REST API client, tick-based NPC component, placeholder Blueprint asset, and adapter documentation.
+- Phase 48 scenario marketplace library with 50 fictional Scenario DSL examples across school, workplace, family, community, and social-experiment categories.
+- `knoema validate` CLI command for Scenario DSL file or directory validation.
 
 ## [0.1.1] - 2026-04-18
 

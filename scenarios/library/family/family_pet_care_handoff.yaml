@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: family_pet_care_handoff
+title: "Pet Care Handoff"
+domain: academic_research
+description: "Fictional pet-care scenario for reliable task transfer."
+seed: 20260808
+tick_duration_minutes: 720
+duration_days: 1
+environment:
+  start_time: "2026-06-09T09:00:00"
+  location_path: [Knoema Demo World, Scenario Library, Family]
+  conditions:
+    mode: deterministic
+    category: family
+agents:
+  - agent_id: agent_a
+    name: Ari
+    age: 32
+    background: "Synthetic family participant preparing a calm first response."
+    personality:
+      openness: 0.66
+      conscientiousness: 0.55
+      extraversion: 0.47
+      agreeableness: 0.73
+      neuroticism: 0.18
+    values: [clarity, care]
+    goals: [state one need, listen before deciding]
+    synthetic: true
+  - agent_id: agent_b
+    name: Bora
+    age: 32
+    background: "Synthetic family participant tracking shared constraints."
+    personality:
+      openness: 0.45
+      conscientiousness: 0.73
+      extraversion: 0.53
+      agreeableness: 0.58
+      neuroticism: 0.33
+    values: [fairness, follow-through]
+    goals: [summarize the context, offer one next step]
+    synthetic: true
+events:
+  - timestamp: "2026-06-09T13:00:00"
+    event_type: family.pet_checkpoint
+    participants: [agent_a, agent_b]
+    location: Knoema Demo World > Scenario Library > Family
+    description: "Two relatives confirm feeding and walking times."
+metrics:
+  - name: handoff_accuracy
+    kind: score
+    description: "Scenario-specific score computed from fictional synthetic replay cues."
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null

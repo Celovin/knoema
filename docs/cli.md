@@ -66,3 +66,13 @@ knoema score experiments\50_agent_village\results\sim_log.jsonl
 ```
 
 The command prints JSON with PCS summary statistics, per-agent PCS values, RCS pair counts, and an RCS sample for quick inspection.
+
+## Scenario Validation
+
+Use `validate` to check one Scenario DSL YAML file or every YAML file under a directory:
+
+```powershell
+knoema validate scenarios\library --json
+```
+
+The command prints the number of validated files, failed files, and per-file issues. It returns exit code `0` only when all scenarios load and pass the ethics validator.

@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: community_volunteer_shift
+title: "Volunteer Shift Swap"
+domain: academic_research
+description: "Fictional volunteer coordination scenario for swapping shifts respectfully."
+seed: 20260903
+tick_duration_minutes: 720
+duration_days: 1
+environment:
+  start_time: "2026-06-04T09:00:00"
+  location_path: [Knoema Demo World, Scenario Library, Community]
+  conditions:
+    mode: deterministic
+    category: community
+agents:
+  - agent_id: agent_a
+    name: Ari
+    age: 27
+    background: "Synthetic community participant preparing a calm first response."
+    personality:
+      openness: 0.66
+      conscientiousness: 0.73
+      extraversion: 0.41
+      agreeableness: 0.73
+      neuroticism: 0.33
+    values: [clarity, care]
+    goals: [state one need, listen before deciding]
+    synthetic: true
+  - agent_id: agent_b
+    name: Bora
+    age: 27
+    background: "Synthetic community participant tracking shared constraints."
+    personality:
+      openness: 0.45
+      conscientiousness: 0.67
+      extraversion: 0.47
+      agreeableness: 0.58
+      neuroticism: 0.28
+    values: [fairness, follow-through]
+    goals: [summarize the context, offer one next step]
+    synthetic: true
+events:
+  - timestamp: "2026-06-04T13:00:00"
+    event_type: community.shift_checkpoint
+    participants: [agent_a, agent_b]
+    location: Knoema Demo World > Scenario Library > Community
+    description: "Two volunteers confirm a shift swap and notify the coordinator."
+metrics:
+  - name: swap_reliability
+    kind: score
+    description: "Scenario-specific score computed from fictional synthetic replay cues."
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+  irb_notes: null
