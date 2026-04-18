@@ -185,6 +185,7 @@ Detailed notes:
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)
+- [Discord Community Launch Kit](docs/discord_community.md)
 - [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/knoema_technical_report.pdf)
 
 ## Roadmap
