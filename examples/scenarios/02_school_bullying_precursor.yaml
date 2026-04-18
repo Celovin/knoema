@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: school_climate_precursor
+title: School Climate Precursor
+domain: academic_research
+description: Fictional classroom climate replay for studying support timing and adult intervention.
+seed: 20260419
+tick_duration_minutes: 720
+duration_days: 1
+environment:
+  start_time: "2026-03-03T08:00:00"
+  location_path: [Knoema Demo World, School Wing, Classroom 2]
+  conditions:
+    semester_week: 3
+    supervision: present
+agents:
+  - agent_id: student_a
+    name: Ari
+    age: 15
+    background: Synthetic student preparing a group presentation.
+    personality:
+      openness: 0.67
+      conscientiousness: 0.59
+      extraversion: 0.35
+      agreeableness: 0.63
+      neuroticism: 0.36
+    values: [fairness, privacy]
+    goals: [finish the presentation, ask for support]
+    synthetic: true
+  - agent_id: teacher
+    name: Dana
+    age: 34
+    background: Synthetic teacher monitoring group work.
+    personality:
+      openness: 0.71
+      conscientiousness: 0.82
+      extraversion: 0.55
+      agreeableness: 0.77
+      neuroticism: 0.18
+    values: [student safety, clarity]
+    goals: [notice friction, intervene proportionally]
+    synthetic: true
+events:
+  - timestamp: "2026-03-03T14:00:00"
+    event_type: classroom.support_checkpoint
+    participants: [student_a, teacher]
+    location: Knoema Demo World > School Wing > Classroom 2
+    description: Teacher checks whether group expectations are clear.
+metrics:
+  - name: support_latency
+    kind: latency
+    description: Simulated time until a support action appears.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: true
+  irb_notes: Synthetic minors; use only for design review unless approved.

@@ -32,6 +32,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Prompt templates for English, Korean, Japanese, and Chinese runs
 - Simulation runner with scheduled events and JSONL export
 - `knoema run` CLI for YAML-driven local simulations
+- Scenario DSL v1 for validated YAML scenarios and ethics guardrails
 - Jupyter notebooks for MVP demo tracks and a 10-agent village scale-up
 - 50-agent deterministic village experiment with committed metrics, trace sample, and PDF report
 - Gradio Playground for no-key replay demos and user-supplied LLM API keys
@@ -192,6 +193,17 @@ knoema run examples/cli_dorm.yaml --json
 
 See [CLI](docs/cli.md) for the YAML config shape, output path rules, and dry-run validation.
 
+## Scenario DSL
+
+```python
+from knoema.dsl import load_scenario
+
+scenario = load_scenario("examples/scenarios/01_shopkeeper_winter_crime.yaml")
+logs = scenario.to_simulator().run(duration_days=scenario.duration_days)
+```
+
+See [DSL Tutorial](docs/dsl/tutorial.md), [DSL Reference](docs/dsl/reference.md), and [Scenario JSON Schema](schemas/scenario_v1.json).
+
 ## Godot Integration
 
 See [adapters/godot/README.md](adapters/godot/README.md) for the Godot 4 scaffold, HTTP/local fallback client, and demo scene structure.
@@ -237,6 +249,8 @@ Detailed notes:
 - [Formal Benchmark Report](benchmarks/formal_report/README.md)
 - [Formal Report PDF](benchmarks/formal_report/report.pdf)
 - [Reproducibility Report](docs/reports/reproducibility.md)
+- [DSL Tutorial](docs/dsl/tutorial.md)
+- [DSL Reference](docs/dsl/reference.md)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)

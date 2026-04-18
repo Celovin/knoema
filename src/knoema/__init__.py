@@ -15,6 +15,7 @@ from knoema.benchmark import (
 )
 from knoema.config import KnoemaConfig, load_config
 from knoema.decision import DecisionEngine, decide
+from knoema.dsl import Scenario, load_scenario
 from knoema.emotion import EmotionState, EmotionStimulus
 from knoema.environment import Environment, EnvironmentContext
 from knoema.llm import AnthropicClient, LLMCallRecord, LLMGateway, LocalClient, OpenAIClient
@@ -90,6 +91,7 @@ __all__ = [
     "RelationshipType",
     "RetrievalWeights",
     "SQLiteFaissMemoryStore",
+    "Scenario",
     "ShortTermMemoryBuffer",
     "SimulationLogEntry",
     "Simulator",
@@ -100,6 +102,7 @@ __all__ = [
     "decide",
     "format_markdown_report",
     "load_config",
+    "load_scenario",
     "normalize_prompt_language",
     "render_decision_user_prompt",
     "render_persona_system_prompt",

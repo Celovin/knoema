@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: shopkeeper_winter_replay
+title: Shopkeeper Winter Replay
+domain: public_safety_research
+description: Fictional low-severity shop incident replay for prevention workflow research.
+seed: 20260418
+tick_duration_minutes: 720
+duration_days: 1
+environment:
+  start_time: "2026-01-12T08:00:00"
+  location_path: [Knoema Demo World, Winter Market, Corner Shop]
+  conditions:
+    weather: snow
+    visibility: low
+agents:
+  - agent_id: shopkeeper
+    name: Mina
+    age: 42
+    background: Synthetic shop owner closing inventory before a storm.
+    personality:
+      openness: 0.52
+      conscientiousness: 0.78
+      extraversion: 0.42
+      agreeableness: 0.68
+      neuroticism: 0.31
+    values: [calm, documentation]
+    goals: [close safely, preserve a neutral replay log]
+    synthetic: true
+  - agent_id: neighbor
+    name: Joon
+    age: 37
+    background: Synthetic neighbor checking whether the shop needs help.
+    personality:
+      openness: 0.61
+      conscientiousness: 0.66
+      extraversion: 0.58
+      agreeableness: 0.74
+      neuroticism: 0.22
+    values: [mutual aid]
+    goals: [offer help, avoid escalation]
+    synthetic: true
+events:
+  - timestamp: "2026-01-12T20:00:00"
+    event_type: shop.replay_checkpoint
+    participants: [shopkeeper, neighbor]
+    location: Knoema Demo World > Winter Market > Corner Shop
+    description: Fictional closing-time checkpoint for replay consistency.
+metrics:
+  - name: milestone_coverage
+    kind: ratio
+    description: Share of expected replay milestones represented in the log.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: true
+  irb_notes: Synthetic replay only; review required before any field study.

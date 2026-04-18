@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: public_space_dispute
+title: Public Space Dispute
+domain: public_safety_research
+description: Fictional plaza disagreement replay for testing de-escalation milestone coverage.
+seed: 20260420
+tick_duration_minutes: 720
+duration_days: 1
+environment:
+  start_time: "2026-05-10T10:00:00"
+  location_path: [Knoema Demo World, Riverside Plaza]
+  conditions:
+    crowd_level: moderate
+    event_type: weekend market
+agents:
+  - agent_id: vendor
+    name: Lio
+    age: 46
+    background: Synthetic vendor managing a busy stall.
+    personality:
+      openness: 0.48
+      conscientiousness: 0.73
+      extraversion: 0.51
+      agreeableness: 0.62
+      neuroticism: 0.28
+    values: [order, respectful exchange]
+    goals: [keep the stall open, avoid escalation]
+    synthetic: true
+  - agent_id: mediator
+    name: Sora
+    age: 39
+    background: Synthetic community mediator assigned to the plaza.
+    personality:
+      openness: 0.76
+      conscientiousness: 0.69
+      extraversion: 0.64
+      agreeableness: 0.81
+      neuroticism: 0.16
+    values: [calm, shared facts]
+    goals: [separate concerns, document milestones]
+    synthetic: true
+events:
+  - timestamp: "2026-05-10T16:00:00"
+    event_type: plaza.deescalation_checkpoint
+    participants: [vendor, mediator]
+    location: Knoema Demo World > Riverside Plaza
+    description: Mediator asks each side to restate the shared facts.
+metrics:
+  - name: deescalation_milestones
+    kind: count
+    description: Count of replay milestones that reduce ambiguity.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: true
+  irb_notes: Synthetic de-escalation replay with no identity inference.

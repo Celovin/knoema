@@ -115,6 +115,17 @@ results = store.retrieve_with_scores(
 knoema run examples/cli_dorm.yaml --json
 ```
 
+## Scenario DSL
+
+```python
+from knoema.dsl import load_scenario
+
+scenario = load_scenario('examples/scenarios/01_shopkeeper_winter_crime.yaml')
+logs = scenario.to_simulator().run(duration_days=scenario.duration_days)
+```
+
+자세한 내용은 [DSL Tutorial](docs/dsl/tutorial.md), [DSL Reference](docs/dsl/reference.md), [Scenario JSON Schema](schemas/scenario_v1.json)를 참고하세요.
+
 YAML 설정 형식, 출력 경로 규칙, dry-run 검증은 [CLI](docs/cli.md)를 참고하세요.
 
 ## Godot 연동
@@ -141,6 +152,8 @@ Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 
 - [Formal Benchmark Report](benchmarks/formal_report/README.md)
 - [Formal Report PDF](benchmarks/formal_report/report.pdf)
 - [Reproducibility Report](docs/reports/reproducibility.md)
+- [DSL Tutorial](docs/dsl/tutorial.md)
+- [DSL Reference](docs/dsl/reference.md)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [튜토리얼 블로그 초안](docs/tutorial_blog.md)
