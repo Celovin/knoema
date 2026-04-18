@@ -1,0 +1,27 @@
+\section{Experiments and Evidence}
+
+Knoema's Phase 30 evidence is engineering-oriented. The experiments answer whether the runtime can generate reproducible artifacts, whether the memory policy improves deterministic proxy metrics over a naive full-context baseline, and whether a 50-agent scenario can be committed and replayed as a public artifact.
+
+\subsection{50-Agent Village Experiment}
+
+The 50-agent village experiment runs a deterministic week with 50 synthetic agents, 42 ticks, and 2,100 committed actions. Each agent contributes 42 actions. The run records 100 relationship edges, a deterministic seed of 20260418, a bit-for-bit artifact check, and zero provider cost because it uses local deterministic decisions.
+
+\input{figures/fifty_agent_trace}
+
+\subsection{Formal Benchmark Bundle}
+
+The formal benchmark bundle runs four scenarios across two approaches and three local model profiles, producing 24 deterministic runs. The scenarios measure memory recall, relationship dynamics, narrative branching, and scalability. The comparison baseline is a naive full-context prompt policy. Mesa and Concordia are documented as external references rather than misrepresented as exact reimplementations.
+
+\input{figures/benchmark_matrix}
+\input{tables/benchmark_summary}
+
+Across the deterministic matrix, the Knoema memory policy improves top-k memory recall proxies and token efficiency proxies in every scenario. The paired sign-test over the composite score reports $p=0.000244$. This should be read as deterministic evidence over the benchmark proxy, not as a real-world behavioral claim.
+
+\input{figures/benchmark_snapshot}
+
+\subsection{Reproducibility Tests}
+
+The reproducibility suite checks same-seed bit-for-bit logs and canonical memories, seed propagation, YAML config serialization, and JSONL replay summaries. These tests are part of the ordinary pytest run, so reproducibility regressions are caught by the same CI path as package regressions.
+
+\input{tables/release_artifacts}
+\input{figures/dashboard_surface}

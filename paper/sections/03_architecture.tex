@@ -1,0 +1,30 @@
+\section{Architecture}
+
+Knoema separates persistent state, decision generation, and adapters. Figure~\ref{fig:architecture-flow} summarizes the loop. State modules build an agent-specific context, the decision layer produces an action, and the simulator commits that action to logs, memories, relationship state, and downstream artifacts.
+
+\input{figures/architecture_flow}
+
+\subsection{State Model}
+
+The state model uses simple typed objects. A persona stores identity, background, personality, values, and goals. Short-term memory stores recent local events. Long-term memory stores persisted memories in SQLite and retrieves candidates through a FAISS-compatible vector index. Relationships are directed edges with trust, familiarity, relationship type, and interaction weight. Environment context contains time, location, conditions, and recent world events. Emotion state follows the PAD dimensions of valence, arousal, and dominance.
+
+\input{figures/memory_pipeline}
+\input{figures/relationship_graph}
+
+\subsection{Decision Loop}
+
+At every tick the simulator gathers persona, memory, relationship, environment, and emotion context for an agent. The decision engine renders messages, calls an \texttt{LLMClient}, and parses a strict action structure when possible. Deterministic local clients are used throughout tests and public demos. Provider-backed clients can be added without changing the simulator loop.
+
+\input{figures/reproducibility_loop}
+
+\subsection{Scenario DSL}
+
+The Scenario DSL expresses agents, environment, events, duration, metrics, and ethics flags in YAML. The parser returns typed scenario objects, the validator rejects unsafe or unsupported public-safety claims, and the serializer supports round trips for reproducibility.
+
+\input{figures/scenario_dsl_flow}
+
+\subsection{Adapters}
+
+Adapters consume action contracts and logs rather than private runtime internals. The game SDK exposes deterministic NPC responses in Python, TypeScript, and GDScript. Godot and Unity scaffolds demonstrate engine integration paths. Dashboards consume JSONL logs for inspection and replay.
+
+\input{figures/game_sdk_flow}

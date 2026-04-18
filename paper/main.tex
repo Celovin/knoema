@@ -1,28 +1,33 @@
 \documentclass[11pt]{article}
 
 \usepackage[margin=1in]{geometry}
+\usepackage{array}
 \usepackage{booktabs}
 \usepackage{hyperref}
+\usepackage{longtable}
 \usepackage{times}
 \usepackage{url}
 
-\title{Knoema Engine: A Lightweight LLM-Based Multi-Agent Social Simulation Runtime}
+\title{Knoema Engine: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation}
 \author{Celovin\\\texttt{hello@celovin.com}}
 \date{April 2026}
 
 \begin{document}
 \maketitle
 
-\input{sections/abstract}
-\input{sections/introduction}
-\input{sections/related}
-\input{sections/architecture}
-\input{sections/implementation}
-\input{sections/experiments}
-\input{sections/safety}
-\input{sections/conclusion}
+\input{abstract}
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_architecture}
+\input{sections/04_experiments}
+\input{sections/05_applications}
+\input{sections/06_discussion}
+\input{sections/07_conclusion}
+\appendix
+\input{appendix}
 
 \bibliographystyle{plain}
+\nocite{*}
 \bibliography{references}
 
 \end{document}

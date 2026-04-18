@@ -1,0 +1,17 @@
+\section{Applications}
+
+Knoema keeps one runtime while exposing different public surfaces for games, synthetic replay research, and academic simulation.
+
+\subsection{Persistent Game NPCs}
+
+The game path treats the LLM as an optional dialogue provider behind a deterministic NPC contract. The current SDK response contains text, emotion, branch flags, and raw debugging state. This contract is intentionally small so a game can test behavior before connecting provider-backed dialogue.
+
+\subsection{Synthetic Replay Research}
+
+The replay path uses fictional, non-identifying scenarios to inspect event traces. A scenario can define a known event sequence, run synthetic agents, and compare generated actions against process milestones. This is a replay and education workflow, not a prediction workflow.
+
+\subsection{Academic Simulation}
+
+The academic path emphasizes reproducible artifacts. Configurations, seeds, logs, metrics, dashboards, and reports remain close to the code. The MkDocs site and LaTeX report make the public API and evidence bundle easier to audit.
+
+\input{figures/safety_boundary}

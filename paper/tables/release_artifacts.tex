@@ -1,0 +1,17 @@
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\toprule
+Artifact & Path & Verification \\
+\midrule
+Core runtime & \texttt{src/knoema} & pytest, ruff, mypy \\
+Scenario DSL & \texttt{src/knoema/dsl} & parser, validator, serializer tests \\
+50-agent run & \texttt{experiments/50\_agent\_village} & hash and metrics tests \\
+Formal benchmark & \texttt{benchmarks/formal\_report} & deterministic output tests \\
+Game SDK & \texttt{sdk} & Python, TypeScript, GDScript contract tests \\
+Docs site & \texttt{mkdocs.yml} & mkdocs build \\
+\bottomrule
+\end{tabular}
+\caption{Public artifacts used by the Phase 30 report.}
+\label{tab:release-artifacts}
+\end{table}

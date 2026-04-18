@@ -1,0 +1,20 @@
+\section{Artifact Appendix}
+
+\subsection{Repository Layout}
+
+The public repository contains the Python package in \texttt{src/knoema}, notebooks in \texttt{examples}, game adapters under \texttt{adapters}, SDK facades under \texttt{sdk}, dashboards under \texttt{dashboard} and \texttt{saas}, benchmark bundles under \texttt{benchmarks}, and documentation under \texttt{docs}.
+
+\subsection{Reproducibility Checklist}
+
+\begin{itemize}
+  \item Fixed seeds are part of scenario and experiment configuration.
+  \item JSONL logs are committed for formal experiments where appropriate.
+  \item Dashboard inspection consumes exported logs rather than simulator internals.
+  \item Public-safety examples are fictional, synthetic, and non-identifying.
+  \item Provider keys are not committed or persisted in public demos.
+  \item CI runs lint, type checks, and pytest on Python 3.11 and 3.12.
+\end{itemize}
+
+\subsection{Build Notes}
+
+The LaTeX source is intended for an arXiv-style preprint build with a local TeX distribution. The repository also includes \texttt{paper/build\_pdf.py}, a ReportLab preview builder used when a LaTeX engine is not present in the local Windows environment.

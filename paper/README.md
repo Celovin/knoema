@@ -1,12 +1,16 @@
 # Knoema Technical Report
 
-This folder contains the Phase 12 technical report draft.
+This folder contains the Phase 30 arXiv-oriented technical report draft. It keeps the earlier Phase 12 source files for continuity and adds the v2 preprint structure used by `main.tex`.
 
 ## Files
 
-- `main.tex`: arXiv-oriented LaTeX source.
-- `sections/`: paper sections included by `main.tex`.
-- `references.bib`: BibTeX references.
+- `main.tex`: arXiv-oriented LaTeX source for the Phase 30 draft.
+- `abstract.tex`: paper abstract included by `main.tex`.
+- `sections/01_*.tex` through `sections/07_*.tex`: v2 paper sections.
+- `figures/`: LaTeX figure blocks for architecture, DSL, SDK, benchmark, and safety diagrams.
+- `tables/`: LaTeX tables for benchmark and release-artifact summaries.
+- `appendix.tex`: artifact and reproducibility appendix.
+- `references.bib`: expanded BibTeX references for the preprint.
 - `build_pdf.py`: local PDF preview builder using ReportLab.
 - `knoema_technical_report.pdf`: generated preview PDF for meetings.
 
@@ -30,4 +34,4 @@ pdflatex main.tex
 pdflatex main.tex
 ```
 
-The current Windows environment used for this draft did not include a LaTeX engine, so the committed PDF is generated from the same report content with ReportLab.
+The current Windows environment used for this draft did not include a LaTeX engine. The committed preview PDF is generated from the same report content with ReportLab and visually checked by rendering pages with Poppler.

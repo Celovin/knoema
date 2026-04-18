@@ -327,6 +327,7 @@ Detailed notes:
 - [Hugging Face Playground Guide](playground/README.md)
 - [Website App](website/app/page.tsx)
 - [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/knoema_technical_report.pdf)
+- [arXiv-oriented Phase 30 Preprint Source](paper/main.tex), [Appendix](paper/appendix.tex), and [Expanded References](paper/references.bib)
 
 ## Roadmap
 

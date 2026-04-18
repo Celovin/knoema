@@ -1,0 +1,17 @@
+\section{Discussion}
+
+\subsection{What The Current Evidence Supports}
+
+The current evidence supports an engineering claim: explicit state, deterministic logs, and adapter contracts make persistent-agent systems easier to inspect and test. The repository demonstrates this through 136 local tests, benchmark artifacts, a public Playground, dashboards, SDK facades, and generated documentation.
+
+\subsection{What It Does Not Support}
+
+The current evidence does not establish real-world behavioral validity, general human simulation accuracy, production game quality, or safe deployment in operational public-safety environments. The public-safety track is limited to synthetic replay and prevention-oriented analysis.
+
+\subsection{Threats To Validity}
+
+Deterministic local clients understate the variability of live LLM providers. Hash embeddings are useful for reproducible tests but weaker than production semantic encoders. The naive baseline is intentionally simple. Human evaluation has not yet been run. Larger-scale experiments need memory-store stress tests, model comparisons, and independent review.
+
+\subsection{Release Discipline}
+
+Knoema uses repository-level checks to prevent private planning documents and unrelated entity references from entering public files. Runtime artifacts such as logs, SQLite databases, FAISS indexes, checkpoints, and documentation build output are ignored by git.
