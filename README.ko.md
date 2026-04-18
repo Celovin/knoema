@@ -63,6 +63,15 @@ pip install -e ".[dashboard]"
 streamlit run dashboard/app.py
 ```
 
+## Research SaaS
+
+```bash
+pip install -r saas/requirements.txt
+streamlit run saas/app.py
+```
+
+Research dashboard는 simulation run, A/B comparison, memory inspection, relationship exploration, cost budget, citation export 6개 page를 제공합니다.
+
 브라우저에서 `http://localhost:8501`을 열고 `Simulator.export_logs(...)`가 만든 JSONL 로그를 불러오면 됩니다. 샘플 로그도 포함되어 있습니다.
 
 ## 벤치마크
@@ -154,6 +163,7 @@ Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 
 - [Reproducibility Report](docs/reports/reproducibility.md)
 - [DSL Tutorial](docs/dsl/tutorial.md)
 - [DSL Reference](docs/dsl/reference.md)
+- [Research SaaS App](saas/app.py)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [튜토리얼 블로그 초안](docs/tutorial_blog.md)

@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 20 formal benchmark report bundle with 24 deterministic runs, baseline discipline notes, SVG figures, summary statistics, and a 20-page PDF report.
 - Phase 21 reproducibility test suite covering same-seed determinism, seed propagation, config serialization, JSONL replay summaries, and a public reproducibility report.
 - Phase 22 Scenario DSL v1 with Pydantic schema, YAML parser, ethics validator, serializer, JSON Schema, three sample scenarios, and DSL documentation.
+- Phase 23 Research SaaS dashboard scaffold with six Streamlit pages, A/B comparison services, memory and relationship inspectors, cost budget, and citation export helpers.
 
 ## [0.1.0] - 2026-04-18
 

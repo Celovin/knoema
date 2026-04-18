@@ -40,6 +40,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Godot 4 adapter scaffold
 - Unity 2022 LTS adapter scaffold for Package Manager Git installs
 - Streamlit dashboard for inspecting simulation logs with playback and live-tail controls
+- Research SaaS dashboard scaffold for experiment comparison, memory inspection, cost budget, and citation export
 
 ## Install
 
@@ -140,6 +141,15 @@ streamlit run dashboard/app.py
 ```
 
 Open `http://localhost:8501`, then load a JSONL file produced by `Simulator.export_logs(...)` or use the bundled sample.
+
+## Research SaaS
+
+```bash
+pip install -r saas/requirements.txt
+streamlit run saas/app.py
+```
+
+The research dashboard includes six pages for simulation runs, A/B comparison, memory inspection, relationship exploration, cost budgeting, and citation export.
 
 ## Benchmarks
 
@@ -251,6 +261,7 @@ Detailed notes:
 - [Reproducibility Report](docs/reports/reproducibility.md)
 - [DSL Tutorial](docs/dsl/tutorial.md)
 - [DSL Reference](docs/dsl/reference.md)
+- [Research SaaS App](saas/app.py)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)
