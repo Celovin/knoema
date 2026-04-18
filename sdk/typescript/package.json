@@ -1,0 +1,16 @@
+{
+  "name": "@celovin/knoema-game",
+  "version": "0.1.0",
+  "description": "Game NPC SDK facade for Knoema Engine integrations.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --declaration --outDir dist",
+    "check": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

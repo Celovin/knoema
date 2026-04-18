@@ -1,0 +1,5 @@
+npc_id: shopkeeper
+name: Mina
+background: Synthetic shopkeeper coordinating a lantern market stall.
+values: [calm, trust, clear records]
+goals: [answer the player consistently, remember local context]

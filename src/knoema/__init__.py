@@ -18,6 +18,7 @@ from knoema.decision import DecisionEngine, decide
 from knoema.dsl import Scenario, load_scenario
 from knoema.emotion import EmotionState, EmotionStimulus
 from knoema.environment import Environment, EnvironmentContext
+from knoema.game import NPC, GameSession, NPCResponse
 from knoema.llm import AnthropicClient, LLMCallRecord, LLMGateway, LocalClient, OpenAIClient
 from knoema.memory import (
     HashEmbeddingEncoder,
@@ -54,6 +55,7 @@ __author__ = "Celovin"
 __license__ = "MIT"
 
 __all__ = [
+    "NPC",
     "SUPPORTED_PROMPT_LANGUAGES",
     "Action",
     "AgentID",
@@ -68,6 +70,7 @@ __all__ = [
     "EmotionStimulus",
     "Environment",
     "EnvironmentContext",
+    "GameSession",
     "HashEmbeddingEncoder",
     "InteractionOutcome",
     "KnoemaConfig",
@@ -81,6 +84,7 @@ __all__ = [
     "MemorySummarizer",
     "MemoryType",
     "MemoryWriter",
+    "NPCResponse",
     "OpenAIClient",
     "Persona",
     "Personality",

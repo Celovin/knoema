@@ -35,6 +35,7 @@ Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정�
 - MVP 데모 트랙과 10명 마을 확장 실험을 보여주는 Jupyter 노트북
 - JSON과 Markdown 리포트를 생성하는 deterministic benchmark script
 - Godot 4 어댑터 스캐폴드
+- Python, TypeScript, GDScript Game SDK facade
 - Playback과 live-tail control을 포함한 Streamlit 시뮬레이션 로그 대시보드
 
 ## 설치
@@ -137,6 +138,27 @@ logs = scenario.to_simulator().run(duration_days=scenario.duration_days)
 
 YAML 설정 형식, 출력 경로 규칙, dry-run 검증은 [CLI](docs/cli.md)를 참고하세요.
 
+## Game SDK
+
+Knoema는 설치형 Python 패키지, TypeScript 도구, Godot GDScript 프로토타입에서 사용할 수 있는 deterministic NPC SDK facade를 제공합니다.
+
+```python
+from knoema.game import GameSession
+
+session = GameSession(game_id='demo-village')
+npc = session.create_npc(
+    persona_file='sdk/python/examples/personas/shopkeeper.yaml',
+    initial_relationships={'player': 'neighbor'},
+)
+response = npc.interact('asks about the lantern market', context={'location': 'Harbor Village'})
+print(response.text)
+```
+
+- [Python Game SDK](docs/sdk/python-api.md)
+- [TypeScript Game SDK](docs/sdk/typescript-api.md)
+- [Godot GDScript Game SDK](docs/sdk/godot-api.md)
+- [Game SDK Integration Patterns](docs/sdk/integration_patterns.md)
+
 ## Godot 연동
 
 Godot 4 스캐폴드, HTTP/local fallback client, 데모 씬 구조는 [adapters/godot/README.md](adapters/godot/README.md)를 참고하세요.
@@ -163,6 +185,10 @@ Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 
 - [Reproducibility Report](docs/reports/reproducibility.md)
 - [DSL Tutorial](docs/dsl/tutorial.md)
 - [DSL Reference](docs/dsl/reference.md)
+- [Python Game SDK](docs/sdk/python-api.md)
+- [TypeScript Game SDK](docs/sdk/typescript-api.md)
+- [Godot GDScript Game SDK](docs/sdk/godot-api.md)
+- [Game SDK Integration Patterns](docs/sdk/integration_patterns.md)
 - [Research SaaS App](saas/app.py)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)

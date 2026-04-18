@@ -39,6 +39,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Deterministic benchmark scripts with JSON, Markdown, SVG figures, and PDF reports
 - Godot 4 adapter scaffold
 - Unity 2022 LTS adapter scaffold for Package Manager Git installs
+- Game SDK facades for Python, TypeScript, and GDScript NPC integrations
 - Streamlit dashboard for inspecting simulation logs with playback and live-tail controls
 - Research SaaS dashboard scaffold for experiment comparison, memory inspection, cost budget, and citation export
 
@@ -214,6 +215,35 @@ logs = scenario.to_simulator().run(duration_days=scenario.duration_days)
 
 See [DSL Tutorial](docs/dsl/tutorial.md), [DSL Reference](docs/dsl/reference.md), and [Scenario JSON Schema](schemas/scenario_v1.json).
 
+## Game SDK
+
+Knoema includes deterministic NPC SDK facades for installed Python packages, TypeScript tooling, and direct Godot GDScript prototypes.
+
+```python
+from knoema.game import GameSession
+
+session = GameSession(game_id="demo-village")
+npc = session.create_npc(
+    persona_file="sdk/python/examples/personas/shopkeeper.yaml",
+    initial_relationships={"player": "neighbor"},
+)
+response = npc.interact("asks about the lantern market", context={"location": "Harbor Village"})
+print(response.text)
+```
+
+Run the Python example after installing the package in editable mode:
+
+```bash
+python sdk/python/examples/basic_npc.py
+```
+
+SDK references:
+
+- [Python Game SDK](docs/sdk/python-api.md)
+- [TypeScript Game SDK](docs/sdk/typescript-api.md)
+- [Godot GDScript Game SDK](docs/sdk/godot-api.md)
+- [Game SDK Integration Patterns](docs/sdk/integration_patterns.md)
+
 ## Godot Integration
 
 See [adapters/godot/README.md](adapters/godot/README.md) for the Godot 4 scaffold, HTTP/local fallback client, and demo scene structure.
@@ -261,6 +291,10 @@ Detailed notes:
 - [Reproducibility Report](docs/reports/reproducibility.md)
 - [DSL Tutorial](docs/dsl/tutorial.md)
 - [DSL Reference](docs/dsl/reference.md)
+- [Python Game SDK](docs/sdk/python-api.md)
+- [TypeScript Game SDK](docs/sdk/typescript-api.md)
+- [Godot GDScript Game SDK](docs/sdk/godot-api.md)
+- [Game SDK Integration Patterns](docs/sdk/integration_patterns.md)
 - [Research SaaS App](saas/app.py)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
