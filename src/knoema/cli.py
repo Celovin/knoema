@@ -18,6 +18,13 @@ from knoema.llm import LocalClient
 from knoema.persona import Persona
 from knoema.prompts import PromptLanguage, normalize_prompt_language
 from knoema.simulator import Simulator
+from knoema.telemetry import (
+    NullTelemetryClient,
+    TelemetryClient,
+    build_cli_properties,
+    build_env_telemetry_client,
+    telemetry_opt_in_from_env,
+)
 from knoema.types import Personality, WorldEvent
 
 
@@ -212,15 +219,47 @@ def build_parser() -> argparse.ArgumentParser:
         help="Validate config and print a summary without running or writing logs.",
     )
     run_parser.add_argument("--json", action="store_true", help="Print summary as JSON.")
+    run_parser.add_argument(
+        "--telemetry",
+        action="store_true",
+        help="Opt in to anonymous usage telemetry for this command.",
+    )
     return parser
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def main(
+    argv: Sequence[str] | None = None,
+    telemetry_client: TelemetryClient | NullTelemetryClient | None = None,
+) -> int:
     parser = build_parser()
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     if args.command == "run":
-        summary = run_config(args.config, output_path=args.output, dry_run=args.dry_run)
+        telemetry = _resolve_telemetry_client(
+            force_enable=args.telemetry,
+            provided_client=telemetry_client,
+        )
+        base_properties = build_cli_properties(
+            dry_run=args.dry_run,
+            json_output=args.json,
+        )
+        telemetry.capture("cli_run_requested", properties=base_properties)
+        try:
+            summary = run_config(args.config, output_path=args.output, dry_run=args.dry_run)
+        except Exception:
+            telemetry.capture("cli_run_failed", properties=base_properties)
+            raise
+        summary_properties = build_cli_properties(
+            dry_run=args.dry_run,
+            json_output=args.json,
+            agent_count=summary.agent_count,
+            duration_days=summary.duration_days,
+            tick_duration_minutes=summary.tick_duration_minutes,
+            scheduled_events=summary.scheduled_events,
+            log_count=summary.log_count,
+            prompt_language=summary.prompt_language,
+        )
+        telemetry.capture("cli_run_completed", properties=summary_properties)
         if args.json:
             print(json.dumps(summary.to_json_dict(), ensure_ascii=False, sort_keys=True))
         else:
@@ -228,6 +267,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"Wrote {summary.log_count} actions for {summary.agent_count} agents "
                 f"to {summary.output_path}"
             )
+        telemetry.capture("cli_summary_emitted", properties=summary_properties)
         return 0
     parser.error(f"Unknown command: {args.command}")
     return 2
@@ -245,6 +285,18 @@ def _resolve_output_path(
     if output_path is not None:
         return Path.cwd() / selected
     return config_dir / selected
+
+
+def _resolve_telemetry_client(
+    *,
+    force_enable: bool,
+    provided_client: TelemetryClient | NullTelemetryClient | None,
+) -> TelemetryClient | NullTelemetryClient:
+    if not force_enable and not telemetry_opt_in_from_env():
+        return NullTelemetryClient()
+    if provided_client is not None:
+        return provided_client
+    return build_env_telemetry_client(force_enable=True)
 
 
 if __name__ == "__main__":

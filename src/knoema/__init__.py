@@ -49,6 +49,16 @@ from knoema.prompts import (
 from knoema.protocols import LLMClient, MemoryRetriever, MemoryWriter, PromptRenderable
 from knoema.relationship import InteractionOutcome, Relationship, RelationshipGraph
 from knoema.simulator import SimulationLogEntry, Simulator
+from knoema.telemetry import (
+    NullTelemetryClient,
+    TelemetryClient,
+    TelemetryEvent,
+    TelemetrySettings,
+    build_cli_properties,
+    build_env_telemetry_client,
+    load_or_create_anonymous_id,
+    telemetry_opt_in_from_env,
+)
 from knoema.types import (
     Action,
     AgentID,
@@ -97,6 +107,7 @@ __all__ = [
     "MemoryType",
     "MemoryWriter",
     "NPCResponse",
+    "NullTelemetryClient",
     "OllamaClient",
     "OpenAIClient",
     "Persona",
@@ -112,17 +123,24 @@ __all__ = [
     "ShortTermMemoryBuffer",
     "SimulationLogEntry",
     "Simulator",
+    "TelemetryClient",
+    "TelemetryEvent",
+    "TelemetrySettings",
     "VLLMClient",
     "WorldEvent",
     "__version__",
+    "build_cli_properties",
     "build_comparison_rows",
+    "build_env_telemetry_client",
     "build_village_personas",
     "decide",
     "format_markdown_report",
     "load_config",
+    "load_or_create_anonymous_id",
     "load_scenario",
     "normalize_prompt_language",
     "render_decision_user_prompt",
     "render_persona_system_prompt",
     "run_knoema_benchmark",
+    "telemetry_opt_in_from_env",
 ]

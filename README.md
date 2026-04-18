@@ -326,6 +326,7 @@ Detailed notes:
 - [Game SDK Integration Patterns](docs/sdk/integration_patterns.md)
 - [Research SaaS App](saas/app.py)
 - [Security Policy](docs/SECURITY.md) and [Phase 34 Security Audit](docs/security/audit_2026-04-18.md)
+- [Privacy](docs/PRIVACY.md)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [Local vs Cloud LLM Fallback Notes](src/knoema/llm/local/benchmarks/local_vs_cloud.md)
