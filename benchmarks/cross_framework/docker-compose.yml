@@ -1,0 +1,5 @@
+services:
+  cross-framework-benchmark:
+    build: .
+    volumes:
+      - ./results:/app/results

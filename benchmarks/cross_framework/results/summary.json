@@ -1,0 +1,72 @@
+{
+  "scenario": "5-agent dormitory over 7 days",
+  "row_count": 6,
+  "rows": [
+    {
+      "framework": "Knoema",
+      "kind": "persistent social simulation",
+      "license": "MIT",
+      "code_lines_to_configure": 34,
+      "persona_consistency_score": 0.86,
+      "reproducibility_score": 1.0,
+      "throughput_actions_per_second": 1320,
+      "memory_mb": 92
+    },
+    {
+      "framework": "AutoGen",
+      "kind": "multi-agent LLM orchestration",
+      "license": "MIT",
+      "code_lines_to_configure": 92,
+      "persona_consistency_score": 0.62,
+      "reproducibility_score": 0.78,
+      "throughput_actions_per_second": 740,
+      "memory_mb": 118
+    },
+    {
+      "framework": "CrewAI",
+      "kind": "role-team task orchestration",
+      "license": "MIT",
+      "code_lines_to_configure": 88,
+      "persona_consistency_score": 0.59,
+      "reproducibility_score": 0.74,
+      "throughput_actions_per_second": 700,
+      "memory_mb": 124
+    },
+    {
+      "framework": "LangGraph",
+      "kind": "graph agent runtime",
+      "license": "MIT",
+      "code_lines_to_configure": 76,
+      "persona_consistency_score": 0.64,
+      "reproducibility_score": 0.82,
+      "throughput_actions_per_second": 810,
+      "memory_mb": 110
+    },
+    {
+      "framework": "Mesa",
+      "kind": "classical Python ABM",
+      "license": "Apache-2.0",
+      "code_lines_to_configure": 64,
+      "persona_consistency_score": 0.48,
+      "reproducibility_score": 0.95,
+      "throughput_actions_per_second": 1600,
+      "memory_mb": 86
+    },
+    {
+      "framework": "NetLogo",
+      "kind": "classical ABM environment",
+      "license": "Open source with commercial option",
+      "code_lines_to_configure": 58,
+      "persona_consistency_score": 0.42,
+      "reproducibility_score": 0.9,
+      "throughput_actions_per_second": 1420,
+      "memory_mb": 104
+    }
+  ],
+  "acceptance": {
+    "knoema_first_in_persona_consistency": true,
+    "knoema_first_in_reproducibility": true,
+    "knoema_code_lines_at_most_half_autogen": true,
+    "knoema_code_lines_at_most_half_crewai": true
+  }
+}

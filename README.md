@@ -47,6 +47,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - 50-agent deterministic village experiment with committed metrics, trace sample, and PDF report
 - Gradio Playground for no-key replay demos and user-supplied LLM API keys
 - Deterministic benchmark scripts with JSON, Markdown, SVG figures, and PDF reports
+- Cross-framework comparison benchmark against AutoGen, CrewAI, LangGraph, Mesa, and NetLogo
 - Godot 4 adapter scaffold
 - Unity 2022 LTS adapter scaffold for Package Manager Git installs
 - Game SDK facades for Python, TypeScript, and GDScript NPC integrations

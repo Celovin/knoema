@@ -87,6 +87,7 @@ nav:
       - Godot SDK: sdk/godot-api.md
       - Integration Patterns: sdk/integration_patterns.md
   - Reports:
+      - Cross-Framework Benchmark: benchmarks/cross_framework.md
       - Competitor Matrix: competitor_matrix.md
       - Reproducibility Report: reports/reproducibility.md
   - Reproductions:
