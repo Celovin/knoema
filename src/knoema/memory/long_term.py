@@ -117,11 +117,19 @@ class SQLiteFaissMemoryStore:
             self._path.parent.mkdir(parents=True, exist_ok=True)
         self._connection = sqlite3.connect(database)
         self._connection.row_factory = sqlite3.Row
+        self._configure_connection()
         self._index = faiss.IndexFlatIP(self.encoder.dimension)
         self._memory_ids: list[str] = []
         self._records: dict[str, Memory] = {}
         self._ensure_schema()
         self._load_existing()
+
+    def _configure_connection(self) -> None:
+        self._connection.execute("PRAGMA foreign_keys = ON")
+        self._connection.execute("PRAGMA temp_store = MEMORY")
+        if self._path is not None:
+            self._connection.execute("PRAGMA journal_mode = WAL")
+            self._connection.execute("PRAGMA synchronous = NORMAL")
 
     def _ensure_schema(self) -> None:
         self._connection.execute(
