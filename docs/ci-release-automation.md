@@ -58,6 +58,13 @@ The local `website/.vercel/project.json` link file is machine-specific and is ig
 
 Add `--fail-on-blockers` when you want a non-zero exit code if any activation blocker is still present.
 
+When the only remaining blocker is Hugging Face authentication, deploy the Playground with:
+
+```powershell
+cd C:\Users\admin\Projects\knoema
+.venv\Scripts\python scripts\deploy_playground_space.py
+```
+
 ## Tag Release
 
 The `Release` workflow runs only for tags matching `v*.*.*`.

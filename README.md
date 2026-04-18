@@ -141,6 +141,12 @@ pip install -r playground/requirements.txt
 python playground/app.py
 ```
 
+Space deploy helper:
+
+```bash
+python scripts/deploy_playground_space.py
+```
+
 ## Website
 
 ```bash
@@ -364,7 +370,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Release Prep
 
-Local package and Docker release checks are documented in [RELEASE.md](RELEASE.md). CI and release automation are documented in [CI and Release Automation](docs/ci-release-automation.md). The repository includes Release Please version PRs and a tag-triggered GitHub Release workflow with PyPI Trusted Publishing gated by the `pypi` environment. Use `python scripts/external_activation_status.py` before external activation steps to confirm release and deployment blockers plus suggested next actions in one JSON snapshot, or `python scripts/pre_release_check.py --version 0.1.1` to combine that status with a local release dry run.
+Local package and Docker release checks are documented in [RELEASE.md](RELEASE.md). CI and release automation are documented in [CI and Release Automation](docs/ci-release-automation.md). The repository includes Release Please version PRs and a tag-triggered GitHub Release workflow with PyPI Trusted Publishing gated by the `pypi` environment. Use `python scripts/external_activation_status.py` before external activation steps to confirm release and deployment blockers plus suggested next actions in one JSON snapshot, `python scripts/deploy_playground_space.py` once Hugging Face auth is ready, or `python scripts/pre_release_check.py --version 0.1.1` to combine activation status with a local release dry run.
 
 ## License
 

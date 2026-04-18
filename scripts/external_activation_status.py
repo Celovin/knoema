@@ -143,11 +143,11 @@ def _suggested_actions(
     if hf_user != OWNER:
         if hf_env_token_names:
             actions.append(
-                "Replace the current Hugging Face environment token with a Celovin-scoped token and verify with `hf auth whoami`."
+                "Replace the current Hugging Face environment token with a Celovin-scoped token, verify with `hf auth whoami`, then run `python scripts/deploy_playground_space.py`."
             )
         else:
             actions.append(
-                "Authenticate Hugging Face as Celovin with `hf auth login`, then verify with `hf auth whoami`."
+                "Authenticate Hugging Face as Celovin with `hf auth login`, verify with `hf auth whoami`, then run `python scripts/deploy_playground_space.py`."
             )
     if not website_project_link_exists:
         if vercel_identity is None:

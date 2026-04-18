@@ -41,6 +41,18 @@ cd C:\Users\admin\Projects\knoema
 
 ## Hugging Face Space Deployment
 
+Preferred command:
+
+```powershell
+cd C:\Users\admin\Projects\knoema
+.venv\Scripts\python scripts\deploy_playground_space.py
+```
+
+The helper validates that `hf auth whoami` resolves to `Celovin`, creates the Space if needed,
+and uploads the contents of `playground/`.
+
+Manual fallback:
+
 1. Create a new public Space named `Celovin/knoema-playground`.
 2. Select the Gradio SDK.
 3. Upload the contents of this `playground/` directory.
