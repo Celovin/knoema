@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 14 publish-ready tutorial blog draft for Medium and velog cross-posting.
 - Phase 14 Discord community launch kit with channel layout, rules, announcement copy, and moderation checklist.
 - Phase 15 Hugging Face Playground with three scenarios, replay-only mode, optional user-supplied LLM keys, timeline, relationship graph, and JSONL download.
+- Phase 16 Unity 2022 LTS adapter scaffold with UPM package metadata, runtime HTTP/fallback client, NPCAgent component, Basic NPC sample, and Editor test scaffold.
 
 ## [0.1.0] - 2026-04-18
 

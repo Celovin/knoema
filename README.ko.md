@@ -99,6 +99,16 @@ YAML 설정 형식, 출력 경로 규칙, dry-run 검증은 [CLI](docs/cli.md)�
 
 Godot 4 스캐폴드, HTTP/local fallback client, 데모 씬 구조는 [adapters/godot/README.md](adapters/godot/README.md)를 참고하세요.
 
+## Unity 연동
+
+Unity Package Manager에서 다음 Git URL로 설치할 수 있습니다.
+
+```text
+https://github.com/Celovin/knoema.git?path=adapters/unity
+```
+
+Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 컴포넌트, Basic NPC 샘플은 [adapters/unity/README.md](adapters/unity/README.md)를 참고하세요.
+
 ## 문서
 
 - [Architecture](docs/architecture.md)

@@ -36,6 +36,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Gradio Playground for no-key replay demos and user-supplied LLM API keys
 - Deterministic benchmark script with JSON and Markdown reports
 - Godot 4 adapter scaffold
+- Unity 2022 LTS adapter scaffold for Package Manager Git installs
 - Streamlit dashboard for inspecting simulation logs with playback and live-tail controls
 
 ## Install
@@ -171,6 +172,16 @@ See [CLI](docs/cli.md) for the YAML config shape, output path rules, and dry-run
 ## Godot Integration
 
 See [adapters/godot/README.md](adapters/godot/README.md) for the Godot 4 scaffold, HTTP/local fallback client, and demo scene structure.
+
+## Unity Integration
+
+Install the Unity adapter with Package Manager:
+
+```text
+https://github.com/Celovin/knoema.git?path=adapters/unity
+```
+
+See [adapters/unity/README.md](adapters/unity/README.md) for the Unity 2022.3 LTS package scaffold, HTTP/local fallback client, `NPCAgent` component, and Basic NPC sample.
 
 ## Architecture
 
