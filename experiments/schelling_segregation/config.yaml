@@ -1,0 +1,20 @@
+scenario_name: Schelling Segregation Reproduction
+seed: 20260419
+grid_size: 50
+agent_count: 2000
+max_steps: 200
+block_size: 3
+thresholds:
+  - 0.3
+  - 0.5
+  - 0.7
+modes:
+  - name: deterministic
+    seed_offset: 0
+    note: Fixed-rule baseline for the paper-aligned reproduction.
+  - name: ollama
+    seed_offset: 101
+    note: Local-runtime label using the same seeded move policy without external inference.
+  - name: api
+    seed_offset: 202
+    note: Cloud-runtime label using the same seeded move policy without external inference.

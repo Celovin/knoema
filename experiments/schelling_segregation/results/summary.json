@@ -1,0 +1,46 @@
+{
+  "agent_count": 2000,
+  "block_size": 3,
+  "deterministic_alignment": {
+    "threshold_0.3_actual": 0.548,
+    "threshold_0.3_in_expected_band": true,
+    "threshold_0.3_target": 0.5,
+    "threshold_0.7_actual": 0.942,
+    "threshold_0.7_in_expected_band": true,
+    "threshold_0.7_target": 0.95
+  },
+  "deterministic_results": {
+    "0.3": {
+      "mean_neighbor_similarity": 0.73,
+      "segregation_index": 0.548,
+      "steps": 12
+    },
+    "0.5": {
+      "mean_neighbor_similarity": 0.876,
+      "segregation_index": 0.758,
+      "steps": 18
+    },
+    "0.7": {
+      "mean_neighbor_similarity": 0.995,
+      "segregation_index": 0.942,
+      "steps": 69
+    }
+  },
+  "grid_size": 50,
+  "modes": [
+    "deterministic",
+    "ollama",
+    "api"
+  ],
+  "reproducibility": {
+    "bit_for_bit_artifacts": true,
+    "config_fingerprint": "871bc40905ddd10338a415bbf6c38e60b602f97044de97d4f059a7a962cbd9f3",
+    "runs_jsonl_sha256": "b9086ed453eced54b37fd5cc0c1edb3b3f8c0de96638a372ec86065e1d526b18"
+  },
+  "scenario_name": "Schelling Segregation Reproduction",
+  "thresholds": [
+    0.3,
+    0.5,
+    0.7
+  ]
+}
