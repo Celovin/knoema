@@ -7,7 +7,11 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/Celovin/knoema-playground)
 
-English: [README.md](README.md)
+## 언어
+
+| English | 한국어 | 日本語 | 简体中文 | 繁體中文 | Deutsch | Français | Español |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) |
 
 Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정을 가진 지속형 에이전트를 모델링하는 초기 MVP입니다. 하나의 런타임으로 게임 NPC, 완전 가상 공공안전 리플레이 연구, 재현 가능한 에이전트 기반 사회 시뮬레이션을 지원합니다.
 

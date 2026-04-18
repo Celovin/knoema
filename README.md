@@ -9,7 +9,11 @@
 [![DOI: pending](https://img.shields.io/badge/DOI-pending-lightgrey)](docs/research/academic-indexing.md)
 [![Papers with Code: submission packet](https://img.shields.io/badge/Papers%20with%20Code-submission%20packet-blue)](docs/research/academic-indexing.md)
 
-Korean: [README.ko.md](README.ko.md)
+## Languages
+
+| English | 한국어 | 日本語 | 简体中文 | 繁體中文 | Deutsch | Français | Español |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) |
 
 Knoema Engine is an early MVP for modeling persistent agents with memory, relationships, emotions, environment context, and LLM-backed decisions. The same runtime can support narrative NPCs, fictional public-safety replay research, and reproducible agent-based social simulation.
 
