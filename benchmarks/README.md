@@ -17,6 +17,14 @@ python benchmarks\run_benchmark.py `
 
 The Markdown report includes explicit comparison slots for Concordia and Mesa. Those rows are marked `not-measured` unless equivalent external adapter runs are performed. This avoids claiming external performance numbers without running the same scenario under the same environment.
 
+The Phase 20 formal bundle expands this into 24 deterministic runs, source SVG figures, a Markdown summary, and a 20-page PDF report:
+
+```powershell
+python benchmarks\formal_report\runner.py
+```
+
+See [formal_report/README.md](formal_report/README.md) and [formal_report/report.pdf](formal_report/report.pdf).
+
 Recommended comparison discipline:
 
 - Keep agent count, tick cadence, duration, and local deterministic policy equivalent.

@@ -35,7 +35,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Jupyter notebooks for MVP demo tracks and a 10-agent village scale-up
 - 50-agent deterministic village experiment with committed metrics, trace sample, and PDF report
 - Gradio Playground for no-key replay demos and user-supplied LLM API keys
-- Deterministic benchmark script with JSON and Markdown reports
+- Deterministic benchmark scripts with JSON, Markdown, SVG figures, and PDF reports
 - Godot 4 adapter scaffold
 - Unity 2022 LTS adapter scaffold for Package Manager Git installs
 - Streamlit dashboard for inspecting simulation logs with playback and live-tail controls
@@ -156,6 +156,14 @@ python experiments/50_agent_village/run.py
 
 See [50-Agent Village Experiment](experiments/50_agent_village/README.md) and [50-Agent Benchmark Report](docs/reports/50_agent_benchmark.pdf).
 
+Formal report bundle:
+
+```bash
+python benchmarks/formal_report/runner.py
+```
+
+See [Formal Benchmark Report](benchmarks/formal_report/README.md) and [Formal Report PDF](benchmarks/formal_report/report.pdf).
+
 ## Memory Retrieval
 
 `SQLiteFaissMemoryStore.retrieve(...)` keeps the simple list-of-memory API. Use `retrieve_with_scores(...)` when you need semantic score, temporal score, importance score, and final reranking score for analysis:
@@ -220,6 +228,8 @@ Detailed notes:
 - [Competitor Matrix](docs/competitor_matrix.md)
 - [50-Agent Village Experiment](experiments/50_agent_village/README.md)
 - [50-Agent Benchmark Report](docs/reports/50_agent_benchmark.pdf)
+- [Formal Benchmark Report](benchmarks/formal_report/README.md)
+- [Formal Report PDF](benchmarks/formal_report/report.pdf)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)

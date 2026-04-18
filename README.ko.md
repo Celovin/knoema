@@ -79,6 +79,14 @@ python experiments/50_agent_village/run.py
 
 자세한 내용은 [50-Agent Village Experiment](experiments/50_agent_village/README.md)와 [50-Agent Benchmark Report](docs/reports/50_agent_benchmark.pdf)를 참고하세요.
 
+Formal report bundle:
+
+```bash
+python benchmarks/formal_report/runner.py
+```
+
+자세한 내용은 [Formal Benchmark Report](benchmarks/formal_report/README.md)와 [Formal Report PDF](benchmarks/formal_report/report.pdf)를 참고하세요.
+
 벤치마크 리포트는 Knoema 처리량을 실제 측정하고, Concordia와 Mesa는 별도 외부 실행이 필요하다는 `not-measured` 비교 슬롯으로 표시합니다. 자세한 기준은 [benchmarks/README.md](benchmarks/README.md)에 정리했습니다.
 
 ## 메모리 검색
@@ -124,6 +132,8 @@ Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 
 - [Competitor Matrix](docs/competitor_matrix.md)
 - [50-Agent Village Experiment](experiments/50_agent_village/README.md)
 - [50-Agent Benchmark Report](docs/reports/50_agent_benchmark.pdf)
+- [Formal Benchmark Report](benchmarks/formal_report/README.md)
+- [Formal Report PDF](benchmarks/formal_report/report.pdf)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [튜토리얼 블로그 초안](docs/tutorial_blog.md)
