@@ -96,6 +96,9 @@ node_modules/
 out/
 .vercel/
 
+# Swift Package Manager
+sdk/ios/KnoemaMobile/.build/
+
 # Documentation builds
 site/
 

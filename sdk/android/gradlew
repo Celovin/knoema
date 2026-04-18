@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+python "$(dirname "$0")/scripts/validate_android_sdk.py" "$@"

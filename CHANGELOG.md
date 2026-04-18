@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 57 cross-framework comparison benchmark against AutoGen, CrewAI, LangGraph, Mesa, and NetLogo with Docker-reproducible reporting artifacts.
 - Phase 58 human evaluation framework with survey templates, a static rater UI, pilot sample data, and Cohen/Fleiss reliability metrics.
 - Phase 59 cloud deployment templates for AWS, GCP, and Azure with static validation and cost comparison documentation.
+- Phase 60 mobile SDK scaffolds for iOS Swift Package Manager and Android Kotlin clients with REST, WebSocket, cache, and offline surfaces.
 
 ## [0.1.1] - 2026-04-18
 

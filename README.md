@@ -53,6 +53,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Godot 4 adapter scaffold
 - Unity 2022 LTS adapter scaffold for Package Manager Git installs
 - Game SDK facades for Python, TypeScript, and GDScript NPC integrations
+- Mobile SDK scaffolds for iOS Swift Package Manager and Android Kotlin clients
 - Browser-side static runtime for no-server 2-agent, 5-agent, and Sally-Anne demos
 - VS Code Scenario DSL extension scaffold with syntax highlighting and validation
 - Streamlit dashboard for inspecting simulation logs with playback and live-tail controls

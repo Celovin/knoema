@@ -88,6 +88,7 @@ nav:
       - Python SDK: sdk/python-api.md
       - TypeScript SDK: sdk/typescript-api.md
       - Godot SDK: sdk/godot-api.md
+      - Mobile SDKs: sdk/mobile.md
       - Integration Patterns: sdk/integration_patterns.md
   - Reports:
       - Cross-Framework Benchmark: benchmarks/cross_framework.md
