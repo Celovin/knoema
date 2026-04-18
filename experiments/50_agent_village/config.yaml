@@ -1,0 +1,68 @@
+scenario_name: 50_agent_village_week
+seed: 20260418
+duration_days: 7
+tick_duration_minutes: 240
+prompt_language: en
+environment:
+  start_time: "2026-06-01T07:00:00"
+  location_path: ["Knoema Demo World", "Harbor Village", "Central Square"]
+  conditions:
+    weather: clear
+    season: early summer
+    market_pressure: moderate
+    civic_goal: prepare a weekly lantern market without conflict
+latency_model:
+  base_ms: 38.0
+  tick_jitter_ms: 1.7
+  agent_jitter_ms: 0.8
+agent_roster:
+  - {agent_id: villager_01, name: Aria, age: 31, role: baker}
+  - {agent_id: villager_02, name: Ben, age: 44, role: harbor mechanic}
+  - {agent_id: villager_03, name: Clio, age: 27, role: teacher}
+  - {agent_id: villager_04, name: Dae, age: 36, role: grocer}
+  - {agent_id: villager_05, name: Elin, age: 59, role: retired nurse}
+  - {agent_id: villager_06, name: Finn, age: 19, role: courier}
+  - {agent_id: villager_07, name: Gia, age: 40, role: carpenter}
+  - {agent_id: villager_08, name: Han, age: 33, role: musician}
+  - {agent_id: villager_09, name: Iris, age: 25, role: clerk}
+  - {agent_id: villager_10, name: Nora, age: 47, role: organizer}
+  - {agent_id: villager_11, name: Oren, age: 53, role: fisher}
+  - {agent_id: villager_12, name: Pia, age: 22, role: apprentice potter}
+  - {agent_id: villager_13, name: Quin, age: 38, role: herbalist}
+  - {agent_id: villager_14, name: Rafi, age: 29, role: bridge keeper}
+  - {agent_id: villager_15, name: Sia, age: 34, role: weaver}
+  - {agent_id: villager_16, name: Taro, age: 41, role: well engineer}
+  - {agent_id: villager_17, name: Uma, age: 28, role: archivist}
+  - {agent_id: villager_18, name: Vela, age: 63, role: elder councilor}
+  - {agent_id: villager_19, name: Wren, age: 18, role: stable hand}
+  - {agent_id: villager_20, name: Yori, age: 45, role: miller}
+  - {agent_id: villager_21, name: Zia, age: 32, role: lantern maker}
+  - {agent_id: villager_22, name: Amon, age: 50, role: boatwright}
+  - {agent_id: villager_23, name: Bina, age: 24, role: flower seller}
+  - {agent_id: villager_24, name: Cato, age: 55, role: watch captain}
+  - {agent_id: villager_25, name: Dina, age: 37, role: cook}
+  - {agent_id: villager_26, name: Ero, age: 26, role: map keeper}
+  - {agent_id: villager_27, name: Faye, age: 48, role: tailor}
+  - {agent_id: villager_28, name: Goro, age: 61, role: beekeeper}
+  - {agent_id: villager_29, name: Hara, age: 21, role: student helper}
+  - {agent_id: villager_30, name: Ivo, age: 35, role: stone mason}
+  - {agent_id: villager_31, name: Jina, age: 43, role: midwife}
+  - {agent_id: villager_32, name: Kalo, age: 30, role: storyteller}
+  - {agent_id: villager_33, name: Lio, age: 52, role: grain steward}
+  - {agent_id: villager_34, name: Mina, age: 23, role: sign painter}
+  - {agent_id: villager_35, name: Niko, age: 39, role: toolsmith}
+  - {agent_id: villager_36, name: Ona, age: 46, role: ferry scheduler}
+  - {agent_id: villager_37, name: Pavo, age: 57, role: orchard keeper}
+  - {agent_id: villager_38, name: Rina, age: 20, role: market runner}
+  - {agent_id: villager_39, name: Soren, age: 42, role: water inspector}
+  - {agent_id: villager_40, name: Tessa, age: 58, role: mediator}
+  - {agent_id: villager_41, name: Ulan, age: 27, role: repair scout}
+  - {agent_id: villager_42, name: Vina, age: 49, role: seed keeper}
+  - {agent_id: villager_43, name: Willa, age: 33, role: tea house owner}
+  - {agent_id: villager_44, name: Xavi, age: 36, role: stage builder}
+  - {agent_id: villager_45, name: Yana, age: 51, role: textile dyer}
+  - {agent_id: villager_46, name: Zeno, age: 28, role: drummer}
+  - {agent_id: villager_47, name: Asha, age: 64, role: memory keeper}
+  - {agent_id: villager_48, name: Boro, age: 24, role: cart driver}
+  - {agent_id: villager_49, name: Cira, age: 45, role: safety marshal}
+  - {agent_id: villager_50, name: Dori, age: 29, role: night lantern lead}

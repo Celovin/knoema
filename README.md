@@ -33,6 +33,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Simulation runner with scheduled events and JSONL export
 - `knoema run` CLI for YAML-driven local simulations
 - Jupyter notebooks for MVP demo tracks and a 10-agent village scale-up
+- 50-agent deterministic village experiment with committed metrics, trace sample, and PDF report
 - Gradio Playground for no-key replay demos and user-supplied LLM API keys
 - Deterministic benchmark script with JSON and Markdown reports
 - Godot 4 adapter scaffold
@@ -147,6 +148,14 @@ python benchmarks/run_benchmark.py --json-output runs/benchmark.json --markdown-
 
 The benchmark report records measured Knoema throughput and transparent `not-measured` comparison slots for Concordia and Mesa. See [benchmarks/README.md](benchmarks/README.md) for comparison discipline.
 
+Phase 19 scale experiment:
+
+```bash
+python experiments/50_agent_village/run.py
+```
+
+See [50-Agent Village Experiment](experiments/50_agent_village/README.md) and [50-Agent Benchmark Report](docs/reports/50_agent_benchmark.pdf).
+
 ## Memory Retrieval
 
 `SQLiteFaissMemoryStore.retrieve(...)` keeps the simple list-of-memory API. Use `retrieve_with_scores(...)` when you need semantic score, temporal score, importance score, and final reranking score for analysis:
@@ -209,6 +218,8 @@ Detailed notes:
 - [Architecture](docs/architecture.md)
 - [Research Positioning](docs/research.md)
 - [Competitor Matrix](docs/competitor_matrix.md)
+- [50-Agent Village Experiment](experiments/50_agent_village/README.md)
+- [50-Agent Benchmark Report](docs/reports/50_agent_benchmark.pdf)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)

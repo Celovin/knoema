@@ -1,0 +1,4 @@
+# Keep text safety scans focused on readable source and documentation.
+*.gif
+*.png
+*.pdf
