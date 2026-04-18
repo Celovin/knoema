@@ -1,0 +1,46 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/dorm_two_agents.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T09:00:00"
+  location_path: ["Seoul", "University Dorm", "Shared Kitchen"]
+  conditions:
+    weather: spring rain
+    noise_level: low
+    social_context: two roommates negotiating routines before class
+agents:
+  - agent_id: mina
+    name: Mina
+    age: 21
+    background: A design student who wants the shared dorm to feel calm and usable.
+    personality:
+      openness: 0.74
+      conscientiousness: 0.66
+      extraversion: 0.48
+      agreeableness: 0.72
+      neuroticism: 0.32
+    values: ["mutual respect", "quiet work time", "clear routines"]
+    goals: ["prepare breakfast", "ask about the sink schedule", "keep the mood warm"]
+    location_path: ["Seoul", "University Dorm", "Shared Kitchen"]
+  - agent_id: joon
+    name: Joon
+    age: 22
+    background: A computer science student balancing project deadlines and dorm chores.
+    personality:
+      openness: 0.58
+      conscientiousness: 0.78
+      extraversion: 0.42
+      agreeableness: 0.61
+      neuroticism: 0.40
+    values: ["fairness", "focus", "direct communication"]
+    goals: ["finish a systems assignment", "avoid conflict", "share chores fairly"]
+    location_path: ["Seoul", "University Dorm", "Shared Kitchen"]
+events:
+  - timestamp: "2026-04-20T09:00:00"
+    event_type: dorm.notice
+    participants: ["mina", "joon"]
+    location: Shared Kitchen
+    description: A residence assistant posts a reminder that shared spaces will be inspected tomorrow.
+local_response: '{"action_type": "speak", "target": null, "content": "I notice the shared routine and suggest a small next step."}'

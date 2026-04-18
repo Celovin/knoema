@@ -1,0 +1,4 @@
+knoema-engine @ git+https://github.com/Celovin/knoema.git@main
+gradio>=4.44
+plotly>=5.24
+pyyaml>=6.0

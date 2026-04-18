@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 14 Streamlit dashboard realtime playback with live-tail and auto-refresh controls.
 - Phase 14 publish-ready tutorial blog draft for Medium and velog cross-posting.
 - Phase 14 Discord community launch kit with channel layout, rules, announcement copy, and moderation checklist.
+- Phase 15 Hugging Face Playground with three scenarios, replay-only mode, optional user-supplied LLM keys, timeline, relationship graph, and JSONL download.
 
 ## [0.1.0] - 2026-04-18
 

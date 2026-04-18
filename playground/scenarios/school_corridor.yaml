@@ -1,0 +1,56 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 20
+  output_path: runs/school_corridor.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T15:40:00"
+  location_path: ["After-school Program", "Main Corridor"]
+  conditions:
+    supervision: teacher nearby
+    privacy: public corridor
+    social_context: students negotiate club-room cleanup without personal data
+agents:
+  - agent_id: yuna
+    name: Yuna
+    age: 16
+    background: A club leader trying to keep the cleanup fair and non-confrontational.
+    personality:
+      openness: 0.70
+      conscientiousness: 0.76
+      extraversion: 0.61
+      agreeableness: 0.82
+      neuroticism: 0.35
+    values: ["fairness", "safety", "clear expectations"]
+    goals: ["organize cleanup", "avoid blame", "ask for teacher guidance if needed"]
+  - agent_id: minho
+    name: Minho
+    age: 16
+    background: A student who wants to leave for practice but still be seen as reliable.
+    personality:
+      openness: 0.50
+      conscientiousness: 0.45
+      extraversion: 0.66
+      agreeableness: 0.56
+      neuroticism: 0.44
+    values: ["freedom", "peer respect", "time"]
+    goals: ["leave soon", "avoid conflict", "help just enough"]
+  - agent_id: sora
+    name: Sora
+    age: 17
+    background: A quiet student who notices when group pressure becomes unfair.
+    personality:
+      openness: 0.64
+      conscientiousness: 0.69
+      extraversion: 0.30
+      agreeableness: 0.77
+      neuroticism: 0.42
+    values: ["kindness", "accuracy", "safe boundaries"]
+    goals: ["support fair cleanup", "speak carefully", "keep the hallway calm"]
+events:
+  - timestamp: "2026-04-20T15:40:00"
+    event_type: school.cleanup_request
+    participants: ["yuna", "minho", "sora"]
+    location: Main Corridor
+    description: The club advisor asks the students to agree on a fair cleanup plan before leaving.
+local_response: '{"action_type": "speak", "target": null, "content": "I suggest a fair and safe next step in the corridor."}'

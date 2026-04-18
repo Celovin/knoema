@@ -5,6 +5,7 @@
 [![CI](https://github.com/Celovin/knoema/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/knoema/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/Celovin/knoema-playground)
 
 English: [README.md](README.md)
 
@@ -119,6 +120,15 @@ mypy src
 ## 릴리스 준비
 
 로컬 패키지 빌드와 Docker 릴리스 검증 절차는 [RELEASE.md](RELEASE.md)에 정리되어 있습니다. 태그 기반 GitHub Release workflow는 포함되어 있지만, PyPI 업로드는 별도 승인 단계로 남겨두었습니다.
+
+## Playground
+
+[Knoema Playground](https://huggingface.co/spaces/Celovin/knoema-playground)에서 브라우저 기반 데모를 실행할 수 있습니다. API 키가 없는 사용자는 replay-only 모드로 3개 기본 시나리오를 확인할 수 있고, OpenAI 또는 Anthropic 키를 입력하면 현재 세션에서만 live LLM 실행을 사용할 수 있습니다.
+
+```bash
+pip install -r playground/requirements.txt
+python playground/app.py
+```
 
 ## 라이선스
 

@@ -5,6 +5,7 @@
 [![CI](https://github.com/Celovin/knoema/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/knoema/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/Celovin/knoema-playground)
 
 Korean: [README.ko.md](README.ko.md)
 
@@ -32,6 +33,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Simulation runner with scheduled events and JSONL export
 - `knoema run` CLI for YAML-driven local simulations
 - Jupyter notebooks for MVP demo tracks and a 10-agent village scale-up
+- Gradio Playground for no-key replay demos and user-supplied LLM API keys
 - Deterministic benchmark script with JSON and Markdown reports
 - Godot 4 adapter scaffold
 - Streamlit dashboard for inspecting simulation logs with playback and live-tail controls
@@ -114,6 +116,19 @@ sim.export_logs("runs/dorm_001.jsonl")
 
 Run notebooks top-to-bottom after installing `.[dev]`.
 
+## Playground
+
+Try the browser demo at [Knoema Playground](https://huggingface.co/spaces/Celovin/knoema-playground).
+
+The Playground includes three prebuilt scenarios, a deterministic replay-only mode that needs no API key, optional OpenAI or Anthropic runs with a user-supplied per-session API key, a timeline view, an interactive relationship graph, and JSONL log download.
+
+Local run:
+
+```bash
+pip install -r playground/requirements.txt
+python playground/app.py
+```
+
 ## Dashboard
 
 ```bash
@@ -186,6 +201,7 @@ Detailed notes:
 - [Prompt Templates](docs/prompts.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)
 - [Discord Community Launch Kit](docs/discord_community.md)
+- [Hugging Face Playground Guide](playground/README.md)
 - [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/knoema_technical_report.pdf)
 
 ## Roadmap
