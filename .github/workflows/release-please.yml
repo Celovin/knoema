@@ -15,7 +15,10 @@ concurrency:
 
 jobs:
   release-please:
+    if: ${{ vars.ENABLE_RELEASE_PLEASE == '1' }}
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: googleapis/release-please-action@v4
         with:

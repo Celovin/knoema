@@ -50,6 +50,7 @@ def test_phase35_release_workflow_uses_oidc_pypi_publish() -> None:
 def test_phase35_release_please_manifest_is_configured() -> None:
     config = json.loads(Path(".github/release-please-config.json").read_text(encoding="utf-8"))
     manifest = json.loads(Path(".release-please-manifest.json").read_text(encoding="utf-8"))
+    workflow = Path(".github/workflows/release-please.yml").read_text(encoding="utf-8")
 
     package = config["packages"]["."]
     assert package["release-type"] == "python"
@@ -57,6 +58,7 @@ def test_phase35_release_please_manifest_is_configured() -> None:
     assert package["changelog-path"] == "CHANGELOG.md"
     assert "src/knoema/__init__.py" in package["extra-files"]
     assert manifest["."] == "0.1.0"
+    assert "vars.ENABLE_RELEASE_PLEASE == '1'" in workflow
 
 
 def test_phase35_release_dry_run_script_and_docs_exist() -> None:

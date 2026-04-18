@@ -27,6 +27,8 @@ The matrix installs the package and runs import plus focused type/config smoke t
 
 The `Release Please` workflow opens version bump and changelog pull requests from conventional commits on `main`.
 
+The workflow is gated by the repository variable `ENABLE_RELEASE_PLEASE=1`. Keep it disabled until the repository owner either enables GitHub Actions pull request creation for this repository or provides a dedicated release-please token. Without that owner-controlled setting, GitHub rejects release-please PR creation.
+
 Configuration lives in:
 
 - `.github/release-please-config.json`
