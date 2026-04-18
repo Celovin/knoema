@@ -8,9 +8,13 @@ from knoema.dsl.scenario import Scenario
 
 DISALLOWED_PURPOSE_PHRASES = (
     "predict crime",
+    "predict future crime",
     "identify suspect",
     "rank suspects",
     "suspect score",
+    "personal risk score",
+    "operational law enforcement",
+    "surveillance list",
     "real person profile",
     "personal data",
 )

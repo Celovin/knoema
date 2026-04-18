@@ -72,6 +72,9 @@ nav:
       - Unreal Adapter: adapters/unreal.md
       - Web Scenario Editor: website/scenario-editor.md
       - Research Workflow: guides/research-workflow.md
+      - Red Team Report: safety/red_team_report.md
+      - Content Filter Policy: safety/content_filter_policy.md
+      - Audit Log Schema: safety/audit_log_schema.md
       - Academic Indexing: research/academic-indexing.md
       - Papers with Code Packet: research/papers_with_code_submission.md
       - Safety Scenarios: guides/safety-scenarios.md

@@ -60,6 +60,15 @@ from knoema.prompts import (
 )
 from knoema.protocols import LLMClient, MemoryRetriever, MemoryWriter, PromptRenderable
 from knoema.relationship import InteractionOutcome, Relationship, RelationshipGraph
+from knoema.safety import (
+    AuditEvent,
+    AuditLogWriter,
+    ContentFilter,
+    FilterDecision,
+    SafetyCategory,
+    audit_event_from_record,
+    validate_audit_record,
+)
 from knoema.simulator import SimulationLogEntry, Simulator
 from knoema.telemetry import (
     NullTelemetryClient,
@@ -101,11 +110,14 @@ __all__ = [
     "AgentContext",
     "AgentID",
     "AnthropicClient",
+    "AuditEvent",
+    "AuditLogWriter",
     "BackendRunSummary",
     "BenchmarkConfig",
     "BenchmarkReport",
     "BenchmarkRun",
     "ComparisonRow",
+    "ContentFilter",
     "DecisionEngine",
     "DistributedSimulationConfig",
     "Emotion",
@@ -113,6 +125,7 @@ __all__ = [
     "EmotionStimulus",
     "Environment",
     "EnvironmentContext",
+    "FilterDecision",
     "GameSession",
     "HashEmbeddingEncoder",
     "HierarchicalPlanner",
@@ -144,6 +157,7 @@ __all__ = [
     "RelationshipType",
     "RetrievalWeights",
     "SQLiteFaissMemoryStore",
+    "SafetyCategory",
     "SallyAnneBenchmarkResult",
     "SallyAnneCaseResult",
     "Scenario",
@@ -163,6 +177,7 @@ __all__ = [
     "WorldEvent",
     "WorldState",
     "__version__",
+    "audit_event_from_record",
     "build_cli_properties",
     "build_comparison_rows",
     "build_env_telemetry_client",
@@ -184,4 +199,5 @@ __all__ = [
     "score_log",
     "shard_agents_by_location",
     "telemetry_opt_in_from_env",
+    "validate_audit_record",
 ]

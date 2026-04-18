@@ -41,6 +41,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Simulation runner with scheduled events and JSONL export
 - `knoema run` CLI for YAML-driven local simulations
 - Scenario DSL v1 for validated YAML scenarios and ethics guardrails
+- Opt-in red-team content filter and append-only safety audit log helpers
 - Jupyter notebooks for MVP demo tracks and a 10-agent village scale-up
 - 50-agent deterministic village experiment with committed metrics, trace sample, and PDF report
 - Gradio Playground for no-key replay demos and user-supplied LLM API keys

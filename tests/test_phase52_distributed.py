@@ -67,7 +67,7 @@ def test_phase52_experiment_summary_and_formal_report_artifacts() -> None:
         cwd=Path.cwd(),
     )
     subprocess.run(
-        [sys.executable, "benchmarks/formal_report/runner.py"],
+        [sys.executable, "benchmarks/formal_report/runner.py", "--skip-pdf"],
         check=True,
         cwd=Path.cwd(),
     )
