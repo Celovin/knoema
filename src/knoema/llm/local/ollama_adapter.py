@@ -31,6 +31,9 @@ class OllamaClient:
         max_tokens = numeric_option(kwargs.get("max_tokens"))
         if max_tokens is not None:
             options["num_predict"] = int(max_tokens)
+        seed = numeric_option(kwargs.get("seed"))
+        if seed is not None:
+            options["seed"] = int(seed)
 
         payload: dict[str, Any] = {
             "model": kwargs.get("model", self.model),

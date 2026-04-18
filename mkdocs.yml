@@ -88,6 +88,7 @@ nav:
       - Security Policy: SECURITY.md
       - Security Audit: security/audit_2026-04-18.md
   - Media:
+      - Ollama Live Demo: videos/ollama_live_demo.md
       - Demo Video 30 Seconds: videos/script_30sec.md
       - Demo Video 3 Minutes: videos/script_3min.md
       - Demo Video 10 Minutes: videos/script_10min.md

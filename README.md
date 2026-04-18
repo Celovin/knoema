@@ -125,6 +125,7 @@ sim.export_logs("runs/dorm_001.jsonl")
 - [Game NPC Persistent Memory Demo](examples/03_game_npc_demo.ipynb): NPC memory retrieval and Godot-style payload
 - [Ten-Agent Village Simulation](examples/04_village.ipynb): deterministic 10-person village run with relationship and JSONL checks
 - [Ollama Local LLM Fallback](examples/05_ollama_local_fallback.ipynb): local-first gateway example with deterministic fallback
+- [Live Ollama Five-Agent Demo](examples/05_live_ollama_demo.ipynb): seeded `llama3.1:8b` notebook run with a 30-second live cap
 
 Run notebooks top-to-bottom after installing `.[dev]`.
 

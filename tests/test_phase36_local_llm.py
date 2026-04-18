@@ -47,6 +47,22 @@ def test_phase36_ollama_client_posts_chat_payload(monkeypatch: Any) -> None:
     assert captured["body"]["options"]["num_predict"] == 64
 
 
+def test_phase36_ollama_client_includes_seed_when_requested(monkeypatch: Any) -> None:
+    captured: dict[str, Any] = {}
+
+    def fake_urlopen(request: Any, timeout: float) -> _FakeResponse:
+        captured["body"] = json.loads(request.data.decode("utf-8"))
+        return _FakeResponse({"message": {"content": "seed ok"}})
+
+    monkeypatch.setattr("knoema.llm.local.http.request.urlopen", fake_urlopen)
+
+    client = OllamaClient(model="llama3.3:8b")
+    response = client.complete(_messages(), seed=20260419)
+
+    assert response == "seed ok"
+    assert captured["body"]["options"]["seed"] == 20260419
+
+
 def test_phase36_llama_cpp_client_reads_openai_style_response(monkeypatch: Any) -> None:
     captured: dict[str, Any] = {}
 
