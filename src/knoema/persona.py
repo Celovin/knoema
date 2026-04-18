@@ -31,6 +31,7 @@ class Persona:
     goals: list[str] = field(default_factory=list)
     theory_of_mind: TheoryOfMindProfile = field(default_factory=TheoryOfMindProfile)
     planning: bool = False
+    social_learning: bool = False
 
     def __post_init__(self) -> None:
         _validate_non_empty_string("agent_id", self.agent_id)
@@ -72,6 +73,7 @@ class Persona:
             Active goals: {goals_text}
             Theory of mind: {theory_of_mind_text}
             Hierarchical planning: {"enabled" if self.planning else "disabled"}
+            Social learning: {"enabled" if self.social_learning else "disabled"}
 
             Stay consistent with this persona, remember prior social context,
             and respond in a way that preserves believable long-term behavior.

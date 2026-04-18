@@ -1,0 +1,12 @@
+{
+  "acceptance": {
+    "propagation_rate_at_least_0_75": true
+  },
+  "learner_count": 19,
+  "propagated_learners": 19,
+  "propagation_rate": 1.0,
+  "scenario_name": "social_learning_cascade",
+  "schelling_strategy_variant_rate": 0.842,
+  "teacher_count": 1,
+  "ticks": 50
+}

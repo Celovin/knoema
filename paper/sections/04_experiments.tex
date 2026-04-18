@@ -41,6 +41,10 @@ Phase 45 adds two compact reproductions drawn from classical agent-based modelin
 
 \input{tables/classic_reproductions_summary}
 
+\subsection{Social Learning Cascade}
+
+Phase 55 adds a deterministic observational-learning cascade with one teacher and nineteen learners. The teacher demonstrates an efficient route-selection strategy, and learners opt in to social learning before observing the behavior. By tick 50, the committed summary reports 19 propagated learners out of 19, for a propagation rate of 1.000 against the 0.750 acceptance target. This is a controlled engineering check for imitation mechanics rather than a claim about human cultural diffusion.
+
 \subsection{Evaluation Metrics}
 
 Phase 46 adds two lightweight behavioral scoring functions so committed JSONL artifacts can be graded without re-running the simulator. Persona Consistency Score (PCS) summarizes whether one agent keeps a stable action mix, location pattern, normalized content signature, and target focus across a run. The current implementation uses

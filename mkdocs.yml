@@ -54,6 +54,7 @@ nav:
       - Research Positioning: research.md
       - Prompt Templates: prompts.md
       - Hierarchical Planning: cognition/hierarchical_planning.md
+      - Social Learning: cognition/social_learning.md
       - Scenario DSL Tutorial: dsl/tutorial.md
       - Scenario DSL Reference: dsl/reference.md
   - API:

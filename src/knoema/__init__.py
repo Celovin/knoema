@@ -13,6 +13,7 @@ from knoema.benchmark import (
     format_markdown_report,
     run_knoema_benchmark,
 )
+from knoema.cognition import LearnedSkill, ObservedBehavior, SocialLearner
 from knoema.config import KnoemaConfig, load_config
 from knoema.decision import DecisionEngine, decide
 from knoema.distributed import (
@@ -134,6 +135,7 @@ __all__ = [
     "LLMCallRecord",
     "LLMClient",
     "LLMGateway",
+    "LearnedSkill",
     "LlamaCppClient",
     "LocalClient",
     "LocalLLMError",
@@ -145,6 +147,7 @@ __all__ = [
     "MemoryWriter",
     "NPCResponse",
     "NullTelemetryClient",
+    "ObservedBehavior",
     "OllamaClient",
     "OpenAIClient",
     "Persona",
@@ -166,6 +169,7 @@ __all__ = [
     "ShortTermMemoryBuffer",
     "SimulationLogEntry",
     "Simulator",
+    "SocialLearner",
     "Task",
     "TelemetryClient",
     "TelemetryEvent",

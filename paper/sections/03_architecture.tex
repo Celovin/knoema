@@ -36,3 +36,5 @@ Phase 44 adds a FastAPI server that wraps the simulator pool behind REST and Web
 \subsection{Cognitive Modules}
 
 Phase 51 adds a persona opt-in hierarchical planning module. Agents with \texttt{planning=False} keep the original tick-level behavior. Agents with \texttt{planning=True} decompose their first active goal into HTN-style tasks, select the next ready task from an inspectable task list, and pass that task into the decision prompt as a planning hint without changing the JSON action schema. The planning-depth experiment reports a 0.900 goal-achievement proxy for three-level hierarchies, compared with a 0.525 planning-off baseline.
+
+Phase 55 adds opt-in social learning. Agents with \texttt{social\_learning=True} observe successful actions from other agents, retain them as learned skills, and can reproduce the highest-motivation skill as a normal action. The module follows a compact attention, retention, reproduction, and motivation loop while preserving backward compatibility for personas that do not opt in.

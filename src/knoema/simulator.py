@@ -7,7 +7,9 @@ import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Literal
 
+from knoema.cognition import SocialLearner
 from knoema.decision import DecisionEngine
 from knoema.emotion import EmotionState
 from knoema.environment import Environment
@@ -72,6 +74,7 @@ class Simulator:
         )
         self.theory_of_mind = TheoryOfMindEngine.from_personas(agents)
         self.planner = HierarchicalPlanner()
+        self.social_learner = SocialLearner()
         self.logs: list[SimulationLogEntry] = []
         for agent in agents:
             self.relationships.add_agent(agent.agent_id)
@@ -134,6 +137,13 @@ class Simulator:
                 agent.agent_id,
                 WorldState(tick=len(self.logs), facts={"planning_enabled": True}),
             )
+        if agent.social_learning:
+            imitation = self.social_learner.consider_imitation(
+                agent.agent_id,
+                WorldState(tick=len(self.logs), facts={"social_learning_enabled": True}),
+            )
+            if imitation is not None:
+                return imitation
         return self.decision_engine.decide(
             persona=agent,
             memories=self.short_term_memories[agent.agent_id].recent(8),
@@ -174,8 +184,25 @@ class Simulator:
         )
         if action.target is not None:
             self.relationships.update_after_interaction(agent.agent_id, action.target, action, "neutral")
+        self._share_observation(agent, action)
         if agent.planning:
             self.planner.complete_active_task(agent.agent_id)
+
+    def _share_observation(self, actor: Persona, action: Action) -> None:
+        outcome: Literal["success", "neutral"] = (
+            "success" if action.action_type not in {"observe", "wait"} else "neutral"
+        )
+        for observer in self.agents:
+            if not observer.social_learning or observer.agent_id == actor.agent_id:
+                continue
+            self.social_learner.observe(
+                observer.agent_id,
+                actor.agent_id,
+                action,
+                outcome,
+                context=WorldState(tick=len(self.logs), facts={"observed": True}),
+                observed_at=self.environment.current_time,
+            )
 
 
 def _default_action_response(messages: object) -> str:

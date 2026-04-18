@@ -1,0 +1,7 @@
+scenario_name: social_learning_cascade
+teacher_count: 1
+learner_count: 19
+ticks: 50
+strategy: efficient_route_selection
+acceptance:
+  propagation_rate_at_least: 0.75
