@@ -44,4 +44,6 @@ The response contract intentionally starts small:
 3. Connect the SDK facade to engine-specific UI or behavior-tree code.
 4. Add provider-backed dialogue only after the deterministic contract is stable.
 
+For regressions, export JSONL logs from the simulator or game server boundary and replay the same config, seed, and player-facing action sequence before changing prompts or provider settings.
+
 See also `docs/sdk/integration_patterns.md`.

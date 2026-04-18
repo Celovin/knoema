@@ -34,4 +34,4 @@ jobs:
         continue-on-error: true  # strict mypy warns early, not a hard gate yet
 
       - name: Pytest
-        run: pytest
+        run: pytest --cov-fail-under=90
