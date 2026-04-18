@@ -57,7 +57,7 @@ def test_phase35_release_please_manifest_is_configured() -> None:
     assert package["package-name"] == "knoema-engine"
     assert package["changelog-path"] == "CHANGELOG.md"
     assert "src/knoema/__init__.py" in package["extra-files"]
-    assert manifest["."] == "0.1.0"
+    assert manifest["."] == "0.1.1"
     assert "vars.ENABLE_RELEASE_PLEASE == '1'" in workflow
 
 

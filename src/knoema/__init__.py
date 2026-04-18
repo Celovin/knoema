@@ -70,7 +70,7 @@ from knoema.types import (
     WorldEvent,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __author__ = "Celovin"
 __license__ = "MIT"
 

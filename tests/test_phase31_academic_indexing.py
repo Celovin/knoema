@@ -23,7 +23,7 @@ def test_phase31_citation_metadata_is_machine_readable() -> None:
 
     assert citation["cff-version"] == "1.2.0"
     assert citation["type"] == "software"
-    assert citation["version"] == "0.1.0"
+    assert citation["version"] == "0.1.1"
     assert citation["license"] == "MIT"
     assert citation["repository-code"] == "https://github.com/Celovin/knoema"
     assert citation["authors"][0]["name"] == "Celovin"
@@ -36,7 +36,7 @@ def test_phase31_zenodo_metadata_is_valid_json() -> None:
     assert metadata["upload_type"] == "software"
     assert metadata["access_right"] == "open"
     assert metadata["license"] == "mit"
-    assert metadata["version"] == "0.1.0"
+    assert metadata["version"] == "0.1.1"
     assert metadata["creators"][0]["name"] == "Celovin"
     assert any(
         item["identifier"] == "https://github.com/Celovin/knoema"

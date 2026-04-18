@@ -5,7 +5,7 @@ title: "Knoema Engine: An Open Runtime for Persistent NPCs, Synthetic Replay Res
 authors:
   - name: "Celovin"
     email: "hello@celovin.com"
-version: 0.1.0
+version: 0.1.1
 date-released: 2026-04-18
 license: MIT
 repository-code: "https://github.com/Celovin/knoema"
