@@ -1,0 +1,20 @@
+schema_version: 1
+template_id: preference_pairwise
+title: Pairwise Preference
+instructions:
+  - Read both anonymized traces.
+  - Choose the trace that better matches the target persona and scenario state.
+  - Use tie only when the two traces are indistinguishable for the stated criterion.
+labels:
+  - left
+  - right
+  - tie
+items:
+  - id: prefer_persona
+    prompt: Which trace better preserves the persona?
+  - id: prefer_memory
+    prompt: Which trace better uses prior memory?
+  - id: prefer_relationship
+    prompt: Which trace better preserves relationship state?
+  - id: prefer_overall
+    prompt: Which trace is better overall?

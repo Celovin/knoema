@@ -1,0 +1,19 @@
+schema_version: 1
+template_id: turing_style
+title: Human-Likeness Probe
+instructions:
+  - Rate whether a short trace could be mistaken for a human-authored role-play log.
+  - This is a believability probe, not a claim about consciousness or human cognition.
+labels:
+  - model_generated
+  - human_authored
+  - unsure
+items:
+  - id: origin_guess
+    prompt: Which origin is more likely for this trace?
+  - id: confidence
+    prompt: How confident are you in that judgment?
+    scale: likert_5
+  - id: rationale
+    prompt: Briefly state the cue that drove your judgment.
+    response_type: free_text

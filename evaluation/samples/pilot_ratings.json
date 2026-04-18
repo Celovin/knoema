@@ -1,0 +1,48 @@
+{
+  "pilot_id": "phase58-internal-protocol-check",
+  "rater_ids": ["rater_a", "rater_b", "rater_c", "rater_d", "rater_e"],
+  "ratings_by_item": {
+    "pair_001": {
+      "rater_a": "left",
+      "rater_b": "left",
+      "rater_c": "left",
+      "rater_d": "left",
+      "rater_e": "right"
+    },
+    "pair_002": {
+      "rater_a": "right",
+      "rater_b": "right",
+      "rater_c": "right",
+      "rater_d": "right",
+      "rater_e": "right"
+    },
+    "pair_003": {
+      "rater_a": "left",
+      "rater_b": "left",
+      "rater_c": "left",
+      "rater_d": "left",
+      "rater_e": "left"
+    },
+    "pair_004": {
+      "rater_a": "tie",
+      "rater_b": "tie",
+      "rater_c": "tie",
+      "rater_d": "right",
+      "rater_e": "tie"
+    },
+    "pair_005": {
+      "rater_a": "right",
+      "rater_b": "right",
+      "rater_c": "right",
+      "rater_d": "right",
+      "rater_e": "left"
+    },
+    "pair_006": {
+      "rater_a": "left",
+      "rater_b": "left",
+      "rater_c": "left",
+      "rater_d": "left",
+      "rater_e": "left"
+    }
+  }
+}

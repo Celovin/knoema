@@ -1,0 +1,11 @@
+{
+  "name": "knoema-human-evaluation-web",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/serve.js",
+    "build": "node scripts/build.js",
+    "test": "node scripts/smoke.js"
+  }
+}

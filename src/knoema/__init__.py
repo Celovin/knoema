@@ -29,6 +29,14 @@ from knoema.distributed import (
 from knoema.dsl import Scenario, load_scenario
 from knoema.emotion import EmotionState, EmotionStimulus
 from knoema.environment import Environment, EnvironmentContext
+from knoema.evaluation import (
+    ComparisonPair,
+    EvaluationSession,
+    ReliabilityReport,
+    cohen_kappa,
+    compute_inter_rater_reliability,
+    fleiss_kappa,
+)
 from knoema.game import NPC, GameSession, NPCResponse
 from knoema.llm import (
     AnthropicClient,
@@ -117,6 +125,7 @@ __all__ = [
     "BenchmarkConfig",
     "BenchmarkReport",
     "BenchmarkRun",
+    "ComparisonPair",
     "ComparisonRow",
     "ContentFilter",
     "DecisionEngine",
@@ -126,6 +135,7 @@ __all__ = [
     "EmotionStimulus",
     "Environment",
     "EnvironmentContext",
+    "EvaluationSession",
     "FilterDecision",
     "GameSession",
     "HashEmbeddingEncoder",
@@ -158,6 +168,7 @@ __all__ = [
     "Relationship",
     "RelationshipGraph",
     "RelationshipType",
+    "ReliabilityReport",
     "RetrievalWeights",
     "SQLiteFaissMemoryStore",
     "SafetyCategory",
@@ -186,10 +197,13 @@ __all__ = [
     "build_comparison_rows",
     "build_env_telemetry_client",
     "build_village_personas",
+    "cohen_kappa",
+    "compute_inter_rater_reliability",
     "compute_pcs",
     "compute_rcs",
     "decide",
     "detect_hot_shards",
+    "fleiss_kappa",
     "format_markdown_report",
     "load_config",
     "load_or_create_anonymous_id",

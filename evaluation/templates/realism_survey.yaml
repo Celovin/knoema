@@ -1,0 +1,42 @@
+schema_version: 1
+template_id: realism_survey
+title: Realism Survey
+scale:
+  type: likert_5
+  anchors:
+    1: Strongly disagree
+    2: Disagree
+    3: Neutral
+    4: Agree
+    5: Strongly agree
+items:
+  - id: realism_01
+    prompt: The agent actions follow from the prior context.
+  - id: realism_02
+    prompt: The conversation sounds plausible for the agent persona.
+  - id: realism_03
+    prompt: The agent remembers relevant earlier events.
+  - id: realism_04
+    prompt: The relationship changes are believable.
+  - id: realism_05
+    prompt: The emotional tone fits the situation.
+  - id: realism_06
+    prompt: The scenario remains internally consistent.
+  - id: realism_07
+    prompt: The agent avoids impossible knowledge.
+  - id: realism_08
+    prompt: The agent goal is visible in its actions.
+  - id: realism_09
+    prompt: The simulation feels coherent across ticks.
+  - id: realism_10
+    prompt: The written log is easy to evaluate.
+  - id: realism_11
+    prompt: The agent behavior differs from other agents.
+  - id: realism_12
+    prompt: The scene could support a game NPC prototype.
+  - id: realism_13
+    prompt: The scene could support a research replay.
+  - id: realism_14
+    prompt: The output avoids identifying real people.
+  - id: realism_15
+    prompt: The output states enough context for review.

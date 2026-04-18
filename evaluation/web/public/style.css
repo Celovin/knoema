@@ -1,0 +1,43 @@
+:root {
+  color: #15201b;
+  background: #f7f9f8;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.pair-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+article {
+  border: 1px solid #aebbb4;
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+pre {
+  white-space: pre-wrap;
+}
+
+button,
+select {
+  min-height: 40px;
+}
+
+@media (max-width: 720px) {
+  .pair-grid {
+    grid-template-columns: 1fr;
+  }
+}

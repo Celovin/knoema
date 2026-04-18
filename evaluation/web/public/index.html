@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Knoema Human Evaluation</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <main>
+      <h1>Knoema Human Evaluation</h1>
+      <section>
+        <h2>Session</h2>
+        <p id="session-status">Ready for a blinded pairwise review.</p>
+      </section>
+      <section aria-labelledby="pair-title">
+        <h2 id="pair-title">Pairwise Preference</h2>
+        <div class="pair-grid">
+          <article>
+            <h3>Trace A</h3>
+            <pre id="trace-a">Alice remembers the library plan and asks Ben for a quieter table.</pre>
+          </article>
+          <article>
+            <h3>Trace B</h3>
+            <pre id="trace-b">Alice ignores the prior plan and starts an unrelated conversation.</pre>
+          </article>
+        </div>
+        <form id="rating-form">
+          <label for="rating">Preferred trace</label>
+          <select id="rating" name="rating">
+            <option value="left">Trace A</option>
+            <option value="right">Trace B</option>
+            <option value="tie">Tie</option>
+          </select>
+          <button type="submit">Save rating</button>
+        </form>
+        <p id="saved-rating" aria-live="polite"></p>
+      </section>
+    </main>
+    <script src="./main.js" type="module"></script>
+  </body>
+</html>
