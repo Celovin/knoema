@@ -55,6 +55,11 @@ def test_external_activation_status_reports_current_blockers(tmp_path: Path) -> 
             stdout="\x1b[1muser: \x1b[0m iruhana25\n",
             stderr="",
         ),
+        _command_key(["hf", "auth", "list"]): CommandResult(
+            exit_code=0,
+            stdout="No access tokens found.\n",
+            stderr="",
+        ),
         _command_key(["vercel", "whoami"]): CommandResult(exit_code=0, stdout="celovin-team\n", stderr=""),
     }
 
@@ -62,13 +67,24 @@ def test_external_activation_status_reports_current_blockers(tmp_path: Path) -> 
         del cwd
         return responses[_command_key(command)]
 
-    report = collect_external_activation_status(run_command=fake_runner, repo_root=tmp_path)
+    report = collect_external_activation_status(
+        run_command=fake_runner,
+        repo_root=tmp_path,
+        environment={"HF_TOKEN": "set"},
+        home_dir=tmp_path,
+    )
 
     assert report["ready_for_external_activation"] is False
     assert report["repo"]["is_public"] is True
     assert report["deployment"]["hugging_face"]["authenticated_user"] == "iruhana25"
+    assert report["deployment"]["hugging_face"]["auth_source"] == "env:HF_TOKEN"
     assert report["deployment"]["vercel"]["website_project_link_exists"] is False
+    assert report["deployment"]["vercel"]["auth_file_exists"] is False
     assert report["github_actions"]["release_please_enabled"] is False
+    assert report["suggested_actions"][0].startswith(
+        "Replace the current Hugging Face environment token"
+    )
+    assert report["suggested_actions"][1].startswith("From `website/`, run `vercel link`")
     assert "Repository variable ENABLE_RELEASE_PLEASE is not set." in report["blockers"]
 
 
@@ -76,6 +92,9 @@ def test_external_activation_status_reports_ready_state_when_all_checks_pass(tmp
     website_link = tmp_path / "website" / ".vercel"
     website_link.mkdir(parents=True)
     (website_link / "project.json").write_text('{"projectId":"p123"}', encoding="utf-8")
+    auth_dir = tmp_path / ".vercel"
+    auth_dir.mkdir()
+    (auth_dir / "auth.json").write_text('{"token":"masked"}', encoding="utf-8")
 
     responses = {
         _command_key(
@@ -119,6 +138,11 @@ def test_external_activation_status_reports_ready_state_when_all_checks_pass(tmp
             stdout="user: Celovin\n",
             stderr="",
         ),
+        _command_key(["hf", "auth", "list"]): CommandResult(
+            exit_code=0,
+            stdout="active: default\n",
+            stderr="",
+        ),
         _command_key(["vercel", "whoami"]): CommandResult(
             exit_code=0,
             stdout="celovin-production\n",
@@ -130,10 +154,18 @@ def test_external_activation_status_reports_ready_state_when_all_checks_pass(tmp
         del cwd
         return responses[_command_key(command)]
 
-    report = collect_external_activation_status(run_command=fake_runner, repo_root=tmp_path)
+    report = collect_external_activation_status(
+        run_command=fake_runner,
+        repo_root=tmp_path,
+        environment={},
+        home_dir=tmp_path,
+    )
 
     assert report["ready_for_external_activation"] is True
     assert report["blockers"] == []
     assert report["deployment"]["hugging_face"]["matches_target_namespace"] is True
+    assert report["deployment"]["hugging_face"]["auth_source"] == "stored_token"
     assert report["github_actions"]["default_workflow_permissions"] == "write"
     assert report["github_actions"]["release_please_enabled"] is True
+    assert report["deployment"]["vercel"]["auth_file_exists"] is True
+    assert report["suggested_actions"] == []

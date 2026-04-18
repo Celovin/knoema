@@ -5,6 +5,7 @@ import json
 import os
 import re
 import subprocess
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
@@ -13,6 +14,7 @@ OWNER = "Celovin"
 REPO = "knoema"
 FULL_REPO = f"{OWNER}/{REPO}"
 TARGET_SPACE = f"{OWNER}/knoema-playground"
+HF_ENV_TOKEN_NAMES = ("HF_TOKEN", "HUGGINGFACE_HUB_TOKEN", "HUGGING_FACE_HUB_TOKEN")
 
 
 @dataclass(frozen=True, slots=True)
@@ -94,6 +96,13 @@ def _parse_variable_names(output: str) -> list[str]:
     return names
 
 
+def _hf_has_stored_tokens(output: str) -> bool:
+    cleaned = _strip_ansi(output).strip().lower()
+    if not cleaned:
+        return False
+    return "no access tokens found" not in cleaned
+
+
 def _load_json(result: CommandResult) -> dict[str, Any] | None:
     if result.exit_code != 0:
         return None
@@ -103,13 +112,62 @@ def _load_json(result: CommandResult) -> dict[str, Any] | None:
     return json.loads(payload)
 
 
+def _suggested_actions(
+    *,
+    hf_user: str | None,
+    hf_env_token_names: list[str],
+    website_project_link_exists: bool,
+    vercel_identity: str | None,
+    github_actions_status: dict[str, object],
+    latest_release: dict[str, str] | None,
+) -> list[str]:
+    actions: list[str] = []
+    if hf_user != OWNER:
+        if hf_env_token_names:
+            actions.append(
+                "Replace the current Hugging Face environment token with a Celovin-scoped token and verify with `hf auth whoami`."
+            )
+        else:
+            actions.append(
+                "Authenticate Hugging Face as Celovin with `hf auth login`, then verify with `hf auth whoami`."
+            )
+    if not website_project_link_exists:
+        if vercel_identity is None:
+            actions.append(
+                "From `website/`, run `vercel login` and then `vercel link` to create `website/.vercel/project.json` for the production project."
+            )
+        else:
+            actions.append(
+                "From `website/`, run `vercel link` to create `website/.vercel/project.json` for the production project."
+            )
+    if github_actions_status["default_workflow_permissions"] != "write":
+        actions.append(
+            "Set GitHub Actions default workflow permissions to `Read and write` and allow Actions to create and approve pull requests."
+        )
+    if not github_actions_status["release_please_enabled"]:
+        actions.append("Set the repository variable `ENABLE_RELEASE_PLEASE=1`.")
+    if latest_release is None:
+        actions.append("Publish the first GitHub release before external activation.")
+    return actions
+
+
 def collect_external_activation_status(
     *,
     run_command: CommandRunner = _run_command,
     repo_root: Path | None = None,
+    environment: Mapping[str, str] | None = None,
+    home_dir: Path | None = None,
 ) -> dict[str, object]:
     root = repo_root or _repo_root()
     website_project_link = root / "website" / ".vercel" / "project.json"
+    env = os.environ if environment is None else environment
+    if home_dir is not None:
+        auth_home = home_dir
+    elif "USERPROFILE" in env:
+        auth_home = Path(env["USERPROFILE"])
+    else:
+        auth_home = Path.home()
+    vercel_auth_file = auth_home / ".vercel" / "auth.json"
 
     repo_view = _load_json(
         run_command(
@@ -129,6 +187,7 @@ def collect_external_activation_status(
     variables_result = run_command(["gh", "variable", "list", "--repo", FULL_REPO])
     release_result = run_command(["gh", "release", "list", "--repo", FULL_REPO, "--limit", "1"])
     hf_result = run_command(["hf", "auth", "whoami"], cwd=root)
+    hf_tokens_result = run_command(["hf", "auth", "list"], cwd=root)
     vercel_result = run_command(["vercel", "whoami"], cwd=root / "website")
 
     repo_status = {
@@ -143,6 +202,10 @@ def collect_external_activation_status(
     }
 
     hf_user = _parse_hf_user(hf_result.stdout) if hf_result.exit_code == 0 else None
+    hf_env_token_names = [name for name in HF_ENV_TOKEN_NAMES if env.get(name)]
+    hf_has_stored_tokens = (
+        hf_tokens_result.exit_code == 0 and _hf_has_stored_tokens(hf_tokens_result.stdout)
+    )
     vercel_identity = vercel_result.stdout.strip() or None
     variable_names = _parse_variable_names(variables_result.stdout)
 
@@ -166,10 +229,19 @@ def collect_external_activation_status(
             "authenticated_user": hf_user,
             "matches_target_namespace": hf_user == OWNER,
             "target_space": TARGET_SPACE,
+            "auth_source": (
+                f"env:{hf_env_token_names[0]}"
+                if hf_env_token_names
+                else "stored_token" if hf_has_stored_tokens else None
+            ),
+            "env_token_names": hf_env_token_names,
+            "has_stored_tokens": hf_has_stored_tokens,
         },
         "vercel": {
             "whoami": vercel_identity,
+            "is_logged_in": vercel_identity is not None,
             "website_project_link_exists": website_project_link.exists(),
+            "auth_file_exists": vercel_auth_file.exists(),
         },
     }
 
@@ -193,6 +265,14 @@ def collect_external_activation_status(
         "github_actions": github_actions_status,
         "ready_for_external_activation": blockers == [],
         "blockers": blockers,
+        "suggested_actions": _suggested_actions(
+            hf_user=hf_user,
+            hf_env_token_names=hf_env_token_names,
+            website_project_link_exists=website_project_link.exists(),
+            vercel_identity=vercel_identity,
+            github_actions_status=github_actions_status,
+            latest_release=repo_status["latest_release"],
+        ),
     }
 
 

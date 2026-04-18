@@ -74,8 +74,10 @@ def test_phase35_release_dry_run_script_and_docs_exist() -> None:
     assert "Trusted Publisher" in docs
     assert "external_activation_status.py" in docs
     assert "pre_release_check.py" in docs
+    assert "Suggested next actions" in docs
     assert "--fail-on-blockers" in docs
     assert "python scripts/external_activation_status.py" in readme
     assert "python scripts/pre_release_check.py --version 0.1.1" in readme
     assert "ENABLE_RELEASE_PLEASE" in status_script
+    assert "suggested_actions" in status_script
     assert "ready_for_release_tag" in pre_release_script

@@ -27,7 +27,7 @@ The matrix installs the package and runs import plus focused type/config smoke t
 
 The `Release Please` workflow opens version bump and changelog pull requests from conventional commits on `main`.
 
-The workflow is gated by the repository variable `ENABLE_RELEASE_PLEASE=1`. Keep it disabled until the repository owner either enables GitHub Actions pull request creation for this repository or provides a dedicated release-please token. Without that owner-controlled setting, GitHub rejects release-please PR creation.
+The workflow is gated by the repository variable `ENABLE_RELEASE_PLEASE=1`. On April 18, 2026, the repository owner enabled GitHub Actions `Read and write` workflow permissions, allowed Actions to approve pull requests, and set that variable for `Celovin/knoema`. Keep the external activation status check in the release checklist so configuration drift is caught before tagging.
 
 Configuration lives in:
 
@@ -52,6 +52,7 @@ The script prints a JSON snapshot covering:
 - Vercel project link presence for production deployment
 - GitHub Actions workflow permission mode
 - Repository variable state for `ENABLE_RELEASE_PLEASE`
+- Suggested next actions when any blocker is still present
 
 Add `--fail-on-blockers` when you want a non-zero exit code if any activation blocker is still present.
 
