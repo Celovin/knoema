@@ -208,6 +208,7 @@ Detailed notes:
 
 - [Architecture](docs/architecture.md)
 - [Research Positioning](docs/research.md)
+- [Competitor Matrix](docs/competitor_matrix.md)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)

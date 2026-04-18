@@ -113,6 +113,7 @@ Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 
 
 - [Architecture](docs/architecture.md)
 - [Research Positioning](docs/research.md)
+- [Competitor Matrix](docs/competitor_matrix.md)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [튜토리얼 블로그 초안](docs/tutorial_blog.md)
