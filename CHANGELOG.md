@@ -45,6 +45,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 37 scenario marketplace beta with repository-backed submission docs, curated seed scenarios, a scenario validator workflow, and a scenario submission PR template.
 - Phase 38 multilingual README pack for English, Korean, Japanese, Simplified Chinese, Traditional Chinese, German, French, and Spanish navigation.
 - Phase 39 anonymous opt-in telemetry for CLI usage, privacy documentation, and safe event-delivery tests.
+- Phase 40 public case-study pack for KNOT integration, a Korean university pilot, and indie studio adoption planning.
 
 ### Changed
 - Hardened Phase 24 SDK facades with required input validation, defensive dictionary copies, TypeScript package build configuration, and safer Godot missing-NPC responses.

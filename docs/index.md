@@ -32,4 +32,7 @@ Public-safety examples in this repository are fictional, synthetic, and non-iden
 - [Game Integration](guides/game-integration.md)
 - [Research Workflow](guides/research-workflow.md)
 - [Safety Scenarios](guides/safety-scenarios.md)
+- [KNOT Episode 1 Integration](case_studies/01_knot_episode_1_integration.md)
+- [Korean University Pilot](case_studies/02_korean_university_pilot.md)
+- [Indie Studio Adoption](case_studies/03_indie_studio_adoption.md)
 - [CLI Reference](reference/cli.md)
