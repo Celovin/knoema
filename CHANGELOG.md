@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 50 Papers with Code submission packet with machine-readable JSON metadata and result rows.
 - Phase 50 technical report PDF regenerated as a 30+ page preview.
 - Phase 51 hierarchical task-network planner with persona opt-in goal decomposition and planning-depth evidence.
+- Phase 52 distributed 1000-agent city experiment with Ray-compatible fallback, location sharding, SVG evidence, and formal report integration.
 
 ## [0.1.1] - 2026-04-18
 

@@ -30,7 +30,7 @@ Composite score compares paired Knoema and naive runs for each scenario or model
 
 - Memory recall accuracy: deterministic top-k proxy for preserving scenario facts.
 - Token efficiency ratio: naive prompt tokens divided by approach prompt tokens.
-- Scalability curve: estimated actions/sec at 5, 10, 25, and 50 agents, plus a 500-agent metropolis appendix.
+- Scalability curve: estimated actions/sec at 5, 10, 25, and 50 agents, plus 500-agent and 1000-agent appendices.
 - Narrative branching count: branch flags normalized per 100 turns.
 
 ## Baseline Discipline
@@ -44,6 +44,8 @@ Composite score compares paired Knoema and naive runs for each scenario or model
 
 - Summary source: experiments/500_agent_metropolis/results/summary.json
 - Figure source: results/figures/metropolis_scale.svg
+- 1000-agent source: experiments/1000_agent_city/results/summary.json
+- 1000-agent figure: results/figures/city_1000_scale.svg
 - Theory-of-mind source: deterministic Sally-Anne harness in src/knoema/theory_of_mind.py
 
 | Metric | Knoema 500-Agent Metropolis | Google DeepMind Concordia | Stanford Generative Agents |
@@ -52,7 +54,8 @@ Composite score compares paired Knoema and naive runs for each scenario or model
 | Agent scale | 500 agents x 20 seeds | Not measured in this repo | 25-agent sandbox in paper |
 | Latency / memory | p95 65.055 ms / max 436.000 MB | Equivalent adapter run required | Equivalent adapter run required |
 | Throughput | mean 1657.527 actions/sec | Equivalent adapter run required | Paper or code reference only |
-| Artifacts | JSONL + summary.json + SVG | Separate appendix needed | Separate appendix needed |
+| 1000-agent city | ray row 5300.000 actions/sec; 1.050 MB/agent | Equivalent adapter run required | Equivalent adapter run required |
+| Artifacts | JSONL + summary.json + SVG, plus 1000-agent summary + SVG | Separate appendix needed | Separate appendix needed |
 | Surface | Godot + Unity scaffolds, Korean prompt surface | No packaged game-engine adapter | No packaged game-engine adapter |
 | Theory-of-mind surface | Persona opt-in symbolic belief tracker | No public opt-in ToM API reported | No public opt-in ToM API reported |
 | Sally-Anne reproduction | 1.000 over 20 cases | No public score reported | No public score reported |

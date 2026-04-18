@@ -1,0 +1,19 @@
+scenario_name: 1000_agent_city
+agent_count: 1000
+districts:
+  - north
+  - south
+  - east
+  - west
+  - central
+ticks: 200
+backends:
+  single-process:
+    workers: 1
+  process-pool:
+    workers: 8
+  ray:
+    workers: 16
+acceptance:
+  ray_speedup_over_single_process: 3.0
+  max_memory_per_agent_mb: 1.2

@@ -15,6 +15,16 @@ from knoema.benchmark import (
 )
 from knoema.config import KnoemaConfig, load_config
 from knoema.decision import DecisionEngine, decide
+from knoema.distributed import (
+    BackendRunSummary,
+    DistributedSimulationConfig,
+    RayExecutor,
+    Shard,
+    ShardPlan,
+    detect_hot_shards,
+    rebalance_hot_shards,
+    shard_agents_by_location,
+)
 from knoema.dsl import Scenario, load_scenario
 from knoema.emotion import EmotionState, EmotionStimulus
 from knoema.environment import Environment, EnvironmentContext
@@ -91,11 +101,13 @@ __all__ = [
     "AgentContext",
     "AgentID",
     "AnthropicClient",
+    "BackendRunSummary",
     "BenchmarkConfig",
     "BenchmarkReport",
     "BenchmarkRun",
     "ComparisonRow",
     "DecisionEngine",
+    "DistributedSimulationConfig",
     "Emotion",
     "EmotionState",
     "EmotionStimulus",
@@ -126,6 +138,7 @@ __all__ = [
     "Personality",
     "PromptLanguage",
     "PromptRenderable",
+    "RayExecutor",
     "Relationship",
     "RelationshipGraph",
     "RelationshipType",
@@ -134,6 +147,8 @@ __all__ = [
     "SallyAnneBenchmarkResult",
     "SallyAnneCaseResult",
     "Scenario",
+    "Shard",
+    "ShardPlan",
     "ShortTermMemoryBuffer",
     "SimulationLogEntry",
     "Simulator",
@@ -155,15 +170,18 @@ __all__ = [
     "compute_pcs",
     "compute_rcs",
     "decide",
+    "detect_hot_shards",
     "format_markdown_report",
     "load_config",
     "load_or_create_anonymous_id",
     "load_scenario",
     "normalize_prompt_language",
+    "rebalance_hot_shards",
     "render_decision_user_prompt",
     "render_persona_system_prompt",
     "run_knoema_benchmark",
     "run_sally_anne_benchmark",
     "score_log",
+    "shard_agents_by_location",
     "telemetry_opt_in_from_env",
 ]

@@ -98,6 +98,9 @@ local-llm = [
     "transformers>=4.44",
     "torch>=2.4",
 ]
+distributed = [
+    "ray[default]>=2.40",
+]
 
 [project.urls]
 Homepage = "https://github.com/Celovin/knoema"

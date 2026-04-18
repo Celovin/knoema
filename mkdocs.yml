@@ -50,6 +50,7 @@ nav:
       - Configuration: getting-started/configuration.md
   - Core Concepts:
       - Architecture: architecture.md
+      - Distributed Architecture: architecture_distributed.md
       - Research Positioning: research.md
       - Prompt Templates: prompts.md
       - Hierarchical Planning: cognition/hierarchical_planning.md

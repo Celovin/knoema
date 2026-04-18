@@ -35,6 +35,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Environment context for time, location, conditions, and recent events
 - PAD emotion state: valence, arousal, dominance
 - Opt-in hierarchical planning for multi-step agent goals
+- Optional distributed 1000-agent execution envelope with Ray-compatible fallback
 - LLM gateway with Anthropic, OpenAI, and deterministic local clients
 - Prompt templates for English, Korean, Japanese, and Chinese runs
 - Simulation runner with scheduled events and JSONL export

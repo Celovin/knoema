@@ -14,8 +14,8 @@ cd C:\Users\admin\Projects\knoema
 Outputs:
 
 - `results/raw.jsonl`: 24 deterministic runs across 4 scenarios, 2 approaches, and 3 local model profiles.
-- `results/summary.md`: aggregate tables, metric definitions, paired sign-test p-value, the Phase 42 or 43 scale and theory-of-mind appendix, and the Phase 45 classic reproduction section.
-- `results/figures/*.svg`: five source figures for recall, token efficiency, scalability, branching, and the Phase 42 metropolis appendix.
+- `results/summary.md`: aggregate tables, metric definitions, paired sign-test p-value, the Phase 42 and Phase 52 scale appendices, the Phase 43 theory-of-mind appendix, and the Phase 45 classic reproduction section.
+- `results/figures/*.svg`: source figures for recall, token efficiency, scalability, branching, the Phase 42 metropolis appendix, and the Phase 52 1000-agent city appendix.
 - `report.pdf`: 20-page formal benchmark report.
 
 Use `--skip-pdf` when running in environments without the optional `paper` dependencies.

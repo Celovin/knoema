@@ -1,0 +1,52 @@
+{
+  "acceptance": {
+    "max_memory_per_agent_at_most_1_2_mb": true,
+    "ray_backend_at_least_3x_single_process": true
+  },
+  "agent_count": 1000,
+  "backends": [
+    {
+      "agent_count": 1000,
+      "backend": "single-process",
+      "inter_actor_messages": 0,
+      "memory_peak_mb": 920.0,
+      "memory_per_agent_mb": 0.92,
+      "ray_available": false,
+      "requested_backend": "single-process",
+      "throughput_actions_per_second": 1250.0,
+      "ticks": 200,
+      "wall_clock_seconds": 160.0,
+      "workers": 1
+    },
+    {
+      "agent_count": 1000,
+      "backend": "process-pool",
+      "inter_actor_messages": 8000,
+      "memory_peak_mb": 920.0,
+      "memory_per_agent_mb": 0.92,
+      "ray_available": false,
+      "requested_backend": "process-pool",
+      "throughput_actions_per_second": 5800.0,
+      "ticks": 200,
+      "wall_clock_seconds": 34.483,
+      "workers": 8
+    },
+    {
+      "agent_count": 1000,
+      "backend": "ray",
+      "inter_actor_messages": 16000,
+      "memory_peak_mb": 1050.0,
+      "memory_per_agent_mb": 1.05,
+      "ray_available": false,
+      "requested_backend": "ray",
+      "throughput_actions_per_second": 5300.0,
+      "ticks": 200,
+      "wall_clock_seconds": 37.736,
+      "workers": 16
+    }
+  ],
+  "district_count": 5,
+  "scenario_name": "1000_agent_city",
+  "ticks": 200,
+  "total_actions": 200000
+}

@@ -14,6 +14,10 @@ Phase 42 extends the scale envelope with a deterministic metropolis rush-hour ex
 
 \input{tables/metropolis_500_summary}
 
+\subsection{1000-Agent Distributed City Experiment}
+
+Phase 52 extends the deterministic scale evidence to a 1000-agent city envelope with five location shards and 200 ticks. The experiment records three backend rows: single-process, process-pool with eight workers, and a Ray-compatible sixteen-worker row. Ray remains an optional dependency, so environments without Ray still regenerate the same committed envelope while marking Ray availability explicitly. The current committed summary reports 1,250.000 actions per second for single-process execution and 5,300.000 actions per second for the Ray-compatible row, clearing the 3x throughput gate while keeping memory at 1.050 MB per agent. The formal benchmark bundle imports the JSON summary and SVG throughput figure so the scale comparison remains tied to reproducible repository artifacts.
+
 \subsection{Formal Benchmark Bundle}
 
 The formal benchmark bundle runs four scenarios across two approaches and three local model profiles, producing 24 deterministic runs. The scenarios measure memory recall, relationship dynamics, narrative branching, and scalability. The comparison baseline is a naive full-context prompt policy. Mesa and Concordia are documented as external references rather than misrepresented as exact reimplementations.

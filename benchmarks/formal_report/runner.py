@@ -13,14 +13,14 @@ from pathlib import Path
 from typing import Any
 
 from baselines import mesa_stub, naive_llm
+
+from knoema.theory_of_mind import SallyAnneBenchmarkResult, run_sally_anne_benchmark
 from scenarios import (
     scenario_A_memory_recall,
     scenario_B_relationship_dynamics,
     scenario_C_narrative_branching,
     scenario_D_scalability,
 )
-
-from knoema.theory_of_mind import SallyAnneBenchmarkResult, run_sally_anne_benchmark
 
 ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = ROOT / "results"
@@ -29,6 +29,9 @@ DEFAULT_REPORT = ROOT / "report.pdf"
 METROPOLIS_RESULTS_DIR = ROOT.parents[1] / "experiments" / "500_agent_metropolis" / "results"
 METROPOLIS_SUMMARY_PATH = METROPOLIS_RESULTS_DIR / "summary.json"
 METROPOLIS_FIGURE_PATH = METROPOLIS_RESULTS_DIR / "latency_memory.svg"
+CITY_RESULTS_DIR = ROOT.parents[1] / "experiments" / "1000_agent_city" / "results"
+CITY_SUMMARY_PATH = CITY_RESULTS_DIR / "summary.json"
+CITY_FIGURE_PATH = CITY_RESULTS_DIR / "latency_scaling.svg"
 SCHELLING_SUMMARY_PATH = ROOT.parents[1] / "experiments" / "schelling_segregation" / "results" / "summary.json"
 AXELROD_SUMMARY_PATH = ROOT.parents[1] / "experiments" / "axelrod_prisoners_dilemma" / "results" / "summary.json"
 
@@ -74,6 +77,7 @@ def write_outputs(
     report_path: Path | None = DEFAULT_REPORT,
 ) -> None:
     metropolis_summary = load_metropolis_summary()
+    city_summary = load_city_summary()
     theory_of_mind_result = run_sally_anne_benchmark()
     schelling_summary = load_classic_reproduction_summary(SCHELLING_SUMMARY_PATH)
     axelrod_summary = load_classic_reproduction_summary(AXELROD_SUMMARY_PATH)
@@ -87,6 +91,7 @@ def write_outputs(
     summary = build_summary(
         runs,
         metropolis_summary=metropolis_summary,
+        city_summary=city_summary,
         theory_of_mind_result=theory_of_mind_result,
         schelling_summary=schelling_summary,
         axelrod_summary=axelrod_summary,
@@ -101,6 +106,7 @@ def write_outputs(
             summary,
             report_path,
             metropolis_summary=metropolis_summary,
+            city_summary=city_summary,
             theory_of_mind_result=theory_of_mind_result,
             schelling_summary=schelling_summary,
             axelrod_summary=axelrod_summary,
@@ -111,6 +117,7 @@ def build_summary(
     runs: Sequence[Mapping[str, Any]],
     *,
     metropolis_summary: Mapping[str, Any],
+    city_summary: Mapping[str, Any],
     theory_of_mind_result: SallyAnneBenchmarkResult,
     schelling_summary: Mapping[str, Any],
     axelrod_summary: Mapping[str, Any],
@@ -151,7 +158,7 @@ def build_summary(
             "",
             "- Memory recall accuracy: deterministic top-k proxy for preserving scenario facts.",
             "- Token efficiency ratio: naive prompt tokens divided by approach prompt tokens.",
-            "- Scalability curve: estimated actions/sec at 5, 10, 25, and 50 agents, plus a 500-agent metropolis appendix.",
+            "- Scalability curve: estimated actions/sec at 5, 10, 25, and 50 agents, plus 500-agent and 1000-agent appendices.",
             "- Narrative branching count: branch flags normalized per 100 turns.",
             "",
             "## Baseline Discipline",
@@ -165,6 +172,8 @@ def build_summary(
             "",
             "- Summary source: experiments/500_agent_metropolis/results/summary.json",
             "- Figure source: results/figures/metropolis_scale.svg",
+            "- 1000-agent source: experiments/1000_agent_city/results/summary.json",
+            "- 1000-agent figure: results/figures/city_1000_scale.svg",
             "- Theory-of-mind source: deterministic Sally-Anne harness in src/knoema/theory_of_mind.py",
             "",
             "| Metric | Knoema 500-Agent Metropolis | Google DeepMind Concordia | Stanford Generative Agents |",
@@ -173,6 +182,7 @@ def build_summary(
     )
     for metric, knoema, concordia, stanford in _comparison_markdown_rows(
         metropolis_summary,
+        city_summary,
         theory_of_mind_result,
     ):
         lines.append(f"| {metric} | {knoema} | {concordia} | {stanford} |")
@@ -219,6 +229,7 @@ def write_figures(runs: Sequence[Mapping[str, Any]], figures_dir: Path) -> None:
         _scalability_points(runs),
     )
     shutil.copyfile(METROPOLIS_FIGURE_PATH, figures_dir / "metropolis_scale.svg")
+    shutil.copyfile(CITY_FIGURE_PATH, figures_dir / "city_1000_scale.svg")
 
 
 def write_bar_svg(path: Path, title: str, values: Sequence[tuple[str, float]]) -> None:
@@ -289,6 +300,7 @@ def build_pdf_report(
     path: Path,
     *,
     metropolis_summary: Mapping[str, Any],
+    city_summary: Mapping[str, Any],
     theory_of_mind_result: SallyAnneBenchmarkResult,
     schelling_summary: Mapping[str, Any],
     axelrod_summary: Mapping[str, Any],
@@ -306,6 +318,7 @@ def build_pdf_report(
         p_value,
         summary,
         metropolis_summary,
+        city_summary,
         theory_of_mind_result,
         schelling_summary,
         axelrod_summary,
@@ -424,6 +437,7 @@ def _pdf_page_specs(
     p_value: float,
     summary: str,
     metropolis_summary: Mapping[str, Any],
+    city_summary: Mapping[str, Any],
     theory_of_mind_result: SallyAnneBenchmarkResult,
     schelling_summary: Mapping[str, Any],
     axelrod_summary: Mapping[str, Any],
@@ -540,10 +554,11 @@ def _pdf_page_specs(
             "title": "Scale and Theory of Mind",
             "intro": [
                 "Phase 42 folds the 500-agent metropolis run into the formal bundle.",
+                "Phase 52 adds the 1000-agent city backend comparison.",
                 "Phase 43 adds persona opt-in theory-of-mind and a deterministic Sally-Anne harness.",
             ],
             "headers": ["Metric", "Knoema 500-Agent", "Concordia", "Stanford"],
-            "rows": _comparison_pdf_rows(metropolis_summary, theory_of_mind_result),
+            "rows": _comparison_pdf_rows(metropolis_summary, city_summary, theory_of_mind_result),
         },
         {
             "kind": "table",
@@ -588,6 +603,14 @@ def load_metropolis_summary() -> dict[str, Any]:
     return payload
 
 
+def load_city_summary() -> dict[str, Any]:
+    payload = json.loads(CITY_SUMMARY_PATH.read_text(encoding="utf-8"))
+    required = {"agent_count", "ticks", "backends", "acceptance"}
+    if not isinstance(payload, dict) or not required.issubset(payload):
+        raise ValueError("Phase 52 city summary is missing required keys")
+    return payload
+
+
 def load_classic_reproduction_summary(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
@@ -597,11 +620,14 @@ def load_classic_reproduction_summary(path: Path) -> dict[str, Any]:
 
 def _comparison_markdown_rows(
     summary: Mapping[str, Any],
+    city_summary: Mapping[str, Any],
     theory_of_mind_result: SallyAnneBenchmarkResult,
 ) -> list[tuple[str, str, str, str]]:
     latency = summary["latency_ms"]
     memory = summary["memory_mb"]
     throughput = summary["throughput_actions_per_second"]
+    city_backends = _city_backends(city_summary)
+    city_ray = city_backends["ray"]
     return [
         ("Comparison status", "Measured local deterministic run", "External reference only", "External reference only"),
         (
@@ -623,8 +649,14 @@ def _comparison_markdown_rows(
             "Paper or code reference only",
         ),
         (
+            "1000-agent city",
+            f"ray row {city_ray['throughput_actions_per_second']:.3f} actions/sec; {city_ray['memory_per_agent_mb']:.3f} MB/agent",
+            "Equivalent adapter run required",
+            "Equivalent adapter run required",
+        ),
+        (
             "Artifacts",
-            "JSONL + summary.json + SVG",
+            "JSONL + summary.json + SVG, plus 1000-agent summary + SVG",
             "Separate appendix needed",
             "Separate appendix needed",
         ),
@@ -651,21 +683,34 @@ def _comparison_markdown_rows(
 
 def _comparison_pdf_rows(
     summary: Mapping[str, Any],
+    city_summary: Mapping[str, Any],
     theory_of_mind_result: SallyAnneBenchmarkResult,
 ) -> list[list[str]]:
     latency = summary["latency_ms"]
     memory = summary["memory_mb"]
     throughput = summary["throughput_actions_per_second"]
+    city_ray = _city_backends(city_summary)["ray"]
     return [
         ["Status", "local run", "reference only", "reference only"],
         ["Scale", f"{summary['agent_count']} x {summary['seed_count']} seeds", "not measured here", "25-agent paper"],
         ["Latency", f"p95 {latency['mean_p95']:.1f} ms", "adapter run needed", "paper only"],
         ["Peak memory", f"max {memory['max_peak']:.1f} MB", "adapter run needed", "paper only"],
         ["Throughput", f"mean {throughput['mean']:.1f} act/s", "adapter run needed", "paper only"],
+        ["1000-agent", f"ray {city_ray['throughput_actions_per_second']:.0f} act/s", "adapter run needed", "adapter run needed"],
         ["Artifacts", "JSONL + JSON + SVG", "appendix needed", "appendix needed"],
         ["ToM surface", "persona opt-in", "no public opt-in API", "no public opt-in API"],
         ["Sally-Anne", f"{theory_of_mind_result.correct_cases}/{theory_of_mind_result.total_cases}", "not reported", "not reported"],
     ]
+
+
+def _city_backends(city_summary: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]:
+    backends = city_summary["backends"]
+    if not isinstance(backends, list):
+        raise ValueError("city backends must be a list")
+    rows = {str(row["backend"]): row for row in backends if isinstance(row, dict)}
+    if {"single-process", "process-pool", "ray"} - set(rows):
+        raise ValueError("city summary must include all three backends")
+    return rows
 
 
 def _classic_reproduction_markdown_rows(
