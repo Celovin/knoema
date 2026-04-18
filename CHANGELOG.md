@@ -51,6 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hardened Phase 24 SDK facades with required input validation, defensive dictionary copies, TypeScript package build configuration, and safer Godot missing-NPC responses.
 - Improved Phase 25 website quality with canonical/robots/Twitter metadata, page-level SEO metadata, discoverable priority hero image loading, and dimensioned lazy benchmark figures.
 - Tuned SQLite-backed memory storage for more stable hosted-runner write performance.
+- Expanded MkDocs navigation so all public Markdown docs are surfaced in the published documentation site.
 
 ## [0.1.0] - 2026-04-18
 

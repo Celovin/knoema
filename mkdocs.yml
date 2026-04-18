@@ -48,6 +48,12 @@ nav:
       - Installation: getting-started/installation.md
       - First Simulation: getting-started/first-simulation.md
       - Configuration: getting-started/configuration.md
+  - Core Concepts:
+      - Architecture: architecture.md
+      - Research Positioning: research.md
+      - Prompt Templates: prompts.md
+      - Scenario DSL Tutorial: dsl/tutorial.md
+      - Scenario DSL Reference: dsl/reference.md
   - API:
       - Persona: api/persona.md
       - Memory: api/memory.md
@@ -62,17 +68,42 @@ nav:
       - Research Workflow: guides/research-workflow.md
       - Academic Indexing: research/academic-indexing.md
       - Safety Scenarios: guides/safety-scenarios.md
+  - SDK:
+      - Python SDK: sdk/python-api.md
+      - TypeScript SDK: sdk/typescript-api.md
+      - Godot SDK: sdk/godot-api.md
+      - Integration Patterns: sdk/integration_patterns.md
+  - Reports:
+      - Competitor Matrix: competitor_matrix.md
+      - Reproducibility Report: reports/reproducibility.md
   - Case Studies:
       - KNOT Episode 1 Integration: case_studies/01_knot_episode_1_integration.md
       - Korean University Pilot: case_studies/02_korean_university_pilot.md
       - Indie Studio Adoption: case_studies/03_indie_studio_adoption.md
   - Reference:
+      - CLI Overview: cli.md
       - CLI: reference/cli.md
       - CI and Release: ci-release-automation.md
       - Privacy: PRIVACY.md
       - Security Policy: SECURITY.md
       - Security Audit: security/audit_2026-04-18.md
+  - Media:
+      - Demo Video 30 Seconds: videos/script_30sec.md
+      - Demo Video 3 Minutes: videos/script_3min.md
+      - Demo Video 10 Minutes: videos/script_10min.md
+      - Demo Shot List: videos/shotlist.md
+      - Tutorial 01 Getting Started: videos/tutorials/01_getting_started_10min.md
+      - Tutorial 02 First NPC: videos/tutorials/02_build_your_first_npc_15min.md
+      - Tutorial 03 Research Experiment: videos/tutorials/03_research_experiment_20min.md
+  - Blog Drafts:
+      - Tutorial Blog Draft: tutorial_blog.md
+      - Korean Blog 01 Why Knoema: blog/ko/01-why-knoema-korean-indie-games.md
+      - Korean Blog 02 NPC Memory Principles: blog/ko/02-llm-npc-memory-principles.md
+      - Korean Blog 03 Godot Integration: blog/ko/03-godot-integration-step-by-step.md
+      - Korean Blog 04 Research Reproducibility: blog/ko/04-academic-research-reproducibility.md
+      - Korean Blog 05 Ethics and Guards: blog/ko/05-crime-simulation-ethics-and-guards.md
   - Community:
       - Discord: community/discord.md
+      - Discord Launch Kit: discord_community.md
       - Contributing: community/contributing.md
       - Roadmap: community/roadmap.md

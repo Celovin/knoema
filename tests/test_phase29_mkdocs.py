@@ -38,8 +38,13 @@ def test_phase29_mkdocs_config_includes_api_reference() -> None:
 
     assert "mkdocstrings" in config
     assert "Getting Started:" in config
+    assert "Core Concepts:" in config
     assert "API:" in config
     assert "Guides:" in config
+    assert "SDK:" in config
+    assert "Reports:" in config
+    assert "Media:" in config
+    assert "Blog Drafts:" in config
     assert "Community:" in config
     assert "mkdocs-material" in pyproject
     assert "mkdocstrings[python]" in pyproject
@@ -56,3 +61,16 @@ def test_phase29_docs_keep_safety_boundary_and_public_links() -> None:
     assert "Prediction of future crime" in safety
     assert "GameSession" in game
     assert "config, seed, commit hash, logs, and summary metrics" in research
+
+
+def test_phase29_mkdocs_nav_covers_all_public_markdown_pages() -> None:
+    config = Path("mkdocs.yml").read_text(encoding="utf-8")
+    docs_root = Path("docs")
+
+    public_markdown_paths = sorted(
+        path.relative_to(docs_root).as_posix()
+        for path in docs_root.rglob("*.md")
+    )
+
+    for relative_path in public_markdown_paths:
+        assert relative_path in config, relative_path
