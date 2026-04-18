@@ -60,6 +60,7 @@ nav:
   - Guides:
       - Game Integration: guides/game-integration.md
       - Research Workflow: guides/research-workflow.md
+      - Academic Indexing: research/academic-indexing.md
       - Safety Scenarios: guides/safety-scenarios.md
   - Reference:
       - CLI: reference/cli.md

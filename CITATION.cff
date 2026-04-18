@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use Knoema Engine in research, please cite the software repository and the technical report draft."
+type: software
+title: "Knoema Engine: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation"
+authors:
+  - name: "Celovin"
+    email: "hello@celovin.com"
+version: 0.1.0
+date-released: 2026-04-18
+license: MIT
+repository-code: "https://github.com/Celovin/knoema"
+url: "https://github.com/Celovin/knoema"
+abstract: "Knoema Engine is an MIT-licensed runtime for persistent social agents whose memory, relationships, emotions, environment context, deterministic logs, and optional LLM-backed decisions remain inspectable outside a model prompt."
+keywords:
+  - "large language models"
+  - "multi-agent simulation"
+  - "agent-based modeling"
+  - "game NPCs"
+  - "reproducibility"
+  - "synthetic replay"
+preferred-citation:
+  type: article
+  title: "Knoema Engine: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation"
+  authors:
+    - name: "Celovin"
+      email: "hello@celovin.com"
+  year: 2026
+  url: "https://github.com/Celovin/knoema/blob/main/paper/main.tex"
+  abstract: "This technical report presents Knoema Engine as an open runtime for persistent social agents across game NPCs, fictional synthetic replay research, and reproducible academic simulation."

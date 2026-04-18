@@ -1,0 +1,37 @@
+{
+  "title": "Knoema Engine: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation",
+  "upload_type": "software",
+  "description": "Knoema Engine is an MIT-licensed Python runtime for persistent social agents with explicit persona, memory, relationship, emotion, environment, deterministic replay, and optional LLM-backed decision surfaces. Public-safety examples are fictional, synthetic, and non-identifying; the project is not designed for prediction, suspect scoring, surveillance, or enforcement automation.",
+  "creators": [
+    {
+      "name": "Celovin",
+      "affiliation": "Celovin"
+    }
+  ],
+  "access_right": "open",
+  "license": "mit",
+  "publication_date": "2026-04-18",
+  "version": "0.1.0",
+  "keywords": [
+    "large language models",
+    "multi-agent simulation",
+    "agent-based modeling",
+    "game NPC",
+    "synthetic replay",
+    "reproducible research",
+    "social simulation"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/Celovin/knoema",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://github.com/Celovin/knoema/blob/main/paper/main.tex",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-preprint"
+    }
+  ],
+  "notes": "Release metadata prepared during Phase 31. A DOI is assigned only after the repository or release archive is connected to Zenodo under the Celovin account."
+}

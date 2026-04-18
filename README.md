@@ -6,6 +6,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/Celovin/knoema-playground)
+[![DOI: pending](https://img.shields.io/badge/DOI-pending-lightgrey)](docs/research/academic-indexing.md)
+[![Papers with Code: submission packet](https://img.shields.io/badge/Papers%20with%20Code-submission%20packet-blue)](docs/research/academic-indexing.md)
 
 Korean: [README.ko.md](README.ko.md)
 
@@ -328,6 +330,7 @@ Detailed notes:
 - [Website App](website/app/page.tsx)
 - [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/knoema_technical_report.pdf)
 - [arXiv-oriented Phase 30 Preprint Source](paper/main.tex), [Appendix](paper/appendix.tex), and [Expanded References](paper/references.bib)
+- [Academic Indexing Packet](docs/research/academic-indexing.md), [Citation Metadata](CITATION.cff), and [Zenodo Metadata](.zenodo.json)
 
 ## Roadmap
 
