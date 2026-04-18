@@ -54,3 +54,25 @@ def test_phase25_website_copy_keeps_safety_and_sdk_surfaces() -> None:
     assert "synthetic, non-identifying scenarios" in combined
     assert "from knoema.game import GameSession" in combined
     assert "Python, TypeScript, and GDScript" in combined
+
+
+def test_phase25_website_has_seo_and_image_loading_basics() -> None:
+    layout = Path("website/app/layout.tsx").read_text(encoding="utf-8")
+    hero = Path("website/components/Hero.tsx").read_text(encoding="utf-8")
+    research = Path("website/app/research/page.tsx").read_text(encoding="utf-8")
+    docs = Path("website/app/docs/page.tsx").read_text(encoding="utf-8")
+    showcase = Path("website/app/showcase/page.tsx").read_text(encoding="utf-8")
+    blog = Path("website/app/blog/page.tsx").read_text(encoding="utf-8")
+
+    assert "alternates" in layout
+    assert "robots" in layout
+    assert "twitter" in layout
+    assert 'src="/og-image.png"' in hero
+    assert "priority" in hero
+    assert 'className="hero-bg"' in hero
+    assert 'loading="lazy"' in research
+    assert 'width="960"' in research
+
+    for page in [docs, research, showcase, blog]:
+        assert "export const metadata" in page
+        assert "canonical" in page

@@ -1,10 +1,20 @@
+import Image from "next/image";
 import Link from "next/link";
 
-const proofItems = ["v0.1.0 public release", "122 local tests", "Python, TypeScript, Godot SDKs"];
+const proofItems = ["v0.1.0 public release", "130+ local tests", "Python, TypeScript, Godot SDKs"];
 
 export function Hero() {
   return (
     <section className="hero">
+      <Image
+        alt=""
+        aria-hidden="true"
+        className="hero-bg"
+        fill
+        priority
+        sizes="100vw"
+        src="/og-image.png"
+      />
       <nav className="site-nav" aria-label="Primary navigation">
         <Link href="/">Knoema</Link>
         <div>

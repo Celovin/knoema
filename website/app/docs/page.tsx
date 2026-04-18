@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Docs | Knoema Engine",
+  description:
+    "Knoema Engine architecture, scenario DSL, SDK, and CLI documentation entry points.",
+  alternates: {
+    canonical: "/docs",
+  },
+};
 
 const docs = [
   ["Architecture", "https://github.com/Celovin/knoema/blob/main/docs/architecture.md"],

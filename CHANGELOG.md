@@ -36,6 +36,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Phase 26 Korean technical blog drafts covering indie game NPCs, memory design, Godot integration, research reproducibility, and synthetic replay guardrails with thumbnail assets.
 - Phase 27 YouTube tutorial scripts for getting started, first NPC integration, and reproducible research experiments with recording guidance and descriptions.
 
+### Changed
+- Hardened Phase 24 SDK facades with required input validation, defensive dictionary copies, TypeScript package build configuration, and safer Godot missing-NPC responses.
+- Improved Phase 25 website quality with canonical/robots/Twitter metadata, page-level SEO metadata, discoverable priority hero image loading, and dimensioned lazy benchmark figures.
+
 ## [0.1.0] - 2026-04-18
 
 ### Added

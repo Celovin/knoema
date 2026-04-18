@@ -6,8 +6,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc --declaration --outDir dist",
-    "check": "tsc --noEmit"
+    "build": "tsc --project tsconfig.json",
+    "check": "tsc --project tsconfig.json --noEmit"
   },
   "license": "MIT",
   "devDependencies": {

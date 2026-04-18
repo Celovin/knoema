@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Blog | Knoema Engine",
+  description:
+    "Knoema Engine publication queue for game NPC integration, memory design, reproducibility, and safety notes.",
+  alternates: {
+    canonical: "/blog",
+  },
+};
 
 const drafts = [
   "Why Knoema for Korean indie games",

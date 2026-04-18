@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Showcase | Knoema Engine",
+  description:
+    "Knoema Engine paths for browser playground demos, game SDK prototyping, and research SaaS inspection.",
+  alternates: {
+    canonical: "/showcase",
+  },
+};
 
 const paths = [
   ["Browser Playground", "Run replay-only demos or provide a session key for live LLM trials."],
