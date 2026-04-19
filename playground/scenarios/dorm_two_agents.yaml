@@ -43,4 +43,6 @@ events:
     participants: ["mina", "joon"]
     location: Shared Kitchen
     description: A residence assistant posts a reminder that shared spaces will be inspected tomorrow.
+description_ko: "두 룸메이트가 아침 준비와 청소 분담을 조율하는 시나리오입니다. 작은 생활 갈등이 협상과 관계 조정으로 이어지는 흐름을 보기 좋습니다."
+description_en: "Two roommates negotiate breakfast routines and shared chores. It is a compact scenario for watching a small domestic conflict turn into coordination."
 local_response: '{"action_type": "speak", "target": null, "content": "I notice the shared routine and suggest a small next step."}'

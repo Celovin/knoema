@@ -73,6 +73,39 @@ def scenario_default_agent_count(name: str) -> int:
     return len(load_run_config(scenario_path(name)).agents)
 
 
+def scenario_description(name: str, language: str = "en") -> str:
+    config = load_run_config(scenario_path(name))
+    if language == "ko" and config.description_ko:
+        return config.description_ko.strip()
+    if language != "ko" and config.description_en:
+        return config.description_en.strip()
+    return _default_scenario_description(language)
+
+
+def build_playground_hint(
+    *,
+    scenario_name: str | None,
+    language: str = "en",
+    environment_note: str | None = None,
+) -> str:
+    parts: list[str] = []
+    if scenario_name:
+        scenario_label = "시나리오" if language == "ko" else "Scenario"
+        parts.append(f"**{scenario_label}:** {scenario_description(scenario_name, language)}")
+    else:
+        parts.append(_default_scenario_description(language))
+    if environment_note:
+        environment_label = "환경" if language == "ko" else "Environment"
+        parts.append(f"**{environment_label}:** {environment_note.strip()}")
+    return "\n\n".join(parts)
+
+
+def _default_scenario_description(language: str) -> str:
+    if language == "ko":
+        return "기본 데모 시나리오를 선택해 짧은 에이전트 상호작용 흐름을 확인해 보세요."
+    return "Select a demo scenario to preview a short persistent-agent interaction flow."
+
+
 def run_playground_scenario(
     *,
     scenario_name: str,

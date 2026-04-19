@@ -126,6 +126,9 @@ class SimulationRunConfig(BaseModel):
     agents: list[CliAgentConfig] = Field(min_length=1)
     events: list[CliEventConfig] = Field(default_factory=list)
     local_response: str = '{"action_type": "wait", "target": null, "content": "observes the situation."}'
+    description_ko: str | None = None
+    description_en: str | None = None
+    ethics_tag: str | None = None
 
     @property
     def prompt_language(self) -> PromptLanguage:

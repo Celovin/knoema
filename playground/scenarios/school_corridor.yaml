@@ -53,4 +53,6 @@ events:
     participants: ["yuna", "minho", "sora"]
     location: Main Corridor
     description: The club advisor asks the students to agree on a fair cleanup plan before leaving.
+description_ko: "방과 후 복도에서 학생들이 공정한 청소 분담을 합의해야 하는 시나리오입니다. 공개된 공간에서 갈등을 낮추며 조율하는 과정을 보기 좋습니다."
+description_en: "Students in a school corridor need to agree on a fair cleanup split before leaving. It highlights low-stakes conflict resolution in a public setting."
 local_response: '{"action_type": "speak", "target": null, "content": "I suggest a fair and safe next step in the corridor."}'

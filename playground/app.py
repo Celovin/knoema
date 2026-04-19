@@ -12,6 +12,7 @@ try:
         AGENT_COUNT_MAX,
         AGENT_COUNT_MIN,
         Provider,
+        build_playground_hint,
         host_key_active,
         run_playground_scenario,
         scenario_choices,
@@ -22,6 +23,7 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         AGENT_COUNT_MAX,
         AGENT_COUNT_MIN,
         Provider,
+        build_playground_hint,
         host_key_active,
         run_playground_scenario,
         scenario_choices,
@@ -103,7 +105,16 @@ def _scenario_agent_count_update(scenario_name: str) -> dict[str, Any]:
     return gr.update(value=scenario_default_agent_count(scenario_name))
 
 
-def _language_updates(lang_choice: str, current_provider: str | None) -> list[Any]:
+def _hint_markdown_update(scenario_name: str | None, language_choice: str) -> str:
+    language = "ko" if language_choice == LANGUAGE_CHOICES[0] else "en"
+    return build_playground_hint(scenario_name=scenario_name, language=language)
+
+
+def _language_updates(
+    lang_choice: str,
+    current_provider: str | None,
+    current_scenario: str | None = None,
+) -> list[Any]:
     key = "ko" if lang_choice == LANGUAGE_CHOICES[0] else "en"
     labels = LABELS[key]
     replay_values = (LABELS["ko"]["replay"], LABELS["en"]["replay"])
@@ -131,6 +142,7 @@ def _language_updates(lang_choice: str, current_provider: str | None) -> list[An
         gr.update(label=labels["neuroticism"], info=labels["neuroticism_info"]),
         gr.update(label=labels["agents"], info=labels["agents_info"]),
         gr.update(label=labels["ticks"]),
+        _hint_markdown_update(current_scenario, lang_choice),
         gr.update(value=labels["run"]),
         gr.update(label=labels["summary"]),
         gr.update(label=labels["timeline"]),
@@ -380,6 +392,13 @@ footer {{display: none !important;}}
     max-height: {TIMELINE_MAX_HEIGHT_PX}px;
     overflow-y: auto;
 }}
+.knoema-hint {{
+    color: #475569;
+    font-size: 0.95rem;
+}}
+.knoema-hint p {{
+    margin-bottom: 0;
+}}
 """
 
 
@@ -486,6 +505,10 @@ def build_app() -> gr.Blocks:
                 ticks = gr.Slider(
                     label=labels["ticks"], minimum=1, maximum=24, step=1, value=4
                 )
+        scenario_hint = gr.Markdown(
+            _hint_markdown_update(default_scenario, LANGUAGE_CHOICES[0]),
+            elem_classes=["knoema-hint"],
+        )
         run_button = gr.Button(labels["run"], variant="primary")
         summary = gr.Textbox(label=labels["summary"], interactive=False)
         graph = gr.Plot(label=labels["graph"], elem_id="relationship-graph")
@@ -500,7 +523,7 @@ def build_app() -> gr.Blocks:
         download = gr.File(label=labels["download"])
 
         def _switch(lang_choice: str) -> list[Any]:
-            return _language_updates(lang_choice, provider.value)
+            return _language_updates(lang_choice, provider.value, scenario.value)
 
         language.change(
             _switch,
@@ -521,6 +544,7 @@ def build_app() -> gr.Blocks:
                 neuroticism,
                 agent_count,
                 ticks,
+                scenario_hint,
                 run_button,
                 summary,
                 timeline,
@@ -534,6 +558,11 @@ def build_app() -> gr.Blocks:
             _scenario_agent_count_update,
             inputs=[scenario],
             outputs=[agent_count],
+        )
+        scenario.change(
+            _hint_markdown_update,
+            inputs=[scenario, language],
+            outputs=[scenario_hint],
         )
         run_button.click(
             _run,

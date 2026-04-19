@@ -87,4 +87,6 @@ events:
     participants: ["aria", "dae", "nora"]
     location: Market Square
     description: The market opens with one stall damaged by overnight wind.
+description_ko: "시장 날 아침, 열 명의 주민이 수리와 배달, 행사 준비를 동시에 조율합니다. 다대다 상호작용과 관계 그래프 변화를 관찰하기 좋은 시나리오입니다."
+description_en: "On market morning, ten villagers coordinate repairs, deliveries, and festival prep at once. It is useful for observing many-to-many interaction and relationship shifts."
 local_response: '{"action_type": "speak", "target": null, "content": "I respond to the village routine and coordinate with a neighbor."}'
