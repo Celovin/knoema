@@ -647,6 +647,7 @@ LABELS["ko"]["theme_info"] = "라이트, 다크, 자동 중 하나를 선택하�
 LABELS["ko"]["theme_auto"] = "자동"
 LABELS["ko"]["theme_light"] = "라이트"
 LABELS["ko"]["theme_dark"] = "다크"
+LABELS["ko"]["graph_a11y"] = "관계 그래프 요약"
 LABELS["ko"]["report_agent_panel"] = "ReportAgent Q&A"
 LABELS["ko"]["report_agent_question"] = "런 질문"
 LABELS["ko"]["report_agent_run"] = "현재 런 요약 답변"
@@ -677,6 +678,7 @@ LABELS["en"]["theme_info"] = "Choose Light, Dark, or Auto and persist the prefer
 LABELS["en"]["theme_auto"] = "Auto"
 LABELS["en"]["theme_light"] = "Light"
 LABELS["en"]["theme_dark"] = "Dark"
+LABELS["en"]["graph_a11y"] = "Graph summary"
 LABELS["en"]["report_agent_panel"] = "ReportAgent Q&A"
 LABELS["en"]["report_agent_question"] = "Run question"
 LABELS["en"]["report_agent_run"] = "Answer from current run"
@@ -798,10 +800,14 @@ GRAPH_HEIGHT_PX = 620
 TIMELINE_MAX_HEIGHT_PX = 360
 ACTION_CHART_HEIGHT_PX = 380
 EMOTION_TRAJECTORY_MAX_AGENTS = 12
-AGENT_COLOR_SEQUENCE: tuple[str, ...] = tuple(qualitative.Bold)
+AGENT_COLOR_SEQUENCE: tuple[str, ...] = tuple(
+    qualitative.Safe + qualitative.Set2 + qualitative.Pastel1 + qualitative.Dark2
+)
 ACTION_PATTERN_SEQUENCE: tuple[str, ...] = ("", "/", "\\", "x", "-", "|", "+", ".", "o")
 ACTION_FLOW_SELF_TYPES = frozenset({"alone", "move", "query_memory"})
-ACTION_FLOW_COLOR_SEQUENCE: tuple[str, ...] = tuple(qualitative.Set3 + qualitative.Bold)
+ACTION_FLOW_COLOR_SEQUENCE: tuple[str, ...] = tuple(
+    qualitative.Safe + qualitative.Set2 + qualitative.Pastel1 + qualitative.Dark2
+)
 
 BIG_FIVE_FIELDS = PERSONA_TRAIT_FIELDS[:5]
 TIER_BD_FIELDS = (
@@ -1161,7 +1167,78 @@ def _theme_head() -> str:
 
 
 THEME_HEAD = _theme_head()
-APP_HEAD = TUTORIAL_HEAD + THEME_HEAD
+
+
+def _accessibility_head() -> str:
+    return f"""
+<script>
+(() => {{
+  const koreanChoice = {json.dumps(KOREAN_CHOICE, ensure_ascii=False)};
+  const labels = {{
+    ko: {{
+      tutorial: "튜토리얼 열기",
+      run: "시뮬레이션 실행",
+      theme: "테마 선택",
+      tick: "틱 선택",
+      graph: "관계 그래프. 실행 요약에 텍스트 대체 설명이 있습니다.",
+      summary: "실행 요약 및 관계 그래프 대체 설명",
+    }},
+    en: {{
+      tutorial: "Open tutorial walkthrough",
+      run: "Run simulation",
+      theme: "Theme selector",
+      tick: "Tick selector",
+      graph: "Relationship graph. The run summary contains a text alternative.",
+      summary: "Run summary and relationship graph text alternative",
+    }},
+  }};
+
+  function currentLang() {{
+    const checked = Array.from(document.querySelectorAll('input[type="radio"]'))
+      .find((input) => input.checked && input.value === koreanChoice);
+    return checked ? "ko" : "en";
+  }}
+
+  function setAttr(element, name, value) {{
+    if (element && element.getAttribute(name) !== value) {{
+      element.setAttribute(name, value);
+    }}
+  }}
+
+  function setLabel(id, label) {{
+    const element = document.getElementById(id);
+    setAttr(element, "aria-label", label);
+  }}
+
+  function applyA11y() {{
+    const key = currentLang();
+    const text = labels[key];
+    setLabel("tutorial-button", text.tutorial);
+    setLabel("run-button", text.run);
+    setLabel("theme-mode-radio", text.theme);
+    setLabel("tick-scrubber", text.tick);
+
+    const summary = document.getElementById("run-summary");
+    setAttr(summary, "role", "status");
+    setAttr(summary, "aria-live", "polite");
+    setAttr(summary, "aria-label", text.summary);
+
+    const graph = document.getElementById("relationship-graph");
+    setAttr(graph, "role", "img");
+    setAttr(graph, "tabindex", "0");
+    setAttr(graph, "aria-label", text.graph);
+    setAttr(graph, "aria-describedby", "run-summary");
+  }}
+
+  window.addEventListener("load", applyA11y);
+  new MutationObserver(applyA11y).observe(document.documentElement, {{ childList: true, subtree: true }});
+}})();
+</script>
+"""
+
+
+ACCESSIBILITY_HEAD = _accessibility_head()
+APP_HEAD = TUTORIAL_HEAD + THEME_HEAD + ACCESSIBILITY_HEAD
 
 FOOTER_CSS = f"""
 :root {{
@@ -1925,6 +2002,7 @@ def _render_result_outputs(
             )
         if host_provider:
             summary += f" | (Celovin host {host_provider} key in use - demo only)"
+    summary += f" | {_relationship_accessibility_text(result.relationship_rows, language=language)}"
     agent_ids = sorted(
         set(result.action_breakdown)
         | set(result.memory_snapshot)
@@ -1970,6 +2048,40 @@ def _render_result_outputs(
         _spatial_heatmap_figure(result.jsonl, result.memory_snapshot, language=language),
         _action_flow_figure(result.jsonl, language=language),
         _mini_map_figure(result.jsonl, -1, language=language),
+    )
+
+
+def _relationship_accessibility_text(
+    rows: list[dict[str, object]],
+    *,
+    language: str = "en",
+) -> str:
+    labels = LABELS[language]
+    if not rows:
+        if language == "ko":
+            return f"{labels['graph_a11y']}: 아직 관계 간선이 없습니다."
+        return f"{labels['graph_a11y']}: no relationship edges yet."
+
+    strongest = max(
+        rows,
+        key=lambda row: (
+            float(row.get("trust", 0.0)),
+            float(row.get("weight", 0.0)),
+        ),
+    )
+    source = str(strongest.get("source", "unknown"))
+    target = str(strongest.get("target", "unknown"))
+    trust = float(strongest.get("trust", 0.0))
+    weight = float(strongest.get("weight", 0.0))
+    edge_count = len(rows)
+    if language == "ko":
+        return (
+            f"{labels['graph_a11y']}: 관계 간선 {edge_count}개, "
+            f"가장 강한 연결 {source} -> {target}, 신뢰 {trust:.2f}, 가중치 {weight:.2f}."
+        )
+    return (
+        f"{labels['graph_a11y']}: {edge_count} relationship edges; "
+        f"strongest link {source} -> {target}, trust {trust:.2f}, weight {weight:.2f}."
     )
 
 
@@ -4700,7 +4812,7 @@ def build_app() -> gr.Blocks:
                 interactive=False,
                 elem_id="player-voice-output",
             )
-        summary = gr.Textbox(label=labels["summary"], interactive=False)
+        summary = gr.Textbox(label=labels["summary"], interactive=False, elem_id="run-summary")
         action_chart = gr.Plot(
             label=labels["action_chart"],
             value=initial_action_chart_figure,
