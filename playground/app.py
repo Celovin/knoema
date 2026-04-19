@@ -666,6 +666,8 @@ LABELS["ko"]["report_agent_panel"] = "ReportAgent Q&A"
 LABELS["ko"]["report_agent_question"] = "런 질문"
 LABELS["ko"]["report_agent_run"] = "현재 런 요약 답변"
 LABELS["ko"]["report_agent_empty"] = "런을 실행한 뒤 질문하면 JSONL 기반 요약을 돌려줍니다."
+LABELS["ko"]["competitive_panel"] = "경쟁 비교"
+LABELS["ko"]["competitive_intro"] = "연구용 사회 시뮬레이션, 예측 샌드박스, 오케스트레이션 프레임워크를 같은 표면에서 비교합니다."
 LABELS["ko"]["compare_panel"] = "A/B 비교"
 LABELS["ko"]["compare_seed_a"] = "비교 시드 A"
 LABELS["ko"]["compare_seed_b"] = "비교 시드 B"
@@ -697,6 +699,8 @@ LABELS["en"]["report_agent_panel"] = "ReportAgent Q&A"
 LABELS["en"]["report_agent_question"] = "Run question"
 LABELS["en"]["report_agent_run"] = "Answer from current run"
 LABELS["en"]["report_agent_empty"] = "Run a scenario first, then ask a question to get a JSONL-grounded summary."
+LABELS["en"]["competitive_panel"] = "Competitive comparison"
+LABELS["en"]["competitive_intro"] = "Compare research simulators, prediction sandboxes, and orchestration frameworks side by side."
 LABELS["en"]["compare_panel"] = "A/B compare"
 LABELS["en"]["compare_seed_a"] = "Compare seed A"
 LABELS["en"]["compare_seed_b"] = "Compare seed B"
@@ -827,6 +831,86 @@ ACTION_PATTERN_SEQUENCE: tuple[str, ...] = ("", "/", "\\", "x", "-", "|", "+", "
 ACTION_FLOW_SELF_TYPES = frozenset({"alone", "move", "query_memory"})
 ACTION_FLOW_COLOR_SEQUENCE: tuple[str, ...] = tuple(
     qualitative.Safe + qualitative.Set2 + qualitative.Pastel1 + qualitative.Dark2
+)
+COMPETITIVE_COMPARISON_ROWS: tuple[dict[str, object], ...] = (
+    {
+        "system": "Knoema",
+        "focus_en": "Open-source social simulation engine",
+        "focus_ko": "오픈소스 사회 시뮬레이션 엔진",
+        "memory_en": "Persistent memory plus directed trust graph",
+        "memory_ko": "지속 기억 + 방향성 신뢰 그래프",
+        "repro_en": "Deterministic replay, YAML, JSONL, benchmark artifacts",
+        "repro_ko": "결정론적 리플레이, YAML, JSONL, 벤치마크 산출물",
+        "game_en": "Godot and Unity scaffolds",
+        "game_ko": "Godot/Unity 스캐폴드",
+        "license": "MIT",
+        "reference": "https://github.com/Celovin/knoema",
+    },
+    {
+        "system": "Stanford Generative Agents",
+        "focus_en": "Academic prototype",
+        "focus_ko": "학술 프로토타입",
+        "memory_en": "Memory stream and reflection architecture",
+        "memory_ko": "memory stream + reflection 구조",
+        "repro_en": "Paper and demo code only (partial)",
+        "repro_ko": "논문과 데모 코드 중심 (partial)",
+        "game_en": "No packaged game SDK",
+        "game_ko": "패키지형 게임 SDK 없음",
+        "license": "MIT repository",
+        "reference": "https://arxiv.org/abs/2304.03442",
+    },
+    {
+        "system": "Google DeepMind Concordia",
+        "focus_en": "Research library",
+        "focus_ko": "연구용 라이브러리",
+        "memory_en": "Component-based generative agents",
+        "memory_ko": "컴포넌트 기반 generative agents",
+        "repro_en": "Scenario code and package surface (partial)",
+        "repro_ko": "시나리오 코드와 패키지 표면 (partial)",
+        "game_en": "No packaged game SDK",
+        "game_ko": "패키지형 게임 SDK 없음",
+        "license": "Apache-2.0",
+        "reference": "https://github.com/google-deepmind/concordia",
+    },
+    {
+        "system": "MiroFish",
+        "focus_en": "Prediction-oriented multi-agent app",
+        "focus_ko": "예측 지향 멀티에이전트 앱",
+        "memory_en": "High-fidelity world, personalities, long-term memory",
+        "memory_ko": "고해상도 세계, 페르소나, 장기 기억",
+        "repro_en": "Seed-driven simulation reports (partial)",
+        "repro_ko": "seed 기반 시뮬레이션 보고서 (partial)",
+        "game_en": "No packaged game SDK",
+        "game_ko": "패키지형 게임 SDK 없음",
+        "license": "AGPL-3.0",
+        "reference": "https://github.com/666ghj/MiroFish",
+    },
+    {
+        "system": "CAMEL-AI",
+        "focus_en": "General multi-agent framework",
+        "focus_ko": "범용 멀티에이전트 프레임워크",
+        "memory_en": "Stateful memory plus benchmark support",
+        "memory_ko": "stateful memory + benchmark 지원",
+        "repro_en": "Framework and benchmark surfaces (partial social-world focus)",
+        "repro_ko": "프레임워크/벤치마크 표면 (사회 세계 특화는 partial)",
+        "game_en": "No packaged game SDK",
+        "game_ko": "패키지형 게임 SDK 없음",
+        "license": "Apache-2.0",
+        "reference": "https://github.com/camel-ai/camel",
+    },
+    {
+        "system": "Microsoft AutoGen",
+        "focus_en": "Agent orchestration framework",
+        "focus_ko": "에이전트 오케스트레이션 프레임워크",
+        "memory_en": "Application-defined state",
+        "memory_ko": "애플리케이션 정의 상태",
+        "repro_en": "App-dependent (partial)",
+        "repro_ko": "앱 구현 의존 (partial)",
+        "game_en": "No packaged game SDK",
+        "game_ko": "패키지형 게임 SDK 없음",
+        "license": "MIT",
+        "reference": "https://github.com/microsoft/autogen",
+    },
 )
 
 BIG_FIVE_FIELDS = PERSONA_TRAIT_FIELDS[:5]
@@ -3761,6 +3845,39 @@ def _trait_update(field_name: str, labels: dict[str, str]) -> dict[str, Any]:
     return gr.update(label=labels[field_name], info=labels[f"{field_name}_info"])
 
 
+def _competitive_comparison_markdown(language: str) -> str:
+    key = _language_key(language)
+    labels = LABELS[key]
+    if key == "ko":
+        header = (
+            "| System | 초점 | 기억/세계 모델 | 재현 가능 표면 | 게임 어댑터 | License | Reference |\n"
+            "| --- | --- | --- | --- | --- | --- | --- |"
+        )
+        rows = [
+            (
+                f"| {row['system']} | {row['focus_ko']} | {row['memory_ko']} | "
+                f"{row['repro_ko']} | {row['game_ko']} | {row['license']} | "
+                f"[public]({row['reference']}) |"
+            )
+            for row in COMPETITIVE_COMPARISON_ROWS
+        ]
+    else:
+        header = (
+            "| System | Focus | Memory / world model | Reproducible surface | "
+            "Game adapters | License | Reference |\n"
+            "| --- | --- | --- | --- | --- | --- | --- |"
+        )
+        rows = [
+            (
+                f"| {row['system']} | {row['focus_en']} | {row['memory_en']} | "
+                f"{row['repro_en']} | {row['game_en']} | {row['license']} | "
+                f"[public]({row['reference']}) |"
+            )
+            for row in COMPETITIVE_COMPARISON_ROWS
+        ]
+    return "\n".join([f"### {labels['competitive_panel']}", labels["competitive_intro"], "", header, *rows])
+
+
 def _language_updates(
     lang_choice: str,
     current_provider: str | None,
@@ -3878,6 +3995,8 @@ def _language_updates(
         gr.update(label=labels["report_agent_panel"]),
         gr.update(label=labels["report_agent_question"]),
         gr.update(value=labels["report_agent_run"]),
+        gr.update(label=labels["competitive_panel"]),
+        _competitive_comparison_markdown(key),
         gr.update(label=labels["compare_panel"]),
         gr.update(label=labels["compare_seed_a"]),
         gr.update(label=labels["compare_seed_b"]),
@@ -5646,6 +5765,16 @@ def build_app() -> gr.Blocks:
                 labels["report_agent_empty"],
                 elem_id="report-agent-output",
             )
+        competitive_panel = gr.Accordion(
+            labels["competitive_panel"],
+            open=False,
+            elem_id="competitive-comparison-panel",
+        )
+        with competitive_panel:
+            competitive_table = gr.Markdown(
+                _competitive_comparison_markdown("ko"),
+                elem_id="competitive-comparison-table",
+            )
         compare_panel = gr.Accordion(
             labels["compare_panel"],
             open=False,
@@ -5756,6 +5885,8 @@ def build_app() -> gr.Blocks:
             report_agent_panel,
             report_agent_question,
             report_agent_button,
+            competitive_panel,
+            competitive_table,
             compare_panel,
             compare_seed_a,
             compare_seed_b,
