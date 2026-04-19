@@ -28,7 +28,7 @@ from knoema.persona import Persona
 from knoema.planning import HierarchicalPlanner, Task
 from knoema.protocols import LLMClient, Message
 from knoema.simulator import SimulationLogEntry, Simulator
-from knoema.types import PERSONALITY_NEUTRAL_DEFAULTS, Personality
+from knoema.types import ACTION_TYPES, PERSONALITY_NEUTRAL_DEFAULTS, Personality
 
 Provider = Literal["Replay only", "OpenAI", "Anthropic"]
 AGENT_COUNT_MIN = 1
@@ -50,6 +50,31 @@ SCENARIO_DIR = Path(__file__).resolve().parent / "scenarios"
 ENVIRONMENTS_PATH = Path(__file__).resolve().parent / "environments.yaml"
 PERSONA_PRESETS_PATH = Path(__file__).resolve().parent / "persona_presets.yaml"
 CULTURAL_PRIORS_PATH = Path(__file__).resolve().parent / "cultural_priors.yaml"
+ACTION_TEMPLATES_PATH = Path(__file__).resolve().parent / "action_templates.yaml"
+UNTARGETED_ACTION_TYPES = frozenset(
+    {
+        "observe",
+        "move",
+        "query_memory",
+        "propose_plan",
+        "exit",
+        "enter",
+        "gossip",
+        "alone",
+    }
+)
+PROMPT_LINE_PREFIXES: dict[str, dict[str, str]] = {
+    "en": {"location": "Location: ", "trigger": "Trigger: "},
+    "ko": {"location": "위치: ", "trigger": "트리거: "},
+    "ja": {"location": "場所: ", "trigger": "トリガー: "},
+    "zh": {"location": "位置: ", "trigger": "触发事件: "},
+}
+NO_TRIGGER_LINES = {
+    "en": "No immediate trigger.",
+    "ko": "즉시 반응할 트리거가 없습니다.",
+    "ja": "直近のトリガーはありません。",
+    "zh": "没有需要立即回应的触发事件。",
+}
 DEFAULT_SCENARIOS: tuple[dict[str, str], ...] = (
     {"name": "Dorm: two agents", "filename": "dorm_two_agents.yaml"},
     {"name": "Village: ten agents", "filename": "village_ten.yaml"},
@@ -438,6 +463,20 @@ def cultural_prior_trait_values(
     return tuple(float(resolved[field_name]) for field_name in fields)
 
 
+@lru_cache(maxsize=1)
+def load_action_templates() -> dict[str, dict[str, str]]:
+    with ACTION_TEMPLATES_PATH.open(encoding="utf-8") as handle:
+        data = yaml.safe_load(handle) or {}
+    templates = {str(language): dict(values) for language, values in dict(data).items()}
+    for language in ("en", "ko"):
+        missing = [action_type for action_type in ACTION_TYPES if action_type not in templates.get(language, {})]
+        if missing:
+            raise ValueError(
+                f"action templates for {language!r} are missing verbs: {', '.join(missing)}"
+            )
+    return templates
+
+
 def agent_editor_defaults(
     scenario_name: str,
     *,
@@ -639,7 +678,7 @@ def run_playground_scenario(
             api_key=api_key,
             model=model,
             config=config,
-            agent_ids=[agent.agent_id for agent in agents],
+            agents=agents,
             language=language,
         ),
         language=language if language in {"ko", "ja", "zh"} else config.prompt_language,
@@ -843,7 +882,7 @@ def _build_client(
     api_key: str,
     model: str,
     config: SimulationRunConfig,
-    agent_ids: list[str],
+    agents: list[Persona],
     language: str = "en",
 ) -> LLMClient:
     user_key = api_key.strip()
@@ -862,7 +901,7 @@ def _build_client(
                 api_key=key,
             )
     return LocalClient(
-        _scripted_responder(agent_ids=agent_ids, fallback=config.local_response, language=language)
+        _scripted_responder(agents=agents, fallback=config.local_response, language=language)
     )
 
 
@@ -878,7 +917,11 @@ def host_key_active(provider: Provider, api_key: str) -> str | None:
     return None
 
 
-def _scripted_responder(*, agent_ids: list[str], fallback: str, language: str = "en"):
+def _scripted_responder(*, agents: list[Persona], fallback: str, language: str = "en"):
+    agent_ids = [agent.agent_id for agent in agents]
+    persona_by_id = {agent.agent_id: agent for agent in agents}
+    call_counts = {agent.agent_id: 0 for agent in agents}
+
     def respond(messages: list[Message]) -> str:
         system_prompt = next(
             (message.get("content", "") for message in messages if message.get("role") == "system"),
@@ -893,21 +936,26 @@ def _scripted_responder(*, agent_ids: list[str], fallback: str, language: str = 
             "",
         )
         agent_id = _extract_agent_id(system_prompt) or (agent_ids[0] if agent_ids else "agent")
-        target = next((candidate for candidate in agent_ids if candidate != agent_id), None)
-        location = _extract_line_value(user_prompt, "Location: ") or "shared space"
-        content = _scripted_content(
-            agent_id=agent_id, location=location, user_prompt=user_prompt, language=language
+        persona = persona_by_id.get(agent_id)
+        tick = call_counts.get(agent_id, 0)
+        target = _default_scripted_target(agent_ids, agent_id, tick=tick)
+        location = _extract_prompt_line(user_prompt, key="location", language=language) or (
+            "공용 공간" if _template_language(language) == "ko" else "shared space"
         )
-        if not content:
+        call_counts[agent_id] = tick + 1
+        payload = _scripted_action_payload(
+            persona=persona,
+            agent_id=agent_id,
+            location=location,
+            user_prompt=user_prompt,
+            default_target=target,
+            trigger_target=_extract_trigger_target(user_prompt, agent_ids, agent_id, language),
+            tick=tick,
+            language=language,
+        )
+        if payload is None:
             return fallback
-        return json.dumps(
-            {
-                "action_type": "speak" if target else "observe",
-                "target": target,
-                "content": content,
-            },
-            ensure_ascii=False,
-        )
+        return json.dumps(payload, ensure_ascii=False)
 
     return respond
 
@@ -922,6 +970,218 @@ def _extract_line_value(text: str, prefix: str) -> str | None:
         if line.startswith(prefix):
             return line.removeprefix(prefix).strip()
     return None
+
+
+def _scripted_action_payload(
+    *,
+    persona: Persona | None,
+    agent_id: str,
+    location: str,
+    user_prompt: str,
+    default_target: str | None,
+    trigger_target: str | None,
+    tick: int,
+    language: str = "en",
+) -> dict[str, Any]:
+    trigger_text = _extract_trigger_text(user_prompt, language)
+    action_type = _scripted_action_type(
+        persona=persona,
+        agent_id=agent_id,
+        location=location,
+        tick=tick,
+        trigger_text=trigger_text,
+        default_target=default_target,
+        trigger_target=trigger_target,
+    )
+    target = _resolved_scripted_target(
+        action_type,
+        default_target=default_target,
+        trigger_target=trigger_target,
+    )
+    topic = _scripted_topic(trigger_text, location, language)
+    return {
+        "action_type": action_type,
+        "target": target,
+        "content": _render_scripted_action_content(
+            action_type=action_type,
+            agent_id=agent_id,
+            target=target,
+            location=location,
+            topic=topic,
+            language=language,
+        ),
+        "metadata": {
+            "rule": "replay-action-vocabulary",
+            "scripted": True,
+            "template_language": _template_language(language),
+            "tick": tick,
+            "topic": topic,
+        },
+    }
+
+
+def _scripted_action_type(
+    *,
+    persona: Persona | None,
+    agent_id: str,
+    location: str,
+    tick: int,
+    trigger_text: str,
+    default_target: str | None,
+    trigger_target: str | None,
+) -> str:
+    has_trigger = _has_trigger(trigger_text)
+    if tick == 0:
+        return "speak" if has_trigger else "observe"
+
+    personality = (
+        persona.personality
+        if persona is not None
+        else Personality(**PERSONALITY_NEUTRAL_DEFAULTS)
+    )
+    action_cycle: list[str] = ["speak", "observe", "move", "query_memory", "propose_plan"]
+    has_target = default_target is not None or trigger_target is not None
+    if has_target:
+        action_cycle.extend(["offer", "accept", "refuse", "give", "take", "persuade"])
+    if personality.agreeableness >= 0.65 or personality.trait_empathy >= 0.6:
+        action_cycle.append("comfort")
+    if personality.conscientiousness >= 0.65 or personality.need_for_cognition >= 0.65:
+        action_cycle.append("propose_plan")
+    if personality.kantianism >= 0.6 or personality.fairness >= 0.6:
+        action_cycle.append("defend")
+    if personality.extraversion >= 0.58:
+        action_cycle.append("gossip")
+    if personality.extraversion <= 0.4:
+        action_cycle.append("alone")
+    if personality.risk_tolerance >= 0.6 or personality.stimulation >= 0.6:
+        action_cycle.extend(["enter", "exit"])
+    if personality.machiavellianism >= 0.5 or personality.narcissism >= 0.6:
+        action_cycle.append("deceive")
+    if personality.psychopathy + personality.sadism >= 0.75:
+        action_cycle.append("threaten")
+    if personality.psychopathy + personality.sadism >= 1.05:
+        action_cycle.append("attack")
+    if has_trigger and personality.agreeableness >= 0.6:
+        action_cycle.append("offer")
+    deduped_cycle = _dedupe_preserve_order(action_cycle)
+    cycle_index = (tick + _stable_bucket(agent_id, location, trigger_target or "")) % len(
+        deduped_cycle
+    )
+    return deduped_cycle[cycle_index]
+
+
+def _render_scripted_action_content(
+    *,
+    action_type: str,
+    agent_id: str,
+    target: str | None,
+    location: str,
+    topic: str,
+    language: str,
+) -> str:
+    templates = load_action_templates()
+    template_language = _template_language(language)
+    template = templates[template_language][action_type]
+    return template.format(
+        agent=agent_id,
+        target=target or ("주변 사람들" if template_language == "ko" else "the group"),
+        location=location,
+        topic=topic,
+    )
+
+
+def _scripted_topic(trigger_text: str, location: str, language: str) -> str:
+    template_language = _template_language(language)
+    if _has_trigger(trigger_text):
+        topic = re.sub(r"\s+", " ", trigger_text).strip().rstrip(".!?")
+        if topic:
+            return topic[:72].rstrip()
+    return "공용 루틴" if template_language == "ko" else f"coordination in {location}"
+
+
+def _resolved_scripted_target(
+    action_type: str,
+    *,
+    default_target: str | None,
+    trigger_target: str | None,
+) -> str | None:
+    if action_type in UNTARGETED_ACTION_TYPES:
+        return None
+    return trigger_target or default_target
+
+
+def _extract_prompt_line(text: str, *, key: str, language: str) -> str | None:
+    preferred_language = _prompt_line_language(language)
+    prefixes = [PROMPT_LINE_PREFIXES[preferred_language][key], *(
+        values[key]
+        for candidate, values in PROMPT_LINE_PREFIXES.items()
+        if candidate != preferred_language
+    )]
+    for prefix in prefixes:
+        value = _extract_line_value(text, prefix)
+        if value is not None:
+            return value
+    return None
+
+
+def _extract_trigger_text(user_prompt: str, language: str) -> str:
+    return _extract_prompt_line(user_prompt, key="trigger", language=language) or _no_trigger_line(
+        language
+    )
+
+
+def _extract_trigger_target(
+    user_prompt: str,
+    agent_ids: list[str],
+    self_id: str,
+    language: str,
+) -> str | None:
+    trigger_text = _extract_trigger_text(user_prompt, language)
+    for candidate in agent_ids:
+        if candidate != self_id and candidate in trigger_text:
+            return candidate
+    return None
+
+
+def _default_scripted_target(agent_ids: list[str], self_id: str, *, tick: int) -> str | None:
+    candidates = [candidate for candidate in agent_ids if candidate != self_id]
+    if not candidates:
+        return None
+    return candidates[_stable_bucket(self_id, str(tick)) % len(candidates)]
+
+
+def _prompt_line_language(language: str) -> str:
+    normalized = str(language).strip().lower()
+    return normalized if normalized in PROMPT_LINE_PREFIXES else "en"
+
+
+def _template_language(language: str) -> str:
+    return "ko" if _prompt_line_language(language) == "ko" else "en"
+
+
+def _no_trigger_line(language: str) -> str:
+    return NO_TRIGGER_LINES[_prompt_line_language(language)]
+
+
+def _has_trigger(trigger_text: str) -> bool:
+    normalized = trigger_text.strip()
+    return bool(normalized) and normalized not in set(NO_TRIGGER_LINES.values())
+
+
+def _dedupe_preserve_order(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        ordered.append(value)
+    return ordered
+
+
+def _stable_bucket(*parts: str) -> int:
+    payload = "|".join(part for part in parts if part)
+    return sum((index + 1) * ord(character) for index, character in enumerate(payload))
 
 
 def _scripted_content(

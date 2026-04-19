@@ -174,6 +174,9 @@ def parse_action_response(
     target_value = payload.get("target")
     target = str(target_value) if target_value not in {None, ""} else None
     content = str(payload.get("content") or response).strip()
+    metadata = payload.get("metadata")
+    if not isinstance(metadata, dict):
+        metadata = {}
     if not content:
         content = "..."
     return Action(
@@ -183,6 +186,7 @@ def parse_action_response(
         target=target,
         content=content,
         location=location,
+        metadata=metadata,
     )
 
 

@@ -36,6 +36,8 @@ class SimulationLogEntry:
         payload = asdict(self)
         payload["timestamp"] = self.timestamp.isoformat()
         payload["action"]["timestamp"] = self.action.timestamp.isoformat()
+        if not payload["action"].get("metadata"):
+            payload["action"].pop("metadata", None)
         return payload
 
 

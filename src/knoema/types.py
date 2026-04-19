@@ -3,12 +3,56 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 
 AgentID = str
 MemoryType = Literal["episodic", "semantic", "procedural"]
+ActionType = Literal[
+    "speak",
+    "observe",
+    "move",
+    "give",
+    "take",
+    "threaten",
+    "deceive",
+    "comfort",
+    "query_memory",
+    "propose_plan",
+    "exit",
+    "enter",
+    "attack",
+    "defend",
+    "offer",
+    "accept",
+    "refuse",
+    "gossip",
+    "persuade",
+    "alone",
+]
+ACTION_TYPES: tuple[str, ...] = (
+    "speak",
+    "observe",
+    "move",
+    "give",
+    "take",
+    "threaten",
+    "deceive",
+    "comfort",
+    "query_memory",
+    "propose_plan",
+    "exit",
+    "enter",
+    "attack",
+    "defend",
+    "offer",
+    "accept",
+    "refuse",
+    "gossip",
+    "persuade",
+    "alone",
+)
 RelationshipType = Literal[
     "family",
     "friend",
@@ -174,10 +218,11 @@ class Memory:
 class Action:
     agent_id: AgentID
     timestamp: datetime
-    action_type: str
+    action_type: ActionType | str
     target: AgentID | None
     content: str
     location: str
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         _validate_agent_id("agent_id", self.agent_id)
@@ -204,10 +249,12 @@ class WorldEvent:
 
 
 __all__ = [
+    "ACTION_TYPES",
     "BIG_FIVE_FIELDS",
     "PERSONALITY_FIELDS",
     "PERSONALITY_NEUTRAL_DEFAULTS",
     "Action",
+    "ActionType",
     "AgentID",
     "Emotion",
     "Memory",
