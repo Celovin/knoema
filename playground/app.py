@@ -16,6 +16,7 @@ try:
         PERSONA_TRAIT_FIELDS,
         Provider,
         build_playground_hint,
+        compute_trait_correlation_study,
         cultural_prior_choices,
         cultural_prior_trait_values,
         environment_note,
@@ -26,6 +27,7 @@ try:
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
+        trait_correlation_summary,
     )
 except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
     from simulation import (
@@ -35,6 +37,7 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         PERSONA_TRAIT_FIELDS,
         Provider,
         build_playground_hint,
+        compute_trait_correlation_study,
         cultural_prior_choices,
         cultural_prior_trait_values,
         environment_note,
@@ -45,6 +48,7 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
+        trait_correlation_summary,
     )
 
 
@@ -566,6 +570,12 @@ LABELS["en"]["planning_depth"] = "Planning depth"
 LABELS["en"]["planning_depth_info"] = "Decompose the top goal into 2 to 4 subtasks at simulation start."
 LABELS["en"]["current_plan_panel"] = "Current plan"
 LABELS["en"]["current_plan_empty"] = "No HTN plan has been generated yet."
+LABELS["ko"]["trait_matrix_panel"] = "Trait 상관/ablation"
+LABELS["ko"]["trait_matrix_plot"] = "Trait correlation matrix"
+LABELS["ko"]["trait_matrix_summary"] = "Trait ablation summary"
+LABELS["en"]["trait_matrix_panel"] = "Trait correlation / ablation"
+LABELS["en"]["trait_matrix_plot"] = "Trait correlation matrix"
+LABELS["en"]["trait_matrix_summary"] = "Trait ablation summary"
 ENVIRONMENT_PRESETS = load_environment_presets()
 GRAPH_HEIGHT_PX = 620
 TIMELINE_MAX_HEIGHT_PX = 360
@@ -1047,6 +1057,7 @@ def _language_updates(
     environment_value = current_environment or _default_environment_id()
     planning_depth_value = int(current_planning_depth or 3)
     trait_updates = [_trait_update(field_name, labels) for field_name in PERSONA_TRAIT_FIELDS]
+    trait_matrix_figure, trait_matrix_summary = _trait_correlation_outputs(key)
     return [
         labels["header"],
         gr.update(label=labels["scenario"]),
@@ -1110,10 +1121,53 @@ def _language_updates(
         labels["monologue_empty"],
         gr.update(label=labels["current_plan_panel"]),
         labels["current_plan_empty"],
+        gr.update(label=labels["trait_matrix_panel"]),
+        trait_matrix_figure,
+        trait_matrix_summary,
         gr.update(label=labels["jsonl"]),
         gr.update(label=labels["download"]),
         gr.update(label=labels["lang"]),
     ]
+
+
+def _trait_axis_label(field_name: str, language: str) -> str:
+    label = LABELS[language].get(field_name, field_name.replace("_", " ").title())
+    return label.replace(" / ", "<br>")
+
+
+def _trait_correlation_outputs(language: str) -> tuple[go.Figure, str]:
+    return (
+        _trait_correlation_figure(language),
+        trait_correlation_summary(language=language),
+    )
+
+
+def _trait_correlation_figure(language: str) -> go.Figure:
+    study = compute_trait_correlation_study()
+    axis_labels = [_trait_axis_label(field_name, language) for field_name in study.trait_names]
+    title = "Trait correlation matrix" if language == "en" else "Trait 상관 행렬"
+    figure = go.Figure(
+        data=[
+            go.Heatmap(
+                z=study.correlation_matrix,
+                x=axis_labels,
+                y=axis_labels,
+                zmin=-1.0,
+                zmax=1.0,
+                colorscale="RdBu",
+                reversescale=True,
+                hovertemplate="%{y} ↔ %{x}<br>r=%{z:.2f}<extra></extra>",
+            )
+        ]
+    )
+    figure.update_layout(
+        title=title,
+        height=620,
+        margin={"l": 0, "r": 0, "t": 48, "b": 0},
+        xaxis={"tickangle": -45},
+        yaxis={"autorange": "reversed"},
+    )
+    return figure
 
 
 def _relationship_figure(rows: list[dict[str, Any]], *, language: str = "en") -> go.Figure:
@@ -1261,6 +1315,7 @@ def _node_hover_text(
 def build_app() -> gr.Blocks:
     labels = LABELS["ko"]
     default_scenario = scenario_choices()[0]
+    initial_trait_matrix_figure, initial_trait_matrix_summary = _trait_correlation_outputs("ko")
 
     with gr.Blocks(
         title="Knoema Playground",
@@ -1472,6 +1527,21 @@ def build_app() -> gr.Blocks:
         )
         with current_plan_panel:
             current_plan_view = gr.Markdown(labels["current_plan_empty"])
+        trait_matrix_panel = gr.Accordion(
+            labels["trait_matrix_panel"],
+            open=False,
+            elem_id="trait-correlation-panel",
+        )
+        with trait_matrix_panel:
+            trait_matrix_plot = gr.Plot(
+                label=labels["trait_matrix_plot"],
+                value=initial_trait_matrix_figure,
+                elem_id="trait-correlation-heatmap",
+            )
+            trait_matrix_summary = gr.Markdown(
+                initial_trait_matrix_summary,
+                elem_id="trait-correlation-summary",
+            )
 
         with gr.Column(elem_id="export-panel"):
             export_heading = gr.Markdown(f"#### {labels['export_panel']}")
@@ -1514,6 +1584,9 @@ def build_app() -> gr.Blocks:
             monologue_view,
             current_plan_panel,
             current_plan_view,
+            trait_matrix_panel,
+            trait_matrix_plot,
+            trait_matrix_summary,
             jsonl,
             download,
             language,

@@ -34,6 +34,8 @@ Provider = Literal["Replay only", "OpenAI", "Anthropic"]
 AGENT_COUNT_MIN = 1
 AGENT_COUNT_MAX = 30
 AGENT_RESIZE_JITTER = 0.05
+TRAIT_CORRELATION_RUN_COUNT = 100
+TRAIT_REDUNDANCY_THRESHOLD = 0.7
 PERSONALITY_FIELDS = (
     "openness",
     "conscientiousness",
@@ -131,6 +133,24 @@ class PlaygroundResult:
     tick_count: int
 
 
+@dataclass(frozen=True, slots=True)
+class TraitMergeCandidate:
+    keep_trait: str
+    drop_trait: str
+    correlation: float
+    keep_stddev: float
+    drop_stddev: float
+
+
+@dataclass(frozen=True, slots=True)
+class TraitCorrelationStudy:
+    sample_count: int
+    trait_names: tuple[str, ...]
+    correlation_matrix: tuple[tuple[float, ...], ...]
+    max_pair: tuple[str, str, float]
+    merge_candidates: tuple[TraitMergeCandidate, ...]
+
+
 def scenario_choices() -> list[str]:
     return [scenario["name"] for scenario in DEFAULT_SCENARIOS]
 
@@ -177,6 +197,111 @@ def _default_scenario_description(language: str) -> str:
     if language == "ko":
         return "기본 데모 시나리오를 선택해 짧은 에이전트 상호작용 흐름을 확인해 보세요."
     return "Select a demo scenario to preview a short persistent-agent interaction flow."
+
+
+@lru_cache(maxsize=8)
+def compute_trait_correlation_study(
+    run_count: int = TRAIT_CORRELATION_RUN_COUNT,
+    threshold: float = TRAIT_REDUNDANCY_THRESHOLD,
+) -> TraitCorrelationStudy:
+    sample_count = max(1, int(run_count))
+    samples = _trait_sample_vectors(sample_count)
+    columns = {
+        field_name: [sample[field_name] for sample in samples]
+        for field_name in PERSONA_TRAIT_FIELDS
+    }
+    stddevs = {
+        field_name: _population_stddev(values)
+        for field_name, values in columns.items()
+    }
+
+    matrix_rows: list[tuple[float, ...]] = []
+    max_pair = ("", "", 0.0)
+    merge_candidates: list[TraitMergeCandidate] = []
+    for row_index, row_trait in enumerate(PERSONA_TRAIT_FIELDS):
+        row_values: list[float] = []
+        for column_index, column_trait in enumerate(PERSONA_TRAIT_FIELDS):
+            if row_index == column_index:
+                correlation = 1.0
+            else:
+                correlation = round(
+                    _pearson_correlation(columns[row_trait], columns[column_trait]),
+                    4,
+                )
+                if column_index > row_index and abs(correlation) > abs(max_pair[2]):
+                    max_pair = (row_trait, column_trait, correlation)
+                if column_index > row_index and abs(correlation) > float(threshold):
+                    keep_trait, drop_trait = _merge_direction(
+                        row_trait,
+                        column_trait,
+                        stddevs,
+                    )
+                    merge_candidates.append(
+                        TraitMergeCandidate(
+                            keep_trait=keep_trait,
+                            drop_trait=drop_trait,
+                            correlation=correlation,
+                            keep_stddev=round(stddevs[keep_trait], 4),
+                            drop_stddev=round(stddevs[drop_trait], 4),
+                        )
+                    )
+            row_values.append(correlation)
+        matrix_rows.append(tuple(row_values))
+
+    merge_candidates.sort(key=lambda candidate: abs(candidate.correlation), reverse=True)
+    return TraitCorrelationStudy(
+        sample_count=sample_count,
+        trait_names=PERSONA_TRAIT_FIELDS,
+        correlation_matrix=tuple(matrix_rows),
+        max_pair=max_pair,
+        merge_candidates=tuple(merge_candidates),
+    )
+
+
+def trait_correlation_summary(
+    *,
+    run_count: int = TRAIT_CORRELATION_RUN_COUNT,
+    threshold: float = TRAIT_REDUNDANCY_THRESHOLD,
+    language: str = "en",
+) -> str:
+    study = compute_trait_correlation_study(run_count=run_count, threshold=threshold)
+    title = "### 특성 상관 진단" if language == "ko" else "### Trait correlation study"
+    max_label = "최대 |r| 쌍" if language == "ko" else "Max |r| pair"
+    sample_label = "배치 실행 수" if language == "ko" else "Batch runs"
+    threshold_label = "병합 기준" if language == "ko" else "Merge threshold"
+    lines = [
+        title,
+        f"- **{sample_label}:** {study.sample_count}",
+        f"- **{threshold_label}:** |r| > {threshold:.2f}",
+        (
+            f"- **{max_label}:** `{study.max_pair[0]}` <-> `{study.max_pair[1]}` (r={study.max_pair[2]:.2f})"
+            if study.max_pair[0]
+            else f"- **{max_label}:** none"
+        ),
+    ]
+    if study.merge_candidates:
+        candidate_label = "분석상 병합 후보" if language == "ko" else "Analysis-only merge candidates"
+        retention_note = (
+            "하위호환을 위해 스키마는 유지하고 후보만 보고합니다."
+            if language == "ko"
+            else "Schema is preserved for backward compatibility; only candidates are reported."
+        )
+        lines.append(
+            f"- **{candidate_label}:** {len(study.merge_candidates)} pairs. {retention_note}"
+        )
+        for candidate in study.merge_candidates[:5]:
+            lines.append(
+                "  - "
+                f"`{candidate.drop_trait}` -> `{candidate.keep_trait}` "
+                f"(r={candidate.correlation:.2f}, sigma={candidate.drop_stddev:.3f}->{candidate.keep_stddev:.3f})"
+            )
+    else:
+        lines.append(
+            "- 모든 30개 trait를 유지합니다. |r| > 0.70인 쌍이 없습니다."
+            if language == "ko"
+            else "- Keep all 30 traits. No pair exceeds |r| > 0.70."
+        )
+    return "\n".join(lines)
 
 
 @lru_cache(maxsize=1)
@@ -310,6 +435,74 @@ def cultural_prior_trait_values(
         for field_name, shift in dict(prior["shifts"]).items():
             resolved[field_name] = _clamp_unit(PERSONALITY_NEUTRAL_DEFAULTS[field_name] + float(shift))
     return tuple(float(resolved[field_name]) for field_name in fields)
+
+
+def _trait_sample_vectors(run_count: int) -> tuple[dict[str, float], ...]:
+    presets = load_persona_presets()
+    priors = (None, *load_cultural_priors())
+    samples: list[dict[str, float]] = []
+    for sample_index in range(run_count):
+        preset = presets[sample_index % len(presets)]
+        prior = priors[sample_index % len(priors)]
+        values = {
+            field_name: float(preset["personality"][field_name])
+            for field_name in PERSONA_TRAIT_FIELDS
+        }
+        if prior is not None:
+            for field_name, shifted_value in zip(
+                PERSONA_TRAIT_FIELDS,
+                cultural_prior_trait_values(str(prior["id"]), PERSONA_TRAIT_FIELDS),
+                strict=True,
+            ):
+                if field_name in prior["shifts"]:
+                    values[field_name] = float(shifted_value)
+        samples.append(_apply_analysis_jitter(values, sample_index))
+    return tuple(samples)
+
+
+def _apply_analysis_jitter(values: dict[str, float], sample_index: int) -> dict[str, float]:
+    jittered: dict[str, float] = {}
+    for offset, field_name in enumerate(PERSONA_TRAIT_FIELDS):
+        jitter_bucket = ((sample_index * 7) + (offset * 3)) % 7 - 3
+        jitter = jitter_bucket * 0.01
+        jittered[field_name] = round(_clamp_unit(values[field_name] + jitter), 4)
+    return jittered
+
+
+def _population_stddev(values: list[float]) -> float:
+    if not values:
+        return 0.0
+    mean = sum(values) / len(values)
+    variance = sum((value - mean) ** 2 for value in values) / len(values)
+    return variance ** 0.5
+
+
+def _pearson_correlation(values_a: list[float], values_b: list[float]) -> float:
+    if len(values_a) != len(values_b):
+        raise ValueError("correlation inputs must have matching lengths")
+    if not values_a:
+        return 0.0
+    mean_a = sum(values_a) / len(values_a)
+    mean_b = sum(values_b) / len(values_b)
+    centered_a = [value - mean_a for value in values_a]
+    centered_b = [value - mean_b for value in values_b]
+    numerator = sum(value_a * value_b for value_a, value_b in zip(centered_a, centered_b, strict=True))
+    denominator = (
+        sum(value * value for value in centered_a) * sum(value * value for value in centered_b)
+    ) ** 0.5
+    if denominator == 0.0:
+        return 0.0
+    return numerator / denominator
+
+
+def _merge_direction(
+    trait_a: str,
+    trait_b: str,
+    stddevs: dict[str, float],
+) -> tuple[str, str]:
+    if stddevs[trait_a] >= stddevs[trait_b]:
+        return trait_a, trait_b
+    return trait_b, trait_a
 
 
 def run_playground_scenario(
