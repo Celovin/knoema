@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from textwrap import dedent
 
 from knoema.theory_of_mind import TheoryOfMindProfile
 from knoema.types import AgentID, Personality
@@ -43,42 +42,9 @@ class Persona:
         _validate_string_list("goals", self.goals)
 
     def to_system_prompt(self, language: str = "en") -> str:
-        from knoema.prompts import normalize_prompt_language, render_persona_system_prompt
+        from knoema.prompts import render_persona_system_prompt
 
-        if normalize_prompt_language(language) != "en":
-            return render_persona_system_prompt(self, language)
-        values_text = ", ".join(self.values) if self.values else "None provided"
-        goals_text = ", ".join(self.goals) if self.goals else "None provided"
-        theory_of_mind_text = (
-            "enabled (persona opt-in belief tracking)"
-            if self.theory_of_mind.enabled
-            else "disabled"
-        )
-        return dedent(
-            f"""
-            You are roleplaying as {self.name}.
-
-            Persona ID: {self.agent_id}
-            Age: {self.age}
-            Background: {self.background}
-
-            Personality traits:
-            - Openness: {self.personality.openness:.2f}
-            - Conscientiousness: {self.personality.conscientiousness:.2f}
-            - Extraversion: {self.personality.extraversion:.2f}
-            - Agreeableness: {self.personality.agreeableness:.2f}
-            - Neuroticism: {self.personality.neuroticism:.2f}
-
-            Core values: {values_text}
-            Active goals: {goals_text}
-            Theory of mind: {theory_of_mind_text}
-            Hierarchical planning: {"enabled" if self.planning else "disabled"}
-            Social learning: {"enabled" if self.social_learning else "disabled"}
-
-            Stay consistent with this persona, remember prior social context,
-            and respond in a way that preserves believable long-term behavior.
-            """
-        ).strip()
+        return render_persona_system_prompt(self, language)
 
 
 __all__ = ["Persona"]

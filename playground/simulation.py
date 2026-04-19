@@ -25,7 +25,7 @@ from knoema.llm import AnthropicClient, LocalClient, OpenAIClient
 from knoema.persona import Persona
 from knoema.protocols import LLMClient, Message
 from knoema.simulator import SimulationLogEntry, Simulator
-from knoema.types import Personality
+from knoema.types import PERSONALITY_NEUTRAL_DEFAULTS, Personality
 
 Provider = Literal["Replay only", "OpenAI", "Anthropic"]
 AGENT_COUNT_MIN = 1
@@ -107,6 +107,9 @@ PERSONA_TRAIT_FIELDS = (
     "benevolence",
     "universalism",
 )
+PERSONA_TRAIT_DEFAULTS = {
+    field_name: float(PERSONALITY_NEUTRAL_DEFAULTS[field_name]) for field_name in PERSONA_TRAIT_FIELDS
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -267,6 +270,7 @@ def run_playground_scenario(
     extraversion: float,
     agreeableness: float,
     neuroticism: float,
+    personality_overrides: dict[str, float] | None = None,
     ticks: int,
     agent_count: int | None = None,
     environment_preset_id: str | None = None,
@@ -282,15 +286,19 @@ def run_playground_scenario(
     target_agent_count = len(config.agents) if agent_count is None else int(agent_count)
     agent_configs = _resize_agent_pool(config.agents, target_agent_count)
     agents = [agent.to_domain() for agent in agent_configs]
-    agents[0] = _customize_primary_agent(
+    resolved_personality = {
+        "openness": openness,
+        "conscientiousness": conscientiousness,
+        "extraversion": extraversion,
+        "agreeableness": agreeableness,
+        "neuroticism": neuroticism,
+        **(personality_overrides or {}),
+    }
+    agents[0] = _customize_agent(
         agents[0],
         name=primary_name,
         age=primary_age,
-        openness=openness,
-        conscientiousness=conscientiousness,
-        extraversion=extraversion,
-        agreeableness=agreeableness,
-        neuroticism=neuroticism,
+        personality_overrides=resolved_personality,
     )
     environment = config.environment.to_domain()
     preset = environment_preset(environment_preset_id)
@@ -403,6 +411,29 @@ def _apply_environment_preset(environment: object, preset: dict[str, Any]) -> No
     environment.conditions["preset_conditions"] = list(preset.get("conditions", []))
 
 
+def _customize_agent(
+    agent: Persona,
+    *,
+    name: str,
+    age: int,
+    personality_overrides: dict[str, float] | None = None,
+) -> Persona:
+    resolved_name = name.strip() or agent.name
+    personality_values = agent.personality.to_dict()
+    for field_name, value in (personality_overrides or {}).items():
+        if field_name in PERSONA_TRAIT_FIELDS:
+            personality_values[field_name] = float(value)
+    return Persona(
+        agent_id=agent.agent_id,
+        name=resolved_name,
+        age=max(1, age),
+        background=agent.background,
+        personality=Personality.from_dict(personality_values),
+        values=list(agent.values),
+        goals=list(agent.goals),
+    )
+
+
 def _customize_primary_agent(
     agent: Persona,
     *,
@@ -414,21 +445,17 @@ def _customize_primary_agent(
     agreeableness: float,
     neuroticism: float,
 ) -> Persona:
-    resolved_name = name.strip() or agent.name
-    return Persona(
-        agent_id=agent.agent_id,
-        name=resolved_name,
-        age=max(1, age),
-        background=agent.background,
-        personality=Personality(
-            openness=openness,
-            conscientiousness=conscientiousness,
-            extraversion=extraversion,
-            agreeableness=agreeableness,
-            neuroticism=neuroticism,
-        ),
-        values=list(agent.values),
-        goals=list(agent.goals),
+    return _customize_agent(
+        agent,
+        name=name,
+        age=age,
+        personality_overrides={
+            "openness": openness,
+            "conscientiousness": conscientiousness,
+            "extraversion": extraversion,
+            "agreeableness": agreeableness,
+            "neuroticism": neuroticism,
+        },
     )
 
 

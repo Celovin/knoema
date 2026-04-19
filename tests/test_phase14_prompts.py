@@ -72,9 +72,9 @@ def test_phase14_persona_system_prompt_templates_cover_four_languages() -> None:
     }
 
     assert "You are roleplaying as Alice." in prompts["en"]
-    assert "역할" in prompts["ko"]
-    assert "ロールプレイ" in prompts["ja"]
-    assert "角色扮演" in prompts["zh"]
+    assert "당신은 Alice 역할을 일관되게 연기합니다." in prompts["ko"]
+    assert prompts["ja"].splitlines()[0] != prompts["en"].splitlines()[0]
+    assert prompts["zh"].splitlines()[0] != prompts["en"].splitlines()[0]
     assert all("Persona ID: alice" in prompt for prompt in prompts.values())
     assert all("honesty" in prompt for prompt in prompts.values())
 
@@ -109,7 +109,7 @@ def test_phase14_decision_engine_passes_language_to_prompt_builder() -> None:
 
     def responder(messages: Sequence[Message]) -> str:
         seen_messages.append(messages)
-        return '{"action_type": "speak", "target": "bob", "content": "좋아."}'
+        return '{"action_type": "speak", "target": "bob", "content": "醫뗭븘."}'
 
     engine = DecisionEngine(LocalClient(responder), language="ko")
 
@@ -121,6 +121,34 @@ def test_phase14_decision_engine_passes_language_to_prompt_builder() -> None:
         emotion=Emotion(valence=0.2, arousal=0.4, dominance=0.5),
     )
 
-    assert action.content == "좋아."
-    assert "역할" in seen_messages[0][0]["content"]
+    assert action.content == "醫뗭븘."
+    assert "당신은 Alice 역할을 일관되게 연기합니다." in seen_messages[0][0]["content"]
     assert "다음 행동" in seen_messages[0][1]["content"]
+
+
+def test_phase14_persona_prompt_emits_dark_tetrad_section_only_when_non_neutral() -> None:
+    baseline_prompt = render_persona_system_prompt(_persona(), "en")
+    assert "Tier C - Dark Tetrad" not in baseline_prompt
+
+    intensified = Persona(
+        agent_id="alice",
+        name="Alice",
+        age=17,
+        background="Dormitory student who keeps careful notes.",
+        personality=Personality(
+            0.7,
+            0.6,
+            0.3,
+            0.8,
+            0.4,
+            machiavellianism=1.0,
+            sadism=1.0,
+        ),
+        values=["honesty"],
+        goals=["keep peace with roommate"],
+    )
+    intensified_prompt = render_persona_system_prompt(intensified, "en")
+
+    assert "Tier C - Dark Tetrad" in intensified_prompt
+    assert "Machiavellianism: 1.00" in intensified_prompt
+    assert "Sadism: 1.00" in intensified_prompt

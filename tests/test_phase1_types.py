@@ -23,6 +23,48 @@ def test_personality_requires_unit_interval_traits() -> None:
         )
 
 
+def test_personality_round_trip_with_all_thirty_traits() -> None:
+    personality = Personality(
+        openness=0.7,
+        conscientiousness=0.6,
+        extraversion=0.4,
+        agreeableness=0.55,
+        neuroticism=0.3,
+        honesty_humility=0.8,
+        machiavellianism=0.2,
+        narcissism=0.1,
+        psychopathy=0.0,
+        sadism=0.0,
+        kantianism=0.7,
+        humanism=0.8,
+        faith_in_humanity=0.6,
+        risk_tolerance=0.4,
+        locus_of_control=0.7,
+        need_for_cognition=0.65,
+        trait_empathy=0.75,
+        care_harm=0.7,
+        fairness=0.8,
+        binding_morals=0.5,
+        self_direction=0.75,
+        stimulation=0.55,
+        hedonism=0.45,
+        achievement=0.7,
+        power=0.3,
+        security=0.6,
+        conformity=0.4,
+        tradition=0.5,
+        benevolence=0.8,
+        universalism=0.7,
+    )
+
+    payload = personality.to_dict()
+    restored = Personality.from_dict(payload)
+
+    assert len(payload) == 30
+    assert restored.machiavellianism == 0.2
+    assert restored.universalism == 0.7
+
+
 def test_emotion_accepts_pad_boundaries() -> None:
     emotion = Emotion(valence=-1.0, arousal=1.0, dominance=0.0)
 

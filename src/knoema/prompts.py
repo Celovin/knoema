@@ -8,7 +8,14 @@ from datetime import datetime
 from typing import Any, Literal, Protocol
 
 from knoema.relationship import Relationship
-from knoema.types import AgentID, Emotion, Memory, Personality, WorldEvent
+from knoema.types import (
+    PERSONALITY_NEUTRAL_DEFAULTS,
+    AgentID,
+    Emotion,
+    Memory,
+    Personality,
+    WorldEvent,
+)
 
 PromptLanguage = Literal["en", "ko", "ja", "zh"]
 SUPPORTED_PROMPT_LANGUAGES: tuple[PromptLanguage, ...] = ("en", "ko", "ja", "zh")
@@ -138,6 +145,66 @@ _DECISION_COPY: Mapping[PromptLanguage, Mapping[str, str]] = {
     },
 }
 
+_BIG_FIVE_LINES: tuple[tuple[str, str], ...] = (
+    ("Openness", "openness"),
+    ("Conscientiousness", "conscientiousness"),
+    ("Extraversion", "extraversion"),
+    ("Agreeableness", "agreeableness"),
+    ("Neuroticism", "neuroticism"),
+)
+_PERSONALITY_TIER_LINES: tuple[tuple[str, tuple[tuple[str, str], ...]], ...] = (
+    (
+        "Tier B - HEXACO + Light Triad",
+        (
+            ("Honesty-Humility", "honesty_humility"),
+            ("Kantianism", "kantianism"),
+            ("Humanism", "humanism"),
+            ("Faith in humanity", "faith_in_humanity"),
+        ),
+    ),
+    (
+        "Tier C - Dark Tetrad",
+        (
+            ("Machiavellianism", "machiavellianism"),
+            ("Narcissism", "narcissism"),
+            ("Psychopathy", "psychopathy"),
+            ("Sadism", "sadism"),
+        ),
+    ),
+    (
+        "Tier E - Behavioral dispositions",
+        (
+            ("Risk tolerance", "risk_tolerance"),
+            ("Locus of control", "locus_of_control"),
+            ("Need for cognition", "need_for_cognition"),
+            ("Trait empathy", "trait_empathy"),
+        ),
+    ),
+    (
+        "Tier F - Moral foundations",
+        (
+            ("Care / Harm", "care_harm"),
+            ("Fairness", "fairness"),
+            ("Binding morals", "binding_morals"),
+        ),
+    ),
+    (
+        "Tier G - Schwartz 10 values",
+        (
+            ("Self-direction", "self_direction"),
+            ("Stimulation", "stimulation"),
+            ("Hedonism", "hedonism"),
+            ("Achievement", "achievement"),
+            ("Power", "power"),
+            ("Security", "security"),
+            ("Conformity", "conformity"),
+            ("Tradition", "tradition"),
+            ("Benevolence", "benevolence"),
+            ("Universalism", "universalism"),
+        ),
+    ),
+)
+
 
 class PromptPersona(Protocol):
     agent_id: AgentID
@@ -187,28 +254,45 @@ def render_persona_system_prompt(
         if getattr(theory_of_mind, "enabled", False)
         else "disabled"
     )
-    return "\n".join(
+    lines = [
+        copy["role"].format(name=persona.name),
+        "",
+        f"Persona ID: {persona.agent_id}",
+        f"{copy['age']}: {persona.age}",
+        f"{copy['background']}: {persona.background}",
+        "",
+        f"{copy['traits']}:",
+        *[
+            f"- {label}: {getattr(persona.personality, field_name):.2f}"
+            for label, field_name in _BIG_FIVE_LINES
+        ],
+    ]
+    for title, tier_fields in _PERSONALITY_TIER_LINES:
+        if not _tier_has_signal(persona.personality, tier_fields):
+            continue
+        lines.extend(
+            [
+                "",
+                f"{title}:",
+                *[
+                    f"- {label}: {getattr(persona.personality, field_name):.2f}"
+                    for label, field_name in tier_fields
+                ],
+            ]
+        )
+    lines.extend(
         [
-            copy["role"].format(name=persona.name),
-            "",
-            f"Persona ID: {persona.agent_id}",
-            f"{copy['age']}: {persona.age}",
-            f"{copy['background']}: {persona.background}",
-            "",
-            f"{copy['traits']}:",
-            f"- Openness: {persona.personality.openness:.2f}",
-            f"- Conscientiousness: {persona.personality.conscientiousness:.2f}",
-            f"- Extraversion: {persona.personality.extraversion:.2f}",
-            f"- Agreeableness: {persona.personality.agreeableness:.2f}",
-            f"- Neuroticism: {persona.personality.neuroticism:.2f}",
             "",
             f"{copy['values']}: {values}",
             f"{copy['goals']}: {goals}",
             f"{copy.get('tom', 'Theory of mind')}: {theory_of_mind_text}",
+            f"Hierarchical planning: {'enabled' if getattr(persona, 'planning', False) else 'disabled'}",
+            f"Social learning: {'enabled' if getattr(persona, 'social_learning', False) else 'disabled'}",
             "",
             copy["guidance"],
         ]
     )
+    return "\n".join(lines)
 
 
 def render_decision_user_prompt(
@@ -260,6 +344,16 @@ def render_decision_user_prompt(
 
 def _join_or_empty(values: Sequence[str], empty_text: str) -> str:
     return ", ".join(values) if values else empty_text
+
+
+def _tier_has_signal(
+    personality: Personality,
+    tier_fields: Sequence[tuple[str, str]],
+) -> bool:
+    for _, field_name in tier_fields:
+        if abs(getattr(personality, field_name) - PERSONALITY_NEUTRAL_DEFAULTS[field_name]) > 1e-9:
+            return True
+    return False
 
 
 __all__ = [

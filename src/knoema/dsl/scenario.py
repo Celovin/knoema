@@ -25,15 +25,34 @@ class PersonalitySpec(BaseModel):
     extraversion: float = Field(ge=0.0, le=1.0)
     agreeableness: float = Field(ge=0.0, le=1.0)
     neuroticism: float = Field(ge=0.0, le=1.0)
+    honesty_humility: float = Field(default=0.5, ge=0.0, le=1.0)
+    machiavellianism: float = Field(default=0.0, ge=0.0, le=1.0)
+    narcissism: float = Field(default=0.0, ge=0.0, le=1.0)
+    psychopathy: float = Field(default=0.0, ge=0.0, le=1.0)
+    sadism: float = Field(default=0.0, ge=0.0, le=1.0)
+    kantianism: float = Field(default=0.5, ge=0.0, le=1.0)
+    humanism: float = Field(default=0.5, ge=0.0, le=1.0)
+    faith_in_humanity: float = Field(default=0.5, ge=0.0, le=1.0)
+    risk_tolerance: float = Field(default=0.5, ge=0.0, le=1.0)
+    locus_of_control: float = Field(default=0.5, ge=0.0, le=1.0)
+    need_for_cognition: float = Field(default=0.5, ge=0.0, le=1.0)
+    trait_empathy: float = Field(default=0.5, ge=0.0, le=1.0)
+    care_harm: float = Field(default=0.5, ge=0.0, le=1.0)
+    fairness: float = Field(default=0.5, ge=0.0, le=1.0)
+    binding_morals: float = Field(default=0.5, ge=0.0, le=1.0)
+    self_direction: float = Field(default=0.5, ge=0.0, le=1.0)
+    stimulation: float = Field(default=0.5, ge=0.0, le=1.0)
+    hedonism: float = Field(default=0.5, ge=0.0, le=1.0)
+    achievement: float = Field(default=0.5, ge=0.0, le=1.0)
+    power: float = Field(default=0.5, ge=0.0, le=1.0)
+    security: float = Field(default=0.5, ge=0.0, le=1.0)
+    conformity: float = Field(default=0.5, ge=0.0, le=1.0)
+    tradition: float = Field(default=0.5, ge=0.0, le=1.0)
+    benevolence: float = Field(default=0.5, ge=0.0, le=1.0)
+    universalism: float = Field(default=0.5, ge=0.0, le=1.0)
 
     def to_domain(self) -> Personality:
-        return Personality(
-            openness=self.openness,
-            conscientiousness=self.conscientiousness,
-            extraversion=self.extraversion,
-            agreeableness=self.agreeableness,
-            neuroticism=self.neuroticism,
-        )
+        return Personality(**self.model_dump())
 
 
 class AgentSpec(BaseModel):

@@ -52,9 +52,12 @@ def test_subtask6_persona_dropdown_renders_blank_plus_twenty_five_choices() -> N
 
 
 def test_subtask6_loading_machiavellian_politician_updates_visible_sliders() -> None:
-    expected = playground_simulation.persona_trait_values("machiavellian_politician")
+    expected = playground_simulation.persona_trait_values(
+        "machiavellian_politician",
+        playground_simulation.PERSONA_TRAIT_FIELDS,
+    )
     updates = playground_app._apply_persona_preset("machiavellian_politician")
 
     assert expected is not None
-    assert len(updates) == 5
+    assert len(updates) == 30
     assert [update["value"] for update in updates] == list(expected)
