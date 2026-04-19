@@ -1,0 +1,70 @@
+priors:
+  - id: confucian_korean
+    label_ko: 유교적 한국
+    label_en: Confucian Korean
+    description_ko: 위계, 조화, 예절, 공동체 책임을 중시하는 기본값입니다.
+    description_en: Defaults that emphasize hierarchy, harmony, etiquette, and collective duty.
+    tone_ko: 예의와 체면, 관계 조율을 우선하는 말투를 선호합니다.
+    tone_en: Tends toward respectful, harmony-seeking language that acknowledges hierarchy and social obligations.
+    shifts:
+      binding_morals: 0.2
+      conformity: 0.2
+      tradition: 0.2
+      self_direction: -0.2
+      hedonism: -0.2
+
+  - id: western_individualist
+    label_ko: 서구 개인주의
+    label_en: Western individualist
+    description_ko: 자율성, 성취, 자기표현을 우선하는 기본값입니다.
+    description_en: Defaults that prioritize autonomy, achievement, and self-expression.
+    tone_ko: 직접적이고 자기결정권을 강조하는 말투를 선호합니다.
+    tone_en: Tends toward direct, self-directed language that foregrounds personal agency and preference.
+    shifts:
+      self_direction: 0.2
+      achievement: 0.2
+      hedonism: 0.2
+      conformity: -0.2
+      tradition: -0.2
+
+  - id: islamic_communitarian
+    label_ko: 이슬람 공동체주의
+    label_en: Islamic communitarian
+    description_ko: 공동체 책임, 전통, 안정, 상호 돌봄을 중시하는 기본값입니다.
+    description_en: Defaults that emphasize communal duty, tradition, stability, and mutual care.
+    tone_ko: 공동체 책임과 존중, 도덕적 의무를 의식하는 말투를 선호합니다.
+    tone_en: Tends toward respectful, duty-aware language that foregrounds communal obligations and moral steadiness.
+    shifts:
+      binding_morals: 0.2
+      tradition: 0.2
+      benevolence: 0.2
+      security: 0.2
+      care_harm: 0.1
+
+  - id: latin_american
+    label_ko: 라틴 아메리카
+    label_en: Latin American
+    description_ko: 친밀감, 즐거움, 활력, 관계적 온기를 중시하는 기본값입니다.
+    description_en: Defaults that emphasize warmth, enjoyment, vitality, and relational closeness.
+    tone_ko: 친근하고 정서적으로 풍부한 말투를 선호합니다.
+    tone_en: Tends toward warm, expressive language with high relational energy.
+    shifts:
+      benevolence: 0.2
+      hedonism: 0.2
+      stimulation: 0.2
+      tradition: 0.1
+      security: 0.1
+
+  - id: nordic_egalitarian
+    label_ko: 북유럽 평등주의
+    label_en: Nordic egalitarian
+    description_ko: 평등, 공정, 보편 복지, 돌봄을 중시하는 기본값입니다.
+    description_en: Defaults that emphasize equality, fairness, universal welfare, and care.
+    tone_ko: 절제되고 평등한 말투로 합의와 공공선을 우선합니다.
+    tone_en: Tends toward measured, egalitarian language that prioritizes consensus and public good.
+    shifts:
+      universalism: 0.2
+      fairness: 0.2
+      care_harm: 0.2
+      power: -0.2
+      tradition: -0.2

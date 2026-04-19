@@ -43,6 +43,7 @@ JITTER_STEPS = (-0.05, -0.025, 0.0, 0.025, 0.05)
 SCENARIO_DIR = Path(__file__).resolve().parent / "scenarios"
 ENVIRONMENTS_PATH = Path(__file__).resolve().parent / "environments.yaml"
 PERSONA_PRESETS_PATH = Path(__file__).resolve().parent / "persona_presets.yaml"
+CULTURAL_PRIORS_PATH = Path(__file__).resolve().parent / "cultural_priors.yaml"
 DEFAULT_SCENARIOS: tuple[dict[str, str], ...] = (
     {"name": "Dorm: two agents", "filename": "dorm_two_agents.yaml"},
     {"name": "Village: ten agents", "filename": "village_ten.yaml"},
@@ -257,6 +258,55 @@ def persona_trait_values(
     return tuple(float(personality[field]) for field in fields)
 
 
+@lru_cache(maxsize=1)
+def load_cultural_priors() -> tuple[dict[str, Any], ...]:
+    with CULTURAL_PRIORS_PATH.open(encoding="utf-8") as handle:
+        data = yaml.safe_load(handle) or {}
+    priors = data.get("priors", [])
+    normalized: list[dict[str, Any]] = []
+    for prior in priors:
+        shifts = {field_name: float(value) for field_name, value in dict(prior.get("shifts", {})).items()}
+        unknown = sorted(set(shifts).difference(PERSONA_TRAIT_FIELDS))
+        if unknown:
+            prior_id = prior.get("id", "<unknown>")
+            raise ValueError(
+                f"cultural prior {prior_id!r} contains unknown trait shifts: {', '.join(unknown)}"
+            )
+        normalized.append({**dict(prior), "shifts": shifts})
+    return tuple(normalized)
+
+
+def cultural_prior(prior_id: str | None) -> dict[str, Any] | None:
+    if not prior_id:
+        return None
+    for prior in load_cultural_priors():
+        if prior.get("id") == prior_id:
+            return dict(prior)
+    return None
+
+
+def cultural_prior_choices(language: str = "en", *, include_blank: bool = True) -> list[tuple[str, str]]:
+    choices: list[tuple[str, str]] = []
+    if include_blank:
+        blank_label = "(없음)" if language == "ko" else "(none)"
+        choices.append((blank_label, ""))
+    label_key = "label_ko" if language == "ko" else "label_en"
+    choices.extend((str(prior[label_key]), str(prior["id"])) for prior in load_cultural_priors())
+    return choices
+
+
+def cultural_prior_trait_values(
+    prior_id: str | None,
+    fields: tuple[str, ...] = PERSONA_TRAIT_FIELDS,
+) -> tuple[float, ...]:
+    resolved = dict(PERSONA_TRAIT_DEFAULTS)
+    prior = cultural_prior(prior_id)
+    if prior is not None:
+        for field_name, shift in dict(prior["shifts"]).items():
+            resolved[field_name] = _clamp_unit(PERSONALITY_NEUTRAL_DEFAULTS[field_name] + float(shift))
+    return tuple(float(resolved[field_name]) for field_name in fields)
+
+
 def run_playground_scenario(
     *,
     scenario_name: str,
@@ -274,6 +324,7 @@ def run_playground_scenario(
     ticks: int,
     agent_count: int | None = None,
     environment_preset_id: str | None = None,
+    cultural_prior_id: str | None = None,
     language: str = "en",
 ) -> PlaygroundResult:
     """Run a short scenario and return UI-ready artifacts.
@@ -286,6 +337,11 @@ def run_playground_scenario(
     target_agent_count = len(config.agents) if agent_count is None else int(agent_count)
     agent_configs = _resize_agent_pool(config.agents, target_agent_count)
     agents = [agent.to_domain() for agent in agent_configs]
+    if cultural_prior_id:
+        agents = [
+            _apply_cultural_prior_to_agent(agent, cultural_prior_id, language=language)
+            for agent in agents
+        ]
     resolved_personality = {
         "openness": openness,
         "conscientiousness": conscientiousness,
@@ -411,6 +467,57 @@ def _apply_environment_preset(environment: object, preset: dict[str, Any]) -> No
     environment.conditions["preset_conditions"] = list(preset.get("conditions", []))
 
 
+def _rebuild_persona(
+    agent: Persona,
+    *,
+    name: str | None = None,
+    age: int | None = None,
+    background: str | None = None,
+    personality_values: dict[str, float] | None = None,
+) -> Persona:
+    return Persona(
+        agent_id=agent.agent_id,
+        name=(name.strip() if name is not None else agent.name.strip()) or agent.name,
+        age=max(1, age if age is not None else agent.age),
+        background=background if background is not None else agent.background,
+        personality=Personality.from_dict(personality_values or agent.personality.to_dict()),
+        values=list(agent.values),
+        goals=list(agent.goals),
+        theory_of_mind=agent.theory_of_mind,
+        planning=agent.planning,
+        social_learning=agent.social_learning,
+    )
+
+
+def _apply_cultural_prior_to_agent(
+    agent: Persona,
+    prior_id: str,
+    *,
+    language: str = "en",
+) -> Persona:
+    prior = cultural_prior(prior_id)
+    if prior is None:
+        return agent
+    personality_values = agent.personality.to_dict()
+    for field_name, value in zip(
+        PERSONA_TRAIT_FIELDS,
+        cultural_prior_trait_values(prior_id, PERSONA_TRAIT_FIELDS),
+        strict=True,
+    ):
+        if field_name in prior["shifts"]:
+            personality_values[field_name] = value
+    tone_key = "tone_ko" if language == "ko" else "tone_en"
+    tone = str(prior.get(tone_key, "")).strip()
+    background = agent.background
+    if tone:
+        background = f"{background} {tone}".strip()
+    return _rebuild_persona(
+        agent,
+        background=background,
+        personality_values=personality_values,
+    )
+
+
 def _customize_agent(
     agent: Persona,
     *,
@@ -418,19 +525,15 @@ def _customize_agent(
     age: int,
     personality_overrides: dict[str, float] | None = None,
 ) -> Persona:
-    resolved_name = name.strip() or agent.name
     personality_values = agent.personality.to_dict()
     for field_name, value in (personality_overrides or {}).items():
         if field_name in PERSONA_TRAIT_FIELDS:
             personality_values[field_name] = float(value)
-    return Persona(
-        agent_id=agent.agent_id,
-        name=resolved_name,
-        age=max(1, age),
-        background=agent.background,
-        personality=Personality.from_dict(personality_values),
-        values=list(agent.values),
-        goals=list(agent.goals),
+    return _rebuild_persona(
+        agent,
+        name=name,
+        age=age,
+        personality_values=personality_values,
     )
 
 

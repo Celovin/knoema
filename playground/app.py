@@ -16,6 +16,8 @@ try:
         PERSONA_TRAIT_FIELDS,
         Provider,
         build_playground_hint,
+        cultural_prior_choices,
+        cultural_prior_trait_values,
         environment_note,
         host_key_active,
         load_environment_presets,
@@ -33,6 +35,8 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         PERSONA_TRAIT_FIELDS,
         Provider,
         build_playground_hint,
+        cultural_prior_choices,
+        cultural_prior_trait_values,
         environment_note,
         host_key_active,
         load_environment_presets,
@@ -540,6 +544,12 @@ def _build_labels() -> dict[str, dict[str, str]]:
 
 
 LABELS = _build_labels()
+LABELS["ko"]["cultural_prior"] = "문화 prior"
+LABELS["ko"]["cultural_prior_info"] = "선택한 문화 모듈이 Schwartz 가치와 도덕 기반의 기본값을 먼저 이동시킵니다."
+LABELS["en"]["cultural_prior"] = "Cultural prior"
+LABELS["en"]["cultural_prior_info"] = (
+    "The selected cultural module shifts Schwartz and moral-foundation defaults before any archetype override."
+)
 ENVIRONMENT_PRESETS = load_environment_presets()
 GRAPH_HEIGHT_PX = 620
 TIMELINE_MAX_HEIGHT_PX = 360
@@ -863,6 +873,10 @@ def _persona_choices(language: str) -> list[tuple[str, str]]:
     return persona_choices(language, include_blank=True)
 
 
+def _cultural_prior_choices(language: str) -> list[tuple[str, str]]:
+    return cultural_prior_choices(language, include_blank=True)
+
+
 def _provider_choices(language: str) -> list[str]:
     labels = LABELS[language]
     return [labels["replay"], "OpenAI", "Anthropic"]
@@ -896,6 +910,7 @@ def _trait_slider(
 def _run(
     scenario_name: str,
     environment_preset_id: str | None,
+    cultural_prior_id: str | None,
     provider: str,
     api_key: str,
     model: str,
@@ -936,6 +951,7 @@ def _run(
         ticks=int(ticks),
         agent_count=int(agent_count),
         environment_preset_id=environment_preset_id,
+        cultural_prior_id=cultural_prior_id,
         language=language,
     )
     host_provider = host_key_active(_normalize_provider(provider), api_key)
@@ -973,6 +989,11 @@ def _apply_persona_preset(preset_id: str | None) -> list[dict[str, Any]]:
     return [gr.update(value=value) for value in values]
 
 
+def _apply_cultural_prior(prior_id: str | None) -> list[dict[str, Any]]:
+    values = cultural_prior_trait_values(prior_id, PERSONA_TRAIT_FIELDS)
+    return [gr.update(value=value) for value in values]
+
+
 def _hint_markdown_update(
     scenario_name: str | None,
     language_choice: str,
@@ -995,6 +1016,7 @@ def _language_updates(
     current_provider: str | None,
     current_scenario: str | None = None,
     current_environment: str | None = None,
+    current_cultural_prior: str | None = None,
     current_persona: str | None = None,
 ) -> list[Any]:
     key = _language_key(lang_choice)
@@ -1030,6 +1052,12 @@ def _language_updates(
         gr.update(label=labels["tier_g_panel"]),
         gr.update(label=labels["name"]),
         gr.update(label=labels["age"]),
+        gr.update(
+            label=labels["cultural_prior"],
+            choices=_cultural_prior_choices(key),
+            value=current_cultural_prior or "",
+            info=labels["cultural_prior_info"],
+        ),
         gr.update(
             label=labels["persona_preset"],
             choices=_persona_choices(key),
@@ -1277,6 +1305,14 @@ def build_app() -> gr.Blocks:
                     value=21,
                 )
 
+            cultural_prior = gr.Dropdown(
+                label=labels["cultural_prior"],
+                choices=_cultural_prior_choices("ko"),
+                value="",
+                info=labels["cultural_prior_info"],
+                elem_id="cultural-prior-dropdown",
+            )
+
             persona_preset = gr.Dropdown(
                 label=labels["persona_preset"],
                 choices=_persona_choices("ko"),
@@ -1393,6 +1429,7 @@ def build_app() -> gr.Blocks:
             tier_g_panel,
             primary_name,
             primary_age,
+            cultural_prior,
             persona_preset,
             *[trait_sliders[field_name] for field_name in PERSONA_TRAIT_FIELDS],
             agent_count,
@@ -1414,6 +1451,7 @@ def build_app() -> gr.Blocks:
                 provider.value,
                 scenario.value,
                 environment_preset.value,
+                cultural_prior.value,
                 persona_preset.value,
             )
 
@@ -1446,6 +1484,11 @@ def build_app() -> gr.Blocks:
             inputs=[scenario, language, environment_preset],
             outputs=[scenario_hint],
         )
+        cultural_prior.change(
+            _apply_cultural_prior,
+            inputs=[cultural_prior],
+            outputs=[trait_sliders[field_name] for field_name in PERSONA_TRAIT_FIELDS],
+        )
         persona_preset.change(
             _apply_persona_preset,
             inputs=[persona_preset],
@@ -1456,6 +1499,7 @@ def build_app() -> gr.Blocks:
             inputs=[
                 scenario,
                 environment_preset,
+                cultural_prior,
                 provider,
                 api_key,
                 model,
