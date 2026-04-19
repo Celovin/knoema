@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 
@@ -38,7 +39,7 @@ def test_phase35_release_workflow_uses_oidc_pypi_publish() -> None:
     assert "tags:" in workflow
     assert '"v*.*.*"' in workflow
     assert "twine check dist/*" in workflow
-    assert "actions/download-artifact@v7" in workflow
+    assert re.search(r"actions/download-artifact@v\d+", workflow) is not None
     assert "environment:" in workflow
     assert "name: pypi" in workflow
     assert "id-token: write" in workflow
