@@ -1,0 +1,159 @@
+{
+  "average_recall_at_5": 1.0,
+  "passed": true,
+  "per_agent": [
+    {
+      "agent_id": "agent_alpha",
+      "queries": [
+        {
+          "query_id": "alpha-q1",
+          "recall_at_k": 1.0,
+          "relevant_memory_ids": [
+            "alpha-04"
+          ],
+          "retrieved_memory_ids": [
+            "alpha-04",
+            "alpha-07",
+            "alpha-02",
+            "alpha-06",
+            "alpha-03"
+          ]
+        },
+        {
+          "query_id": "alpha-q2",
+          "recall_at_k": 1.0,
+          "relevant_memory_ids": [
+            "alpha-01"
+          ],
+          "retrieved_memory_ids": [
+            "alpha-01",
+            "alpha-07",
+            "alpha-02",
+            "alpha-04",
+            "alpha-06"
+          ]
+        },
+        {
+          "query_id": "alpha-q3",
+          "recall_at_k": 1.0,
+          "relevant_memory_ids": [
+            "alpha-03"
+          ],
+          "retrieved_memory_ids": [
+            "alpha-03",
+            "alpha-02",
+            "alpha-04",
+            "alpha-07",
+            "alpha-05"
+          ]
+        },
+        {
+          "query_id": "alpha-q4",
+          "recall_at_k": 1.0,
+          "relevant_memory_ids": [
+            "alpha-05"
+          ],
+          "retrieved_memory_ids": [
+            "alpha-05",
+            "alpha-03",
+            "alpha-06",
+            "alpha-02",
+            "alpha-01"
+          ]
+        },
+        {
+          "query_id": "alpha-q5",
+          "recall_at_k": 1.0,
+          "relevant_memory_ids": [
+            "alpha-07"
+          ],
+          "retrieved_memory_ids": [
+            "alpha-07",
+            "alpha-04",
+            "alpha-02",
+            "alpha-06",
+            "alpha-01"
+          ]
+        }
+      ],
+      "recall_at_5": 1.0
+    },
+    {
+      "agent_id": "agent_beta",
+      "queries": [
+        {
+          "query_id": "beta-q1",
+          "recall_at_k": 1.0,
+          "relevant_memory_ids": [
+            "beta-01"
+          ],
+          "retrieved_memory_ids": [
+            "beta-01",
+            "beta-07",
+            "beta-03",
+            "beta-04",
+            "beta-05"
+          ]
+        },
+        {
+          "query_id": "beta-q2",
+          "recall_at_k": 1.0,
+          "relevant_memory_ids": [
+            "beta-03"
+          ],
+          "retrieved_memory_ids": [
+            "beta-03",
+            "beta-04",
+            "beta-07",
+            "beta-02",
+            "beta-01"
+          ]
+        },
+        {
+          "query_id": "beta-q3",
+          "recall_at_k": 1.0,
+          "relevant_memory_ids": [
+            "beta-04"
+          ],
+          "retrieved_memory_ids": [
+            "beta-04",
+            "beta-06",
+            "beta-03",
+            "beta-01",
+            "beta-07"
+          ]
+        },
+        {
+          "query_id": "beta-q4",
+          "recall_at_k": 1.0,
+          "relevant_memory_ids": [
+            "beta-05"
+          ],
+          "retrieved_memory_ids": [
+            "beta-05",
+            "beta-04",
+            "beta-03",
+            "beta-01",
+            "beta-02"
+          ]
+        },
+        {
+          "query_id": "beta-q5",
+          "recall_at_k": 1.0,
+          "relevant_memory_ids": [
+            "beta-07"
+          ],
+          "retrieved_memory_ids": [
+            "beta-07",
+            "beta-03",
+            "beta-02",
+            "beta-01",
+            "beta-05"
+          ]
+        }
+      ],
+      "recall_at_5": 1.0
+    }
+  ],
+  "target_recall_at_5": 0.85
+}
