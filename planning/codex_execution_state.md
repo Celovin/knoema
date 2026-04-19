@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 14:30 UTC by Codex
+**Last updated**: 2026-04-19 14:37 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -21,7 +21,7 @@
 ## Group 2 — 콘텐츠 확장 (4-6h)
 
 - [x] 4. 25 environment presets (`playground/environments.yaml`) - 2026-04-19 14:30 UTC, commit 8dd1fcd
-- [ ] 6. 25 persona archetypes (`playground/persona_presets.yaml`)
+- [x] 6. 25 persona archetypes (`playground/persona_presets.yaml`) - 2026-04-19 14:37 UTC, commit d918766
 - [ ] 14. 30 Replay scenarios (12 existing + 18 new YAMLs)
 - [ ] 26. Cultural context modules (Confucian/Western/Islamic/Latin/Nordic)
 
