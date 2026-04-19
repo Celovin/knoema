@@ -85,45 +85,78 @@ def _relationship_figure(rows: list[dict[str, Any]], *, language: str = "en") ->
         if language == "ko"
         else "No relationship edges yet. Run more ticks or use a conversational scenario."
     )
+    scene_layout = {
+        "xaxis": {"visible": False, "showbackground": False},
+        "yaxis": {"visible": False, "showbackground": False},
+        "zaxis": {"visible": False, "showbackground": False},
+        "bgcolor": "rgba(248,250,252,1)",
+        "camera": {"eye": {"x": 1.6, "y": 1.6, "z": 1.0}},
+    }
     if not rows:
         figure = go.Figure()
         figure.update_layout(
             title=title,
+            scene=scene_layout,
             annotations=[{"text": empty_msg, "showarrow": False}],
+            margin={"l": 0, "r": 0, "t": 40, "b": 0},
         )
         return figure
 
     agents = sorted({str(row["source"]) for row in rows} | {str(row["target"]) for row in rows})
-    positions = _circle_positions(agents)
+    positions = _sphere_positions(agents)
     edge_x: list[float | None] = []
     edge_y: list[float | None] = []
+    edge_z: list[float | None] = []
     for row in rows:
         source = str(row["source"])
         target = str(row["target"])
-        sx, sy = positions[source]
-        tx, ty = positions[target]
+        sx, sy, sz = positions[source]
+        tx, ty, tz = positions[target]
         edge_x.extend([sx, tx, None])
         edge_y.extend([sy, ty, None])
+        edge_z.extend([sz, tz, None])
 
+    trust_lookup: dict[str, float] = {}
+    for row in rows:
+        trust_lookup[str(row["source"])] = max(
+            trust_lookup.get(str(row["source"]), 0.0), float(row.get("trust", 0.5))
+        )
     node_x = [positions[agent][0] for agent in agents]
     node_y = [positions[agent][1] for agent in agents]
+    node_z = [positions[agent][2] for agent in agents]
     node_text = list(agents)
+    node_color = [trust_lookup.get(agent, 0.5) for agent in agents]
     figure = go.Figure(
         data=[
-            go.Scatter(
+            go.Scatter3d(
                 x=edge_x,
                 y=edge_y,
+                z=edge_z,
                 mode="lines",
-                line={"width": 1.5, "color": "#64748b"},
+                line={"width": 4, "color": "#94a3b8"},
                 hoverinfo="none",
             ),
-            go.Scatter(
+            go.Scatter3d(
                 x=node_x,
                 y=node_y,
+                z=node_z,
                 mode="markers+text",
                 text=node_text,
                 textposition="top center",
-                marker={"size": 18, "color": "#2563eb"},
+                marker={
+                    "size": 14,
+                    "color": node_color,
+                    "colorscale": "Viridis",
+                    "cmin": 0.0,
+                    "cmax": 1.0,
+                    "opacity": 0.95,
+                    "line": {"width": 1, "color": "#1e293b"},
+                    "colorbar": {
+                        "title": "신뢰" if language == "ko" else "Trust",
+                        "thickness": 12,
+                        "len": 0.6,
+                    },
+                },
                 hovertext=_node_hover_text(agents, rows),
                 hoverinfo="text",
             ),
@@ -132,24 +165,32 @@ def _relationship_figure(rows: list[dict[str, Any]], *, language: str = "en") ->
     figure.update_layout(
         title=title,
         showlegend=False,
-        xaxis={"visible": False},
-        yaxis={"visible": False},
-        margin={"l": 20, "r": 20, "t": 40, "b": 20},
+        scene=scene_layout,
+        margin={"l": 0, "r": 0, "t": 40, "b": 0},
     )
     return figure
 
 
-def _circle_positions(agents: list[str]) -> dict[str, tuple[float, float]]:
+def _sphere_positions(agents: list[str]) -> dict[str, tuple[float, float, float]]:
     import math
 
-    count = max(1, len(agents))
-    return {
-        agent: (
-            math.cos((2 * math.pi * index) / count),
-            math.sin((2 * math.pi * index) / count),
-        )
-        for index, agent in enumerate(agents)
-    }
+    n = len(agents)
+    if n == 0:
+        return {}
+    if n == 1:
+        return {agents[0]: (0.0, 0.0, 0.0)}
+    if n == 2:
+        return {agents[0]: (0.0, 1.0, 0.0), agents[1]: (0.0, -1.0, 0.0)}
+    positions: dict[str, tuple[float, float, float]] = {}
+    phi = math.pi * (3.0 - math.sqrt(5.0))
+    for index, agent in enumerate(agents):
+        y = 1.0 - (index / (n - 1)) * 2.0
+        radius = math.sqrt(max(0.0, 1.0 - y * y))
+        theta = phi * index
+        x = math.cos(theta) * radius
+        z = math.sin(theta) * radius
+        positions[agent] = (x, y, z)
+    return positions
 
 
 def _node_hover_text(agents: list[str], rows: list[dict[str, Any]]) -> list[str]:
