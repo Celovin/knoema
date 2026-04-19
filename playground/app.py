@@ -23,6 +23,8 @@ from plotly.subplots import make_subplots
 from scipy.stats import chi2_contingency, mannwhitneyu  # type: ignore[import-untyped]
 from scipy.stats import t as student_t
 
+from knoema.research import summarize_seed_tick_effect
+
 try:
     from .simulation import (
         AGENT_COUNT_MAX,
@@ -3321,6 +3323,47 @@ def _dominant_action_label(counts: Counter[str]) -> str:
     return f"{action_type} ({count})"
 
 
+def _advanced_statistics_lines(rows: list[dict[str, Any]], language: str) -> list[str]:
+    advanced_summary = summarize_seed_tick_effect(rows)
+    if advanced_summary is None:
+        return []
+    if language == "ko":
+        return [
+            (
+                f"- Mixed effects (seed random intercept, late-phase fixed effect): "
+                f"beta={_format_stat(advanced_summary.fixed_effect)} | "
+                f"intercept={_format_stat(advanced_summary.intercept)} | "
+                f"random SD={_format_stat(advanced_summary.random_intercept_sd)} | "
+                f"p={_format_p_value(advanced_summary.p_value)} | "
+                f"backend={advanced_summary.backend}"
+            ),
+            (
+                f"- Bayesian posterior (late-early cooperative rate): "
+                f"mean={_format_stat(advanced_summary.posterior_mean)} | "
+                f"95% CrI [{_format_stat(advanced_summary.credible_interval_low)}, "
+                f"{_format_stat(advanced_summary.credible_interval_high)}] | "
+                f"P(delta>0)={_format_stat(advanced_summary.probability_positive)}"
+            ),
+        ]
+    return [
+        (
+            f"- Mixed effects (seed random intercept, late-phase fixed effect): "
+            f"beta={_format_stat(advanced_summary.fixed_effect)} | "
+            f"intercept={_format_stat(advanced_summary.intercept)} | "
+            f"random SD={_format_stat(advanced_summary.random_intercept_sd)} | "
+            f"p={_format_p_value(advanced_summary.p_value)} | "
+            f"backend={advanced_summary.backend}"
+        ),
+        (
+            f"- Bayesian posterior (late-early cooperative rate): "
+            f"mean={_format_stat(advanced_summary.posterior_mean)} | "
+            f"95% CrI [{_format_stat(advanced_summary.credible_interval_low)}, "
+            f"{_format_stat(advanced_summary.credible_interval_high)}] | "
+            f"P(delta > 0)={_format_stat(advanced_summary.probability_positive)}"
+        ),
+    ]
+
+
 def _statistical_analysis_markdown(jsonl_text: str, language: str) -> str:
     key = _language_key(language)
     rows = _jsonl_rows(jsonl_text)
@@ -3391,6 +3434,7 @@ def _statistical_analysis_markdown(jsonl_text: str, language: str) -> str:
         for row in rows
         if str(row.get("record_type", "")) == "agent_stat"
     ]
+    advanced_lines = _advanced_statistics_lines(rows, key)
     busiest_agent = max(
         agent_rows,
         key=lambda row: float(row.get("mean_actions", 0.0)),
@@ -3476,6 +3520,7 @@ def _statistical_analysis_markdown(jsonl_text: str, language: str) -> str:
             ),
             f"- Highest-activity agent: {busiest_line}",
             "- Multiple-comparison correction: Holm step-down (2 tests)",
+            *advanced_lines,
         ]
     )
 

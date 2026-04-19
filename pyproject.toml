@@ -80,6 +80,11 @@ paper = [
     "pdfplumber>=0.11",
     "pypdf>=6.0",
 ]
+research = [
+    "statsmodels>=0.14",
+    "pymc>=5.16",
+    "arviz>=0.18",
+]
 release = [
     "build>=1.2",
     "twine>=5.1",

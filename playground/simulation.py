@@ -407,6 +407,14 @@ class BatchAgentStat:
 
 
 @dataclass(frozen=True, slots=True)
+class BatchSeedTickStat:
+    seed: int
+    tick: int
+    total_actions: int
+    action_type_counts: dict[str, int]
+
+
+@dataclass(frozen=True, slots=True)
 class BatchResult:
     batch_size: int
     master_seed: int
@@ -414,6 +422,7 @@ class BatchResult:
     reproducibility_coefficient: float
     per_tick_stats: tuple[BatchTickStat, ...]
     per_agent_stats: tuple[BatchAgentStat, ...]
+    per_seed_tick_stats: tuple[BatchSeedTickStat, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -1708,9 +1717,10 @@ def _build_batch_result(
     tick_action_counts: dict[int, Counter[str]] = defaultdict(Counter)
     agent_totals: dict[str, list[int]] = defaultdict(list)
     agent_action_counts: dict[str, Counter[str]] = defaultdict(Counter)
+    per_seed_tick_stats: list[BatchSeedTickStat] = []
     total_actions_per_run: list[int] = []
 
-    for artifacts in artifacts_by_seed:
+    for seed, artifacts in zip(seeds, artifacts_by_seed, strict=True):
         total_actions_per_run.append(len(artifacts.simulator.logs))
         logs_by_tick: dict[int, list[SimulationLogEntry]] = defaultdict(list)
         logs_by_agent: dict[str, list[SimulationLogEntry]] = defaultdict(list)
@@ -1720,6 +1730,15 @@ def _build_batch_result(
         for tick, tick_logs in logs_by_tick.items():
             tick_totals[tick].append(len(tick_logs))
             tick_action_counts[tick].update(entry.action.action_type for entry in tick_logs)
+            action_counts = Counter(entry.action.action_type for entry in tick_logs)
+            per_seed_tick_stats.append(
+                BatchSeedTickStat(
+                    seed=seed,
+                    tick=tick,
+                    total_actions=len(tick_logs),
+                    action_type_counts=dict(sorted(action_counts.items())),
+                )
+            )
         for agent_id, agent_logs in logs_by_agent.items():
             agent_totals[agent_id].append(len(agent_logs))
             agent_action_counts[agent_id].update(
@@ -1752,6 +1771,9 @@ def _build_batch_result(
         reproducibility_coefficient=_reproducibility_coefficient(total_actions_per_run),
         per_tick_stats=per_tick_stats,
         per_agent_stats=per_agent_stats,
+        per_seed_tick_stats=tuple(
+            sorted(per_seed_tick_stats, key=lambda stat: (stat.seed, stat.tick))
+        ),
     )
 
 
@@ -1784,6 +1806,16 @@ def _batch_jsonl(batch_result: BatchResult) -> str:
             "action_type_counts": stat.action_type_counts,
         }
         for stat in batch_result.per_agent_stats
+    )
+    rows.extend(
+        {
+            "record_type": "seed_tick_stat",
+            "seed": stat.seed,
+            "tick": stat.tick,
+            "total_actions": stat.total_actions,
+            "action_type_counts": stat.action_type_counts,
+        }
+        for stat in batch_result.per_seed_tick_stats
     )
     return "\n".join(json.dumps(row, ensure_ascii=False, sort_keys=True) for row in rows)
 
