@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 13:53 UTC by Codex
+**Last updated**: 2026-04-19 14:07 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -13,7 +13,7 @@
 ## Group 1 — 기반·UI (1-3h)
 
 - [x] 1. Relationship graph widened to 620px, timeline stacked below (scrollable) - 2026-04-19 13:53 UTC, commit a4331e9
-- [ ] 2. Agent count slider (1-30) + `_resize_agent_pool`
+- [x] 2. Agent count slider (1-30) + `_resize_agent_pool` - 2026-04-19 14:07 UTC, commit 51e1558
 - [ ] 3. Big Five slider `info=` hints; Korean "정서 불안정성" rename
 - [ ] 13. Scenario-specific guidance hints above Run button
 - [ ] 28. Built-in 8-step tutorial walkthrough
