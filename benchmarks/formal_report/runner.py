@@ -13,6 +13,11 @@ from pathlib import Path
 from typing import Any
 
 from baselines import mesa_stub, naive_llm
+from latency_comparison import (
+    LATENCY_COMPARISON_PATH,
+    LatencyComparisonReport,
+    load_latency_comparison_report,
+)
 
 from knoema.theory_of_mind import SallyAnneBenchmarkResult, run_sally_anne_benchmark
 from scenarios import (
@@ -78,6 +83,7 @@ def write_outputs(
 ) -> None:
     metropolis_summary = load_metropolis_summary()
     city_summary = load_city_summary()
+    latency_comparison = load_latency_comparison_report()
     theory_of_mind_result = run_sally_anne_benchmark()
     schelling_summary = load_classic_reproduction_summary(SCHELLING_SUMMARY_PATH)
     axelrod_summary = load_classic_reproduction_summary(AXELROD_SUMMARY_PATH)
@@ -92,11 +98,16 @@ def write_outputs(
         runs,
         metropolis_summary=metropolis_summary,
         city_summary=city_summary,
+        latency_comparison=latency_comparison,
         theory_of_mind_result=theory_of_mind_result,
         schelling_summary=schelling_summary,
         axelrod_summary=axelrod_summary,
     )
     (output_dir / "summary.md").write_text(summary, encoding="utf-8")
+    (output_dir / "latency_comparison.json").write_text(
+        LATENCY_COMPARISON_PATH.read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
 
     write_figures(runs, figures_dir)
 
@@ -107,6 +118,7 @@ def write_outputs(
             report_path,
             metropolis_summary=metropolis_summary,
             city_summary=city_summary,
+            latency_comparison=latency_comparison,
             theory_of_mind_result=theory_of_mind_result,
             schelling_summary=schelling_summary,
             axelrod_summary=axelrod_summary,
@@ -118,6 +130,7 @@ def build_summary(
     *,
     metropolis_summary: Mapping[str, Any],
     city_summary: Mapping[str, Any],
+    latency_comparison: LatencyComparisonReport,
     theory_of_mind_result: SallyAnneBenchmarkResult,
     schelling_summary: Mapping[str, Any],
     axelrod_summary: Mapping[str, Any],
@@ -167,6 +180,21 @@ def build_summary(
             f"- Mesa stub status: {mesa_notes['status']}; {mesa_notes['reason']}",
             "- Concordia is documented as an external reference only in baselines/concordia_reference.md.",
             "- Stanford Generative Agents is documented as an external reference only in baselines/stanford_reference.md.",
+            "",
+            "## Tick Latency Comparison",
+            "",
+            "- Measurement source: benchmarks/formal_report/results/latency_comparison.json",
+            "- NVIDIA ACE citations: 2025-02-20 and 2024-06-04 NVIDIA technical blogs, plus ACE 24.06 release notes.",
+            "- Inworld citations: 2025-08-15 and 2026-01-21 Inworld TTS blog posts, plus 2025-11-19 Runtime guidance.",
+            "",
+            "| Path | Tick latency | Relative to 200 ms ACE target | Evidence |",
+            "| --- | ---: | --- | --- |",
+        ]
+    )
+    for label, latency, comparison, evidence in _latency_markdown_rows(latency_comparison):
+        lines.append(f"| {label} | {latency} | {comparison} | {evidence} |")
+    lines.extend(
+        [
             "",
             "## Phase 42 and 43 Appendix",
             "",
@@ -301,6 +329,7 @@ def build_pdf_report(
     *,
     metropolis_summary: Mapping[str, Any],
     city_summary: Mapping[str, Any],
+    latency_comparison: LatencyComparisonReport,
     theory_of_mind_result: SallyAnneBenchmarkResult,
     schelling_summary: Mapping[str, Any],
     axelrod_summary: Mapping[str, Any],
@@ -319,6 +348,7 @@ def build_pdf_report(
         summary,
         metropolis_summary,
         city_summary,
+        latency_comparison,
         theory_of_mind_result,
         schelling_summary,
         axelrod_summary,
@@ -438,6 +468,7 @@ def _pdf_page_specs(
     summary: str,
     metropolis_summary: Mapping[str, Any],
     city_summary: Mapping[str, Any],
+    latency_comparison: LatencyComparisonReport,
     theory_of_mind_result: SallyAnneBenchmarkResult,
     schelling_summary: Mapping[str, Any],
     axelrod_summary: Mapping[str, Any],
@@ -543,10 +574,11 @@ def _pdf_page_specs(
         },
         {
             "kind": "text",
-            "title": "Mesa Reference",
+            "title": "Tick Latency Comparison",
             "lines": [
-                "Mesa is documented as a capability boundary.",
-                "No Mesa performance numbers are claimed in this report.",
+                "Measured rows come from the committed latency_comparison.json artifact.",
+                "Published rows cite NVIDIA ACE and Inworld public references.",
+                *_latency_pdf_lines(latency_comparison),
             ],
         },
         {
@@ -576,6 +608,7 @@ def _pdf_page_specs(
             "lines": [
                 "Concordia is external and not vendored. See baselines/concordia_reference.md.",
                 "Stanford reference is paper or code only. See baselines/stanford_reference.md.",
+                "Mesa is documented as a capability boundary and remains not-measured.",
                 "The report avoids wall-clock measurements in committed raw artifacts.",
                 "The same source inputs regenerate the same JSONL, summary, and SVG outputs.",
             ],
@@ -681,6 +714,25 @@ def _comparison_markdown_rows(
     ]
 
 
+def _latency_markdown_rows(
+    report: LatencyComparisonReport,
+) -> list[tuple[str, str, str, str]]:
+    rows: list[tuple[str, str, str, str]] = []
+    for measured in report.measured_rows:
+        latency_value = f"{measured.mean_tick_latency_ms:.3f} ms"
+        comparison = _compare_to_ace(measured.mean_tick_latency_ms)
+        evidence = measured.notes
+        rows.append((measured.label, latency_value, comparison, evidence))
+    for published in report.published_rows:
+        latency_value = _format_latency_range(
+            published.latency_ms_low,
+            published.latency_ms_high,
+        )
+        evidence = "; ".join(source.url for source in published.sources)
+        rows.append((published.label, latency_value, "published reference", evidence))
+    return rows
+
+
 def _comparison_pdf_rows(
     summary: Mapping[str, Any],
     city_summary: Mapping[str, Any],
@@ -701,6 +753,20 @@ def _comparison_pdf_rows(
         ["ToM surface", "persona opt-in", "no public opt-in API", "no public opt-in API"],
         ["Sally-Anne", f"{theory_of_mind_result.correct_cases}/{theory_of_mind_result.total_cases}", "not reported", "not reported"],
     ]
+
+
+def _latency_pdf_lines(report: LatencyComparisonReport) -> list[str]:
+    lines: list[str] = []
+    for measured in report.measured_rows:
+        lines.append(
+            f"{measured.label}: mean {measured.mean_tick_latency_ms:.1f} ms/tick, "
+            f"p95 {measured.p95_tick_latency_ms:.1f} ms/tick."
+        )
+    for published in report.published_rows:
+        lines.append(
+            f"{published.label}: {_format_latency_range(published.latency_ms_low, published.latency_ms_high)}."
+        )
+    return lines
 
 
 def _city_backends(city_summary: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]:
@@ -849,6 +915,19 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     parser.add_argument("--report-path", type=Path, default=DEFAULT_REPORT)
     parser.add_argument("--skip-pdf", action="store_true")
     return parser.parse_args(list(argv) if argv is not None else None)
+
+
+def _compare_to_ace(latency_ms: float) -> str:
+    if latency_ms <= 200.0:
+        return "at or under ACE target"
+    multiple = latency_ms / 200.0
+    return f"{multiple:.1f}x slower than ACE target"
+
+
+def _format_latency_range(low: float, high: float) -> str:
+    if math.isclose(low, high):
+        return f"{low:.3f} ms"
+    return f"{low:.3f}-{high:.3f} ms"
 
 
 if __name__ == "__main__":

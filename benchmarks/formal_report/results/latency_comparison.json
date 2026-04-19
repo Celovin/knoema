@@ -1,0 +1,117 @@
+{
+  "measured_at_utc": "2026-04-19T23:34:10+00:00",
+  "measured_rows": [
+    {
+      "label": "Knoema Playground replay-only",
+      "mean_tick_latency_ms": 5.941,
+      "mode": "Replay only",
+      "model": "gpt-4o-mini",
+      "notes": "Local scripted responder, no network I/O.",
+      "p95_tick_latency_ms": 9.084,
+      "path_id": "playground_replay",
+      "repetitions": 2,
+      "runs": [
+        {
+          "elapsed_ms": 18.865,
+          "log_count": 4,
+          "per_tick_latency_ms": 9.433,
+          "tick_count": 2
+        },
+        {
+          "elapsed_ms": 4.897,
+          "log_count": 4,
+          "per_tick_latency_ms": 2.449,
+          "tick_count": 2
+        }
+      ]
+    },
+    {
+      "label": "Knoema Playground OpenAI mode",
+      "mean_tick_latency_ms": 18556.452,
+      "mode": "OpenAI",
+      "model": "gpt-4o-mini",
+      "notes": "Measured with a live OpenAI Responses API call path; includes network, model, monologue generation, and playground orchestration.",
+      "p95_tick_latency_ms": 20374.884,
+      "path_id": "playground_openai",
+      "repetitions": 2,
+      "runs": [
+        {
+          "elapsed_ms": 33071.943,
+          "log_count": 4,
+          "per_tick_latency_ms": 16535.971,
+          "tick_count": 2
+        },
+        {
+          "elapsed_ms": 41153.864,
+          "log_count": 4,
+          "per_tick_latency_ms": 20576.932,
+          "tick_count": 2
+        }
+      ]
+    }
+  ],
+  "published_rows": [
+    {
+      "label": "NVIDIA ACE target envelope",
+      "latency_ms_high": 200.0,
+      "latency_ms_low": 198.0,
+      "notes": "NVIDIA technical blogs describe ACE or NVIGI as real-time, low-latency inference. ACE release notes list 198 ms algorithmic latency for Speech Live Portrait, which the repo rounds to a 200 ms target envelope.",
+      "reference_id": "nvidia_ace_target",
+      "sources": [
+        {
+          "label": "NVIDIA Technical Blog (2025-02-20)",
+          "url": "https://developer.nvidia.com/blog/bring-nvidia-ace-ai-characters-to-games-with-the-new-in-game-inference-sdk"
+        },
+        {
+          "label": "NVIDIA Technical Blog (2024-06-04)",
+          "url": "https://developer.nvidia.com/blog/build-lifelike-digital-humans-with-nvidia-ace-now-generally-available/"
+        },
+        {
+          "label": "ACE Release Notes 24.06",
+          "url": "https://docs.nvidia.com/ace/overview/2025.03.06/ace-release-notes.html"
+        }
+      ]
+    },
+    {
+      "label": "Inworld TTS-1 first audio chunk",
+      "latency_ms_high": 200.0,
+      "latency_ms_low": 200.0,
+      "notes": "The August 15, 2025 Inworld blog reports the first two-second audio chunk in as few as 200 ms, excluding networking.",
+      "reference_id": "inworld_tts_1",
+      "sources": [
+        {
+          "label": "Inworld blog (2025-08-15)",
+          "url": "https://inworld.ai/blog/introducing-inworld-tts"
+        }
+      ]
+    },
+    {
+      "label": "Inworld TTS-1.5 first audio chunk",
+      "latency_ms_high": 250.0,
+      "latency_ms_low": 130.0,
+      "notes": "The January 21, 2026 Inworld blog reports P90 time-to-first-audio under 250 ms for Max and under 130 ms for Mini.",
+      "reference_id": "inworld_tts_1_5",
+      "sources": [
+        {
+          "label": "Inworld blog (2026-01-21)",
+          "url": "https://inworld.ai/blog/introducing-inworld-tts-1-5"
+        }
+      ]
+    },
+    {
+      "label": "Inworld end-to-end conversational guidance",
+      "latency_ms_high": 3000.0,
+      "latency_ms_low": 1000.0,
+      "notes": "Official Runtime guidance published by Inworld staff in November 2025 says a full audio-input to audio-output turn is typically about 1-3 seconds.",
+      "reference_id": "inworld_runtime_guidance",
+      "sources": [
+        {
+          "label": "Inworld Runtime guidance (2025-11-19)",
+          "url": "https://community.inworld.ai/t/what-latency-do-you-have-when-running-through-a-full-conversational-pipeline-not-just-tts/67"
+        }
+      ]
+    }
+  ],
+  "scenario_name": "Dorm: two agents",
+  "ticks": 2
+}

@@ -40,6 +40,21 @@ Composite score compares paired Knoema and naive runs for each scenario or model
 - Concordia is documented as an external reference only in baselines/concordia_reference.md.
 - Stanford Generative Agents is documented as an external reference only in baselines/stanford_reference.md.
 
+## Tick Latency Comparison
+
+- Measurement source: benchmarks/formal_report/results/latency_comparison.json
+- NVIDIA ACE citations: 2025-02-20 and 2024-06-04 NVIDIA technical blogs, plus ACE 24.06 release notes.
+- Inworld citations: 2025-08-15 and 2026-01-21 Inworld TTS blog posts, plus 2025-11-19 Runtime guidance.
+
+| Path | Tick latency | Relative to 200 ms ACE target | Evidence |
+| --- | ---: | --- | --- |
+| Knoema Playground replay-only | 5.941 ms | at or under ACE target | Local scripted responder, no network I/O. |
+| Knoema Playground OpenAI mode | 18556.452 ms | 92.8x slower than ACE target | Measured with a live OpenAI Responses API call path; includes network, model, monologue generation, and playground orchestration. |
+| NVIDIA ACE target envelope | 198.000-200.000 ms | published reference | https://developer.nvidia.com/blog/bring-nvidia-ace-ai-characters-to-games-with-the-new-in-game-inference-sdk; https://developer.nvidia.com/blog/build-lifelike-digital-humans-with-nvidia-ace-now-generally-available/; https://docs.nvidia.com/ace/overview/2025.03.06/ace-release-notes.html |
+| Inworld TTS-1 first audio chunk | 200.000 ms | published reference | https://inworld.ai/blog/introducing-inworld-tts |
+| Inworld TTS-1.5 first audio chunk | 130.000-250.000 ms | published reference | https://inworld.ai/blog/introducing-inworld-tts-1-5 |
+| Inworld end-to-end conversational guidance | 1000.000-3000.000 ms | published reference | https://community.inworld.ai/t/what-latency-do-you-have-when-running-through-a-full-conversational-pipeline-not-just-tts/67 |
+
 ## Phase 42 and 43 Appendix
 
 - Summary source: experiments/500_agent_metropolis/results/summary.json

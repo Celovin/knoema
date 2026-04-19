@@ -20,10 +20,13 @@ def test_phase20_formal_report_files_exist() -> None:
         "scenarios/scenario_D_scalability.py",
         "baselines/naive_llm.py",
         "baselines/mesa_stub.py",
+        "latency_comparison.py",
+        "run_latency_comparison.py",
         "baselines/concordia_reference.md",
         "baselines/stanford_reference.md",
         "results/raw.jsonl",
         "results/summary.md",
+        "results/latency_comparison.json",
         "results/figures/memory_recall.svg",
         "results/figures/token_efficiency.svg",
         "results/figures/scalability.svg",
@@ -60,6 +63,9 @@ def test_phase20_summary_records_statistics_and_baseline_discipline() -> None:
     assert "Mesa stub status: not-measured" in summary
     assert "Concordia is documented as an external reference" in summary
     assert "Stanford Generative Agents is documented as an external reference" in summary
+    assert "Tick Latency Comparison" in summary
+    assert "NVIDIA ACE citations" in summary
+    assert "Inworld citations" in summary
     assert "Knoema 500-Agent Metropolis" in summary
     assert "results/figures/metropolis_scale.svg" in summary
     assert "Sally-Anne reproduction" in summary
@@ -94,6 +100,7 @@ def test_phase20_runner_regenerates_deterministic_text_outputs(tmp_path: Path) -
     for relative_path in [
         "raw.jsonl",
         "summary.md",
+        "latency_comparison.json",
         "figures/memory_recall.svg",
         "figures/token_efficiency.svg",
         "figures/scalability.svg",
