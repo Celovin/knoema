@@ -750,6 +750,14 @@ LABELS["ko"]["replication_download"] = "Replication package ?ㅼ슫濡쒕뱶"
 LABELS["en"]["replication_button"] = "Export replication package"
 LABELS["en"]["replication_download"] = "Download replication package"
 LABELS["ko"]["reviewer_mode"] = "由щ럭?댁뼱 紐⑤뱶"
+LABELS["ko"]["prereg_data_generation"] = "Data generation process"
+LABELS["ko"]["prereg_factor_design"] = "Factor design matrix"
+LABELS["ko"]["prereg_performance_metrics"] = "Performance metrics"
+LABELS["ko"]["prereg_aggregation"] = "Aggregation plan"
+LABELS["en"]["prereg_data_generation"] = "Data generation process"
+LABELS["en"]["prereg_factor_design"] = "Factor design matrix"
+LABELS["en"]["prereg_performance_metrics"] = "Performance metrics"
+LABELS["en"]["prereg_aggregation"] = "Aggregation plan"
 LABELS["ko"]["deposit_panel"] = "Zenodo / arXiv deposit"
 LABELS["ko"]["deposit_creators"] = "Creators (one per line, optional | affiliation)"
 LABELS["ko"]["deposit_description"] = "Dataset description"
@@ -2699,6 +2707,15 @@ def _deposit_defaults(language: str) -> dict[str, str]:
     }
 
 
+def _simulation_template_defaults() -> dict[str, str]:
+    return {
+        "data_generation": "Freeze the scenario YAML, seed schedule, and agent overrides before interpretation.",
+        "factor_design": "2 x 2 between-seed design over agreeableness profile and stressor intensity.",
+        "performance_metrics": "Cooperation rate, refusal rate, trust delta, and mixed-effects coefficients.",
+        "aggregation": "Aggregate over seeds first, then summarize agent-level dispersion and scenario-level uncertainty.",
+    }
+
+
 def _digest_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
@@ -2783,6 +2800,10 @@ def _preregistration_markdown(
     power_effect_size: float = 0.5,
     power_alpha: float = 0.05,
     power_target: float = 0.8,
+    data_generation_process: str = "",
+    factor_design_matrix: str = "",
+    performance_metrics: str = "",
+    aggregation_plan: str = "",
 ) -> str:
     key = _language_key(language)
     power_plan = _power_analysis_plan(
@@ -2805,6 +2826,10 @@ def _preregistration_markdown(
                 "power_effect_size": round(power_effect_size, 4),
                 "power_alpha": round(power_alpha, 4),
                 "power_target": round(power_target, 4),
+                "data_generation_process": data_generation_process,
+                "factor_design_matrix": factor_design_matrix,
+                "performance_metrics": performance_metrics,
+                "aggregation_plan": aggregation_plan,
                 "summary": summary,
                 "jsonl_digest": _digest_text(jsonl_text),
             },
@@ -2835,6 +2860,18 @@ def _preregistration_markdown(
             "",
             "### Study design",
             design.strip(),
+            "",
+            "### Data generation process",
+            data_generation_process.strip(),
+            "",
+            "### Factor design matrix",
+            factor_design_matrix.strip(),
+            "",
+            "### Performance metrics",
+            performance_metrics.strip(),
+            "",
+            "### Aggregation plan",
+            aggregation_plan.strip(),
             "",
             "### Primary / secondary outcomes",
             outcomes.strip(),
@@ -2879,6 +2916,18 @@ def _preregistration_markdown(
         "### Study design",
         design.strip(),
         "",
+        "### Data generation process",
+        data_generation_process.strip(),
+        "",
+        "### Factor design matrix",
+        factor_design_matrix.strip(),
+        "",
+        "### Performance metrics",
+        performance_metrics.strip(),
+        "",
+        "### Aggregation plan",
+        aggregation_plan.strip(),
+        "",
         "### Primary / secondary outcomes",
         outcomes.strip(),
         "",
@@ -2921,6 +2970,10 @@ def _export_preregistration(
     power_effect_size: float = 0.5,
     power_alpha: float = 0.05,
     power_target: float = 0.8,
+    data_generation_process: str = "",
+    factor_design_matrix: str = "",
+    performance_metrics: str = "",
+    aggregation_plan: str = "",
 ) -> tuple[str, str]:
     document = _preregistration_markdown(
         summary,
@@ -2938,6 +2991,10 @@ def _export_preregistration(
         power_effect_size,
         power_alpha,
         power_target,
+        data_generation_process,
+        factor_design_matrix,
+        performance_metrics,
+        aggregation_plan,
     )
     export_path = Path(tempfile.gettempdir()) / f"knoema_preregistration_{uuid.uuid4().hex}.md"
     export_path.write_text(document, encoding="utf-8")
@@ -4863,7 +4920,11 @@ def _language_updates(
         gr.update(label=labels["prereg_title"]),
         gr.update(label=labels["prereg_hypotheses"]),
         gr.update(label=labels["prereg_design"]),
+        gr.update(label=labels["prereg_data_generation"]),
+        gr.update(label=labels["prereg_factor_design"]),
         gr.update(label=labels["prereg_outcomes"]),
+        gr.update(label=labels["prereg_performance_metrics"]),
+        gr.update(label=labels["prereg_aggregation"]),
         gr.update(label=labels["prereg_analysis"]),
         gr.update(label=labels["prereg_freeze"]),
         gr.update(label=labels["prereg_deviations"]),
@@ -6239,6 +6300,7 @@ def build_app() -> gr.Blocks:
     prereg_defaults = _prereg_defaults("ko")
     power_defaults = _power_defaults()
     deposit_defaults = _deposit_defaults("ko")
+    simulation_defaults = _simulation_template_defaults()
 
     with gr.Blocks(
         title="Knoema Playground",
@@ -6646,11 +6708,35 @@ def build_app() -> gr.Blocks:
                 lines=3,
                 elem_id="prereg-design",
             )
+            prereg_data_generation = gr.Textbox(
+                label=labels["prereg_data_generation"],
+                value=simulation_defaults["data_generation"],
+                lines=3,
+                elem_id="prereg-data-generation",
+            )
+            prereg_factor_design = gr.Textbox(
+                label=labels["prereg_factor_design"],
+                value=simulation_defaults["factor_design"],
+                lines=3,
+                elem_id="prereg-factor-design",
+            )
             prereg_outcomes = gr.Textbox(
                 label=labels["prereg_outcomes"],
                 value=prereg_defaults["outcomes"],
                 lines=3,
                 elem_id="prereg-outcomes",
+            )
+            prereg_performance_metrics = gr.Textbox(
+                label=labels["prereg_performance_metrics"],
+                value=simulation_defaults["performance_metrics"],
+                lines=3,
+                elem_id="prereg-performance-metrics",
+            )
+            prereg_aggregation = gr.Textbox(
+                label=labels["prereg_aggregation"],
+                value=simulation_defaults["aggregation"],
+                lines=3,
+                elem_id="prereg-aggregation",
             )
             prereg_analysis = gr.Textbox(
                 label=labels["prereg_analysis"],
@@ -6740,6 +6826,10 @@ def build_app() -> gr.Blocks:
                     float(power_defaults["effect_size"]),
                     float(power_defaults["alpha"]),
                     float(power_defaults["target_power"]),
+                    simulation_defaults["data_generation"],
+                    simulation_defaults["factor_design"],
+                    simulation_defaults["performance_metrics"],
+                    simulation_defaults["aggregation"],
                 ),
                 elem_id="prereg-preview",
             )
@@ -6990,7 +7080,11 @@ def build_app() -> gr.Blocks:
             prereg_title,
             prereg_hypotheses,
             prereg_design,
+            prereg_data_generation,
+            prereg_factor_design,
             prereg_outcomes,
+            prereg_performance_metrics,
+            prereg_aggregation,
             prereg_analysis,
             prereg_freeze,
             prereg_deviations,
@@ -7266,6 +7360,10 @@ def build_app() -> gr.Blocks:
                 prereg_power_effect,
                 prereg_power_alpha,
                 prereg_power_target,
+                prereg_data_generation,
+                prereg_factor_design,
+                prereg_performance_metrics,
+                prereg_aggregation,
             ],
             outputs=[prereg_preview, prereg_download],
             api_name="export_preregistration",
