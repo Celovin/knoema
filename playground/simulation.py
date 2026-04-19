@@ -65,6 +65,7 @@ def run_playground_scenario(
     agreeableness: float,
     neuroticism: float,
     ticks: int,
+    language: str = "en",
 ) -> PlaygroundResult:
     """Run a short scenario and return UI-ready artifacts.
 
@@ -99,8 +100,9 @@ def run_playground_scenario(
             model=model,
             config=config,
             agent_ids=[agent.agent_id for agent in agents],
+            language=language,
         ),
-        language=config.prompt_language,
+        language=language if language in {"ko", "ja", "zh"} else config.prompt_language,
     )
     for event in config.events:
         simulator.scheduler.schedule(event.to_domain())
@@ -111,7 +113,7 @@ def run_playground_scenario(
     return PlaygroundResult(
         scenario_name=scenario_name,
         mode=provider,
-        timeline_markdown=_timeline_markdown(simulator.logs),
+        timeline_markdown=_timeline_markdown(simulator.logs, language=language),
         relationship_rows=_relationship_rows(simulator),
         jsonl=jsonl,
         download_path=download_path,
@@ -157,6 +159,7 @@ def _build_client(
     model: str,
     config: SimulationRunConfig,
     agent_ids: list[str],
+    language: str = "en",
 ) -> LLMClient:
     if provider == "OpenAI" and api_key.strip():
         return OpenAIClient(model=model.strip() or "gpt-4o-mini", api_key=api_key.strip())
@@ -165,10 +168,12 @@ def _build_client(
             model=model.strip() or "claude-3-5-haiku-latest",
             api_key=api_key.strip(),
         )
-    return LocalClient(_scripted_responder(agent_ids=agent_ids, fallback=config.local_response))
+    return LocalClient(
+        _scripted_responder(agent_ids=agent_ids, fallback=config.local_response, language=language)
+    )
 
 
-def _scripted_responder(*, agent_ids: list[str], fallback: str):
+def _scripted_responder(*, agent_ids: list[str], fallback: str, language: str = "en"):
     def respond(messages: list[Message]) -> str:
         system_prompt = next(
             (message.get("content", "") for message in messages if message.get("role") == "system"),
@@ -181,7 +186,9 @@ def _scripted_responder(*, agent_ids: list[str], fallback: str):
         agent_id = _extract_agent_id(system_prompt) or (agent_ids[0] if agent_ids else "agent")
         target = next((candidate for candidate in agent_ids if candidate != agent_id), None)
         location = _extract_line_value(user_prompt, "Location: ") or "shared space"
-        content = _scripted_content(agent_id=agent_id, location=location, user_prompt=user_prompt)
+        content = _scripted_content(
+            agent_id=agent_id, location=location, user_prompt=user_prompt, language=language
+        )
         if not content:
             return fallback
         return json.dumps(
@@ -208,8 +215,15 @@ def _extract_line_value(text: str, prefix: str) -> str | None:
     return None
 
 
-def _scripted_content(*, agent_id: str, location: str, user_prompt: str) -> str:
-    if "Trigger:" in user_prompt and "No immediate trigger" not in user_prompt:
+def _scripted_content(
+    *, agent_id: str, location: str, user_prompt: str, language: str = "en"
+) -> str:
+    has_trigger = "Trigger:" in user_prompt and "No immediate trigger" not in user_prompt
+    if language == "ko":
+        if has_trigger:
+            return f"[{agent_id}] {location}에서 발생한 최근 사건에 반응하며 다른 사람들의 반응을 살핀다."
+        return f"[{agent_id}] {location}에 대한 짧은 관찰을 공유하고 자신의 계획을 갱신한다."
+    if has_trigger:
         return f"{agent_id} reacts to the latest event at {location} and checks how others feel."
     return f"{agent_id} shares a small observation about {location} and updates their plan."
 
@@ -240,15 +254,17 @@ def _write_download_file(jsonl: str) -> str:
         return handle.name
 
 
-def _timeline_markdown(logs: list[SimulationLogEntry]) -> str:
+def _timeline_markdown(logs: list[SimulationLogEntry], *, language: str = "en") -> str:
     if not logs:
-        return "No events yet."
-    lines = ["### Timeline"]
+        return "아직 이벤트가 없습니다." if language == "ko" else "No events yet."
+    header = "### 타임라인" if language == "ko" else "### Timeline"
+    lines = [header]
+    tick_label = "틱" if language == "ko" else "Tick"
     for entry in logs[:80]:
         action = entry.action
         target = f" -> {action.target}" if action.target else ""
         lines.append(
-            f"- **Tick {entry.tick:02d}** `{entry.timestamp.isoformat()}` "
+            f"- **{tick_label} {entry.tick:02d}** `{entry.timestamp.isoformat()}` "
             f"**{entry.agent_id}{target}**: {action.content}"
         )
     return "\n".join(lines)

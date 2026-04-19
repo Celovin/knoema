@@ -36,7 +36,9 @@ def _run(
     agreeableness: float,
     neuroticism: float,
     ticks: int,
+    language_choice: str = "한국어",
 ) -> tuple[str, go.Figure, str, str, str]:
+    lang = "ko" if language_choice == "한국어" else "en"
     result = run_playground_scenario(
         scenario_name=scenario_name,
         provider=_normalize_provider(provider),
@@ -50,31 +52,39 @@ def _run(
         agreeableness=agreeableness,
         neuroticism=neuroticism,
         ticks=ticks,
+        language=lang,
     )
-    summary = (
-        f"Mode: {result.mode} | Agents: {result.agent_count} | "
-        f"Ticks: {result.tick_count} | Log entries: {result.log_count}"
-    )
+    if lang == "ko":
+        summary = (
+            f"모드: {result.mode} | 에이전트: {result.agent_count}명 | "
+            f"틱: {result.tick_count} | 로그 항목: {result.log_count}개"
+        )
+    else:
+        summary = (
+            f"Mode: {result.mode} | Agents: {result.agent_count} | "
+            f"Ticks: {result.tick_count} | Log entries: {result.log_count}"
+        )
     return (
         result.timeline_markdown,
-        _relationship_figure(result.relationship_rows),
+        _relationship_figure(result.relationship_rows, language=lang),
         result.jsonl,
         result.download_path,
         summary,
     )
 
 
-def _relationship_figure(rows: list[dict[str, Any]]) -> go.Figure:
+def _relationship_figure(rows: list[dict[str, Any]], *, language: str = "en") -> go.Figure:
+    title = "관계 그래프" if language == "ko" else "Relationship graph"
+    empty_msg = (
+        "관계 엣지가 아직 없습니다. 틱 수를 늘리거나 대화형 시나리오를 사용해 보세요."
+        if language == "ko"
+        else "No relationship edges yet. Run more ticks or use a conversational scenario."
+    )
     if not rows:
         figure = go.Figure()
         figure.update_layout(
-            title="Relationship graph",
-            annotations=[
-                {
-                    "text": "No relationship edges yet. Run more ticks or use a conversational scenario.",
-                    "showarrow": False,
-                }
-            ],
+            title=title,
+            annotations=[{"text": empty_msg, "showarrow": False}],
         )
         return figure
 
@@ -115,7 +125,7 @@ def _relationship_figure(rows: list[dict[str, Any]]) -> go.Figure:
         ]
     )
     figure.update_layout(
-        title="Relationship graph",
+        title=title,
         showlegend=False,
         xaxis={"visible": False},
         yaxis={"visible": False},
@@ -374,6 +384,7 @@ def build_app() -> gr.Blocks:
                 agreeableness,
                 neuroticism,
                 ticks,
+                language,
             ],
             outputs=[timeline, graph, jsonl, download, summary],
             api_name="run",
