@@ -20,11 +20,12 @@ SimulationLogEntry = simulator.SimulationLogEntry
 ACTION_TYPES = types_module.ACTION_TYPES
 Action = types_module.Action
 ActionType = types_module.ActionType
+SOCIAL_ACTION_TYPES = types_module.SOCIAL_ACTION_TYPES
 
 
 def test_subtask16_action_type_literal_matches_exported_action_list() -> None:
     assert set(get_args(ActionType)) == set(ACTION_TYPES)
-    assert len(ACTION_TYPES) == 20
+    assert len(SOCIAL_ACTION_TYPES) == 20
 
 
 def test_subtask16_action_templates_cover_all_verbs_in_english_and_korean() -> None:

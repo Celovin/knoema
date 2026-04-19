@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from knoema.game.inventory import Inventory
 from knoema.theory_of_mind import TheoryOfMindProfile
 from knoema.types import AgentID, Personality
 
@@ -29,6 +30,8 @@ class Persona:
     values: list[str] = field(default_factory=list)
     goals: list[str] = field(default_factory=list)
     theory_of_mind: TheoryOfMindProfile = field(default_factory=TheoryOfMindProfile)
+    inventory: Inventory | None = None
+    factions: dict[str, float] | None = None
     planning: bool = False
     social_learning: bool = False
 
@@ -40,6 +43,8 @@ class Persona:
             raise ValueError(f"age must be positive, got {self.age!r}")
         _validate_string_list("values", self.values)
         _validate_string_list("goals", self.goals)
+        if self.factions is not None:
+            self.factions = {str(faction_id): float(score) for faction_id, score in self.factions.items()}
 
     def to_system_prompt(self, language: str = "en") -> str:
         from knoema.prompts import render_persona_system_prompt

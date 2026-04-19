@@ -14,6 +14,7 @@ from knoema.decision import DecisionEngine
 from knoema.emotion import EmotionState
 from knoema.environment import Environment, EnvironmentContext
 from knoema.events import EventDispatcher, EventScheduler
+from knoema.game import apply_faction_action, apply_inventory_action
 from knoema.llm import LocalClient
 from knoema.memory import ShortTermMemoryBuffer
 from knoema.persona import Persona
@@ -215,6 +216,8 @@ class Simulator:
                 importance=0.5,
             )
         )
+        agent.inventory = apply_inventory_action(agent.inventory, action)
+        agent.factions = apply_faction_action(agent.factions, action)
         if action.target is not None:
             self.relationships.update_after_interaction(agent.agent_id, action.target, action, "neutral")
         self._share_observation(agent, action)

@@ -30,8 +30,23 @@ ActionType = Literal[
     "gossip",
     "persuade",
     "alone",
+    "attack_target",
+    "defend_self",
+    "flee",
+    "use_skill",
+    "use_item",
+    "pickup_item",
+    "drop_item",
+    "trade_offer",
+    "quest_offer",
+    "quest_accept",
+    "quest_complete",
+    "faction_join",
+    "faction_betray",
+    "craft_item",
+    "level_up",
 ]
-ACTION_TYPES: tuple[str, ...] = (
+SOCIAL_ACTION_TYPES: tuple[str, ...] = (
     "speak",
     "observe",
     "move",
@@ -53,6 +68,24 @@ ACTION_TYPES: tuple[str, ...] = (
     "persuade",
     "alone",
 )
+GAME_ACTION_TYPES: tuple[str, ...] = (
+    "attack_target",
+    "defend_self",
+    "flee",
+    "use_skill",
+    "use_item",
+    "pickup_item",
+    "drop_item",
+    "trade_offer",
+    "quest_offer",
+    "quest_accept",
+    "quest_complete",
+    "faction_join",
+    "faction_betray",
+    "craft_item",
+    "level_up",
+)
+ACTION_TYPES: tuple[str, ...] = SOCIAL_ACTION_TYPES + GAME_ACTION_TYPES
 RelationshipType = Literal[
     "family",
     "friend",
@@ -251,8 +284,10 @@ class WorldEvent:
 __all__ = [
     "ACTION_TYPES",
     "BIG_FIVE_FIELDS",
+    "GAME_ACTION_TYPES",
     "PERSONALITY_FIELDS",
     "PERSONALITY_NEUTRAL_DEFAULTS",
+    "SOCIAL_ACTION_TYPES",
     "Action",
     "ActionType",
     "AgentID",

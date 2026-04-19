@@ -25,12 +25,19 @@ from knoema.cli import (
     load_run_config,
 )
 from knoema.cognition import Monologue
+from knoema.game.inventory import Inventory
 from knoema.llm import AnthropicClient, LocalClient, OpenAIClient
 from knoema.persona import Persona
 from knoema.planning import HierarchicalPlanner, Task
 from knoema.protocols import LLMClient, Message
 from knoema.simulator import SimulationLogEntry, Simulator
-from knoema.types import ACTION_TYPES, PERSONALITY_NEUTRAL_DEFAULTS, Personality
+from knoema.types import (
+    ACTION_TYPES,
+    GAME_ACTION_TYPES,
+    PERSONALITY_NEUTRAL_DEFAULTS,
+    SOCIAL_ACTION_TYPES,
+    Personality,
+)
 
 Provider = Literal["Replay only", "OpenAI", "Anthropic"]
 AGENT_COUNT_MIN = 1
@@ -63,6 +70,17 @@ UNTARGETED_ACTION_TYPES = frozenset(
         "enter",
         "gossip",
         "alone",
+        "flee",
+        "use_skill",
+        "use_item",
+        "pickup_item",
+        "drop_item",
+        "quest_accept",
+        "quest_complete",
+        "faction_join",
+        "faction_betray",
+        "craft_item",
+        "level_up",
     }
 )
 PROMPT_LINE_PREFIXES: dict[str, dict[str, str]] = {
@@ -823,6 +841,16 @@ def _execute_playground_run(
             name=str(applied_override.get("name", agents[index].name)),
             age=int(applied_override.get("age", agents[index].age)),
             personality_overrides=dict(applied_override.get("personality_overrides", {})),
+            inventory=(
+                _coerce_inventory(applied_override.get("inventory"))
+                if "inventory" in applied_override
+                else None
+            ),
+            factions=(
+                _coerce_factions(applied_override.get("factions"))
+                if "factions" in applied_override
+                else None
+            ),
             planning=(
                 bool(applied_override["planning"])
                 if "planning" in applied_override
@@ -1147,6 +1175,8 @@ def _rebuild_persona(
     age: int | None = None,
     background: str | None = None,
     personality_values: dict[str, float] | None = None,
+    inventory: Inventory | None = None,
+    factions: dict[str, float] | None = None,
     planning: bool | None = None,
 ) -> Persona:
     return Persona(
@@ -1158,6 +1188,8 @@ def _rebuild_persona(
         values=list(agent.values),
         goals=list(agent.goals),
         theory_of_mind=agent.theory_of_mind,
+        inventory=agent.inventory if inventory is None else inventory,
+        factions=dict(agent.factions or {}) if factions is None else dict(factions),
         planning=agent.planning if planning is None else planning,
         social_learning=agent.social_learning,
     )
@@ -1198,6 +1230,8 @@ def _customize_agent(
     name: str,
     age: int,
     personality_overrides: dict[str, float] | None = None,
+    inventory: Inventory | None = None,
+    factions: dict[str, float] | None = None,
     planning: bool | None = None,
 ) -> Persona:
     personality_values = agent.personality.to_dict()
@@ -1209,6 +1243,8 @@ def _customize_agent(
         name=name,
         age=age,
         personality_values=personality_values,
+        inventory=inventory,
+        factions=factions,
         planning=planning,
     )
 
@@ -1236,6 +1272,28 @@ def _customize_primary_agent(
             "neuroticism": neuroticism,
         },
     )
+
+
+def _coerce_inventory(value: object) -> Inventory | None:
+    if value is None:
+        return None
+    if isinstance(value, Inventory):
+        return Inventory(item_ids=list(value.item_ids))
+    if isinstance(value, (list, tuple)):
+        inventory = Inventory()
+        for item in value:
+            if isinstance(item, str) and item.strip():
+                inventory.add(item)
+        return inventory
+    raise TypeError(f"unsupported inventory override: {type(value)!r}")
+
+
+def _coerce_factions(value: object) -> dict[str, float] | None:
+    if value is None:
+        return None
+    if not isinstance(value, dict):
+        raise TypeError(f"unsupported factions override: {type(value)!r}")
+    return {str(faction_id): float(score) for faction_id, score in value.items()}
 
 
 def _build_client(
@@ -1351,6 +1409,7 @@ def _scripted_action_payload(
         agent_id=agent_id,
         location=location,
         tick=tick,
+        user_prompt=user_prompt,
         trigger_text=trigger_text,
         default_target=default_target,
         trigger_target=trigger_target,
@@ -1360,7 +1419,25 @@ def _scripted_action_payload(
         default_target=default_target,
         trigger_target=trigger_target,
     )
-    topic = _scripted_topic(trigger_text, location, language)
+    metadata, topic = _scripted_metadata_and_topic(
+        action_type=action_type,
+        agent_id=agent_id,
+        persona=persona,
+        target=target,
+        tick=tick,
+        trigger_text=trigger_text,
+        location=location,
+        language=language,
+    )
+    metadata.update(
+        {
+            "rule": "replay-action-vocabulary",
+            "scripted": True,
+            "template_language": _template_language(language),
+            "tick": tick,
+            "topic": topic,
+        }
+    )
     return {
         "action_type": action_type,
         "target": target,
@@ -1372,13 +1449,7 @@ def _scripted_action_payload(
             topic=topic,
             language=language,
         ),
-        "metadata": {
-            "rule": "replay-action-vocabulary",
-            "scripted": True,
-            "template_language": _template_language(language),
-            "tick": tick,
-            "topic": topic,
-        },
+        "metadata": metadata,
     }
 
 
@@ -1388,23 +1459,77 @@ def _scripted_action_type(
     agent_id: str,
     location: str,
     tick: int,
+    user_prompt: str,
     trigger_text: str,
     default_target: str | None,
     trigger_target: str | None,
 ) -> str:
     has_trigger = _has_trigger(trigger_text)
-    if tick == 0:
-        return "speak" if has_trigger else "observe"
-
     personality = (
         persona.personality
         if persona is not None
         else Personality(**PERSONALITY_NEUTRAL_DEFAULTS)
     )
-    action_cycle: list[str] = ["speak", "observe", "move", "query_memory", "propose_plan"]
-    has_target = default_target is not None or trigger_target is not None
+    inventory = persona.inventory if persona is not None else None
+    factions = dict(persona.factions or {}) if persona is not None and persona.factions else {}
+    target_candidate = trigger_target or default_target
+    has_target = target_candidate is not None
+    trust_by_target = _extract_relationship_trusts(user_prompt)
+    target_trust = 1.0 if target_candidate is None else trust_by_target.get(target_candidate, 1.0)
+    arousal = _extract_arousal(user_prompt)
+    has_leader_role = _has_leader_role(persona)
+
+    if has_target and has_leader_role and personality.conscientiousness > 0.7 and tick in {1, 4, 7}:
+        return "quest_offer"
+    if (
+        has_target
+        and personality.sadism + personality.machiavellianism > 1.0
+        and target_trust <= 0.45
+        and tick % 4 == 1
+    ):
+        return "attack_target"
+    if has_target and _defend_self_trigger(trigger_text, agent_id):
+        return "defend_self"
+    if arousal > 0.8 and _has_threat(trigger_text):
+        return "flee"
+    if inventory is not None and inventory.item_ids and tick % 5 == 2:
+        return "use_item"
+    if personality.openness > 0.55 and tick % 5 == 1:
+        return "pickup_item"
+    if inventory is not None and inventory.item_ids and tick % 6 == 3:
+        return "drop_item"
+    if has_target and personality.fairness >= 0.5 and tick % 6 == 2:
+        return "trade_offer"
+    if _has_quest_trigger(trigger_text) and tick % 2 == 0:
+        return "quest_accept"
+    if _has_quest_trigger(trigger_text) and tick % 2 == 1:
+        return "quest_complete"
+    if not factions and personality.power > 0.6 and tick % 6 == 4:
+        return "faction_join"
+    if factions and personality.machiavellianism > 0.6 and tick % 7 == 5:
+        return "faction_betray"
+    if tick % 6 == 5 and (personality.openness > 0.6 or (inventory is not None and inventory.item_ids)):
+        return "craft_item"
+    if personality.achievement > 0.6 and tick % 8 == 6:
+        return "level_up"
+    if personality.need_for_cognition > 0.6 and tick % 7 == 3:
+        return "use_skill"
+    if tick == 0:
+        return "speak" if has_trigger else "observe"
+
+    action_cycle = [
+        action_type
+        for action_type in SOCIAL_ACTION_TYPES
+        if action_type in {"speak", "observe", "move", "query_memory", "propose_plan"}
+    ]
     if has_target:
-        action_cycle.extend(["offer", "accept", "refuse", "give", "take", "persuade"])
+        action_cycle.extend(
+            [
+                action_type
+                for action_type in SOCIAL_ACTION_TYPES
+                if action_type in {"offer", "accept", "refuse", "give", "take", "persuade"}
+            ]
+        )
     if personality.agreeableness >= 0.65 or personality.trait_empathy >= 0.6:
         action_cycle.append("comfort")
     if personality.conscientiousness >= 0.65 or personality.need_for_cognition >= 0.65:
@@ -1430,6 +1555,136 @@ def _scripted_action_type(
         deduped_cycle
     )
     return deduped_cycle[cycle_index]
+
+
+def _scripted_metadata_and_topic(
+    *,
+    action_type: str,
+    agent_id: str,
+    persona: Persona | None,
+    target: str | None,
+    tick: int,
+    trigger_text: str,
+    location: str,
+    language: str,
+) -> tuple[dict[str, Any], str]:
+    if action_type not in GAME_ACTION_TYPES:
+        return {}, _scripted_topic(trigger_text, location, language)
+
+    if action_type == "attack_target":
+        damage = 6 + _stable_bucket(agent_id, str(tick)) % 5
+        return {"damage": damage}, f"damage {damage}"
+    if action_type == "use_skill":
+        skill_id = f"skill_{1 + _stable_bucket(agent_id, str(tick)) % 3}"
+        return {"skill_id": skill_id}, skill_id
+    if action_type in {"use_item", "pickup_item", "drop_item"}:
+        item_id = _inventory_item_id(persona, tick)
+        return {"item_id": item_id}, item_id
+    if action_type == "trade_offer":
+        give_item = _inventory_item_id(persona, tick)
+        receive_item = f"item_{(tick + 1) % 5}"
+        return {
+            "give_items": [give_item],
+            "receive_items": [receive_item],
+        }, f"{give_item} for {receive_item}"
+    if action_type in {"quest_offer", "quest_accept", "quest_complete"}:
+        quest_id = f"quest_{target or agent_id}_{tick}"
+        return {"quest_id": quest_id}, quest_id
+    if action_type in {"faction_join", "faction_betray"}:
+        faction_id = _primary_faction_id(persona) or "leader"
+        return {"faction_id": faction_id}, faction_id
+    if action_type == "craft_item":
+        item_id = f"crafted_item_{tick % 5}"
+        return {
+            "materials": _craft_materials(persona),
+            "item_id": item_id,
+        }, item_id
+    if action_type == "level_up":
+        stat = _level_up_stat(persona)
+        return {"stat": stat}, stat
+    return {}, _scripted_topic(trigger_text, location, language)
+
+
+def _extract_relationship_trusts(user_prompt: str) -> dict[str, float]:
+    trusts: dict[str, float] = {}
+    pattern = re.compile(
+        r"^- (?P<target>[A-Za-z0-9_-]+): type=[^,\n]+, weight=[-+]?\d+(?:\.\d+)?, trust=(?P<trust>[-+]?\d+(?:\.\d+)?)$",
+        re.MULTILINE,
+    )
+    for match in pattern.finditer(user_prompt):
+        trusts[match.group("target")] = float(match.group("trust"))
+    return trusts
+
+
+def _extract_arousal(user_prompt: str) -> float:
+    match = re.search(r"arousal=(?P<arousal>[-+]?\d+(?:\.\d+)?)", user_prompt)
+    return float(match.group("arousal")) if match else 0.0
+
+
+def _has_leader_role(persona: Persona | None) -> bool:
+    if persona is None or not persona.factions:
+        return False
+    return any(
+        token in faction_id.lower()
+        for faction_id in persona.factions
+        for token in ("leader", "authority")
+    )
+
+
+def _has_threat(trigger_text: str) -> bool:
+    normalized = trigger_text.lower()
+    return any(
+        token in normalized
+        for token in ("threat", "attack", "danger", "ambush", "betray", "hazard")
+    )
+
+
+def _defend_self_trigger(trigger_text: str, agent_id: str) -> bool:
+    normalized = trigger_text.lower()
+    agent_token = agent_id.lower()
+    return agent_token in normalized and any(
+        token in normalized for token in ("attack", "attacks", "attacked", "strikes", "hits")
+    )
+
+
+def _has_quest_trigger(trigger_text: str) -> bool:
+    normalized = trigger_text.lower()
+    return "quest" in normalized or "mission" in normalized
+
+
+def _primary_faction_id(persona: Persona | None) -> str | None:
+    if persona is None or not persona.factions:
+        return None
+    return max(persona.factions.items(), key=lambda item: (item[1], item[0]))[0]
+
+
+def _inventory_item_id(persona: Persona | None, tick: int) -> str:
+    if persona is not None and persona.inventory is not None and persona.inventory.item_ids:
+        items = list(persona.inventory.item_ids)
+        return items[tick % len(items)]
+    return f"item_{tick % 5}"
+
+
+def _craft_materials(persona: Persona | None) -> list[str]:
+    if persona is not None and persona.inventory is not None:
+        materials = [item for item in persona.inventory.item_ids if item.strip()][:2]
+        if materials:
+            return materials
+    return ["wood", "ore"]
+
+
+def _level_up_stat(persona: Persona | None) -> str:
+    if persona is None:
+        return "achievement"
+    priority = (
+        "conscientiousness",
+        "openness",
+        "extraversion",
+        "agreeableness",
+        "achievement",
+        "power",
+    )
+    return max(priority, key=lambda field_name: getattr(persona.personality, field_name))
 
 
 def _render_scripted_action_content(
