@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import tempfile
 import threading
 import uuid
@@ -15,6 +16,8 @@ import gradio as gr
 import plotly.graph_objects as go
 from plotly.colors import qualitative
 from plotly.subplots import make_subplots
+from scipy.stats import chi2_contingency, mannwhitneyu  # type: ignore[import-untyped]
+from scipy.stats import t as student_t
 
 try:
     from .simulation import (
@@ -752,9 +755,15 @@ LABELS["en"]["routine_text_placeholder"] = "- start_hour: 7\n  end_hour: 9\n  lo
 LABELS["ko"]["trait_matrix_panel"] = "Trait 상관/ablation"
 LABELS["ko"]["trait_matrix_plot"] = "Trait correlation matrix"
 LABELS["ko"]["trait_matrix_summary"] = "Trait ablation summary"
+LABELS["ko"]["statistics_panel"] = "통계 분석"
+LABELS["ko"]["statistics_batch_only"] = "통계 분석은 배치 모드에서만 계산됩니다."
+LABELS["ko"]["statistics_insufficient"] = "통계 분석에는 최소 4개 tick 배치 요약이 필요합니다."
 LABELS["en"]["trait_matrix_panel"] = "Trait correlation / ablation"
 LABELS["en"]["trait_matrix_plot"] = "Trait correlation matrix"
 LABELS["en"]["trait_matrix_summary"] = "Trait ablation summary"
+LABELS["en"]["statistics_panel"] = "Statistical analysis"
+LABELS["en"]["statistics_batch_only"] = "Statistical analysis is available in batch mode only."
+LABELS["en"]["statistics_insufficient"] = "Statistical analysis needs at least four tick summaries."
 LABELS["ko"]["batch_mode"] = "배치 모드"
 LABELS["ko"]["batch_mode_info"] = "같은 시나리오를 여러 시드로 반복 실행해 집계합니다."
 LABELS["ko"]["batch_runs"] = "반복 횟수"
@@ -2480,6 +2489,280 @@ def _flatten_action_counts(action_breakdown: dict[str, dict[str, int]]) -> Count
     return counts
 
 
+def _mean(values: list[float]) -> float:
+    if not values:
+        return 0.0
+    return sum(values) / len(values)
+
+
+def _sample_variance(values: list[float]) -> float:
+    if len(values) < 2:
+        return 0.0
+    mean_value = _mean(values)
+    return sum((value - mean_value) ** 2 for value in values) / (len(values) - 1)
+
+
+def _format_stat(value: float, *, digits: int = 3) -> str:
+    if math.isnan(value):
+        return "n/a"
+    if math.isinf(value):
+        return "inf" if value > 0 else "-inf"
+    return f"{value:.{digits}f}"
+
+
+def _format_p_value(value: float) -> str:
+    if math.isnan(value):
+        return "n/a"
+    if value < 0.001:
+        return "<0.001"
+    return f"{value:.3f}"
+
+
+def _cohens_d(left: list[float], right: list[float]) -> float:
+    if len(left) < 2 or len(right) < 2:
+        return math.nan
+    left_variance = _sample_variance(left)
+    right_variance = _sample_variance(right)
+    pooled_numerator = ((len(left) - 1) * left_variance) + ((len(right) - 1) * right_variance)
+    pooled_denominator = len(left) + len(right) - 2
+    if pooled_denominator <= 0:
+        return math.nan
+    pooled_variance = pooled_numerator / pooled_denominator
+    if pooled_variance <= 0:
+        return 0.0
+    return (_mean(right) - _mean(left)) / math.sqrt(pooled_variance)
+
+
+def _cliffs_delta(left: list[float], right: list[float]) -> float:
+    if not left or not right:
+        return math.nan
+    greater = 0
+    lower = 0
+    for left_value in left:
+        for right_value in right:
+            if right_value > left_value:
+                greater += 1
+            elif right_value < left_value:
+                lower += 1
+    return (greater - lower) / (len(left) * len(right))
+
+
+def _mean_difference_ci(left: list[float], right: list[float]) -> tuple[float, float, float]:
+    mean_diff = _mean(right) - _mean(left)
+    if len(left) < 2 or len(right) < 2:
+        return mean_diff, math.nan, math.nan
+    left_variance = _sample_variance(left)
+    right_variance = _sample_variance(right)
+    left_term = left_variance / len(left)
+    right_term = right_variance / len(right)
+    standard_error = math.sqrt(left_term + right_term)
+    if standard_error == 0:
+        return mean_diff, mean_diff, mean_diff
+    denominator = 0.0
+    if len(left) > 1 and left_term > 0:
+        denominator += (left_term * left_term) / (len(left) - 1)
+    if len(right) > 1 and right_term > 0:
+        denominator += (right_term * right_term) / (len(right) - 1)
+    if denominator == 0:
+        return mean_diff, math.nan, math.nan
+    degrees_of_freedom = ((left_term + right_term) ** 2) / denominator
+    critical = float(student_t.ppf(0.975, degrees_of_freedom))
+    margin = critical * standard_error
+    return mean_diff, mean_diff - margin, mean_diff + margin
+
+
+def _holm_correct(p_values: dict[str, float]) -> dict[str, float]:
+    adjusted = dict.fromkeys(p_values, math.nan)
+    ordered = sorted(
+        ((name, value) for name, value in p_values.items() if not math.isnan(value)),
+        key=lambda item: item[1],
+    )
+    running_max = 0.0
+    total = len(ordered)
+    for index, (name, value) in enumerate(ordered):
+        candidate = min(1.0, (total - index) * value)
+        running_max = max(running_max, candidate)
+        adjusted[name] = running_max
+    return adjusted
+
+
+def _aggregate_batch_action_counts(rows: list[dict[str, Any]]) -> Counter[str]:
+    counts: Counter[str] = Counter()
+    for row in rows:
+        action_counts = row.get("action_type_counts", {})
+        if not isinstance(action_counts, dict):
+            continue
+        for action_type, count in action_counts.items():
+            counts[str(action_type)] += int(count)
+    return counts
+
+
+def _dominant_action_label(counts: Counter[str]) -> str:
+    if not counts:
+        return "n/a"
+    action_type, count = counts.most_common(1)[0]
+    return f"{action_type} ({count})"
+
+
+def _statistical_analysis_markdown(jsonl_text: str, language: str) -> str:
+    key = _language_key(language)
+    rows = _jsonl_rows(jsonl_text)
+    batch_summary = next(
+        (
+            row
+            for row in rows
+            if str(row.get("record_type", "")) == "batch_summary"
+        ),
+        None,
+    )
+    tick_rows = sorted(
+        (
+            row
+            for row in rows
+            if str(row.get("record_type", "")) == "tick_stat"
+        ),
+        key=lambda row: int(row.get("tick", 0)),
+    )
+    if batch_summary is None or not tick_rows:
+        return LABELS[key]["statistics_batch_only"]
+    if len(tick_rows) < 4:
+        return LABELS[key]["statistics_insufficient"]
+
+    split_index = len(tick_rows) // 2
+    early_rows = tick_rows[:split_index]
+    late_rows = tick_rows[split_index:]
+    if not early_rows or not late_rows:
+        return LABELS[key]["statistics_insufficient"]
+
+    early_actions = [float(row.get("mean_actions", 0.0)) for row in early_rows]
+    late_actions = [float(row.get("mean_actions", 0.0)) for row in late_rows]
+    early_counts = _aggregate_batch_action_counts(early_rows)
+    late_counts = _aggregate_batch_action_counts(late_rows)
+    action_types = sorted(set(early_counts) | set(late_counts))
+    chi_square = math.nan
+    chi_square_p = math.nan
+    cramers_v = math.nan
+    degrees_of_freedom = 0
+    if len(action_types) >= 2:
+        contingency = [
+            [int(early_counts.get(action_type, 0)) for action_type in action_types],
+            [int(late_counts.get(action_type, 0)) for action_type in action_types],
+        ]
+        if sum(contingency[0]) > 0 and sum(contingency[1]) > 0:
+            chi_square_result = chi2_contingency(contingency, correction=False)
+            chi_square = float(chi_square_result[0])
+            chi_square_p = float(chi_square_result[1])
+            degrees_of_freedom = int(chi_square_result[2])
+            total = float(sum(contingency[0]) + sum(contingency[1]))
+            if total > 0:
+                cramers_v = math.sqrt(chi_square / total)
+
+    mann_whitney = mannwhitneyu(early_actions, late_actions, alternative="two-sided")
+    mann_whitney_u = float(mann_whitney.statistic)
+    mann_whitney_p = float(mann_whitney.pvalue)
+    cohen_d = _cohens_d(early_actions, late_actions)
+    cliffs_delta = _cliffs_delta(early_actions, late_actions)
+    mean_diff, ci_low, ci_high = _mean_difference_ci(early_actions, late_actions)
+    corrected = _holm_correct(
+        {
+            "mann_whitney": mann_whitney_p,
+            "chi_square": chi_square_p,
+        }
+    )
+    agent_rows = [
+        row
+        for row in rows
+        if str(row.get("record_type", "")) == "agent_stat"
+    ]
+    busiest_agent = max(
+        agent_rows,
+        key=lambda row: float(row.get("mean_actions", 0.0)),
+        default=None,
+    )
+    early_tick_range = f"{int(early_rows[0]['tick'])}-{int(early_rows[-1]['tick'])}"
+    late_tick_range = f"{int(late_rows[0]['tick'])}-{int(late_rows[-1]['tick'])}"
+    batch_size = int(batch_summary.get("batch_size", 0))
+    master_seed = int(batch_summary.get("master_seed", 0))
+    reproducibility = float(batch_summary.get("reproducibility_coefficient", 0.0))
+
+    if key == "ko":
+        busiest_line = "없음"
+        if busiest_agent is not None:
+            busiest_line = (
+                f"{busiest_agent.get('agent_id', 'agent_1')!s} "
+                f"(평균 행동 {float(busiest_agent.get('mean_actions', 0.0)):.2f})"
+            )
+        return "\n".join(
+            [
+                "### 통계 분석",
+                (
+                    f"- 배치 반복 {batch_size}회 | master seed {master_seed} | "
+                    f"재현성 {reproducibility:.3f}"
+                ),
+                f"- 비교 구간: 초기 tick {early_tick_range} vs 후기 tick {late_tick_range}",
+                (
+                    f"- Mann-Whitney U (tick당 평균 행동): U={_format_stat(mann_whitney_u)} | "
+                    f"p={_format_p_value(mann_whitney_p)} | Holm p={_format_p_value(corrected['mann_whitney'])}"
+                ),
+                f"- Cohen's d={_format_stat(cohen_d)} | Cliff's delta={_format_stat(cliffs_delta)}",
+                (
+                    f"- 평균 차이 (후기-초기)={_format_stat(mean_diff)} | "
+                    f"95% CI [{_format_stat(ci_low)}, {_format_stat(ci_high)}]"
+                ),
+                (
+                    f"- chi-square (행동 분포 이동): chi2={_format_stat(chi_square)} | "
+                    f"dof={degrees_of_freedom} | p={_format_p_value(chi_square_p)} | "
+                    f"Holm p={_format_p_value(corrected['chi_square'])}"
+                ),
+                f"- Cramer's V={_format_stat(cramers_v)}",
+                (
+                    f"- 주요 행동 변화: {_dominant_action_label(early_counts)} -> "
+                    f"{_dominant_action_label(late_counts)}"
+                ),
+                f"- 최고 활동 에이전트: {busiest_line}",
+                "- 다중비교 보정: Holm step-down (2 tests)",
+            ]
+        )
+
+    busiest_line = "n/a"
+    if busiest_agent is not None:
+        busiest_line = (
+            f"{busiest_agent.get('agent_id', 'agent_1')!s} "
+            f"(mean actions {float(busiest_agent.get('mean_actions', 0.0)):.2f})"
+        )
+    return "\n".join(
+        [
+            "### Statistical analysis",
+            (
+                f"- Batch runs: {batch_size} | Master seed: {master_seed} | "
+                f"Reproducibility: {reproducibility:.3f}"
+            ),
+            f"- Comparison window: early ticks {early_tick_range} vs late ticks {late_tick_range}",
+            (
+                f"- Mann-Whitney U (mean actions per tick): U={_format_stat(mann_whitney_u)} | "
+                f"p={_format_p_value(mann_whitney_p)} | Holm p={_format_p_value(corrected['mann_whitney'])}"
+            ),
+            f"- Cohen's d={_format_stat(cohen_d)} | Cliff's delta={_format_stat(cliffs_delta)}",
+            (
+                f"- Mean difference (late-early)={_format_stat(mean_diff)} | "
+                f"95% CI [{_format_stat(ci_low)}, {_format_stat(ci_high)}]"
+            ),
+            (
+                f"- chi-square (action-type shift): chi2={_format_stat(chi_square)} | "
+                f"dof={degrees_of_freedom} | p={_format_p_value(chi_square_p)} | "
+                f"Holm p={_format_p_value(corrected['chi_square'])}"
+            ),
+            f"- Cramer's V={_format_stat(cramers_v)}",
+            (
+                f"- Dominant action shift: {_dominant_action_label(early_counts)} -> "
+                f"{_dominant_action_label(late_counts)}"
+            ),
+            f"- Highest-activity agent: {busiest_line}",
+            "- Multiple-comparison correction: Holm step-down (2 tests)",
+        ]
+    )
+
+
 def _report_agent_answer(question: str, jsonl_text: str, summary: str, language: str) -> str:
     rows = _jsonl_rows(jsonl_text)
     key = _language_key(language)
@@ -3293,6 +3576,7 @@ def _language_updates(
         gr.update(label=labels["trait_matrix_panel"]),
         trait_matrix_figure,
         trait_matrix_summary,
+        gr.update(label=labels["statistics_panel"]),
         gr.update(label=labels["jsonl"]),
         gr.update(label=labels["download"]),
         gr.update(value=labels["html_report_button"]),
@@ -4933,6 +5217,16 @@ def build_app() -> gr.Blocks:
                 initial_trait_matrix_summary,
                 elem_id="trait-correlation-summary",
             )
+        statistics_panel = gr.Accordion(
+            labels["statistics_panel"],
+            open=False,
+            elem_id="statistics-panel",
+        )
+        with statistics_panel:
+            statistics_summary = gr.Markdown(
+                _statistical_analysis_markdown("", "ko"),
+                elem_id="statistics-summary",
+            )
 
         with gr.Column(elem_id="export-panel"):
             export_heading = gr.Markdown(f"#### {labels['export_panel']}")
@@ -5114,6 +5408,7 @@ def build_app() -> gr.Blocks:
             trait_matrix_panel,
             trait_matrix_plot,
             trait_matrix_summary,
+            statistics_panel,
             jsonl,
             download,
             html_report_button,
@@ -5200,6 +5495,11 @@ def build_app() -> gr.Blocks:
                 player_stt_engine,
                 player_tts_engine,
             ],
+        )
+        language.change(
+            _statistical_analysis_markdown,
+            inputs=[jsonl, language],
+            outputs=[statistics_summary],
         )
         scenario.change(
             _scenario_agent_count_update,
@@ -5340,7 +5640,7 @@ def build_app() -> gr.Blocks:
             event_injections,
             initial_relationships,
         ]
-        run_button.click(
+        run_event = run_button.click(
             _run_with_optional_streaming,
             inputs=[live_streaming, *common_run_inputs],
             outputs=[
@@ -5368,12 +5668,17 @@ def build_app() -> gr.Blocks:
             ],
             api_name="run",
         )
+        run_event.then(
+            _statistical_analysis_markdown,
+            inputs=[jsonl, language],
+            outputs=[statistics_summary],
+        )
         compare_button.click(
             _compare_runs,
             inputs=[*common_run_inputs, compare_seed_a, compare_seed_b],
             outputs=[compare_output],
         )
-        player_submit.click(
+        player_event = player_submit.click(
             _advance_player_mode,
             inputs=[
                 player_session_state,
@@ -5407,7 +5712,12 @@ def build_app() -> gr.Blocks:
                 player_input,
             ],
         )
-        player_input.submit(
+        player_event.then(
+            _statistical_analysis_markdown,
+            inputs=[jsonl, language],
+            outputs=[statistics_summary],
+        )
+        player_submit_event = player_input.submit(
             _advance_player_mode,
             inputs=[
                 player_session_state,
@@ -5440,6 +5750,11 @@ def build_app() -> gr.Blocks:
                 player_status,
                 player_input,
             ],
+        )
+        player_submit_event.then(
+            _statistical_analysis_markdown,
+            inputs=[jsonl, language],
+            outputs=[statistics_summary],
         )
 
     demo.queue()
