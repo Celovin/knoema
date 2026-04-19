@@ -14,7 +14,9 @@ try:
         AGENT_COUNT_MIN,
         Provider,
         build_playground_hint,
+        environment_note,
         host_key_active,
+        load_environment_presets,
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
@@ -25,7 +27,9 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         AGENT_COUNT_MIN,
         Provider,
         build_playground_hint,
+        environment_note,
         host_key_active,
+        load_environment_presets,
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
@@ -357,6 +361,16 @@ TUTORIAL_HEAD = f"""
 }})();
 </script>
 """
+ENVIRONMENT_PRESETS = load_environment_presets()
+
+
+def _default_environment_id() -> str:
+    return str(ENVIRONMENT_PRESETS[0]["id"])
+
+
+def _preset_choices(language: str) -> list[tuple[str, str]]:
+    label_key = "label_ko" if language == "ko" else "label_en"
+    return [(str(preset[label_key]), str(preset["id"])) for preset in ENVIRONMENT_PRESETS]
 
 
 def _normalize_provider(provider: str) -> Provider:
@@ -371,6 +385,7 @@ def _normalize_provider(provider: str) -> Provider:
 
 def _run(
     scenario_name: str,
+    environment_preset_id: str | None,
     provider: str,
     api_key: str,
     model: str,
@@ -400,6 +415,7 @@ def _run(
         neuroticism=neuroticism,
         ticks=ticks,
         agent_count=agent_count,
+        environment_preset_id=environment_preset_id,
         language=lang,
     )
     host_provider = host_key_active(_normalize_provider(provider), api_key)
@@ -430,27 +446,37 @@ def _scenario_agent_count_update(scenario_name: str) -> dict[str, Any]:
     return gr.update(value=scenario_default_agent_count(scenario_name))
 
 
-def _hint_markdown_update(scenario_name: str | None, language_choice: str) -> str:
+def _hint_markdown_update(
+    scenario_name: str | None,
+    language_choice: str,
+    environment_preset_id: str | None = None,
+) -> str:
     language = "ko" if language_choice == LANGUAGE_CHOICES[0] else "en"
-    return build_playground_hint(scenario_name=scenario_name, language=language)
+    return build_playground_hint(
+        scenario_name=scenario_name,
+        language=language,
+        environment_note=environment_note(environment_preset_id, language),
+    )
 
 
 def _language_updates(
     lang_choice: str,
     current_provider: str | None,
     current_scenario: str | None = None,
+    current_environment: str | None = None,
 ) -> list[Any]:
     key = "ko" if lang_choice == LANGUAGE_CHOICES[0] else "en"
     labels = LABELS[key]
     replay_values = (LABELS["ko"]["replay"], LABELS["en"]["replay"])
     provider_value = labels["replay"] if current_provider in replay_values else current_provider
+    environment_value = current_environment or _default_environment_id()
     return [
         labels["header"],
         gr.update(label=labels["scenario"]),
         gr.update(
             label=labels["environment"],
-            choices=[labels["environment_default"]],
-            value=labels["environment_default"],
+            choices=_preset_choices(key),
+            value=environment_value,
             info=labels["environment_info"],
         ),
         gr.update(
@@ -475,7 +501,7 @@ def _language_updates(
         gr.update(label=labels["neuroticism"], info=labels["neuroticism_info"]),
         gr.update(label=labels["agents"], info=labels["agents_info"]),
         gr.update(label=labels["ticks"]),
-        _hint_markdown_update(current_scenario, lang_choice),
+        _hint_markdown_update(current_scenario, lang_choice, environment_value),
         gr.update(value=labels["run"]),
         gr.update(value=f"#### {labels['export_panel']}"),
         gr.update(label=labels["summary"]),
@@ -631,8 +657,8 @@ LABELS = {
         ),
         "scenario": "시나리오",
         "environment": "환경 프리셋",
-        "environment_default": "시나리오 기본값",
-        "environment_info": "Sub-task 4에서 환경 프리셋 목록이 확장됩니다.",
+        "environment_default": "university_dorm_evening",
+        "environment_info": "지리, 시간대, 가시성, 밀집도 맥락을 바꾸는 고정 프리셋입니다. 모든 위치는 허구 합성 환경입니다.",
         "mode": "모드",
         "replay": "재생 전용",
         "api_key": "API 키",
@@ -679,8 +705,8 @@ LABELS = {
         ),
         "scenario": "Scenario",
         "environment": "Environment preset",
-        "environment_default": "Scenario default",
-        "environment_info": "Sub-task 4 expands this list with real environment presets.",
+        "environment_default": "university_dorm_evening",
+        "environment_info": "Geographic, temporal, visibility, and crowding context. All locations are fictional composites, not real places.",
         "mode": "Mode",
         "replay": "Replay only",
         "api_key": "API key",
@@ -779,8 +805,8 @@ def build_app() -> gr.Blocks:
             )
             environment_preset = gr.Dropdown(
                 label=labels["environment"],
-                choices=[labels["environment_default"]],
-                value=labels["environment_default"],
+                choices=_preset_choices("ko"),
+                value=_default_environment_id(),
                 info=labels["environment_info"],
                 elem_id="environment-preset",
             )
@@ -883,7 +909,11 @@ def build_app() -> gr.Blocks:
         with extended_panel:
             extended_panel_note = gr.Markdown(labels["extended_panel_note"])
         scenario_hint = gr.Markdown(
-            _hint_markdown_update(default_scenario, LANGUAGE_CHOICES[0]),
+            _hint_markdown_update(
+                default_scenario,
+                LANGUAGE_CHOICES[0],
+                _default_environment_id(),
+            ),
             elem_classes=["knoema-hint"],
         )
         run_button = gr.Button(labels["run"], variant="primary", elem_id="run-button")
@@ -902,7 +932,12 @@ def build_app() -> gr.Blocks:
             download = gr.File(label=labels["download"])
 
         def _switch(lang_choice: str) -> list[Any]:
-            return _language_updates(lang_choice, provider.value, scenario.value)
+            return _language_updates(
+                lang_choice,
+                provider.value,
+                scenario.value,
+                environment_preset.value,
+            )
 
         tutorial_button.click(
             fn=None,
@@ -952,13 +987,19 @@ def build_app() -> gr.Blocks:
         )
         scenario.change(
             _hint_markdown_update,
-            inputs=[scenario, language],
+            inputs=[scenario, language, environment_preset],
+            outputs=[scenario_hint],
+        )
+        environment_preset.change(
+            _hint_markdown_update,
+            inputs=[scenario, language, environment_preset],
             outputs=[scenario_hint],
         )
         run_button.click(
             _run,
             inputs=[
                 scenario,
+                environment_preset,
                 provider,
                 api_key,
                 model,

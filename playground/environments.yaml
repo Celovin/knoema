@@ -1,0 +1,253 @@
+# Curated environment presets for the Knoema Playground.
+# Keep this list stable so simulation runs stay reproducible.
+# Every preset is fictional, synthetic, and safe for public demos.
+presets:
+  - id: university_dorm_evening
+    label_ko: 대학 기숙사 · 평일 저녁
+    label_en: University dorm · weekday evening
+    location_path: [North Campus City, Maple University, Dormitory, Room 201]
+    start_time: "2026-04-20T19:00:00"
+    conditions: [indoor, quiet, well_lit]
+    crowding: small_group
+    notes_ko: 공부와 생활 루틴이 겹치는 소규모 실내 환경입니다.
+    notes_en: Small shared indoor setting where routines and chores overlap.
+
+  - id: school_corridor_lunch
+    label_ko: 학교 복도 · 점심시간
+    label_en: School corridor · lunch break
+    location_path: [Cedar City, Horizon High School, Main Hallway]
+    start_time: "2026-04-20T12:30:00"
+    conditions: [indoor, noisy, well_lit]
+    crowding: crowded
+    notes_ko: 여러 또래 집단이 스쳐 지나가며 분위기가 빠르게 변합니다.
+    notes_en: Passing peer groups make the social tone shift quickly.
+
+  - id: office_meeting_afternoon
+    label_ko: 사무실 회의실 · 오후
+    label_en: Office meeting room · afternoon
+    location_path: [Harbor City, Aurora Tower, Floor 12, Meeting Room B]
+    start_time: "2026-04-20T15:00:00"
+    conditions: [indoor, formal, well_lit]
+    crowding: small_group
+    notes_ko: 협업과 갈등, 의사결정 장면에 잘 맞는 업무 환경입니다.
+    notes_en: Useful for collaboration, friction, and decision-making scenes.
+
+  - id: subway_rush_hour
+    label_ko: 지하철 승강장 · 출근시간
+    label_en: Subway platform · morning rush
+    location_path: [Metro South, Line Blue, Central Platform]
+    start_time: "2026-04-20T08:10:00"
+    conditions: [indoor, noisy, well_lit, surveilled]
+    crowding: dense
+    notes_ko: 익명성과 압박감이 높은 혼잡한 공공 공간입니다.
+    notes_en: Dense public setting with high anonymity and ambient pressure.
+
+  - id: convenience_store_midnight
+    label_ko: 편의점 · 자정 (허구 재현 연구용)
+    label_en: Convenience store · midnight (fictional research only)
+    location_path: [River Ward, Corner Block, Convenience Store]
+    start_time: "2026-04-21T00:10:00"
+    conditions: [indoor, well_lit_inside, low_light_outside, surveilled]
+    crowding: sparse
+    notes_ko: 허구 재현 연구용 공공 안전 환경으로, 실제 장소나 인물을 가리키지 않습니다.
+    notes_en: Fictional public-safety research setting that does not reference any real site or person.
+
+  - id: urban_alley_late_night
+    label_ko: 도심 골목 · 심야 (허구 재현 연구용)
+    label_en: Urban alley · late night (fictional research only)
+    location_path: [Old Quarter, Service Alley]
+    start_time: "2026-04-21T01:30:00"
+    conditions: [outdoor, low_light, narrow, sparse_surveillance]
+    crowding: sparse
+    notes_ko: 가시성과 감시가 제한된 허구 재현 연구용 야간 환경입니다.
+    notes_en: Fictional late-night setting with limited visibility and sparse surveillance.
+
+  - id: park_path_dusk
+    label_ko: 공원 산책로 · 해질녘
+    label_en: Park path · dusk
+    location_path: [Willow Park, Riverside Path]
+    start_time: "2026-04-20T18:40:00"
+    conditions: [outdoor, fading_light, quiet, open_visibility]
+    crowding: light
+    notes_ko: 일상적인 우연한 만남을 보기 좋은 야외 공간입니다.
+    notes_en: Outdoor setting for chance encounters and low-stakes observation.
+
+  - id: cafe_weekend_afternoon
+    label_ko: 카페 · 주말 오후
+    label_en: Cafe · weekend afternoon
+    location_path: [Lantern District, Blue Hour Cafe]
+    start_time: "2026-04-25T15:20:00"
+    conditions: [indoor, warm_light, background_music, calm]
+    crowding: moderate
+    notes_ko: 대화와 관찰이 자연스럽게 이어지는 느슨한 사교 환경입니다.
+    notes_en: Relaxed social setting where conversation and observation unfold naturally.
+
+  - id: library_exam_period
+    label_ko: 도서관 열람실 · 시험기간
+    label_en: Library study hall · exam period
+    location_path: [Maple University, Library, Study Hall]
+    start_time: "2026-04-22T22:30:00"
+    conditions: [indoor, very_quiet, well_lit, high_pressure]
+    crowding: dense
+    notes_ko: 조용하지만 긴장감이 누적된 고압 환경입니다.
+    notes_en: Quiet but high-pressure setting where stress accumulates silently.
+
+  - id: market_alley_weekday_lunch
+    label_ko: 시장 골목 · 평일 점심
+    label_en: Market alley · weekday lunch
+    location_path: [Old Town, Market Lane]
+    start_time: "2026-04-22T12:40:00"
+    conditions: [outdoor, noisy, well_lit, food_aromas]
+    crowding: dense
+    notes_ko: 세대와 역할이 섞이면서 즉흥 상호작용이 자주 발생합니다.
+    notes_en: Mixed ages and roles create frequent improvised interactions.
+
+  - id: office_lounge_lunchbreak
+    label_ko: 회사 휴게실 · 점심시간
+    label_en: Office lounge · lunch break
+    location_path: [Harbor City, Aurora Tower, Floor 12, Lounge]
+    start_time: "2026-04-22T12:30:00"
+    conditions: [indoor, casual, well_lit, coffee_machine_humming]
+    crowding: small_group
+    notes_ko: 동료 간 정보 교환과 가벼운 감정 배출이 섞이는 공간입니다.
+    notes_en: Informal coworker exchange and light venting mix together here.
+
+  - id: community_hall_sunday_morning
+    label_ko: 동네 공동체 홀 · 일요일 오전
+    label_en: Community hall · Sunday morning
+    location_path: [Meadow District, Community Hall]
+    start_time: "2026-04-26T10:00:00"
+    conditions: [indoor, formal, well_lit, ritual_space]
+    crowding: moderate
+    notes_ko: 공동체 규범과 관계 기억이 강하게 작동하는 모임 공간입니다.
+    notes_en: Gathering space where community norms and social memory are strong.
+
+  - id: playground_kindergarten_morning
+    label_ko: 유치원 놀이터 · 오전
+    label_en: Kindergarten playground · morning
+    location_path: [Sunrise District, Little Steps Kindergarten, Playground]
+    start_time: "2026-04-21T09:30:00"
+    conditions: [outdoor, bright, supervised, playful]
+    crowding: moderate
+    notes_ko: 돌봄과 안내, 관찰이 동시에 필요한 양육 환경입니다.
+    notes_en: Caregiving, guidance, and observation all matter in this setting.
+
+  - id: senior_center_afternoon
+    label_ko: 시니어 센터 · 오후
+    label_en: Senior center · afternoon
+    location_path: [Meadow District, Senior Center, Activity Room]
+    start_time: "2026-04-21T14:10:00"
+    conditions: [indoor, calm, well_lit, seated]
+    crowding: moderate
+    notes_ko: 속도가 느리지만 관계 기억과 배려가 잘 드러나는 공간입니다.
+    notes_en: Slower-paced setting where memory, care, and courtesy surface clearly.
+
+  - id: hospital_er_night
+    label_ko: 응급실 · 야간 (허구 재현 연구용)
+    label_en: Emergency room · night (fictional research only)
+    location_path: [Northside Medical Campus, Emergency Wing]
+    start_time: "2026-04-21T22:45:00"
+    conditions: [indoor, urgent, bright, triage_flow]
+    crowding: crowded
+    notes_ko: 허구 재현 연구용 의료 대기 환경으로, 실제 병원 운영 판단에는 사용하지 않습니다.
+    notes_en: Fictional medical waiting context for research-only replay, not real operational use.
+
+  - id: courtroom_trial_day
+    label_ko: 법정 공판 · 낮
+    label_en: Courtroom trial · daytime
+    location_path: [Civic Center, Hall of Justice, Courtroom 4]
+    start_time: "2026-04-22T10:15:00"
+    conditions: [indoor, formal, quiet, procedural]
+    crowding: moderate
+    notes_ko: 위계와 절차, 발언 순서가 중요한 고형식 환경입니다.
+    notes_en: Formal environment where hierarchy, procedure, and turn-taking matter.
+
+  - id: military_barracks_evening
+    label_ko: 군 막사 · 저녁 점호 직후
+    label_en: Barracks · after evening roll call
+    location_path: [Frontier Base, Barracks Wing C]
+    start_time: "2026-04-21T19:40:00"
+    conditions: [indoor, formal, shared_quarters, duty_cycle]
+    crowding: moderate
+    notes_ko: 규율과 피로가 함께 작동하는 집단 생활 환경입니다.
+    notes_en: Shared-quarters environment where discipline and fatigue coexist.
+
+  - id: religious_temple_morning
+    label_ko: 사찰 경내 · 아침
+    label_en: Temple grounds · morning
+    location_path: [Pine Ridge, Temple Courtyard]
+    start_time: "2026-04-23T07:20:00"
+    conditions: [outdoor, quiet, ritual, reflective]
+    crowding: light
+    notes_ko: 예절과 침착함, 상징적 공간감이 중요한 환경입니다.
+    notes_en: Reflective setting where ritual etiquette and calm pacing matter.
+
+  - id: subway_after_concert
+    label_ko: 지하철 역사 · 공연 직후
+    label_en: Subway concourse · after concert
+    location_path: [Metro South, Arena Station, Concourse]
+    start_time: "2026-04-26T23:20:00"
+    conditions: [indoor, loud, celebratory, crowded]
+    crowding: dense
+    notes_ko: 흥분이 남아 있는 군중이 한꺼번에 이동하는 전이 공간입니다.
+    notes_en: Transition space where energized crowds move all at once.
+
+  - id: refugee_shelter_winter
+    label_ko: 임시 보호소 · 겨울 (허구 재현 연구용)
+    label_en: Temporary shelter · winter (fictional research only)
+    location_path: [Harbor Relief Zone, Temporary Shelter, Intake Hall]
+    start_time: "2026-01-14T18:30:00"
+    conditions: [indoor, cold_outside, stressed, aid_queue]
+    crowding: dense
+    notes_ko: 허구 재현 연구용 지원 환경으로, 실제 취약 집단 분류나 예측에 사용하지 않습니다.
+    notes_en: Fictional support setting for research-only replay, not for real-world profiling or prediction.
+
+  - id: tech_conference_keynote
+    label_ko: 테크 컨퍼런스 · 키노트 직전
+    label_en: Tech conference · before keynote
+    location_path: [Summit Expo Center, Hall A]
+    start_time: "2026-05-02T09:50:00"
+    conditions: [indoor, anticipatory, branded, networking]
+    crowding: dense
+    notes_ko: 기대감과 자기소개, 정보 탐색이 집중되는 행사 공간입니다.
+    notes_en: Event setting shaped by anticipation, introductions, and information seeking.
+
+  - id: wedding_reception
+    label_ko: 결혼 피로연 · 저녁
+    label_en: Wedding reception · evening
+    location_path: [Lakeside House, Reception Hall]
+    start_time: "2026-05-09T18:10:00"
+    conditions: [indoor, festive, warm_light, family_networks]
+    crowding: crowded
+    notes_ko: 축하와 어색함, 가족 네트워크가 동시에 드러나는 사회적 장면입니다.
+    notes_en: Festive setting where warmth, awkwardness, and family ties all show up.
+
+  - id: funeral_home
+    label_ko: 장례식장 · 조문 시간
+    label_en: Funeral home · visitation hour
+    location_path: [Quiet Pines Memorial Hall, Visitation Room]
+    start_time: "2026-05-11T16:40:00"
+    conditions: [indoor, subdued, ritual, emotionally_heavy]
+    crowding: moderate
+    notes_ko: 절제된 감정 표현과 관계의 거리감이 중요한 애도 환경입니다.
+    notes_en: Mourning context where restraint and social distance become salient.
+
+  - id: prison_yard_recess
+    label_ko: 교정 시설 운동장 · 휴식 (허구 재현 연구용)
+    label_en: Secure yard · recess (fictional research only)
+    location_path: [Cedar Complex, Secure Yard]
+    start_time: "2026-05-12T15:15:00"
+    conditions: [outdoor, surveilled, structured, tense]
+    crowding: moderate
+    notes_ko: 허구 재현 연구용 통제 환경이며 실제 교정 판단이나 예측에 쓰지 않습니다.
+    notes_en: Fictional controlled setting for research-only replay, not for real correctional decision-making.
+
+  - id: online_classroom_zoom
+    label_ko: 온라인 수업 · Zoom
+    label_en: Online classroom · Zoom
+    location_path: [Remote Session, Video Call Grid]
+    start_time: "2026-04-24T20:00:00"
+    conditions: [online, turn_taking, lag_possible, camera_optional]
+    crowding: moderate
+    notes_ko: 물리적 동선 없이 발언 순서와 주의 분산이 핵심인 원격 환경입니다.
+    notes_en: Remote environment where turn-taking and attention drift matter more than physical movement.

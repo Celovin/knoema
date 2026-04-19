@@ -7,8 +7,12 @@ import os
 import re
 import tempfile
 from dataclasses import dataclass
+from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
+
+import yaml
 
 from knoema.cli import (
     CliAgentConfig,
@@ -37,6 +41,7 @@ PERSONALITY_FIELDS = (
 JITTER_STEPS = (-0.05, -0.025, 0.0, 0.025, 0.05)
 
 SCENARIO_DIR = Path(__file__).resolve().parent / "scenarios"
+ENVIRONMENTS_PATH = Path(__file__).resolve().parent / "environments.yaml"
 DEFAULT_SCENARIOS: dict[str, str] = {
     "Dorm: two agents": "dorm_two_agents.yaml",
     "Village: ten agents": "village_ten.yaml",
@@ -106,6 +111,40 @@ def _default_scenario_description(language: str) -> str:
     return "Select a demo scenario to preview a short persistent-agent interaction flow."
 
 
+@lru_cache(maxsize=1)
+def load_environment_presets() -> tuple[dict[str, Any], ...]:
+    with ENVIRONMENTS_PATH.open(encoding="utf-8") as handle:
+        data = yaml.safe_load(handle) or {}
+    presets = data.get("presets", [])
+    return tuple(dict(preset) for preset in presets)
+
+
+def environment_choices(language: str = "en") -> list[tuple[str, str]]:
+    label_key = "label_ko" if language == "ko" else "label_en"
+    return [
+        (str(preset[label_key]), str(preset["id"]))
+        for preset in load_environment_presets()
+    ]
+
+
+def environment_note(preset_id: str | None, language: str = "en") -> str | None:
+    preset = environment_preset(preset_id)
+    if preset is None:
+        return None
+    key = "notes_ko" if language == "ko" else "notes_en"
+    note = preset.get(key)
+    return str(note).strip() if note else None
+
+
+def environment_preset(preset_id: str | None) -> dict[str, Any] | None:
+    if not preset_id:
+        return None
+    for preset in load_environment_presets():
+        if preset.get("id") == preset_id:
+            return dict(preset)
+    return None
+
+
 def run_playground_scenario(
     *,
     scenario_name: str,
@@ -121,6 +160,7 @@ def run_playground_scenario(
     neuroticism: float,
     ticks: int,
     agent_count: int | None = None,
+    environment_preset_id: str | None = None,
     language: str = "en",
 ) -> PlaygroundResult:
     """Run a short scenario and return UI-ready artifacts.
@@ -144,9 +184,13 @@ def run_playground_scenario(
         neuroticism=neuroticism,
     )
     environment = config.environment.to_domain()
-    for agent_config in agent_configs:
-        if agent_config.location_path is not None:
-            environment.set_agent_location(agent_config.agent_id, agent_config.location_path)
+    preset = environment_preset(environment_preset_id)
+    if preset is None:
+        for agent_config in agent_configs:
+            if agent_config.location_path is not None:
+                environment.set_agent_location(agent_config.agent_id, agent_config.location_path)
+    else:
+        _apply_environment_preset(environment, preset)
 
     simulator = Simulator(
         agents=agents,
@@ -239,6 +283,15 @@ def _jitter_personality(
 
 def _clamp_unit(value: float) -> float:
     return max(0.0, min(1.0, value))
+
+
+def _apply_environment_preset(environment: object, preset: dict[str, Any]) -> None:
+    environment.location_path = tuple(str(part) for part in preset["location_path"])
+    environment.current_time = datetime.fromisoformat(str(preset["start_time"]))
+    environment.conditions = dict(getattr(environment, "conditions", {}))
+    environment.conditions["preset_id"] = str(preset["id"])
+    environment.conditions["crowding"] = str(preset["crowding"])
+    environment.conditions["preset_conditions"] = list(preset.get("conditions", []))
 
 
 def _customize_primary_agent(
