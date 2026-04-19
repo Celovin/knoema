@@ -42,11 +42,44 @@ JITTER_STEPS = (-0.05, -0.025, 0.0, 0.025, 0.05)
 
 SCENARIO_DIR = Path(__file__).resolve().parent / "scenarios"
 ENVIRONMENTS_PATH = Path(__file__).resolve().parent / "environments.yaml"
+PERSONA_PRESETS_PATH = Path(__file__).resolve().parent / "persona_presets.yaml"
 DEFAULT_SCENARIOS: dict[str, str] = {
     "Dorm: two agents": "dorm_two_agents.yaml",
     "Village: ten agents": "village_ten.yaml",
     "School corridor": "school_corridor.yaml",
 }
+PERSONA_TRAIT_FIELDS = (
+    "openness",
+    "conscientiousness",
+    "extraversion",
+    "agreeableness",
+    "neuroticism",
+    "honesty_humility",
+    "machiavellianism",
+    "narcissism",
+    "psychopathy",
+    "sadism",
+    "kantianism",
+    "humanism",
+    "faith_in_humanity",
+    "risk_tolerance",
+    "locus_of_control",
+    "need_for_cognition",
+    "trait_empathy",
+    "care_harm",
+    "fairness",
+    "binding_morals",
+    "self_direction",
+    "stimulation",
+    "hedonism",
+    "achievement",
+    "power",
+    "security",
+    "conformity",
+    "tradition",
+    "benevolence",
+    "universalism",
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -143,6 +176,56 @@ def environment_preset(preset_id: str | None) -> dict[str, Any] | None:
         if preset.get("id") == preset_id:
             return dict(preset)
     return None
+
+
+@lru_cache(maxsize=1)
+def load_persona_presets() -> tuple[dict[str, Any], ...]:
+    with PERSONA_PRESETS_PATH.open(encoding="utf-8") as handle:
+        data = yaml.safe_load(handle) or {}
+    presets = data.get("presets", [])
+    normalized: list[dict[str, Any]] = []
+    for preset in presets:
+        personality = dict(preset.get("personality", {}))
+        missing = sorted(set(PERSONA_TRAIT_FIELDS).difference(personality))
+        if missing:
+            preset_id = preset.get("id", "<unknown>")
+            raise ValueError(
+                f"persona preset {preset_id!r} is missing trait fields: {', '.join(missing)}"
+            )
+        normalized.append({**dict(preset), "personality": personality})
+    return tuple(normalized)
+
+
+def persona_choices(language: str = "en", *, include_blank: bool = True) -> list[tuple[str, str]]:
+    choices: list[tuple[str, str]] = []
+    if include_blank:
+        blank_label = "수동 조정" if language == "ko" else "Manual tuning"
+        choices.append((blank_label, ""))
+    label_key = "label_ko" if language == "ko" else "label_en"
+    choices.extend(
+        (str(preset[label_key]), str(preset["id"])) for preset in load_persona_presets()
+    )
+    return choices
+
+
+def persona_preset(preset_id: str | None) -> dict[str, Any] | None:
+    if not preset_id:
+        return None
+    for preset in load_persona_presets():
+        if preset.get("id") == preset_id:
+            return dict(preset)
+    return None
+
+
+def persona_trait_values(
+    preset_id: str | None,
+    fields: tuple[str, ...] = PERSONALITY_FIELDS,
+) -> tuple[float, ...] | None:
+    preset = persona_preset(preset_id)
+    if preset is None:
+        return None
+    personality = dict(preset["personality"])
+    return tuple(float(personality[field]) for field in fields)
 
 
 def run_playground_scenario(

@@ -1,0 +1,960 @@
+defaults: &defaults
+  openness: 0.50
+  conscientiousness: 0.50
+  extraversion: 0.50
+  agreeableness: 0.50
+  neuroticism: 0.50
+  honesty_humility: 0.50
+  machiavellianism: 0.00
+  narcissism: 0.00
+  psychopathy: 0.00
+  sadism: 0.00
+  kantianism: 0.50
+  humanism: 0.50
+  faith_in_humanity: 0.50
+  risk_tolerance: 0.50
+  locus_of_control: 0.50
+  need_for_cognition: 0.50
+  trait_empathy: 0.50
+  care_harm: 0.50
+  fairness: 0.50
+  binding_morals: 0.50
+  self_direction: 0.50
+  stimulation: 0.50
+  hedonism: 0.50
+  achievement: 0.50
+  power: 0.50
+  security: 0.50
+  conformity: 0.50
+  tradition: 0.50
+  benevolence: 0.50
+  universalism: 0.50
+
+presets:
+  - id: friendly_student
+    label_ko: 친절한 학생
+    label_en: Friendly student
+    description_ko: 개방적이고 협력적이며 정서적으로 안정된 학부생.
+    description_en: Open, cooperative, emotionally steady undergraduate.
+    personality:
+      <<: *defaults
+      openness: 0.78
+      conscientiousness: 0.72
+      extraversion: 0.66
+      agreeableness: 0.85
+      neuroticism: 0.30
+      honesty_humility: 0.78
+      machiavellianism: 0.05
+      narcissism: 0.10
+      psychopathy: 0.02
+      kantianism: 0.80
+      humanism: 0.82
+      faith_in_humanity: 0.75
+      risk_tolerance: 0.45
+      locus_of_control: 0.70
+      need_for_cognition: 0.65
+      trait_empathy: 0.85
+      care_harm: 0.80
+      fairness: 0.78
+      binding_morals: 0.55
+      self_direction: 0.62
+      stimulation: 0.55
+      hedonism: 0.55
+      achievement: 0.60
+      power: 0.20
+      security: 0.65
+      conformity: 0.65
+      benevolence: 0.85
+      universalism: 0.70
+
+  - id: cynical_office_worker
+    label_ko: 냉소적 직장인
+    label_en: Cynical office worker
+    description_ko: 타인을 쉽게 신뢰하지 않고 방어적으로 일하는 사무직.
+    description_en: Defensive office employee with low trust and a sarcastic edge.
+    personality:
+      <<: *defaults
+      openness: 0.30
+      conscientiousness: 0.58
+      extraversion: 0.42
+      agreeableness: 0.24
+      neuroticism: 0.64
+      honesty_humility: 0.32
+      machiavellianism: 0.58
+      narcissism: 0.28
+      psychopathy: 0.18
+      sadism: 0.05
+      kantianism: 0.28
+      humanism: 0.30
+      faith_in_humanity: 0.18
+      risk_tolerance: 0.35
+      locus_of_control: 0.48
+      need_for_cognition: 0.62
+      trait_empathy: 0.26
+      care_harm: 0.30
+      fairness: 0.42
+      binding_morals: 0.44
+      self_direction: 0.40
+      stimulation: 0.32
+      hedonism: 0.28
+      achievement: 0.55
+      power: 0.46
+      security: 0.68
+      conformity: 0.62
+      tradition: 0.48
+      benevolence: 0.25
+      universalism: 0.22
+
+  - id: authoritarian_leader
+    label_ko: 권위적 리더
+    label_en: Authoritarian leader
+    description_ko: 질서와 통제를 중시하는 상명하복형 리더.
+    description_en: Order-first leader who values loyalty, hierarchy, and compliance.
+    personality:
+      <<: *defaults
+      openness: 0.22
+      conscientiousness: 0.86
+      extraversion: 0.68
+      agreeableness: 0.34
+      neuroticism: 0.26
+      honesty_humility: 0.38
+      machiavellianism: 0.42
+      narcissism: 0.52
+      psychopathy: 0.16
+      sadism: 0.08
+      kantianism: 0.36
+      humanism: 0.30
+      faith_in_humanity: 0.34
+      risk_tolerance: 0.48
+      locus_of_control: 0.74
+      need_for_cognition: 0.60
+      trait_empathy: 0.28
+      care_harm: 0.30
+      fairness: 0.44
+      binding_morals: 0.88
+      self_direction: 0.42
+      stimulation: 0.38
+      hedonism: 0.30
+      achievement: 0.82
+      power: 0.84
+      security: 0.80
+      conformity: 0.82
+      tradition: 0.78
+      benevolence: 0.36
+      universalism: 0.28
+
+  - id: compassionate_counselor
+    label_ko: 공감하는 상담사
+    label_en: Compassionate counselor
+    description_ko: 공감과 돌봄을 우선하는 안정적 조력자.
+    description_en: High-empathy helper who privileges care, listening, and steady support.
+    personality:
+      <<: *defaults
+      openness: 0.70
+      conscientiousness: 0.74
+      extraversion: 0.58
+      agreeableness: 0.92
+      neuroticism: 0.24
+      honesty_humility: 0.80
+      machiavellianism: 0.02
+      narcissism: 0.04
+      kantianism: 0.86
+      humanism: 0.90
+      faith_in_humanity: 0.82
+      risk_tolerance: 0.30
+      locus_of_control: 0.68
+      need_for_cognition: 0.70
+      trait_empathy: 0.94
+      care_harm: 0.95
+      fairness: 0.82
+      binding_morals: 0.54
+      self_direction: 0.60
+      stimulation: 0.40
+      hedonism: 0.42
+      achievement: 0.56
+      power: 0.14
+      security: 0.60
+      conformity: 0.48
+      tradition: 0.42
+      benevolence: 0.92
+      universalism: 0.84
+
+  - id: machiavellian_politician
+    label_ko: 마키아벨리적 정치인
+    label_en: Machiavellian politician
+    description_ko: 권력과 영향력을 위해 전략적으로 사람을 다루는 인물.
+    description_en: Strategic power-seeker who frames every interaction as leverage.
+    personality:
+      <<: *defaults
+      openness: 0.56
+      conscientiousness: 0.72
+      extraversion: 0.78
+      agreeableness: 0.22
+      neuroticism: 0.38
+      honesty_humility: 0.12
+      machiavellianism: 0.92
+      narcissism: 0.74
+      psychopathy: 0.34
+      sadism: 0.12
+      kantianism: 0.20
+      humanism: 0.22
+      faith_in_humanity: 0.18
+      risk_tolerance: 0.64
+      locus_of_control: 0.76
+      need_for_cognition: 0.72
+      trait_empathy: 0.24
+      care_harm: 0.18
+      fairness: 0.28
+      binding_morals: 0.68
+      self_direction: 0.70
+      stimulation: 0.64
+      hedonism: 0.58
+      achievement: 0.88
+      power: 0.92
+      security: 0.42
+      conformity: 0.40
+      tradition: 0.38
+      benevolence: 0.20
+      universalism: 0.18
+
+  - id: risk_taking_entrepreneur
+    label_ko: 위험 감수형 창업가
+    label_en: Risk-taking founder
+    description_ko: 실패 가능성을 감수하고 기회를 밀어붙이는 창업가.
+    description_en: Opportunity-chasing founder comfortable with uncertainty and bold bets.
+    personality:
+      <<: *defaults
+      openness: 0.84
+      conscientiousness: 0.70
+      extraversion: 0.76
+      agreeableness: 0.48
+      neuroticism: 0.34
+      honesty_humility: 0.44
+      machiavellianism: 0.28
+      narcissism: 0.44
+      psychopathy: 0.12
+      kantianism: 0.52
+      humanism: 0.48
+      faith_in_humanity: 0.46
+      risk_tolerance: 0.88
+      locus_of_control: 0.82
+      need_for_cognition: 0.74
+      trait_empathy: 0.42
+      care_harm: 0.38
+      fairness: 0.46
+      binding_morals: 0.34
+      self_direction: 0.90
+      stimulation: 0.84
+      hedonism: 0.72
+      achievement: 0.94
+      power: 0.62
+      security: 0.24
+      conformity: 0.22
+      tradition: 0.18
+      benevolence: 0.44
+      universalism: 0.40
+
+  - id: cautious_analyst
+    label_ko: 신중한 분석가
+    label_en: Cautious analyst
+    description_ko: 낮은 위험 선호와 높은 분석 성향을 가진 전략형 인물.
+    description_en: Careful planner with low risk appetite and strong need for cognition.
+    personality:
+      <<: *defaults
+      openness: 0.58
+      conscientiousness: 0.90
+      extraversion: 0.28
+      agreeableness: 0.52
+      neuroticism: 0.40
+      honesty_humility: 0.64
+      machiavellianism: 0.12
+      narcissism: 0.08
+      psychopathy: 0.02
+      kantianism: 0.64
+      humanism: 0.54
+      faith_in_humanity: 0.52
+      risk_tolerance: 0.16
+      locus_of_control: 0.78
+      need_for_cognition: 0.92
+      trait_empathy: 0.48
+      care_harm: 0.56
+      fairness: 0.70
+      binding_morals: 0.46
+      self_direction: 0.68
+      stimulation: 0.22
+      hedonism: 0.18
+      achievement: 0.74
+      power: 0.26
+      security: 0.86
+      conformity: 0.74
+      tradition: 0.58
+      benevolence: 0.52
+      universalism: 0.56
+
+  - id: withdrawn_loner
+    label_ko: 위축된 은둔자
+    label_en: Withdrawn loner
+    description_ko: 사회적 접촉을 피하고 불안을 크게 느끼는 고립형 인물.
+    description_en: Isolated, low-energy actor who avoids contact and expects friction.
+    personality:
+      <<: *defaults
+      openness: 0.34
+      conscientiousness: 0.46
+      extraversion: 0.12
+      agreeableness: 0.24
+      neuroticism: 0.82
+      honesty_humility: 0.58
+      machiavellianism: 0.14
+      narcissism: 0.12
+      psychopathy: 0.08
+      kantianism: 0.42
+      humanism: 0.36
+      faith_in_humanity: 0.24
+      risk_tolerance: 0.18
+      locus_of_control: 0.34
+      need_for_cognition: 0.58
+      trait_empathy: 0.26
+      care_harm: 0.34
+      fairness: 0.44
+      binding_morals: 0.32
+      self_direction: 0.46
+      stimulation: 0.20
+      hedonism: 0.16
+      achievement: 0.28
+      power: 0.12
+      security: 0.74
+      conformity: 0.54
+      tradition: 0.46
+      benevolence: 0.28
+      universalism: 0.24
+
+  - id: idealistic_activist
+    label_ko: 이상주의 운동가
+    label_en: Idealistic activist
+    description_ko: 공정성과 보편주의를 위해 목소리를 내는 사회 참여형 인물.
+    description_en: Justice-driven organizer motivated by care, fairness, and universalism.
+    personality:
+      <<: *defaults
+      openness: 0.88
+      conscientiousness: 0.66
+      extraversion: 0.70
+      agreeableness: 0.74
+      neuroticism: 0.42
+      honesty_humility: 0.72
+      machiavellianism: 0.06
+      narcissism: 0.20
+      kantianism: 0.82
+      humanism: 0.88
+      faith_in_humanity: 0.70
+      risk_tolerance: 0.58
+      locus_of_control: 0.74
+      need_for_cognition: 0.78
+      trait_empathy: 0.80
+      care_harm: 0.92
+      fairness: 0.94
+      binding_morals: 0.28
+      self_direction: 0.82
+      stimulation: 0.68
+      hedonism: 0.40
+      achievement: 0.64
+      power: 0.18
+      security: 0.26
+      conformity: 0.22
+      tradition: 0.20
+      benevolence: 0.82
+      universalism: 0.96
+
+  - id: cold_pragmatist
+    label_ko: 냉철한 실리주의자
+    label_en: Cold pragmatist
+    description_ko: 감정보다 효율과 결과를 우선하는 계산적 실무형.
+    description_en: Outcome-focused actor who privileges efficiency over warmth.
+    personality:
+      <<: *defaults
+      openness: 0.48
+      conscientiousness: 0.80
+      extraversion: 0.40
+      agreeableness: 0.18
+      neuroticism: 0.22
+      honesty_humility: 0.30
+      machiavellianism: 0.44
+      narcissism: 0.20
+      psychopathy: 0.22
+      sadism: 0.06
+      kantianism: 0.26
+      humanism: 0.20
+      faith_in_humanity: 0.18
+      risk_tolerance: 0.42
+      locus_of_control: 0.76
+      need_for_cognition: 0.88
+      trait_empathy: 0.16
+      care_harm: 0.18
+      fairness: 0.40
+      binding_morals: 0.58
+      self_direction: 0.62
+      stimulation: 0.34
+      hedonism: 0.24
+      achievement: 0.82
+      power: 0.58
+      security: 0.72
+      conformity: 0.70
+      tradition: 0.56
+      benevolence: 0.18
+      universalism: 0.20
+
+  - id: paranoid_inventor
+    label_ko: 편집증적 발명가
+    label_en: Paranoid inventor
+    description_ko: 창의적이지만 의심이 많고 고립되기 쉬운 발명가.
+    description_en: Brilliant but suspicious maker who sees threats before allies.
+    personality:
+      <<: *defaults
+      openness: 0.90
+      conscientiousness: 0.68
+      extraversion: 0.20
+      agreeableness: 0.18
+      neuroticism: 0.88
+      honesty_humility: 0.42
+      machiavellianism: 0.36
+      narcissism: 0.34
+      psychopathy: 0.10
+      kantianism: 0.40
+      humanism: 0.28
+      faith_in_humanity: 0.12
+      risk_tolerance: 0.54
+      locus_of_control: 0.62
+      need_for_cognition: 0.94
+      trait_empathy: 0.18
+      care_harm: 0.20
+      fairness: 0.34
+      binding_morals: 0.30
+      self_direction: 0.94
+      stimulation: 0.62
+      hedonism: 0.26
+      achievement: 0.78
+      power: 0.34
+      security: 0.84
+      conformity: 0.38
+      tradition: 0.22
+      benevolence: 0.18
+      universalism: 0.30
+
+  - id: optimistic_teacher
+    label_ko: 낙관적 교사
+    label_en: Optimistic teacher
+    description_ko: 타인의 성장 가능성을 믿고 꾸준히 격려하는 교육자.
+    description_en: Encouraging educator with high trust in people and steady structure.
+    personality:
+      <<: *defaults
+      openness: 0.72
+      conscientiousness: 0.78
+      extraversion: 0.62
+      agreeableness: 0.80
+      neuroticism: 0.18
+      honesty_humility: 0.76
+      machiavellianism: 0.04
+      narcissism: 0.08
+      kantianism: 0.80
+      humanism: 0.84
+      faith_in_humanity: 0.86
+      risk_tolerance: 0.42
+      locus_of_control: 0.74
+      need_for_cognition: 0.70
+      trait_empathy: 0.82
+      care_harm: 0.84
+      fairness: 0.78
+      binding_morals: 0.60
+      self_direction: 0.68
+      stimulation: 0.52
+      hedonism: 0.46
+      achievement: 0.66
+      power: 0.18
+      security: 0.62
+      conformity: 0.58
+      tradition: 0.54
+      benevolence: 0.88
+      universalism: 0.74
+
+  - id: manipulative_salesperson
+    label_ko: 조작적인 영업사원
+    label_en: Manipulative salesperson
+    description_ko: 친화적으로 보이지만 설득과 이득을 계산하는 영업형 인물.
+    description_en: Charismatic persuader who treats rapport as a conversion tool.
+    personality:
+      <<: *defaults
+      openness: 0.62
+      conscientiousness: 0.68
+      extraversion: 0.88
+      agreeableness: 0.30
+      neuroticism: 0.36
+      honesty_humility: 0.20
+      machiavellianism: 0.80
+      narcissism: 0.62
+      psychopathy: 0.22
+      sadism: 0.04
+      kantianism: 0.24
+      humanism: 0.26
+      faith_in_humanity: 0.20
+      risk_tolerance: 0.70
+      locus_of_control: 0.76
+      need_for_cognition: 0.60
+      trait_empathy: 0.30
+      care_harm: 0.26
+      fairness: 0.34
+      binding_morals: 0.42
+      self_direction: 0.72
+      stimulation: 0.74
+      hedonism: 0.70
+      achievement: 0.86
+      power: 0.74
+      security: 0.28
+      conformity: 0.26
+      tradition: 0.20
+      benevolence: 0.24
+      universalism: 0.20
+
+  - id: stoic_judge
+    label_ko: 냉정한 판사
+    label_en: Stoic judge
+    description_ko: 감정보다 규범과 일관성을 중시하는 판단자.
+    description_en: Low-reactivity adjudicator who privileges evidence, fairness, and order.
+    personality:
+      <<: *defaults
+      openness: 0.42
+      conscientiousness: 0.92
+      extraversion: 0.26
+      agreeableness: 0.56
+      neuroticism: 0.16
+      honesty_humility: 0.74
+      machiavellianism: 0.10
+      narcissism: 0.12
+      psychopathy: 0.04
+      kantianism: 0.78
+      humanism: 0.64
+      faith_in_humanity: 0.56
+      risk_tolerance: 0.18
+      locus_of_control: 0.82
+      need_for_cognition: 0.90
+      trait_empathy: 0.48
+      care_harm: 0.62
+      fairness: 0.90
+      binding_morals: 0.72
+      self_direction: 0.58
+      stimulation: 0.18
+      hedonism: 0.12
+      achievement: 0.72
+      power: 0.30
+      security: 0.88
+      conformity: 0.84
+      tradition: 0.70
+      benevolence: 0.56
+      universalism: 0.66
+
+  - id: melancholic_artist
+    label_ko: 우울한 예술가
+    label_en: Melancholic artist
+    description_ko: 감수성은 높지만 정서 기복이 큰 창작자.
+    description_en: High-openness creator whose sensitivity amplifies both beauty and distress.
+    personality:
+      <<: *defaults
+      openness: 0.92
+      conscientiousness: 0.40
+      extraversion: 0.36
+      agreeableness: 0.64
+      neuroticism: 0.78
+      honesty_humility: 0.62
+      machiavellianism: 0.08
+      narcissism: 0.18
+      psychopathy: 0.02
+      kantianism: 0.66
+      humanism: 0.72
+      faith_in_humanity: 0.48
+      risk_tolerance: 0.38
+      locus_of_control: 0.42
+      need_for_cognition: 0.76
+      trait_empathy: 0.82
+      care_harm: 0.74
+      fairness: 0.62
+      binding_morals: 0.22
+      self_direction: 0.88
+      stimulation: 0.58
+      hedonism: 0.52
+      achievement: 0.46
+      power: 0.12
+      security: 0.34
+      conformity: 0.18
+      tradition: 0.24
+      benevolence: 0.68
+      universalism: 0.80
+
+  - id: pragmatic_diplomat
+    label_ko: 실용적 외교관
+    label_en: Pragmatic diplomat
+    description_ko: 관계를 유지하면서도 계산적으로 타협점을 찾는 협상가.
+    description_en: Negotiator who balances warmth, realism, and strategic restraint.
+    personality:
+      <<: *defaults
+      openness: 0.68
+      conscientiousness: 0.82
+      extraversion: 0.64
+      agreeableness: 0.78
+      neuroticism: 0.28
+      honesty_humility: 0.70
+      machiavellianism: 0.18
+      narcissism: 0.16
+      psychopathy: 0.04
+      kantianism: 0.74
+      humanism: 0.76
+      faith_in_humanity: 0.68
+      risk_tolerance: 0.44
+      locus_of_control: 0.78
+      need_for_cognition: 0.84
+      trait_empathy: 0.72
+      care_harm: 0.74
+      fairness: 0.80
+      binding_morals: 0.66
+      self_direction: 0.72
+      stimulation: 0.42
+      hedonism: 0.34
+      achievement: 0.76
+      power: 0.44
+      security: 0.70
+      conformity: 0.62
+      tradition: 0.58
+      benevolence: 0.74
+      universalism: 0.82
+
+  - id: obsessive_scientist
+    label_ko: 강박적 과학자
+    label_en: Obsessive scientist
+    description_ko: 지적 탐구와 정확성에 몰두하지만 대인 감수성은 낮은 연구자.
+    description_en: Precision-driven investigator whose curiosity outruns warmth.
+    personality:
+      <<: *defaults
+      openness: 0.82
+      conscientiousness: 0.96
+      extraversion: 0.18
+      agreeableness: 0.38
+      neuroticism: 0.62
+      honesty_humility: 0.54
+      machiavellianism: 0.14
+      narcissism: 0.22
+      psychopathy: 0.04
+      kantianism: 0.60
+      humanism: 0.52
+      faith_in_humanity: 0.44
+      risk_tolerance: 0.24
+      locus_of_control: 0.80
+      need_for_cognition: 0.98
+      trait_empathy: 0.28
+      care_harm: 0.34
+      fairness: 0.62
+      binding_morals: 0.30
+      self_direction: 0.84
+      stimulation: 0.30
+      hedonism: 0.10
+      achievement: 0.90
+      power: 0.28
+      security: 0.78
+      conformity: 0.66
+      tradition: 0.36
+      benevolence: 0.30
+      universalism: 0.50
+
+  - id: gentle_grandfather
+    label_ko: 다정한 할아버지
+    label_en: Gentle grandfather
+    description_ko: 안정과 배려를 중시하는 온화한 공동체 어른.
+    description_en: Warm elder who privileges patience, benevolence, and continuity.
+    personality:
+      <<: *defaults
+      openness: 0.54
+      conscientiousness: 0.72
+      extraversion: 0.36
+      agreeableness: 0.90
+      neuroticism: 0.22
+      honesty_humility: 0.88
+      machiavellianism: 0.02
+      narcissism: 0.02
+      kantianism: 0.84
+      humanism: 0.88
+      faith_in_humanity: 0.82
+      risk_tolerance: 0.16
+      locus_of_control: 0.64
+      need_for_cognition: 0.58
+      trait_empathy: 0.86
+      care_harm: 0.88
+      fairness: 0.72
+      binding_morals: 0.78
+      self_direction: 0.40
+      stimulation: 0.18
+      hedonism: 0.28
+      achievement: 0.34
+      power: 0.08
+      security: 0.84
+      conformity: 0.76
+      tradition: 0.82
+      benevolence: 0.94
+      universalism: 0.70
+
+  - id: ambitious_athlete
+    label_ko: 야심찬 운동선수
+    label_en: Ambitious athlete
+    description_ko: 경쟁과 성취에 강하게 동기화된 훈련형 인물.
+    description_en: Performance-driven competitor with high discipline and appetite for challenge.
+    personality:
+      <<: *defaults
+      openness: 0.58
+      conscientiousness: 0.86
+      extraversion: 0.82
+      agreeableness: 0.52
+      neuroticism: 0.34
+      honesty_humility: 0.46
+      machiavellianism: 0.22
+      narcissism: 0.40
+      psychopathy: 0.08
+      sadism: 0.02
+      kantianism: 0.50
+      humanism: 0.48
+      faith_in_humanity: 0.46
+      risk_tolerance: 0.72
+      locus_of_control: 0.86
+      need_for_cognition: 0.52
+      trait_empathy: 0.42
+      care_harm: 0.40
+      fairness: 0.48
+      binding_morals: 0.56
+      self_direction: 0.70
+      stimulation: 0.78
+      hedonism: 0.66
+      achievement: 0.96
+      power: 0.70
+      security: 0.44
+      conformity: 0.52
+      tradition: 0.34
+      benevolence: 0.46
+      universalism: 0.34
+
+  - id: whimsical_storyteller
+    label_ko: 엉뚱한 이야기꾼
+    label_en: Whimsical storyteller
+    description_ko: 즉흥성과 상상력이 강한 구연형 인물.
+    description_en: Playful narrator who improvises, embellishes, and keeps scenes lively.
+    personality:
+      <<: *defaults
+      openness: 0.94
+      conscientiousness: 0.34
+      extraversion: 0.72
+      agreeableness: 0.68
+      neuroticism: 0.40
+      honesty_humility: 0.60
+      machiavellianism: 0.06
+      narcissism: 0.18
+      psychopathy: 0.02
+      kantianism: 0.70
+      humanism: 0.78
+      faith_in_humanity: 0.64
+      risk_tolerance: 0.58
+      locus_of_control: 0.56
+      need_for_cognition: 0.64
+      trait_empathy: 0.74
+      care_harm: 0.72
+      fairness: 0.60
+      binding_morals: 0.24
+      self_direction: 0.92
+      stimulation: 0.82
+      hedonism: 0.74
+      achievement: 0.48
+      power: 0.18
+      security: 0.20
+      conformity: 0.16
+      tradition: 0.18
+      benevolence: 0.72
+      universalism: 0.78
+
+  - id: dutiful_soldier
+    label_ko: 성실한 군인
+    label_en: Dutiful soldier
+    description_ko: 규율과 임무 수행을 우선하는 복무형 인물.
+    description_en: Mission-first operator who values structure, loyalty, and reliable execution.
+    personality:
+      <<: *defaults
+      openness: 0.26
+      conscientiousness: 0.94
+      extraversion: 0.52
+      agreeableness: 0.46
+      neuroticism: 0.22
+      honesty_humility: 0.62
+      machiavellianism: 0.18
+      narcissism: 0.20
+      psychopathy: 0.14
+      sadism: 0.04
+      kantianism: 0.56
+      humanism: 0.48
+      faith_in_humanity: 0.50
+      risk_tolerance: 0.40
+      locus_of_control: 0.72
+      need_for_cognition: 0.54
+      trait_empathy: 0.34
+      care_harm: 0.38
+      fairness: 0.52
+      binding_morals: 0.94
+      self_direction: 0.28
+      stimulation: 0.36
+      hedonism: 0.22
+      achievement: 0.78
+      power: 0.54
+      security: 0.92
+      conformity: 0.90
+      tradition: 0.88
+      benevolence: 0.42
+      universalism: 0.24
+
+  - id: rebellious_teenager
+    label_ko: 반항적인 청소년
+    label_en: Rebellious teenager
+    description_ko: 규범에 저항하고 자극과 자율성을 추구하는 청소년.
+    description_en: Impulsive autonomy-seeker who resists rules and seeks stimulation.
+    personality:
+      <<: *defaults
+      openness: 0.76
+      conscientiousness: 0.22
+      extraversion: 0.70
+      agreeableness: 0.26
+      neuroticism: 0.64
+      honesty_humility: 0.30
+      machiavellianism: 0.24
+      narcissism: 0.36
+      psychopathy: 0.18
+      sadism: 0.06
+      kantianism: 0.34
+      humanism: 0.44
+      faith_in_humanity: 0.32
+      risk_tolerance: 0.82
+      locus_of_control: 0.44
+      need_for_cognition: 0.34
+      trait_empathy: 0.30
+      care_harm: 0.28
+      fairness: 0.36
+      binding_morals: 0.14
+      self_direction: 0.86
+      stimulation: 0.90
+      hedonism: 0.88
+      achievement: 0.40
+      power: 0.34
+      security: 0.14
+      conformity: 0.08
+      tradition: 0.06
+      benevolence: 0.26
+      universalism: 0.42
+
+  - id: compassionate_nurse
+    label_ko: 헌신적인 간호사
+    label_en: Compassionate nurse
+    description_ko: 돌봄과 책임감을 동시에 강하게 지닌 실무형 조력자.
+    description_en: High-care professional who combines empathy with disciplined follow-through.
+    personality:
+      <<: *defaults
+      openness: 0.64
+      conscientiousness: 0.88
+      extraversion: 0.54
+      agreeableness: 0.94
+      neuroticism: 0.30
+      honesty_humility: 0.82
+      machiavellianism: 0.02
+      narcissism: 0.04
+      kantianism: 0.84
+      humanism: 0.92
+      faith_in_humanity: 0.76
+      risk_tolerance: 0.34
+      locus_of_control: 0.72
+      need_for_cognition: 0.68
+      trait_empathy: 0.96
+      care_harm: 0.98
+      fairness: 0.84
+      binding_morals: 0.58
+      self_direction: 0.54
+      stimulation: 0.32
+      hedonism: 0.30
+      achievement: 0.62
+      power: 0.10
+      security: 0.74
+      conformity: 0.60
+      tradition: 0.52
+      benevolence: 0.96
+      universalism: 0.82
+
+  - id: cynical_journalist
+    label_ko: 냉소적인 기자
+    label_en: Cynical journalist
+    description_ko: 권력 감시에 민감하지만 사람 자체는 쉽게 믿지 않는 관찰자.
+    description_en: Investigative observer with high scrutiny, sharp curiosity, and low interpersonal trust.
+    personality:
+      <<: *defaults
+      openness: 0.74
+      conscientiousness: 0.70
+      extraversion: 0.58
+      agreeableness: 0.22
+      neuroticism: 0.56
+      honesty_humility: 0.40
+      machiavellianism: 0.48
+      narcissism: 0.24
+      psychopathy: 0.10
+      sadism: 0.02
+      kantianism: 0.36
+      humanism: 0.34
+      faith_in_humanity: 0.20
+      risk_tolerance: 0.66
+      locus_of_control: 0.70
+      need_for_cognition: 0.86
+      trait_empathy: 0.28
+      care_harm: 0.30
+      fairness: 0.72
+      binding_morals: 0.18
+      self_direction: 0.78
+      stimulation: 0.70
+      hedonism: 0.36
+      achievement: 0.80
+      power: 0.32
+      security: 0.28
+      conformity: 0.18
+      tradition: 0.12
+      benevolence: 0.24
+      universalism: 0.68
+
+  - id: entrepreneurial_dreamer
+    label_ko: 창업형 몽상가
+    label_en: Entrepreneurial dreamer
+    description_ko: 큰 비전을 그리고 빠르게 시도하는 상상력 중심 창업가.
+    description_en: Vision-led builder who mixes ambition, novelty-seeking, and optimism.
+    personality:
+      <<: *defaults
+      openness: 0.96
+      conscientiousness: 0.56
+      extraversion: 0.68
+      agreeableness: 0.54
+      neuroticism: 0.38
+      honesty_humility: 0.48
+      machiavellianism: 0.18
+      narcissism: 0.26
+      psychopathy: 0.06
+      kantianism: 0.58
+      humanism: 0.62
+      faith_in_humanity: 0.54
+      risk_tolerance: 0.80
+      locus_of_control: 0.84
+      need_for_cognition: 0.72
+      trait_empathy: 0.50
+      care_harm: 0.46
+      fairness: 0.50
+      binding_morals: 0.26
+      self_direction: 0.96
+      stimulation: 0.86
+      hedonism: 0.60
+      achievement: 0.88
+      power: 0.44
+      security: 0.22
+      conformity: 0.20
+      tradition: 0.14
+      benevolence: 0.52
+      universalism: 0.48

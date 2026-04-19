@@ -17,6 +17,8 @@ try:
         environment_note,
         host_key_active,
         load_environment_presets,
+        persona_choices,
+        persona_trait_values,
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
@@ -30,6 +32,8 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         environment_note,
         host_key_active,
         load_environment_presets,
+        persona_choices,
+        persona_trait_values,
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
@@ -373,6 +377,10 @@ def _preset_choices(language: str) -> list[tuple[str, str]]:
     return [(str(preset[label_key]), str(preset["id"])) for preset in ENVIRONMENT_PRESETS]
 
 
+def _persona_choices(language: str) -> list[tuple[str, str]]:
+    return persona_choices(language, include_blank=True)
+
+
 def _normalize_provider(provider: str) -> Provider:
     if provider in {"재생 전용", "Replay only"}:
         return "Replay only"
@@ -446,6 +454,13 @@ def _scenario_agent_count_update(scenario_name: str) -> dict[str, Any]:
     return gr.update(value=scenario_default_agent_count(scenario_name))
 
 
+def _apply_persona_preset(preset_id: str | None) -> list[dict[str, Any]]:
+    values = persona_trait_values(preset_id)
+    if values is None:
+        return [gr.update() for _ in range(5)]
+    return [gr.update(value=value) for value in values]
+
+
 def _hint_markdown_update(
     scenario_name: str | None,
     language_choice: str,
@@ -464,6 +479,7 @@ def _language_updates(
     current_provider: str | None,
     current_scenario: str | None = None,
     current_environment: str | None = None,
+    current_persona: str | None = None,
 ) -> list[Any]:
     key = "ko" if lang_choice == LANGUAGE_CHOICES[0] else "en"
     labels = LABELS[key]
@@ -491,6 +507,12 @@ def _language_updates(
         labels["extended_panel_note"],
         gr.update(label=labels["name"]),
         gr.update(label=labels["age"]),
+        gr.update(
+            label=labels["persona_preset"],
+            choices=_persona_choices(key),
+            value=current_persona or "",
+            info=labels["persona_preset_info"],
+        ),
         gr.update(label=labels["openness"], info=labels["openness_info"]),
         gr.update(
             label=labels["conscientiousness"],
@@ -671,6 +693,8 @@ LABELS = {
         ),
         "name": "이름",
         "age": "나이",
+        "persona_preset": "성격 아키타입",
+        "persona_preset_info": "25개 연구용 아키타입 벡터 중 하나를 불러와 현재 슬라이더 값을 시작점으로 채웁니다.",
         "openness": "개방성",
         "openness_info": "호기심과 새로운 경험에 대한 개방성. 높을수록 변화에 더 잘 적응합니다.",
         "conscientiousness": "성실성",
@@ -719,6 +743,8 @@ LABELS = {
         ),
         "name": "Name",
         "age": "Age",
+        "persona_preset": "Persona archetype",
+        "persona_preset_info": "Load one of 25 research-oriented archetype vectors as a starting point for the current sliders.",
         "openness": "Openness",
         "openness_info": "Curiosity and openness to new experience. Higher = more receptive to change.",
         "conscientiousness": "Conscientiousness",
@@ -851,6 +877,13 @@ def build_app() -> gr.Blocks:
                 primary_age = gr.Slider(
                     label=labels["age"], minimum=12, maximum=80, step=1, value=21
                 )
+            persona_preset = gr.Dropdown(
+                label=labels["persona_preset"],
+                choices=_persona_choices("ko"),
+                value="",
+                info=labels["persona_preset_info"],
+                elem_id="persona-preset-dropdown",
+            )
             with gr.Row():
                 openness = gr.Slider(
                     label=labels["openness"],
@@ -937,6 +970,7 @@ def build_app() -> gr.Blocks:
                 provider.value,
                 scenario.value,
                 environment_preset.value,
+                persona_preset.value,
             )
 
         tutorial_button.click(
@@ -962,6 +996,7 @@ def build_app() -> gr.Blocks:
                 extended_panel_note,
                 primary_name,
                 primary_age,
+                persona_preset,
                 openness,
                 conscientiousness,
                 extraversion,
@@ -994,6 +1029,17 @@ def build_app() -> gr.Blocks:
             _hint_markdown_update,
             inputs=[scenario, language, environment_preset],
             outputs=[scenario_hint],
+        )
+        persona_preset.change(
+            _apply_persona_preset,
+            inputs=[persona_preset],
+            outputs=[
+                openness,
+                conscientiousness,
+                extraversion,
+                agreeableness,
+                neuroticism,
+            ],
         )
         run_button.click(
             _run,
