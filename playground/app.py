@@ -24,7 +24,7 @@ from plotly.subplots import make_subplots
 from scipy.stats import chi2_contingency, mannwhitneyu  # type: ignore[import-untyped]
 from scipy.stats import t as student_t
 
-from knoema.research import summarize_seed_tick_effect
+from knoema.research import PowerAnalysisPlan, estimate_sample_size, summarize_seed_tick_effect
 
 try:
     from .simulation import (
@@ -727,6 +727,18 @@ LABELS["en"]["prereg_deviations"] = "Deviation log"
 LABELS["en"]["prereg_button"] = "Export pre-registration"
 LABELS["en"]["prereg_download"] = "Download pre-registration"
 LABELS["en"]["prereg_preview_empty"] = "Preview the OSF-style registration draft here."
+LABELS["ko"]["prereg_planned_n"] = "계획 표본수"
+LABELS["ko"]["prereg_power_test"] = "Power analysis 검정"
+LABELS["ko"]["prereg_power_effect"] = "효과 크기"
+LABELS["ko"]["prereg_power_alpha"] = "유의수준 alpha"
+LABELS["ko"]["prereg_power_target"] = "목표 power"
+LABELS["ko"]["prereg_power_summary"] = "Power analysis 요약"
+LABELS["en"]["prereg_planned_n"] = "Planned sample size"
+LABELS["en"]["prereg_power_test"] = "Power analysis test"
+LABELS["en"]["prereg_power_effect"] = "Effect size"
+LABELS["en"]["prereg_power_alpha"] = "Alpha"
+LABELS["en"]["prereg_power_target"] = "Target power"
+LABELS["en"]["prereg_power_summary"] = "Power analysis summary"
 LABELS["ko"]["replication_button"] = "Replication package ?대낫?닿린"
 LABELS["ko"]["replication_download"] = "Replication package ?ㅼ슫濡쒕뱶"
 LABELS["en"]["replication_button"] = "Export replication package"
@@ -2511,7 +2523,7 @@ def _report_section(title: str, body: str) -> str:
 
 
 def _prereg_defaults(language: str) -> dict[str, str]:
-    key = _language_key(language)
+    key = language if language in {"ko", "en"} else _language_key(language)
     if key == "ko":
         return {
             "title": "Knoema ?ъ쉶 ?곌퀎 ?ъ깮 ?ㅼ뿕援ъ꽌",
@@ -2553,6 +2565,97 @@ def _prereg_defaults(language: str) -> dict[str, str]:
         ),
         "deviations": "No deviations recorded.",
     }
+
+
+def _power_test_choices(language: str) -> list[tuple[str, str]]:
+    key = language if language in {"ko", "en"} else _language_key(language)
+    if key == "ko":
+        return [
+            ("독립표본 t 검정", "independent_t"),
+            ("대응표본 t 검정", "paired_t"),
+            ("두 비율 비교", "two_proportions"),
+        ]
+    return [
+        ("Independent-samples t-test", "independent_t"),
+        ("Paired-samples t-test", "paired_t"),
+        ("Two-proportion z-test", "two_proportions"),
+    ]
+
+
+def _power_defaults() -> dict[str, float | str]:
+    return {
+        "test_family": "independent_t",
+        "effect_size": 0.5,
+        "alpha": 0.05,
+        "target_power": 0.8,
+        "planned_n": float(
+            estimate_sample_size(
+                effect_size=0.5,
+                alpha=0.05,
+                target_power=0.8,
+                test_family="independent_t",
+            ).total_sample_size
+        ),
+    }
+
+
+def _power_analysis_plan(
+    test_family: str,
+    effect_size: float,
+    alpha: float,
+    target_power: float,
+) -> PowerAnalysisPlan:
+    return estimate_sample_size(
+        effect_size=max(float(effect_size), 0.01),
+        alpha=min(max(float(alpha), 0.001), 0.2),
+        target_power=min(max(float(target_power), 0.5), 0.99),
+        test_family=cast("str", test_family),
+    )
+
+
+def _power_analysis_markdown(
+    language: str,
+    test_family: str,
+    effect_size: float,
+    alpha: float,
+    target_power: float,
+) -> str:
+    plan = _power_analysis_plan(test_family, effect_size, alpha, target_power)
+    key = language if language in {"ko", "en"} else _language_key(language)
+    if key == "ko":
+        return "\n".join(
+            [
+                f"- 권장 총 표본수: **{plan.total_sample_size}**",
+                f"- 군/조건당 표본수: **{plan.sample_size_per_group}**",
+                f"- 효과크기: `{plan.effect_size:.2f}` | alpha `{plan.alpha:.3f}` | power `{plan.target_power:.2f}`",
+                f"- 방법: {plan.method}",
+            ]
+        )
+    return "\n".join(
+        [
+            f"- Recommended total sample size: **{plan.total_sample_size}**",
+            f"- Balanced sample size per group / condition: **{plan.sample_size_per_group}**",
+            f"- Effect size: `{plan.effect_size:.2f}` | alpha `{plan.alpha:.3f}` | power `{plan.target_power:.2f}`",
+            f"- Method: {plan.method}",
+        ]
+    )
+
+
+def _power_analysis_updates(
+    language: str,
+    test_family: str,
+    effect_size: float,
+    alpha: float,
+    target_power: float,
+) -> tuple[float, str]:
+    plan = _power_analysis_plan(test_family, effect_size, alpha, target_power)
+    return float(plan.total_sample_size), _power_analysis_markdown(
+        language,
+        test_family,
+        effect_size,
+        alpha,
+        target_power,
+    )
 
 
 def _digest_text(text: str) -> str:
@@ -2634,8 +2737,20 @@ def _preregistration_markdown(
     analysis_plan: str,
     freeze_after_run: bool,
     deviation_log: str,
+    planned_n: float = 0.0,
+    power_test_family: str = "independent_t",
+    power_effect_size: float = 0.5,
+    power_alpha: float = 0.05,
+    power_target: float = 0.8,
 ) -> str:
     key = _language_key(language)
+    power_plan = _power_analysis_plan(
+        power_test_family,
+        power_effect_size,
+        power_alpha,
+        power_target,
+    )
+    planned_n_value = max(round(float(planned_n or 0.0)), power_plan.total_sample_size)
     freeze_fingerprint = _digest_text(
         json.dumps(
             {
@@ -2644,6 +2759,11 @@ def _preregistration_markdown(
                 "design": design,
                 "outcomes": outcomes,
                 "analysis_plan": analysis_plan,
+                "planned_n": planned_n_value,
+                "power_test_family": power_test_family,
+                "power_effect_size": round(power_effect_size, 4),
+                "power_alpha": round(power_alpha, 4),
+                "power_target": round(power_target, 4),
                 "summary": summary,
                 "jsonl_digest": _digest_text(jsonl_text),
             },
@@ -2677,6 +2797,14 @@ def _preregistration_markdown(
             "",
             "### Primary / secondary outcomes",
             outcomes.strip(),
+            "",
+            "### Planned sample size",
+            f"- Planned N: {planned_n_value}",
+            f"- Recommended N from power analysis: {power_plan.total_sample_size}",
+            f"- Balanced per-group / condition N: {power_plan.sample_size_per_group}",
+            "",
+            "### Power analysis",
+            _power_analysis_markdown(language, power_test_family, power_effect_size, power_alpha, power_target),
             "",
             "### Analysis plan",
             analysis_plan.strip(),
@@ -2713,6 +2841,14 @@ def _preregistration_markdown(
         "### Primary / secondary outcomes",
         outcomes.strip(),
         "",
+        "### Planned sample size",
+        f"- Planned N: {planned_n_value}",
+        f"- Recommended N from power analysis: {power_plan.total_sample_size}",
+        f"- Balanced per-group / condition N: {power_plan.sample_size_per_group}",
+        "",
+        "### Power analysis",
+        _power_analysis_markdown(language, power_test_family, power_effect_size, power_alpha, power_target),
+        "",
         "### Analysis plan",
         analysis_plan.strip(),
         "",
@@ -2739,6 +2875,11 @@ def _export_preregistration(
     analysis_plan: str,
     freeze_after_run: bool,
     deviation_log: str,
+    planned_n: float = 0.0,
+    power_test_family: str = "independent_t",
+    power_effect_size: float = 0.5,
+    power_alpha: float = 0.05,
+    power_target: float = 0.8,
 ) -> tuple[str, str]:
     document = _preregistration_markdown(
         summary,
@@ -2751,6 +2892,11 @@ def _export_preregistration(
         analysis_plan,
         freeze_after_run,
         deviation_log,
+        planned_n,
+        power_test_family,
+        power_effect_size,
+        power_alpha,
+        power_target,
     )
     export_path = Path(tempfile.gettempdir()) / f"knoema_preregistration_{uuid.uuid4().hex}.md"
     export_path.write_text(document, encoding="utf-8")
@@ -4486,6 +4632,11 @@ def _language_updates(
     current_master_seed: int | None = None,
     current_live_streaming: bool = False,
     current_theme_mode: str | None = None,
+    current_power_test: str = "independent_t",
+    current_power_effect: float = 0.5,
+    current_power_alpha: float = 0.05,
+    current_power_target: float = 0.8,
+    current_planned_n: float | None = None,
 ) -> list[Any]:
     key = _language_key(lang_choice)
     labels = LABELS[key]
@@ -4599,6 +4750,22 @@ def _language_updates(
         gr.update(label=labels["prereg_analysis"]),
         gr.update(label=labels["prereg_freeze"]),
         gr.update(label=labels["prereg_deviations"]),
+        gr.update(label=labels["prereg_planned_n"], value=current_planned_n or _power_defaults()["planned_n"]),
+        gr.update(
+            label=labels["prereg_power_test"],
+            choices=_power_test_choices(key),
+            value=current_power_test,
+        ),
+        gr.update(label=labels["prereg_power_effect"], value=current_power_effect),
+        gr.update(label=labels["prereg_power_alpha"], value=current_power_alpha),
+        gr.update(label=labels["prereg_power_target"], value=current_power_target),
+        _power_analysis_markdown(
+            key,
+            current_power_test,
+            current_power_effect,
+            current_power_alpha,
+            current_power_target,
+        ),
         gr.update(value=labels["prereg_button"]),
         gr.update(label=labels["prereg_download"]),
         gr.update(label=labels["compare_panel"]),
@@ -5943,6 +6110,7 @@ def build_app() -> gr.Blocks:
     initial_action_chart_figure = _action_chart_figure({}, language="ko")
     initial_trait_matrix_figure, initial_trait_matrix_summary = _trait_correlation_outputs("ko")
     prereg_defaults = _prereg_defaults("ko")
+    power_defaults = _power_defaults()
 
     with gr.Blocks(
         title="Knoema Playground",
@@ -6373,6 +6541,55 @@ def build_app() -> gr.Blocks:
                 lines=2,
                 elem_id="prereg-deviations",
             )
+            prereg_planned_n = gr.Number(
+                label=labels["prereg_planned_n"],
+                value=power_defaults["planned_n"],
+                precision=0,
+                minimum=1,
+                elem_id="prereg-planned-n",
+            )
+            with gr.Row():
+                prereg_power_test = gr.Dropdown(
+                    label=labels["prereg_power_test"],
+                    choices=_power_test_choices("ko"),
+                    value=str(power_defaults["test_family"]),
+                    elem_id="prereg-power-test",
+                )
+                prereg_power_effect = gr.Slider(
+                    label=labels["prereg_power_effect"],
+                    minimum=0.1,
+                    maximum=1.5,
+                    step=0.05,
+                    value=float(power_defaults["effect_size"]),
+                    elem_id="prereg-power-effect",
+                )
+            with gr.Row():
+                prereg_power_alpha = gr.Slider(
+                    label=labels["prereg_power_alpha"],
+                    minimum=0.01,
+                    maximum=0.2,
+                    step=0.01,
+                    value=float(power_defaults["alpha"]),
+                    elem_id="prereg-power-alpha",
+                )
+                prereg_power_target = gr.Slider(
+                    label=labels["prereg_power_target"],
+                    minimum=0.5,
+                    maximum=0.99,
+                    step=0.01,
+                    value=float(power_defaults["target_power"]),
+                    elem_id="prereg-power-target",
+                )
+            prereg_power_summary = gr.Markdown(
+                _power_analysis_markdown(
+                    "ko",
+                    str(power_defaults["test_family"]),
+                    float(power_defaults["effect_size"]),
+                    float(power_defaults["alpha"]),
+                    float(power_defaults["target_power"]),
+                ),
+                elem_id="prereg-power-summary",
+            )
             prereg_button = gr.Button(
                 labels["prereg_button"],
                 variant="secondary",
@@ -6390,6 +6607,11 @@ def build_app() -> gr.Blocks:
                     prereg_defaults["analysis"],
                     True,
                     prereg_defaults["deviations"],
+                    float(power_defaults["planned_n"]),
+                    str(power_defaults["test_family"]),
+                    float(power_defaults["effect_size"]),
+                    float(power_defaults["alpha"]),
+                    float(power_defaults["target_power"]),
                 ),
                 elem_id="prereg-preview",
             )
@@ -6589,6 +6811,12 @@ def build_app() -> gr.Blocks:
             prereg_analysis,
             prereg_freeze,
             prereg_deviations,
+            prereg_planned_n,
+            prereg_power_test,
+            prereg_power_effect,
+            prereg_power_alpha,
+            prereg_power_target,
+            prereg_power_summary,
             prereg_button,
             prereg_download,
             compare_panel,
@@ -6675,6 +6903,11 @@ def build_app() -> gr.Blocks:
                 master_seed.value,
                 live_streaming.value,
                 theme_mode.value,
+                prereg_power_test.value,
+                prereg_power_effect.value,
+                prereg_power_alpha.value,
+                prereg_power_target.value,
+                prereg_planned_n.value,
             )
 
         tutorial_button.click(
@@ -6787,6 +7020,23 @@ def build_app() -> gr.Blocks:
             inputs=[jsonl, tick_scrubber, language],
             outputs=[mini_map_view],
         )
+        for control in (
+            prereg_power_test,
+            prereg_power_effect,
+            prereg_power_alpha,
+            prereg_power_target,
+        ):
+            control.change(
+                _power_analysis_updates,
+                inputs=[
+                    language,
+                    prereg_power_test,
+                    prereg_power_effect,
+                    prereg_power_alpha,
+                    prereg_power_target,
+                ],
+                outputs=[prereg_planned_n, prereg_power_summary],
+            )
         html_report_button.click(
             _export_html_report,
             inputs=[timeline, graph, jsonl, summary, language],
@@ -6818,6 +7068,11 @@ def build_app() -> gr.Blocks:
                 prereg_analysis,
                 prereg_freeze,
                 prereg_deviations,
+                prereg_planned_n,
+                prereg_power_test,
+                prereg_power_effect,
+                prereg_power_alpha,
+                prereg_power_target,
             ],
             outputs=[prereg_preview, prereg_download],
             api_name="export_preregistration",
