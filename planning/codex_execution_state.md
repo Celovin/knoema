@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 21:55 UTC by Codex
+**Last updated**: 2026-04-19 22:14 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -69,7 +69,7 @@
 - [x] 36. Mixed effects models + Bayesian posterior (statsmodels + PyMC) - 2026-04-19 21:28 UTC, commit e298683
 - [x] 37. DUX-standard replication package bundler - 2026-04-19 21:35 UTC, commit f656833
 - [x] 38. Reviewer-mode UI (blind peer review path) - 2026-04-19 21:55 UTC, commit ef0e95d
-- [ ] 50. Power analysis + sample size calculator
+- [x] 50. Power analysis + sample size calculator - 2026-04-19 22:14 UTC, commit 5661bdd
 - [ ] 51. arXiv / Zenodo auto-deposit
 - [ ] 58. OSF Simulation Studies Template (replaces Sub-task 35 default)
 
