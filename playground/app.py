@@ -12,9 +12,11 @@ try:
     from .simulation import (
         AGENT_COUNT_MAX,
         AGENT_COUNT_MIN,
+        AGENT_EDITOR_SLOT_COUNT,
         PERSONA_TRAIT_DEFAULTS,
         PERSONA_TRAIT_FIELDS,
         Provider,
+        agent_editor_defaults,
         build_playground_hint,
         compute_trait_correlation_study,
         cultural_prior_choices,
@@ -33,9 +35,11 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
     from simulation import (
         AGENT_COUNT_MAX,
         AGENT_COUNT_MIN,
+        AGENT_EDITOR_SLOT_COUNT,
         PERSONA_TRAIT_DEFAULTS,
         PERSONA_TRAIT_FIELDS,
         Provider,
+        agent_editor_defaults,
         build_playground_hint,
         compute_trait_correlation_study,
         cultural_prior_choices,
@@ -564,12 +568,18 @@ LABELS["ko"]["planning_depth"] = "계획 깊이"
 LABELS["ko"]["planning_depth_info"] = "HTN이 시작할 때 2~4개 하위 목표로 분해합니다."
 LABELS["ko"]["current_plan_panel"] = "현재 계획"
 LABELS["ko"]["current_plan_empty"] = "아직 생성된 HTN 계획이 없습니다."
+LABELS["ko"]["agent_panel"] = "에이전트 성격"
+LABELS["ko"]["agent_tab_prefix"] = "에이전트"
+LABELS["ko"]["agent_tab_disabled"] = "이 슬롯을 사용하려면 agent count를 늘리세요."
 LABELS["en"]["htn_enabled"] = "Enable hierarchical planning (HTN)"
 LABELS["en"]["htn_info"] = "Applies to the primary agent in the current playground layout."
 LABELS["en"]["planning_depth"] = "Planning depth"
 LABELS["en"]["planning_depth_info"] = "Decompose the top goal into 2 to 4 subtasks at simulation start."
 LABELS["en"]["current_plan_panel"] = "Current plan"
 LABELS["en"]["current_plan_empty"] = "No HTN plan has been generated yet."
+LABELS["en"]["agent_panel"] = "Agent personalities"
+LABELS["en"]["agent_tab_prefix"] = "Agent"
+LABELS["en"]["agent_tab_disabled"] = "Increase the agent count to unlock this editor."
 LABELS["ko"]["trait_matrix_panel"] = "Trait 상관/ablation"
 LABELS["ko"]["trait_matrix_plot"] = "Trait correlation matrix"
 LABELS["ko"]["trait_matrix_summary"] = "Trait ablation summary"
@@ -921,6 +931,9 @@ def _normalize_provider(provider: str) -> Provider:
 def _trait_slider(
     field_name: str,
     labels: dict[str, str],
+    *,
+    value: float | None = None,
+    elem_id_prefix: str = "trait",
 ) -> gr.Slider:
     return gr.Slider(
         label=labels[field_name],
@@ -928,9 +941,180 @@ def _trait_slider(
         minimum=0.0,
         maximum=1.0,
         step=0.01,
-        value=float(PERSONA_TRAIT_DEFAULTS[field_name]),
-        elem_id=f"trait-{field_name}",
+        value=float(PERSONA_TRAIT_DEFAULTS[field_name] if value is None else value),
+        elem_id=f"{elem_id_prefix}-{field_name}",
     )
+
+
+def _build_agent_editor_tab(
+    *,
+    slot_index: int,
+    labels: dict[str, str],
+    defaults: dict[str, Any],
+) -> dict[str, Any]:
+    suffix = "" if slot_index == 0 else f"-{slot_index + 1}"
+    trait_prefix = "trait" if slot_index == 0 else f"agent-{slot_index + 1}-trait"
+    controls: dict[str, Any] = {"trait_sliders": {}}
+
+    with gr.Tab(
+        _agent_tab_label(slot_index, "ko"),
+        elem_id=f"agent-tab-{slot_index + 1}",
+        interactive=bool(defaults["enabled"]),
+    ) as tab:
+        unavailable_note = gr.Markdown(
+            labels["agent_tab_disabled"],
+            visible=not bool(defaults["enabled"]),
+            elem_id=f"agent-{slot_index + 1}-disabled-note",
+        )
+        with gr.Column(visible=bool(defaults["enabled"])) as editor_column:
+            with gr.Row():
+                name = gr.Textbox(
+                    label=labels["name"],
+                    value=defaults["name"],
+                    elem_id=f"agent-name{suffix}",
+                )
+                age = gr.Slider(
+                    label=labels["age"],
+                    minimum=12,
+                    maximum=80,
+                    step=1,
+                    value=int(defaults["age"]),
+                    elem_id=f"agent-age{suffix}",
+                )
+
+            persona_preset = gr.Dropdown(
+                label=labels["persona_preset"],
+                choices=_persona_choices("ko"),
+                value="",
+                info=labels["persona_preset_info"],
+                elem_id=f"persona-preset-dropdown{suffix}",
+            )
+
+            tier_a_panel = gr.Accordion(
+                labels["tier_a_panel"],
+                open=True,
+                elem_id=f"tier-a-panel{suffix}",
+            )
+            with tier_a_panel:
+                with gr.Row():
+                    for field_name in BIG_FIVE_FIELDS[:3]:
+                        controls["trait_sliders"][field_name] = _trait_slider(
+                            field_name,
+                            labels,
+                            value=float(defaults["personality"][field_name]),
+                            elem_id_prefix=trait_prefix,
+                        )
+                with gr.Row():
+                    for field_name in BIG_FIVE_FIELDS[3:]:
+                        controls["trait_sliders"][field_name] = _trait_slider(
+                            field_name,
+                            labels,
+                            value=float(defaults["personality"][field_name]),
+                            elem_id_prefix=trait_prefix,
+                        )
+
+            extended_panel = gr.Accordion(
+                labels["extended_panel"],
+                open=True,
+                elem_id=f"extended-personality-panel{suffix}",
+            )
+            with extended_panel:
+                extended_panel_note = gr.Markdown(labels["extended_panel_note"])
+
+                tier_bd_panel = gr.Accordion(
+                    labels["tier_bd_panel"],
+                    open=False,
+                    elem_id=f"tier-bd-panel{suffix}",
+                )
+                with tier_bd_panel, gr.Row():
+                    for field_name in TIER_BD_FIELDS:
+                        controls["trait_sliders"][field_name] = _trait_slider(
+                            field_name,
+                            labels,
+                            value=float(defaults["personality"][field_name]),
+                            elem_id_prefix=trait_prefix,
+                        )
+
+                tier_c_panel = gr.Accordion(
+                    labels["tier_c_panel"],
+                    open=False,
+                    elem_id=f"tier-c-panel{suffix}",
+                )
+                with tier_c_panel:
+                    dark_tetrad_notice = gr.Markdown(labels["dark_tetrad_notice"])
+                    with gr.Row():
+                        for field_name in TIER_C_FIELDS:
+                            controls["trait_sliders"][field_name] = _trait_slider(
+                                field_name,
+                                labels,
+                                value=float(defaults["personality"][field_name]),
+                                elem_id_prefix=trait_prefix,
+                            )
+
+                tier_e_panel = gr.Accordion(
+                    labels["tier_e_panel"],
+                    open=False,
+                    elem_id=f"tier-e-panel{suffix}",
+                )
+                with tier_e_panel, gr.Row():
+                    for field_name in TIER_E_FIELDS:
+                        controls["trait_sliders"][field_name] = _trait_slider(
+                            field_name,
+                            labels,
+                            value=float(defaults["personality"][field_name]),
+                            elem_id_prefix=trait_prefix,
+                        )
+
+                tier_f_panel = gr.Accordion(
+                    labels["tier_f_panel"],
+                    open=False,
+                    elem_id=f"tier-f-panel{suffix}",
+                )
+                with tier_f_panel, gr.Row():
+                    for field_name in TIER_F_FIELDS:
+                        controls["trait_sliders"][field_name] = _trait_slider(
+                            field_name,
+                            labels,
+                            value=float(defaults["personality"][field_name]),
+                            elem_id_prefix=trait_prefix,
+                        )
+
+                tier_g_panel = gr.Accordion(
+                    labels["tier_g_panel"],
+                    open=False,
+                    elem_id=f"tier-g-panel{suffix}",
+                )
+                with tier_g_panel:
+                    for row_fields in TIER_G_ROWS:
+                        with gr.Row():
+                            for field_name in row_fields:
+                                controls["trait_sliders"][field_name] = _trait_slider(
+                                    field_name,
+                                    labels,
+                                    value=float(defaults["personality"][field_name]),
+                                    elem_id_prefix=trait_prefix,
+                                )
+
+    controls.update(
+        {
+            "tab": tab,
+            "editor_column": editor_column,
+            "unavailable_note": unavailable_note,
+            "name": name,
+            "age": age,
+            "persona_preset": persona_preset,
+            "tier_a_panel": tier_a_panel,
+            "extended_panel": extended_panel,
+            "extended_panel_note": extended_panel_note,
+            "tier_bd_panel": tier_bd_panel,
+            "tier_c_panel": tier_c_panel,
+            "dark_tetrad_notice": dark_tetrad_notice,
+            "tier_e_panel": tier_e_panel,
+            "tier_f_panel": tier_f_panel,
+            "tier_g_panel": tier_g_panel,
+        }
+    )
+    return controls
 
 
 def _run(
@@ -944,16 +1128,35 @@ def _run(
     primary_age: int,
     *trait_and_runtime: Any,
 ) -> tuple[str, go.Figure, str, str, str, str, str]:
-    expected_with_language = len(PERSONA_TRAIT_FIELDS) + 5
-    expected_without_language = len(PERSONA_TRAIT_FIELDS) + 4
-    if len(trait_and_runtime) == expected_with_language:
+    legacy_with_language = len(PERSONA_TRAIT_FIELDS) + 5
+    legacy_without_language = len(PERSONA_TRAIT_FIELDS) + 4
+    extra_agent_block = (AGENT_EDITOR_SLOT_COUNT - 1) * (2 + len(PERSONA_TRAIT_FIELDS))
+    multi_with_language = legacy_with_language + extra_agent_block
+    multi_without_language = legacy_without_language + extra_agent_block
+
+    multi_agent_values: list[Any] = []
+    if len(trait_and_runtime) == multi_with_language:
+        values = list(trait_and_runtime)
+        trait_values = values[: len(PERSONA_TRAIT_FIELDS)]
+        remainder = values[len(PERSONA_TRAIT_FIELDS) :]
+        multi_agent_values = remainder[:-5]
+        htn_enabled, planning_depth, ticks, agent_count, language_choice = remainder[-5:]
+    elif len(trait_and_runtime) == multi_without_language:
+        values = list(trait_and_runtime)
+        trait_values = values[: len(PERSONA_TRAIT_FIELDS)]
+        remainder = values[len(PERSONA_TRAIT_FIELDS) :]
+        multi_agent_values = remainder[:-4]
+        htn_enabled, planning_depth, ticks, agent_count = remainder[-4:]
+        language_choice = KOREAN_CHOICE
+    elif len(trait_and_runtime) == legacy_with_language:
         *trait_values, htn_enabled, planning_depth, ticks, agent_count, language_choice = trait_and_runtime
-    elif len(trait_and_runtime) == expected_without_language:
+    elif len(trait_and_runtime) == legacy_without_language:
         *trait_values, htn_enabled, planning_depth, ticks, agent_count = trait_and_runtime
         language_choice = KOREAN_CHOICE
     else:  # pragma: no cover - defensive guard
         raise ValueError(
-            f"expected {expected_with_language} or {expected_without_language} personality/runtime values, got {len(trait_and_runtime)}"
+            "unexpected number of personality/runtime values: "
+            f"{len(trait_and_runtime)}"
         )
 
     language = _language_key(str(language_choice))
@@ -961,6 +1164,36 @@ def _run(
         field_name: float(value)
         for field_name, value in zip(PERSONA_TRAIT_FIELDS, trait_values, strict=True)
     }
+    agent_overrides = [
+        {
+            "name": primary_name,
+            "age": int(primary_age),
+            "personality_overrides": personality_overrides,
+            "planning": bool(htn_enabled),
+        }
+    ]
+    if multi_agent_values:
+        block_size = 2 + len(PERSONA_TRAIT_FIELDS)
+        for slot_index in range(0, len(multi_agent_values), block_size):
+            name = str(multi_agent_values[slot_index])
+            age = int(multi_agent_values[slot_index + 1])
+            slot_traits = multi_agent_values[
+                slot_index + 2 : slot_index + 2 + len(PERSONA_TRAIT_FIELDS)
+            ]
+            agent_overrides.append(
+                {
+                    "name": name,
+                    "age": age,
+                    "personality_overrides": {
+                        field_name: float(value)
+                        for field_name, value in zip(
+                            PERSONA_TRAIT_FIELDS,
+                            slot_traits,
+                            strict=True,
+                        )
+                    },
+                }
+            )
     result = run_playground_scenario(
         scenario_name=scenario_name,
         provider=_normalize_provider(provider),
@@ -978,6 +1211,7 @@ def _run(
         agent_count=int(agent_count),
         environment_preset_id=environment_preset_id,
         cultural_prior_id=cultural_prior_id,
+        agent_overrides=agent_overrides,
         primary_planning_enabled=bool(htn_enabled),
         planning_depth=int(planning_depth),
         language=language,
@@ -1024,6 +1258,91 @@ def _apply_cultural_prior(prior_id: str | None) -> list[dict[str, Any]]:
     return [gr.update(value=value) for value in values]
 
 
+def _apply_cultural_prior_to_all_tabs(prior_id: str | None) -> list[dict[str, Any]]:
+    updates: list[dict[str, Any]] = []
+    for _ in range(AGENT_EDITOR_SLOT_COUNT):
+        updates.extend(_apply_cultural_prior(prior_id))
+    return updates
+
+
+def _agent_tab_label(slot_index: int, language: str) -> str:
+    labels = LABELS[language]
+    return f"{labels['agent_tab_prefix']} {slot_index + 1}"
+
+
+def _agent_editor_updates(
+    scenario_name: str,
+    agent_count: int,
+    cultural_prior_id: str | None,
+    language_choice: str,
+) -> list[Any]:
+    language = _language_key(language_choice)
+    labels = LABELS[language]
+    defaults = agent_editor_defaults(
+        scenario_name,
+        agent_count=agent_count,
+        slot_count=AGENT_EDITOR_SLOT_COUNT,
+        cultural_prior_id=cultural_prior_id,
+        language=language,
+    )
+    updates: list[Any] = []
+    for slot_index, default in enumerate(defaults):
+        updates.extend(
+            [
+                gr.update(
+                    label=_agent_tab_label(slot_index, language),
+                    interactive=bool(default["enabled"]),
+                ),
+                gr.update(visible=bool(default["enabled"])),
+                gr.update(
+                    value=labels["agent_tab_disabled"],
+                    visible=not bool(default["enabled"]),
+                ),
+                gr.update(label=labels["name"], value=default["name"]),
+                gr.update(label=labels["age"], value=int(default["age"])),
+                gr.update(
+                    label=labels["persona_preset"],
+                    choices=_persona_choices(language),
+                    value="",
+                    info=labels["persona_preset_info"],
+                ),
+                gr.update(label=labels["tier_a_panel"]),
+                gr.update(label=labels["extended_panel"]),
+                labels["extended_panel_note"],
+                gr.update(label=labels["tier_bd_panel"]),
+                gr.update(label=labels["tier_c_panel"]),
+                labels["dark_tetrad_notice"],
+                gr.update(label=labels["tier_e_panel"]),
+                gr.update(label=labels["tier_f_panel"]),
+                gr.update(label=labels["tier_g_panel"]),
+            ]
+        )
+        updates.extend(
+            [
+                gr.update(
+                    label=labels[field_name],
+                    info=labels[f"{field_name}_info"],
+                    value=float(default["personality"][field_name]),
+                )
+                for field_name in PERSONA_TRAIT_FIELDS
+            ]
+        )
+    return updates
+
+
+def _scenario_agent_editor_updates(
+    scenario_name: str,
+    cultural_prior_id: str | None,
+    language_choice: str,
+) -> list[Any]:
+    return _agent_editor_updates(
+        scenario_name,
+        scenario_default_agent_count(scenario_name),
+        cultural_prior_id,
+        language_choice,
+    )
+
+
 def _hint_markdown_update(
     scenario_name: str | None,
     language_choice: str,
@@ -1048,15 +1367,23 @@ def _language_updates(
     current_environment: str | None = None,
     current_cultural_prior: str | None = None,
     current_persona: str | None = None,
+    current_agent_count: int | None = None,
     current_htn_enabled: bool = False,
     current_planning_depth: int | None = None,
 ) -> list[Any]:
     key = _language_key(lang_choice)
     labels = LABELS[key]
     provider_value = labels["replay"] if _normalize_provider(current_provider or labels["replay"]) == "Replay only" else current_provider
+    scenario_value = current_scenario or scenario_choices()[0]
     environment_value = current_environment or _default_environment_id()
+    agent_count_value = int(current_agent_count or scenario_default_agent_count(scenario_value))
     planning_depth_value = int(current_planning_depth or 3)
-    trait_updates = [_trait_update(field_name, labels) for field_name in PERSONA_TRAIT_FIELDS]
+    agent_editor_updates = _agent_editor_updates(
+        scenario_value,
+        agent_count_value,
+        current_cultural_prior,
+        lang_choice,
+    )
     trait_matrix_figure, trait_matrix_summary = _trait_correlation_outputs(key)
     return [
         labels["header"],
@@ -1075,31 +1402,14 @@ def _language_updates(
         gr.update(label=labels["api_key"], placeholder=labels["api_key_ph"]),
         gr.update(label=labels["model"]),
         gr.update(label=labels["agent_panel"]),
-        gr.update(label=labels["tier_a_panel"]),
-        gr.update(label=labels["extended_panel"]),
-        labels["extended_panel_note"],
-        gr.update(label=labels["tier_bd_panel"]),
-        gr.update(label=labels["tier_c_panel"]),
-        labels["dark_tetrad_notice"],
-        gr.update(label=labels["tier_e_panel"]),
-        gr.update(label=labels["tier_f_panel"]),
-        gr.update(label=labels["tier_g_panel"]),
-        gr.update(label=labels["name"]),
-        gr.update(label=labels["age"]),
         gr.update(
             label=labels["cultural_prior"],
             choices=_cultural_prior_choices(key),
             value=current_cultural_prior or "",
             info=labels["cultural_prior_info"],
         ),
-        gr.update(
-            label=labels["persona_preset"],
-            choices=_persona_choices(key),
-            value=current_persona or "",
-            info=labels["persona_preset_info"],
-        ),
-        *trait_updates,
-        gr.update(label=labels["agents"], info=labels["agents_info"]),
+        *agent_editor_updates,
+        gr.update(label=labels["agents"], info=labels["agents_info"], value=agent_count_value),
         gr.update(
             label=labels["htn_enabled"],
             info=labels["htn_info"],
@@ -1315,6 +1625,12 @@ def _node_hover_text(
 def build_app() -> gr.Blocks:
     labels = LABELS["ko"]
     default_scenario = scenario_choices()[0]
+    initial_agent_defaults = agent_editor_defaults(
+        default_scenario,
+        agent_count=scenario_default_agent_count(default_scenario),
+        cultural_prior_id=None,
+        language="ko",
+    )
     initial_trait_matrix_figure, initial_trait_matrix_summary = _trait_correlation_outputs("ko")
 
     with gr.Blocks(
@@ -1380,23 +1696,12 @@ def build_app() -> gr.Blocks:
                 allow_custom_value=True,
             )
 
-        trait_sliders: dict[str, gr.Slider] = {}
         agent_panel = gr.Accordion(
             labels["agent_panel"],
             open=True,
             elem_id="personality-panel",
         )
         with agent_panel:
-            with gr.Row():
-                primary_name = gr.Textbox(label=labels["name"], value="Mina")
-                primary_age = gr.Slider(
-                    label=labels["age"],
-                    minimum=12,
-                    maximum=80,
-                    step=1,
-                    value=21,
-                )
-
             cultural_prior = gr.Dropdown(
                 label=labels["cultural_prior"],
                 choices=_cultural_prior_choices("ko"),
@@ -1405,59 +1710,16 @@ def build_app() -> gr.Blocks:
                 elem_id="cultural-prior-dropdown",
             )
 
-            persona_preset = gr.Dropdown(
-                label=labels["persona_preset"],
-                choices=_persona_choices("ko"),
-                value="",
-                info=labels["persona_preset_info"],
-                elem_id="persona-preset-dropdown",
-            )
-
-            tier_a_panel = gr.Accordion(labels["tier_a_panel"], open=True, elem_id="tier-a-panel")
-            with tier_a_panel:
-                with gr.Row():
-                    for field_name in BIG_FIVE_FIELDS[:3]:
-                        trait_sliders[field_name] = _trait_slider(field_name, labels)
-                with gr.Row():
-                    for field_name in BIG_FIVE_FIELDS[3:]:
-                        trait_sliders[field_name] = _trait_slider(field_name, labels)
-
-            extended_panel = gr.Accordion(
-                labels["extended_panel"],
-                open=True,
-                elem_id="extended-personality-panel",
-            )
-            with extended_panel:
-                extended_panel_note = gr.Markdown(labels["extended_panel_note"])
-
-                tier_bd_panel = gr.Accordion(labels["tier_bd_panel"], open=False, elem_id="tier-bd-panel")
-                with tier_bd_panel, gr.Row():
-                    for field_name in TIER_BD_FIELDS:
-                        trait_sliders[field_name] = _trait_slider(field_name, labels)
-
-                tier_c_panel = gr.Accordion(labels["tier_c_panel"], open=False, elem_id="tier-c-panel")
-                with tier_c_panel:
-                    dark_tetrad_notice = gr.Markdown(labels["dark_tetrad_notice"])
-                    with gr.Row():
-                        for field_name in TIER_C_FIELDS:
-                            trait_sliders[field_name] = _trait_slider(field_name, labels)
-
-                tier_e_panel = gr.Accordion(labels["tier_e_panel"], open=False, elem_id="tier-e-panel")
-                with tier_e_panel, gr.Row():
-                    for field_name in TIER_E_FIELDS:
-                        trait_sliders[field_name] = _trait_slider(field_name, labels)
-
-                tier_f_panel = gr.Accordion(labels["tier_f_panel"], open=False, elem_id="tier-f-panel")
-                with tier_f_panel, gr.Row():
-                    for field_name in TIER_F_FIELDS:
-                        trait_sliders[field_name] = _trait_slider(field_name, labels)
-
-                tier_g_panel = gr.Accordion(labels["tier_g_panel"], open=False, elem_id="tier-g-panel")
-                with tier_g_panel:
-                    for row_fields in TIER_G_ROWS:
-                        with gr.Row():
-                            for field_name in row_fields:
-                                trait_sliders[field_name] = _trait_slider(field_name, labels)
+            agent_tabs: list[dict[str, Any]] = []
+            with gr.Tabs(elem_id="agent-editor-tabs"):
+                for slot_index, defaults in enumerate(initial_agent_defaults):
+                    agent_tabs.append(
+                        _build_agent_editor_tab(
+                            slot_index=slot_index,
+                            labels=labels,
+                            defaults=defaults,
+                        )
+                    )
 
             with gr.Row():
                 agent_count = gr.Slider(
@@ -1493,6 +1755,9 @@ def build_app() -> gr.Blocks:
                     value=3,
                     elem_id="planning-depth-slider",
                 )
+
+        primary_name = agent_tabs[0]["name"]
+        primary_age = agent_tabs[0]["age"]
 
         scenario_hint = gr.Markdown(
             _hint_markdown_update(
@@ -1548,6 +1813,32 @@ def build_app() -> gr.Blocks:
             jsonl = gr.Code(label=labels["jsonl"], language="json")
             download = gr.File(label=labels["download"])
 
+        agent_editor_outputs: list[Any] = []
+        for controls in agent_tabs:
+            agent_editor_outputs.extend(
+                [
+                    controls["tab"],
+                    controls["editor_column"],
+                    controls["unavailable_note"],
+                    controls["name"],
+                    controls["age"],
+                    controls["persona_preset"],
+                    controls["tier_a_panel"],
+                    controls["extended_panel"],
+                    controls["extended_panel_note"],
+                    controls["tier_bd_panel"],
+                    controls["tier_c_panel"],
+                    controls["dark_tetrad_notice"],
+                    controls["tier_e_panel"],
+                    controls["tier_f_panel"],
+                    controls["tier_g_panel"],
+                    *[
+                        controls["trait_sliders"][field_name]
+                        for field_name in PERSONA_TRAIT_FIELDS
+                    ],
+                ]
+            )
+
         language_outputs: list[gr.components.Component | gr.layouts.Accordion | gr.Markdown] = [
             header,
             scenario,
@@ -1556,20 +1847,8 @@ def build_app() -> gr.Blocks:
             api_key,
             model,
             agent_panel,
-            tier_a_panel,
-            extended_panel,
-            extended_panel_note,
-            tier_bd_panel,
-            tier_c_panel,
-            dark_tetrad_notice,
-            tier_e_panel,
-            tier_f_panel,
-            tier_g_panel,
-            primary_name,
-            primary_age,
             cultural_prior,
-            persona_preset,
-            *[trait_sliders[field_name] for field_name in PERSONA_TRAIT_FIELDS],
+            *agent_editor_outputs,
             agent_count,
             htn_enabled,
             planning_depth,
@@ -1599,7 +1878,8 @@ def build_app() -> gr.Blocks:
                 scenario.value,
                 environment_preset.value,
                 cultural_prior.value,
-                persona_preset.value,
+                None,
+                agent_count.value,
                 htn_enabled.value,
                 planning_depth.value,
             )
@@ -1628,21 +1908,35 @@ def build_app() -> gr.Blocks:
             inputs=[scenario, language, environment_preset],
             outputs=[scenario_hint],
         )
+        scenario.change(
+            _scenario_agent_editor_updates,
+            inputs=[scenario, cultural_prior, language],
+            outputs=agent_editor_outputs,
+        )
         environment_preset.change(
             _hint_markdown_update,
             inputs=[scenario, language, environment_preset],
             outputs=[scenario_hint],
         )
         cultural_prior.change(
-            _apply_cultural_prior,
-            inputs=[cultural_prior],
-            outputs=[trait_sliders[field_name] for field_name in PERSONA_TRAIT_FIELDS],
+            _agent_editor_updates,
+            inputs=[scenario, agent_count, cultural_prior, language],
+            outputs=agent_editor_outputs,
         )
-        persona_preset.change(
-            _apply_persona_preset,
-            inputs=[persona_preset],
-            outputs=[trait_sliders[field_name] for field_name in PERSONA_TRAIT_FIELDS],
+        agent_count.change(
+            _agent_editor_updates,
+            inputs=[scenario, agent_count, cultural_prior, language],
+            outputs=agent_editor_outputs,
         )
+        for controls in agent_tabs:
+            controls["persona_preset"].change(
+                _apply_persona_preset,
+                inputs=[controls["persona_preset"]],
+                outputs=[
+                    controls["trait_sliders"][field_name]
+                    for field_name in PERSONA_TRAIT_FIELDS
+                ],
+            )
         run_button.click(
             _run,
             inputs=[
@@ -1654,7 +1948,22 @@ def build_app() -> gr.Blocks:
                 model,
                 primary_name,
                 primary_age,
-                *[trait_sliders[field_name] for field_name in PERSONA_TRAIT_FIELDS],
+                *[
+                    agent_tabs[0]["trait_sliders"][field_name]
+                    for field_name in PERSONA_TRAIT_FIELDS
+                ],
+                agent_tabs[1]["name"],
+                agent_tabs[1]["age"],
+                *[
+                    agent_tabs[1]["trait_sliders"][field_name]
+                    for field_name in PERSONA_TRAIT_FIELDS
+                ],
+                agent_tabs[2]["name"],
+                agent_tabs[2]["age"],
+                *[
+                    agent_tabs[2]["trait_sliders"][field_name]
+                    for field_name in PERSONA_TRAIT_FIELDS
+                ],
                 htn_enabled,
                 planning_depth,
                 ticks,

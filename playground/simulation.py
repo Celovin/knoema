@@ -34,6 +34,7 @@ Provider = Literal["Replay only", "OpenAI", "Anthropic"]
 AGENT_COUNT_MIN = 1
 AGENT_COUNT_MAX = 30
 AGENT_RESIZE_JITTER = 0.05
+AGENT_EDITOR_SLOT_COUNT = 3
 TRAIT_CORRELATION_RUN_COUNT = 100
 TRAIT_REDUNDANCY_THRESHOLD = 0.7
 PERSONALITY_FIELDS = (
@@ -437,6 +438,48 @@ def cultural_prior_trait_values(
     return tuple(float(resolved[field_name]) for field_name in fields)
 
 
+def agent_editor_defaults(
+    scenario_name: str,
+    *,
+    agent_count: int | None = None,
+    slot_count: int = AGENT_EDITOR_SLOT_COUNT,
+    cultural_prior_id: str | None = None,
+    language: str = "en",
+) -> tuple[dict[str, Any], ...]:
+    config = load_run_config(scenario_path(scenario_name))
+    target_agent_count = len(config.agents) if agent_count is None else int(agent_count)
+    agent_configs = _resize_agent_pool(config.agents, target_agent_count)
+    agents = [agent.to_domain() for agent in agent_configs[:slot_count]]
+    if cultural_prior_id:
+        agents = [
+            _apply_cultural_prior_to_agent(agent, cultural_prior_id, language=language)
+            for agent in agents
+        ]
+
+    defaults: list[dict[str, Any]] = []
+    for slot_index in range(slot_count):
+        if slot_index < len(agents):
+            agent = agents[slot_index]
+            defaults.append(
+                {
+                    "enabled": True,
+                    "name": agent.name,
+                    "age": agent.age,
+                    "personality": agent.personality.to_dict(),
+                }
+            )
+        else:
+            defaults.append(
+                {
+                    "enabled": False,
+                    "name": f"Agent {slot_index + 1}",
+                    "age": 21,
+                    "personality": dict(PERSONA_TRAIT_DEFAULTS),
+                }
+            )
+    return tuple(defaults)
+
+
 def _trait_sample_vectors(run_count: int) -> tuple[dict[str, float], ...]:
     presets = load_persona_presets()
     priors = (None, *load_cultural_priors())
@@ -523,6 +566,7 @@ def run_playground_scenario(
     agent_count: int | None = None,
     environment_preset_id: str | None = None,
     cultural_prior_id: str | None = None,
+    agent_overrides: list[dict[str, Any]] | None = None,
     primary_planning_enabled: bool = False,
     planning_depth: int = 3,
     language: str = "en",
@@ -542,21 +586,41 @@ def run_playground_scenario(
             _apply_cultural_prior_to_agent(agent, cultural_prior_id, language=language)
             for agent in agents
         ]
-    resolved_personality = {
-        "openness": openness,
-        "conscientiousness": conscientiousness,
-        "extraversion": extraversion,
-        "agreeableness": agreeableness,
-        "neuroticism": neuroticism,
-        **(personality_overrides or {}),
-    }
-    agents[0] = _customize_agent(
-        agents[0],
-        name=primary_name,
-        age=primary_age,
-        personality_overrides=resolved_personality,
-        planning=primary_planning_enabled,
-    )
+    resolved_overrides = list(agent_overrides or [])
+    if not resolved_overrides:
+        resolved_overrides.append(
+            {
+                "name": primary_name,
+                "age": primary_age,
+                "personality_overrides": {
+                    "openness": openness,
+                    "conscientiousness": conscientiousness,
+                    "extraversion": extraversion,
+                    "agreeableness": agreeableness,
+                    "neuroticism": neuroticism,
+                    **(personality_overrides or {}),
+                },
+                "planning": primary_planning_enabled,
+            }
+        )
+
+    for index, override in enumerate(resolved_overrides):
+        if index >= len(agents):
+            break
+        applied_override = dict(override)
+        if index == 0:
+            applied_override.setdefault("planning", primary_planning_enabled)
+        agents[index] = _customize_agent(
+            agents[index],
+            name=str(applied_override.get("name", agents[index].name)),
+            age=int(applied_override.get("age", agents[index].age)),
+            personality_overrides=dict(applied_override.get("personality_overrides", {})),
+            planning=(
+                bool(applied_override["planning"])
+                if "planning" in applied_override
+                else None
+            ),
+        )
     environment = config.environment.to_domain()
     preset = environment_preset(environment_preset_id)
     if preset is None:
