@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import tempfile
+from datetime import UTC, datetime
 from html import escape
 from typing import Any, cast
 
@@ -611,6 +613,14 @@ def _build_labels() -> dict[str, dict[str, str]]:
 
 
 LABELS = _build_labels()
+LABELS["ko"]["html_report_button"] = "HTML 보고서 내보내기"
+LABELS["ko"]["html_report_download"] = "HTML 보고서 다운로드"
+LABELS["ko"]["html_report_title"] = "Knoema Playground HTML 보고서"
+LABELS["ko"]["generated_at"] = "생성 시각"
+LABELS["en"]["html_report_button"] = "Export HTML report"
+LABELS["en"]["html_report_download"] = "Download HTML report"
+LABELS["en"]["html_report_title"] = "Knoema Playground HTML report"
+LABELS["en"]["generated_at"] = "Generated at"
 LABELS["ko"]["cultural_prior"] = "문화 prior"
 LABELS["ko"]["cultural_prior_info"] = "선택한 문화 모듈이 Schwartz 가치와 도덕 기반의 기본값을 먼저 이동시킵니다."
 LABELS["ko"]["monologue_panel"] = "내적 독백"
@@ -1840,6 +1850,125 @@ def _noop_run_outputs() -> tuple[Any, ...]:
     return tuple(gr.update() for _ in range(18))
 
 
+def _coerce_plotly_figure(figure: Any) -> go.Figure:
+    if isinstance(figure, go.Figure):
+        return figure
+    if isinstance(figure, dict):
+        return go.Figure(figure)
+    return go.Figure()
+
+
+def _report_section(title: str, body: str) -> str:
+    if not str(body).strip():
+        return (
+            f"<section><h2>{escape(title)}</h2>"
+            "<p class='empty'>No data available.</p></section>"
+        )
+    return (
+        f"<section><h2>{escape(title)}</h2>"
+        f"<pre>{escape(str(body))}</pre></section>"
+    )
+
+
+def _export_html_report(
+    timeline_markdown: str,
+    graph_figure: Any,
+    jsonl_text: str,
+    summary: str,
+    language: str,
+) -> str:
+    language_key = _language_key(language)
+    labels = LABELS[language_key]
+    figure = _coerce_plotly_figure(graph_figure)
+    graph_html = figure.to_html(
+        full_html=False,
+        include_plotlyjs=True,
+        config={"displayModeBar": False, "responsive": True},
+    )
+    generated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
+    document = f"""<!DOCTYPE html>
+<html lang="{language_key}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{escape(labels["html_report_title"])}</title>
+  <style>
+    :root {{
+      color-scheme: light dark;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+    }}
+    body {{
+      margin: 0;
+      background: #0f172a;
+      color: #e2e8f0;
+    }}
+    main {{
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+    }}
+    h1, h2 {{
+      margin: 0 0 12px;
+    }}
+    .summary {{
+      margin: 0 0 20px;
+      padding: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.72);
+    }}
+    .meta {{
+      margin: 0 0 24px;
+      color: #cbd5e1;
+      font-size: 14px;
+    }}
+    section {{
+      margin: 0 0 20px;
+      padding: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.72);
+    }}
+    pre {{
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.5;
+    }}
+    .empty {{
+      margin: 0;
+      color: #cbd5e1;
+    }}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>{escape(labels["html_report_title"])}</h1>
+    <p class="meta">{escape(labels["generated_at"])}: {escape(generated_at)}</p>
+    <div class="summary">{escape(summary)}</div>
+    <section>
+      <h2>{escape(labels["graph"])}</h2>
+      {graph_html}
+    </section>
+    {_report_section(labels["timeline"], timeline_markdown)}
+    {_report_section(labels["jsonl"], jsonl_text)}
+  </main>
+</body>
+</html>
+"""
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        suffix=".html",
+        prefix="knoema_playground_report_",
+        delete=False,
+    ) as handle:
+        handle.write(document)
+        return handle.name
+
+
 def _status_with_voice_notes(status: str, voice_notes: list[str]) -> str:
     filtered = [note.strip() for note in voice_notes if note and note.strip()]
     if not filtered:
@@ -2268,6 +2397,8 @@ def _language_updates(
         trait_matrix_summary,
         gr.update(label=labels["jsonl"]),
         gr.update(label=labels["download"]),
+        gr.update(value=labels["html_report_button"]),
+        gr.update(label=labels["html_report_download"]),
         gr.update(label=labels["lang"]),
     ]
 
@@ -3856,6 +3987,15 @@ def build_app() -> gr.Blocks:
             export_heading = gr.Markdown(f"#### {labels['export_panel']}")
             jsonl = gr.Code(label=labels["jsonl"], language="json")
             download = gr.File(label=labels["download"])
+            html_report_button = gr.Button(
+                labels["html_report_button"],
+                variant="secondary",
+                elem_id="html-report-button",
+            )
+            html_report_download = gr.File(
+                label=labels["html_report_download"],
+                elem_id="html-report-download",
+            )
 
         agent_editor_outputs: list[Any] = []
         for controls in agent_tabs:
@@ -3933,6 +4073,8 @@ def build_app() -> gr.Blocks:
             trait_matrix_summary,
             jsonl,
             download,
+            html_report_button,
+            html_report_download,
             language,
         ]
 
@@ -4038,6 +4180,12 @@ def build_app() -> gr.Blocks:
             _mini_map_figure,
             inputs=[jsonl, tick_scrubber, language],
             outputs=[mini_map_view],
+        )
+        html_report_button.click(
+            _export_html_report,
+            inputs=[timeline, graph, jsonl, summary, language],
+            outputs=[html_report_download],
+            api_name="export_html_report",
         )
         inspector_agent.change(
             _memory_inspector_views,
