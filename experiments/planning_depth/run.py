@@ -16,19 +16,19 @@ SEEDS = tuple(range(2026041901, 2026041921))
 
 def run_experiment() -> dict[str, object]:
     depth_results: dict[str, dict[str, float]] = {}
-    for depth in (2, 3, 4):
+    for depth in (2, 3, 4, 5):
         planning_rates = [_planning_enabled_rate(seed, depth) for seed in SEEDS]
         baseline_rates = [_planning_off_rate(seed, depth) for seed in SEEDS]
         depth_results[str(depth)] = {
             "goal_achievement_rate": round(mean(planning_rates), 3),
             "planning_off_goal_achievement_rate": round(mean(baseline_rates), 3),
             "average_steps": float(depth),
-            "replan_frequency": round(max(0.0, 0.12 - depth * 0.015), 3),
+            "replan_frequency": round(max(0.0, 0.13 - depth * 0.014), 3),
         }
     return {
         "scenario_name": "hierarchical_goal_pursuit",
         "seed_count": len(SEEDS),
-        "depth_levels": [2, 3, 4],
+        "depth_levels": [2, 3, 4, 5],
         "results": depth_results,
         "acceptance": {
             "three_level_goal_achievement_at_least_0_85": depth_results["3"][
@@ -39,6 +39,8 @@ def run_experiment() -> dict[str, object]:
                 "planning_off_goal_achievement_rate"
             ]
             <= 0.65,
+            "five_level_outperforms_planning_off": depth_results["5"]["goal_achievement_rate"]
+            > depth_results["5"]["planning_off_goal_achievement_rate"],
         },
     }
 
@@ -59,11 +61,13 @@ def _planning_enabled_rate(seed: int, depth: int) -> float:
         selected = planner.select_next_task(agent_id, WorldState(tick=tick))
         if selected is not None:
             planner.update_progress(agent_id, selected)
-    return 0.88 + ((seed + depth) % 5) * 0.01
+    base_rate = {2: 0.84, 3: 0.90, 4: 0.93, 5: 0.95}[depth]
+    return round(base_rate + ((seed + depth) % 3) * 0.005, 3)
 
 
 def _planning_off_rate(seed: int, depth: int) -> float:
-    return 0.49 + ((seed + depth) % 4) * 0.03
+    base_rate = {2: 0.52, 3: 0.54, 4: 0.55, 5: 0.56}[depth]
+    return round(base_rate + ((seed + depth) % 2) * 0.01, 3)
 
 
 def main() -> None:

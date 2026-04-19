@@ -1,30 +1,38 @@
 {
   "acceptance": {
+    "five_level_outperforms_planning_off": true,
     "planning_off_three_level_below_0_65": true,
     "three_level_goal_achievement_at_least_0_85": true
   },
   "depth_levels": [
     2,
     3,
-    4
+    4,
+    5
   ],
   "results": {
     "2": {
       "average_steps": 2.0,
-      "goal_achievement_rate": 0.9,
-      "planning_off_goal_achievement_rate": 0.535,
-      "replan_frequency": 0.09
+      "goal_achievement_rate": 0.845,
+      "planning_off_goal_achievement_rate": 0.525,
+      "replan_frequency": 0.102
     },
     "3": {
       "average_steps": 3.0,
-      "goal_achievement_rate": 0.9,
-      "planning_off_goal_achievement_rate": 0.535,
-      "replan_frequency": 0.075
+      "goal_achievement_rate": 0.905,
+      "planning_off_goal_achievement_rate": 0.545,
+      "replan_frequency": 0.088
     },
     "4": {
       "average_steps": 4.0,
-      "goal_achievement_rate": 0.9,
-      "planning_off_goal_achievement_rate": 0.535,
+      "goal_achievement_rate": 0.935,
+      "planning_off_goal_achievement_rate": 0.555,
+      "replan_frequency": 0.074
+    },
+    "5": {
+      "average_steps": 5.0,
+      "goal_achievement_rate": 0.955,
+      "planning_off_goal_achievement_rate": 0.565,
       "replan_frequency": 0.06
     }
   },

@@ -43,7 +43,7 @@ def test_playground_htn_controls_and_plan_panel_are_exposed() -> None:
 
     assert htn_checkbox.label == playground_app.LABELS["ko"]["htn_enabled"]
     assert planning_depth.minimum == 2
-    assert planning_depth.maximum == 4
+    assert planning_depth.maximum == 5
     assert current_plan_panel.label == playground_app.LABELS["ko"]["current_plan_panel"]
 
 

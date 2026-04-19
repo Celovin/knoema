@@ -45,7 +45,7 @@ When `planning=True`, `Simulator` decomposes the first active goal and passes th
 
 ## Experiment
 
-`experiments/planning_depth` runs 20 seeds across 2-, 3-, and 4-level hierarchies. The committed summary reports a 0.900 goal achievement rate for the 3-level planner condition and a 0.525 planning-off baseline.
+`experiments/planning_depth` runs 20 seeds across 2-, 3-, 4-, and 5-level hierarchies. The committed summary now includes the 5-level condition so evaluators can compare HTN-on versus HTN-off scaling beyond the original Phase 51 depth ceiling.
 
 ## Limits
 

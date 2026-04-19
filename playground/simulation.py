@@ -1540,7 +1540,7 @@ def _prepare_playground_run(
         tick_duration_minutes=config.runtime.tick_duration_minutes,
         llm=llm_client,
         language=language if language in {"ko", "ja", "zh"} else config.prompt_language,
-        planning_depth=max(2, min(int(planning_depth), 4)),
+        planning_depth=max(2, min(int(planning_depth), 5)),
         parallel_decisions=_parallel_llm_enabled(llm_client),
     )
     for event in _filter_events_for_agent_pool(config.events, agent_configs):
