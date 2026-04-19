@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import math
 import tempfile
@@ -701,6 +702,28 @@ LABELS["en"]["report_agent_run"] = "Answer from current run"
 LABELS["en"]["report_agent_empty"] = "Run a scenario first, then ask a question to get a JSONL-grounded summary."
 LABELS["en"]["competitive_panel"] = "Competitive comparison"
 LABELS["en"]["competitive_intro"] = "Compare research simulators, prediction sandboxes, and orchestration frameworks side by side."
+LABELS["ko"]["prereg_panel"] = "OSF ?ъ쟾?깅줉"
+LABELS["ko"]["prereg_title"] = "?곌뎄 ?쒕ぉ"
+LABELS["ko"]["prereg_hypotheses"] = "媛??/?곌뎄吏덈Ц"
+LABELS["ko"]["prereg_design"] = "?곌뎄 ?ㅺ퀎"
+LABELS["ko"]["prereg_outcomes"] = "二쇱슂 / 蹂댁“ 吏??"
+LABELS["ko"]["prereg_analysis"] = "遺꾩꽍 怨꾪쉷"
+LABELS["ko"]["prereg_freeze"] = "?ㅽ뻾 ???고씪誘명꽣 怨좎젙"
+LABELS["ko"]["prereg_deviations"] = "?앸컖 濡쒓렇"
+LABELS["ko"]["prereg_button"] = "?ъ쟾?깅줉 ?대낫?닿린"
+LABELS["ko"]["prereg_download"] = "?ъ쟾?깅줉 ?ㅼ슫濡쒕뱶"
+LABELS["ko"]["prereg_preview_empty"] = "?곌뎄 ?뚯쑝濡?OSF ?ъ쟾?깅줉 ?쒖븞??誘몃━蹂닿린?⑸땲??"
+LABELS["en"]["prereg_panel"] = "OSF pre-registration"
+LABELS["en"]["prereg_title"] = "Study title"
+LABELS["en"]["prereg_hypotheses"] = "Hypotheses / research questions"
+LABELS["en"]["prereg_design"] = "Study design"
+LABELS["en"]["prereg_outcomes"] = "Primary / secondary outcomes"
+LABELS["en"]["prereg_analysis"] = "Analysis plan"
+LABELS["en"]["prereg_freeze"] = "Freeze parameters after run"
+LABELS["en"]["prereg_deviations"] = "Deviation log"
+LABELS["en"]["prereg_button"] = "Export pre-registration"
+LABELS["en"]["prereg_download"] = "Download pre-registration"
+LABELS["en"]["prereg_preview_empty"] = "Preview the OSF-style registration draft here."
 LABELS["en"]["compare_panel"] = "A/B compare"
 LABELS["en"]["compare_seed_a"] = "Compare seed A"
 LABELS["en"]["compare_seed_b"] = "Compare seed B"
@@ -2382,6 +2405,253 @@ def _report_section(title: str, body: str) -> str:
     )
 
 
+def _prereg_defaults(language: str) -> dict[str, str]:
+    key = _language_key(language)
+    if key == "ko":
+        return {
+            "title": "Knoema ?ъ쉶 ?곌퀎 ?ъ깮 ?ㅼ뿕援ъ꽌",
+            "hypotheses": (
+                "H1. 移쒗솕?깃낵 諛곕젮 / ?꾪빐 ?뚰뵾媛 ?믪쓣?섎줈 ?묒“?곸씤 ?됰룞 鍮꾩쑉???뒛?쒕떎.\n"
+                "H2. ?뺤꽌 遺덉븞?뺤꽦怨?沅뚮젰 ?깊뼢???믪쓣?섎줈 ?ㅽ듃?덉뒪 ?곹솴?먯꽌 怨곗젅 / ?꾪삎 ?됰룞??利앷??쒕떎."
+            ),
+            "design": (
+                "寃곗젙濡좎쟻 ?쒕뱶瑜?湲곕컲?쇰줈 JSONL 濡쒓렇瑜?援ъ텞?섎뒗 synthetic replay ?곌뎄. "
+                "媛숈? ?쒕굹由ъ삤瑜??щ윭 ?쒕뱶濡?諛섎났 ?ㅽ뻾?섍퀬 tick ?덉궛? 遺꾩꽍 ?꾨줈?좎퐫??怨좎젙?⑸땲??"
+            ),
+            "outcomes": (
+                "?쇱감 吏??: ?묒“?곸씤 action 鍮꾩쑉\n"
+                "蹂댁“ 吏??: ?좊ː 媛以묒튂 蹂??, ?먯씠?꾪듃蹂? ?됰룞 ?ㅻ뵾, 媛먯젙 ?④퀎 ?ㅼ씠??"
+            ),
+            "analysis": (
+                "諛곗튂 ?곌낵瑜?鍮꾧탳?섏뿬 ?됱쐞湲곕컲 檎뺤젙? ?믨낵?ш린瑜??뚯궛?섍퀬, "
+                "?먯씠?꾪듃蹂? ?됰룞移댁슫?몄? 愿怨?蹂?붾줈 2李⑥쟻 ?댄꽍???꾪빀?⑸땲??"
+            ),
+            "deviations": "?앸컖 ?놁쓬.",
+        }
+    return {
+        "title": "Knoema social replay study",
+        "hypotheses": (
+            "H1. Higher agreeableness and care/harm scores increase cooperative action frequency.\n"
+            "H2. Higher emotional volatility and power increase refusal or threat actions under stress."
+        ),
+        "design": (
+            "Synthetic replay study with deterministic seeds, JSONL logging, and a fixed tick budget. "
+            "The same scenario is repeated across multiple seeds before interpretation."
+        ),
+        "outcomes": (
+            "Primary outcome: cooperative action rate.\n"
+            "Secondary outcomes: trust delta, per-agent action diversity, emotion trajectory stability."
+        ),
+        "analysis": (
+            "Compare batch runs with rank-based tests and effect sizes, then inspect per-agent counts "
+            "and relationship drift before interpreting qualitative traces."
+        ),
+        "deviations": "No deviations recorded.",
+    }
+
+
+def _digest_text(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _attached_run_summary(summary: str, jsonl_text: str, language: str) -> str:
+    rows = _jsonl_rows(jsonl_text)
+    batch_summary = next(
+        (
+            row
+            for row in rows
+            if str(row.get("record_type", "")) == "batch_summary"
+        ),
+        None,
+    )
+    tick_values = {
+        int(row["tick"])
+        for row in rows
+        if row.get("tick") is not None
+    }
+    agent_ids = sorted(
+        {
+            str(row["agent_id"])
+            for row in rows
+            if row.get("agent_id")
+        }
+        | {
+            str(row["source"])
+            for row in rows
+            if row.get("source")
+        }
+        | {
+            str(row["target"])
+            for row in rows
+            if row.get("target")
+        }
+    )
+    action_counts = Counter(
+        str(row.get("action_type", ""))
+        for row in rows
+        if row.get("action_type")
+    )
+    top_actions = ", ".join(
+        f"{action_type} x{count}"
+        for action_type, count in action_counts.most_common(3)
+    ) or ("?놁쓬" if _language_key(language) == "ko" else "none")
+    if not rows:
+        if _language_key(language) == "ko":
+            return "- ?꾩쭅 遺?李⑸맂 run ?곌낵媛 ?놁뒿?덈떎."
+        return "- No run artifact is attached yet."
+
+    lines = [
+        f"- Summary: {summary or 'n/a'}",
+        f"- JSONL digest: `{_digest_text(jsonl_text)[:16]}`",
+        f"- Row count: {len(rows)}",
+        f"- Tick span: {min(tick_values) if tick_values else 0} to {max(tick_values) if tick_values else 0}",
+        f"- Agents observed: {', '.join(agent_ids) if agent_ids else 'n/a'}",
+        f"- Top actions: {top_actions}",
+    ]
+    if batch_summary is not None:
+        lines.append(
+            "- Batch summary: "
+            f"runs={int(batch_summary.get('batch_size', 0))}, "
+            f"master_seed={int(batch_summary.get('master_seed', 0))}, "
+            f"reproducibility={float(batch_summary.get('reproducibility_coefficient', 0.0)):.3f}"
+        )
+    return "\n".join(lines)
+
+
+def _preregistration_markdown(
+    summary: str,
+    jsonl_text: str,
+    language: str,
+    title: str,
+    hypotheses: str,
+    design: str,
+    outcomes: str,
+    analysis_plan: str,
+    freeze_after_run: bool,
+    deviation_log: str,
+) -> str:
+    key = _language_key(language)
+    freeze_fingerprint = _digest_text(
+        json.dumps(
+            {
+                "title": title,
+                "hypotheses": hypotheses,
+                "design": design,
+                "outcomes": outcomes,
+                "analysis_plan": analysis_plan,
+                "summary": summary,
+                "jsonl_digest": _digest_text(jsonl_text),
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+    )[:16]
+    attached_run = _attached_run_summary(summary, jsonl_text, key)
+    deviation_text = deviation_log.strip() or _prereg_defaults(key)["deviations"]
+    if key == "ko":
+        freeze_lines = [
+            "1. ?ㅽ뻾 ???쒕뱶, ?곌낵 吏??, 遺꾩꽍 怨꾪쉷???ㅻЦ?섍린 ?꾩뿉 ???뺣┛?⑸땲??",
+            f"2. 怨좎젙 吏臾?`: {freeze_fingerprint}`",
+            "3. 寃곌낵 ?뺣━??JSONL digest? ?붿빟 臾몄옣?쒕? 媛숈씠 蹂댁“ ?좎쭨濡?泥⑤? ?⑸땲??",
+        ]
+        status = "?꾩슜" if freeze_after_run else "?좏깮 ?덇컻"
+        heading = "## OSF-format pre-registration"
+        sections = [
+            heading,
+            f"- Freeze-after-run: {status}",
+            f"- Freeze fingerprint: `{freeze_fingerprint}`",
+            "",
+            "### Study title",
+            title.strip(),
+            "",
+            "### Hypotheses / research questions",
+            hypotheses.strip(),
+            "",
+            "### Study design",
+            design.strip(),
+            "",
+            "### Primary / secondary outcomes",
+            outcomes.strip(),
+            "",
+            "### Analysis plan",
+            analysis_plan.strip(),
+            "",
+            "### Freeze-after-run protocol",
+            *freeze_lines,
+            "",
+            "### Attached run evidence",
+            attached_run,
+            "",
+            "### Deviation log",
+            deviation_text,
+        ]
+        return "\n".join(sections)
+    freeze_lines = [
+        "1. Lock the scenario, seed strategy, outcomes, and analysis plan before interpretation.",
+        f"2. Freeze fingerprint: `{freeze_fingerprint}`",
+        "3. Attach the JSONL digest and summary string to the results packet before drafting claims.",
+    ]
+    sections = [
+        "## OSF-format pre-registration",
+        f"- Freeze-after-run: {'enabled' if freeze_after_run else 'optional'}",
+        f"- Freeze fingerprint: `{freeze_fingerprint}`",
+        "",
+        "### Study title",
+        title.strip(),
+        "",
+        "### Hypotheses / research questions",
+        hypotheses.strip(),
+        "",
+        "### Study design",
+        design.strip(),
+        "",
+        "### Primary / secondary outcomes",
+        outcomes.strip(),
+        "",
+        "### Analysis plan",
+        analysis_plan.strip(),
+        "",
+        "### Freeze-after-run protocol",
+        *freeze_lines,
+        "",
+        "### Attached run evidence",
+        attached_run,
+        "",
+        "### Deviation log",
+        deviation_text,
+    ]
+    return "\n".join(sections)
+
+
+def _export_preregistration(
+    summary: str,
+    jsonl_text: str,
+    language: str,
+    title: str,
+    hypotheses: str,
+    design: str,
+    outcomes: str,
+    analysis_plan: str,
+    freeze_after_run: bool,
+    deviation_log: str,
+) -> tuple[str, str]:
+    document = _preregistration_markdown(
+        summary,
+        jsonl_text,
+        language,
+        title,
+        hypotheses,
+        design,
+        outcomes,
+        analysis_plan,
+        freeze_after_run,
+        deviation_log,
+    )
+    export_path = Path(tempfile.gettempdir()) / f"knoema_preregistration_{uuid.uuid4().hex}.md"
+    export_path.write_text(document, encoding="utf-8")
+    return document, str(export_path)
+
+
 def _export_html_report(
     timeline_markdown: str,
     graph_figure: Any,
@@ -3997,6 +4267,16 @@ def _language_updates(
         gr.update(value=labels["report_agent_run"]),
         gr.update(label=labels["competitive_panel"]),
         _competitive_comparison_markdown(key),
+        gr.update(label=labels["prereg_panel"]),
+        gr.update(label=labels["prereg_title"]),
+        gr.update(label=labels["prereg_hypotheses"]),
+        gr.update(label=labels["prereg_design"]),
+        gr.update(label=labels["prereg_outcomes"]),
+        gr.update(label=labels["prereg_analysis"]),
+        gr.update(label=labels["prereg_freeze"]),
+        gr.update(label=labels["prereg_deviations"]),
+        gr.update(value=labels["prereg_button"]),
+        gr.update(label=labels["prereg_download"]),
         gr.update(label=labels["compare_panel"]),
         gr.update(label=labels["compare_seed_a"]),
         gr.update(label=labels["compare_seed_b"]),
@@ -5336,6 +5616,7 @@ def build_app() -> gr.Blocks:
     )
     initial_action_chart_figure = _action_chart_figure({}, language="ko")
     initial_trait_matrix_figure, initial_trait_matrix_summary = _trait_correlation_outputs("ko")
+    prereg_defaults = _prereg_defaults("ko")
 
     with gr.Blocks(
         title="Knoema Playground",
@@ -5713,6 +5994,77 @@ def build_app() -> gr.Blocks:
                 _statistical_analysis_markdown("", "ko"),
                 elem_id="statistics-summary",
             )
+        prereg_panel = gr.Accordion(
+            labels["prereg_panel"],
+            open=False,
+            elem_id="preregistration-panel",
+        )
+        with prereg_panel:
+            prereg_title = gr.Textbox(
+                label=labels["prereg_title"],
+                value=prereg_defaults["title"],
+                lines=1,
+                elem_id="prereg-title",
+            )
+            prereg_hypotheses = gr.Textbox(
+                label=labels["prereg_hypotheses"],
+                value=prereg_defaults["hypotheses"],
+                lines=4,
+                elem_id="prereg-hypotheses",
+            )
+            prereg_design = gr.Textbox(
+                label=labels["prereg_design"],
+                value=prereg_defaults["design"],
+                lines=3,
+                elem_id="prereg-design",
+            )
+            prereg_outcomes = gr.Textbox(
+                label=labels["prereg_outcomes"],
+                value=prereg_defaults["outcomes"],
+                lines=3,
+                elem_id="prereg-outcomes",
+            )
+            prereg_analysis = gr.Textbox(
+                label=labels["prereg_analysis"],
+                value=prereg_defaults["analysis"],
+                lines=3,
+                elem_id="prereg-analysis",
+            )
+            prereg_freeze = gr.Checkbox(
+                label=labels["prereg_freeze"],
+                value=True,
+                elem_id="prereg-freeze-checkbox",
+            )
+            prereg_deviations = gr.Textbox(
+                label=labels["prereg_deviations"],
+                value=prereg_defaults["deviations"],
+                lines=2,
+                elem_id="prereg-deviations",
+            )
+            prereg_button = gr.Button(
+                labels["prereg_button"],
+                variant="secondary",
+                elem_id="prereg-button",
+            )
+            prereg_preview = gr.Markdown(
+                _preregistration_markdown(
+                    "",
+                    "",
+                    "ko",
+                    prereg_defaults["title"],
+                    prereg_defaults["hypotheses"],
+                    prereg_defaults["design"],
+                    prereg_defaults["outcomes"],
+                    prereg_defaults["analysis"],
+                    True,
+                    prereg_defaults["deviations"],
+                ),
+                elem_id="prereg-preview",
+            )
+            prereg_download = gr.File(
+                label=labels["prereg_download"],
+                elem_id="prereg-download",
+            )
 
         with gr.Column(elem_id="export-panel"):
             export_heading = gr.Markdown(f"#### {labels['export_panel']}")
@@ -5887,6 +6239,16 @@ def build_app() -> gr.Blocks:
             report_agent_button,
             competitive_panel,
             competitive_table,
+            prereg_panel,
+            prereg_title,
+            prereg_hypotheses,
+            prereg_design,
+            prereg_outcomes,
+            prereg_analysis,
+            prereg_freeze,
+            prereg_deviations,
+            prereg_button,
+            prereg_download,
             compare_panel,
             compare_seed_a,
             compare_seed_b,
@@ -6098,6 +6460,23 @@ def build_app() -> gr.Blocks:
             inputs=[jsonl, memory_snapshot_state, summary, language],
             outputs=[latex_table_download],
             api_name="export_latex_table",
+        )
+        prereg_button.click(
+            _export_preregistration,
+            inputs=[
+                summary,
+                jsonl,
+                language,
+                prereg_title,
+                prereg_hypotheses,
+                prereg_design,
+                prereg_outcomes,
+                prereg_analysis,
+                prereg_freeze,
+                prereg_deviations,
+            ],
+            outputs=[prereg_preview, prereg_download],
+            api_name="export_preregistration",
         )
         seed_prompt_apply.click(
             _seed_prompt_updates,
