@@ -68,12 +68,24 @@ def run_memory_retrieval_benchmark(
     k: int = 5,
     target_recall_at_5: float = 0.85,
 ) -> MemoryRetrievalBenchmarkResult:
+    return run_memory_benchmark_cases(
+        _default_benchmark_cases(),
+        k=k,
+        target_recall_at_5=target_recall_at_5,
+    )
+
+
+def run_memory_benchmark_cases(
+    cases: tuple[MemoryBenchmarkCase, ...],
+    *,
+    k: int = 5,
+    target_recall_at_5: float = 0.85,
+) -> MemoryRetrievalBenchmarkResult:
     if k < 1:
         raise ValueError("k must be positive")
     if not 0.0 <= target_recall_at_5 <= 1.0:
         raise ValueError("target_recall_at_5 must be between 0.0 and 1.0")
 
-    cases = _default_benchmark_cases()
     with TemporaryDirectory(prefix="knoema-memory-benchmark-") as temp_dir:
         temp_root = Path(temp_dir)
         per_agent_results = tuple(
@@ -192,6 +204,7 @@ __all__ = [
     "MemoryBenchmarkQuery",
     "MemoryRetrievalBenchmarkResult",
     "QueryRecallResult",
+    "run_memory_benchmark_cases",
     "run_memory_retrieval_benchmark",
     "write_memory_retrieval_benchmark_summary",
 ]
