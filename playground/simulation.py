@@ -25,6 +25,7 @@ from knoema.cli import (
 from knoema.cognition import Monologue
 from knoema.llm import AnthropicClient, LocalClient, OpenAIClient
 from knoema.persona import Persona
+from knoema.planning import HierarchicalPlanner, Task
 from knoema.protocols import LLMClient, Message
 from knoema.simulator import SimulationLogEntry, Simulator
 from knoema.types import PERSONALITY_NEUTRAL_DEFAULTS, Personality
@@ -121,6 +122,7 @@ class PlaygroundResult:
     mode: Provider
     timeline_markdown: str
     monologue_markdown: str
+    plan_markdown: str
     relationship_rows: list[dict[str, object]]
     jsonl: str
     download_path: str
@@ -328,6 +330,8 @@ def run_playground_scenario(
     agent_count: int | None = None,
     environment_preset_id: str | None = None,
     cultural_prior_id: str | None = None,
+    primary_planning_enabled: bool = False,
+    planning_depth: int = 3,
     language: str = "en",
 ) -> PlaygroundResult:
     """Run a short scenario and return UI-ready artifacts.
@@ -358,6 +362,7 @@ def run_playground_scenario(
         name=primary_name,
         age=primary_age,
         personality_overrides=resolved_personality,
+        planning=primary_planning_enabled,
     )
     environment = config.environment.to_domain()
     preset = environment_preset(environment_preset_id)
@@ -381,6 +386,7 @@ def run_playground_scenario(
             language=language,
         ),
         language=language if language in {"ko", "ja", "zh"} else config.prompt_language,
+        planning_depth=max(2, min(int(planning_depth), 4)),
     )
     for event in _filter_events_for_agent_pool(config.events, agent_configs):
         simulator.scheduler.schedule(event.to_domain())
@@ -397,6 +403,7 @@ def run_playground_scenario(
             simulator.monologue_valence,
             language=language,
         ),
+        plan_markdown=_plan_markdown(simulator.planner, agents, language=language),
         relationship_rows=_relationship_rows(simulator),
         jsonl=jsonl,
         download_path=download_path,
@@ -482,6 +489,7 @@ def _rebuild_persona(
     age: int | None = None,
     background: str | None = None,
     personality_values: dict[str, float] | None = None,
+    planning: bool | None = None,
 ) -> Persona:
     return Persona(
         agent_id=agent.agent_id,
@@ -492,7 +500,7 @@ def _rebuild_persona(
         values=list(agent.values),
         goals=list(agent.goals),
         theory_of_mind=agent.theory_of_mind,
-        planning=agent.planning,
+        planning=agent.planning if planning is None else planning,
         social_learning=agent.social_learning,
     )
 
@@ -532,6 +540,7 @@ def _customize_agent(
     name: str,
     age: int,
     personality_overrides: dict[str, float] | None = None,
+    planning: bool | None = None,
 ) -> Persona:
     personality_values = agent.personality.to_dict()
     for field_name, value in (personality_overrides or {}).items():
@@ -542,6 +551,7 @@ def _customize_agent(
         name=name,
         age=age,
         personality_values=personality_values,
+        planning=planning,
     )
 
 
@@ -734,6 +744,64 @@ def _monologue_markdown(
             f"- <span style=\"color:{color}\"><strong>{escape(label)}</strong> {escape(monologue.text)}</span>"
         )
     return "\n".join(lines)
+
+
+def _plan_markdown(
+    planner: HierarchicalPlanner,
+    agents: list[Persona],
+    *,
+    language: str = "en",
+) -> str:
+    planning_agents = [agent for agent in agents if agent.planning]
+    if not planning_agents:
+        return (
+            "계층 계획이 비활성화되어 현재 계획이 없습니다."
+            if language == "ko"
+            else "Hierarchical planning is disabled for this run."
+        )
+
+    title = "### 현재 계획" if language == "ko" else "### Current plan"
+    achievement_label = "목표 달성률" if language == "ko" else "Goal achievement rate"
+    no_plan_label = (
+        "분해된 목표가 아직 없습니다."
+        if language == "ko"
+        else "No decomposed goal is available yet."
+    )
+    lines = [
+        title,
+        f"- **{achievement_label}:** {planner.achievement_rate([agent.agent_id for agent in planning_agents]):.2f}",
+    ]
+    for agent in planning_agents:
+        plan = planner.plan_for(agent.agent_id)
+        if not plan:
+            lines.append(f"- **{agent.name}**: {no_plan_label}")
+            continue
+        lines.append(f"- **{agent.name}**")
+        for task in plan:
+            depth = _task_depth(task, plan)
+            prefix = "  " * depth
+            status = _task_status_badge(task.status)
+            lines.append(f"{prefix}- {status} {task.description}")
+    return "\n".join(lines)
+
+
+def _task_depth(task: Task, plan: tuple[Task, ...]) -> int:
+    by_id = {candidate.task_id: candidate for candidate in plan}
+    depth = 0
+    current = task
+    while current.parent_id is not None and current.parent_id in by_id:
+        depth += 1
+        current = by_id[current.parent_id]
+    return depth
+
+
+def _task_status_badge(status: str) -> str:
+    return {
+        "completed": "[x]",
+        "active": "[>]",
+        "failed": "[!]",
+        "pending": "[ ]",
+    }.get(status, "[ ]")
 
 
 def _relationship_rows(simulator: Simulator) -> list[dict[str, object]]:

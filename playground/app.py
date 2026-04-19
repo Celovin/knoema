@@ -554,6 +554,18 @@ LABELS["en"]["cultural_prior_info"] = (
 )
 LABELS["en"]["monologue_panel"] = "Inner monologue"
 LABELS["en"]["monologue_empty"] = "No inner monologues yet."
+LABELS["ko"]["htn_enabled"] = "계층 계획 활성화 (HTN)"
+LABELS["ko"]["htn_info"] = "현재 버전에서는 주요 에이전트 1명에 적용됩니다."
+LABELS["ko"]["planning_depth"] = "계획 깊이"
+LABELS["ko"]["planning_depth_info"] = "HTN이 시작할 때 2~4개 하위 목표로 분해합니다."
+LABELS["ko"]["current_plan_panel"] = "현재 계획"
+LABELS["ko"]["current_plan_empty"] = "아직 생성된 HTN 계획이 없습니다."
+LABELS["en"]["htn_enabled"] = "Enable hierarchical planning (HTN)"
+LABELS["en"]["htn_info"] = "Applies to the primary agent in the current playground layout."
+LABELS["en"]["planning_depth"] = "Planning depth"
+LABELS["en"]["planning_depth_info"] = "Decompose the top goal into 2 to 4 subtasks at simulation start."
+LABELS["en"]["current_plan_panel"] = "Current plan"
+LABELS["en"]["current_plan_empty"] = "No HTN plan has been generated yet."
 ENVIRONMENT_PRESETS = load_environment_presets()
 GRAPH_HEIGHT_PX = 620
 TIMELINE_MAX_HEIGHT_PX = 360
@@ -921,13 +933,13 @@ def _run(
     primary_name: str,
     primary_age: int,
     *trait_and_runtime: Any,
-) -> tuple[str, go.Figure, str, str, str, str]:
-    expected_with_language = len(PERSONA_TRAIT_FIELDS) + 3
-    expected_without_language = len(PERSONA_TRAIT_FIELDS) + 2
+) -> tuple[str, go.Figure, str, str, str, str, str]:
+    expected_with_language = len(PERSONA_TRAIT_FIELDS) + 5
+    expected_without_language = len(PERSONA_TRAIT_FIELDS) + 4
     if len(trait_and_runtime) == expected_with_language:
-        *trait_values, ticks, agent_count, language_choice = trait_and_runtime
+        *trait_values, htn_enabled, planning_depth, ticks, agent_count, language_choice = trait_and_runtime
     elif len(trait_and_runtime) == expected_without_language:
-        *trait_values, ticks, agent_count = trait_and_runtime
+        *trait_values, htn_enabled, planning_depth, ticks, agent_count = trait_and_runtime
         language_choice = KOREAN_CHOICE
     else:  # pragma: no cover - defensive guard
         raise ValueError(
@@ -956,6 +968,8 @@ def _run(
         agent_count=int(agent_count),
         environment_preset_id=environment_preset_id,
         cultural_prior_id=cultural_prior_id,
+        primary_planning_enabled=bool(htn_enabled),
+        planning_depth=int(planning_depth),
         language=language,
     )
     host_provider = host_key_active(_normalize_provider(provider), api_key)
@@ -977,6 +991,7 @@ def _run(
         result.timeline_markdown,
         _relationship_figure(result.relationship_rows, language=language),
         result.monologue_markdown,
+        result.plan_markdown,
         result.jsonl,
         result.download_path,
         summary,
@@ -1023,11 +1038,14 @@ def _language_updates(
     current_environment: str | None = None,
     current_cultural_prior: str | None = None,
     current_persona: str | None = None,
+    current_htn_enabled: bool = False,
+    current_planning_depth: int | None = None,
 ) -> list[Any]:
     key = _language_key(lang_choice)
     labels = LABELS[key]
     provider_value = labels["replay"] if _normalize_provider(current_provider or labels["replay"]) == "Replay only" else current_provider
     environment_value = current_environment or _default_environment_id()
+    planning_depth_value = int(current_planning_depth or 3)
     trait_updates = [_trait_update(field_name, labels) for field_name in PERSONA_TRAIT_FIELDS]
     return [
         labels["header"],
@@ -1071,6 +1089,16 @@ def _language_updates(
         ),
         *trait_updates,
         gr.update(label=labels["agents"], info=labels["agents_info"]),
+        gr.update(
+            label=labels["htn_enabled"],
+            info=labels["htn_info"],
+            value=current_htn_enabled,
+        ),
+        gr.update(
+            label=labels["planning_depth"],
+            info=labels["planning_depth_info"],
+            value=planning_depth_value,
+        ),
         gr.update(label=labels["ticks"]),
         _hint_markdown_update(current_scenario, lang_choice, environment_value),
         gr.update(value=labels["run"]),
@@ -1080,6 +1108,8 @@ def _language_updates(
         gr.update(label=labels["graph"]),
         gr.update(label=labels["monologue_panel"]),
         labels["monologue_empty"],
+        gr.update(label=labels["current_plan_panel"]),
+        labels["current_plan_empty"],
         gr.update(label=labels["jsonl"]),
         gr.update(label=labels["download"]),
         gr.update(label=labels["lang"]),
@@ -1392,6 +1422,23 @@ def build_app() -> gr.Blocks:
                     value=4,
                 )
 
+            with gr.Row():
+                htn_enabled = gr.Checkbox(
+                    label=labels["htn_enabled"],
+                    info=labels["htn_info"],
+                    value=False,
+                    elem_id="htn-enabled-checkbox",
+                )
+                planning_depth = gr.Slider(
+                    label=labels["planning_depth"],
+                    info=labels["planning_depth_info"],
+                    minimum=2,
+                    maximum=4,
+                    step=1,
+                    value=3,
+                    elem_id="planning-depth-slider",
+                )
+
         scenario_hint = gr.Markdown(
             _hint_markdown_update(
                 default_scenario,
@@ -1418,6 +1465,13 @@ def build_app() -> gr.Blocks:
         )
         with monologue_panel:
             monologue_view = gr.Markdown(labels["monologue_empty"])
+        current_plan_panel = gr.Accordion(
+            labels["current_plan_panel"],
+            open=False,
+            elem_id="current-plan-panel",
+        )
+        with current_plan_panel:
+            current_plan_view = gr.Markdown(labels["current_plan_empty"])
 
         with gr.Column(elem_id="export-panel"):
             export_heading = gr.Markdown(f"#### {labels['export_panel']}")
@@ -1447,6 +1501,8 @@ def build_app() -> gr.Blocks:
             persona_preset,
             *[trait_sliders[field_name] for field_name in PERSONA_TRAIT_FIELDS],
             agent_count,
+            htn_enabled,
+            planning_depth,
             ticks,
             scenario_hint,
             run_button,
@@ -1456,6 +1512,8 @@ def build_app() -> gr.Blocks:
             graph,
             monologue_panel,
             monologue_view,
+            current_plan_panel,
+            current_plan_view,
             jsonl,
             download,
             language,
@@ -1469,6 +1527,8 @@ def build_app() -> gr.Blocks:
                 environment_preset.value,
                 cultural_prior.value,
                 persona_preset.value,
+                htn_enabled.value,
+                planning_depth.value,
             )
 
         tutorial_button.click(
@@ -1522,11 +1582,13 @@ def build_app() -> gr.Blocks:
                 primary_name,
                 primary_age,
                 *[trait_sliders[field_name] for field_name in PERSONA_TRAIT_FIELDS],
+                htn_enabled,
+                planning_depth,
                 ticks,
                 agent_count,
                 language,
             ],
-            outputs=[timeline, graph, monologue_view, jsonl, download, summary],
+            outputs=[timeline, graph, monologue_view, current_plan_view, jsonl, download, summary],
             api_name="run",
         )
 

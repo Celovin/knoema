@@ -51,11 +51,14 @@ class Simulator:
         start_time: datetime | None = None,
         llm: LLMClient | None = None,
         language: str | PromptLanguage = "en",
+        planning_depth: int = 3,
     ) -> None:
         if not agents:
             raise ValueError("agents must not be empty")
         if tick_duration_minutes < 1:
             raise ValueError("tick_duration_minutes must be positive")
+        if planning_depth < 1:
+            raise ValueError("planning_depth must be positive")
         self.agents = agents
         self.environment = environment
         if start_time is not None:
@@ -78,7 +81,8 @@ class Simulator:
             None if isinstance(resolved_llm, LocalClient) else resolved_llm
         )
         self.theory_of_mind = TheoryOfMindEngine.from_personas(agents)
-        self.planner = HierarchicalPlanner()
+        self.planner = HierarchicalPlanner(default_depth=planning_depth)
+        self.planning_depth = planning_depth
         self.social_learner = SocialLearner()
         self.logs: list[SimulationLogEntry] = []
         self.monologues: list[Monologue] = []
@@ -92,6 +96,7 @@ class Simulator:
                         agent_id=agent.agent_id,
                         location=" > ".join(self.environment.location_path),
                         active_goals=tuple(agent.goals),
+                        plan_depth=planning_depth,
                     ),
                 )
 
