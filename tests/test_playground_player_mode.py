@@ -49,6 +49,41 @@ def test_subtask33_build_app_exposes_player_mode_controls() -> None:
     assert player_input.label == playground_app.LABELS["ko"]["player_input"]
 
 
+def test_subtask48_build_app_exposes_voice_mode_controls() -> None:
+    app = playground_app.build_app()
+    components = _walk_components(app)
+
+    stt_engine = next(
+        component
+        for component in components
+        if type(component).__name__ == "Dropdown"
+        and getattr(component, "elem_id", None) == "player-stt-engine"
+    )
+    tts_engine = next(
+        component
+        for component in components
+        if type(component).__name__ == "Dropdown"
+        and getattr(component, "elem_id", None) == "player-tts-engine"
+    )
+    voice_input = next(
+        component
+        for component in components
+        if type(component).__name__ == "Audio"
+        and getattr(component, "elem_id", None) == "player-voice-input"
+    )
+    voice_output = next(
+        component
+        for component in components
+        if type(component).__name__ == "Audio"
+        and getattr(component, "elem_id", None) == "player-voice-output"
+    )
+
+    assert stt_engine.label == playground_app.LABELS["ko"]["player_stt_engine"]
+    assert tts_engine.label == playground_app.LABELS["ko"]["player_tts_engine"]
+    assert voice_input.label == playground_app.LABELS["ko"]["player_voice_input"]
+    assert voice_output.label == playground_app.LABELS["ko"]["player_voice_output"]
+
+
 def test_subtask33_player_session_advances_tick_with_player_action() -> None:
     trait_defaults = {
         field_name: playground_simulation.PERSONA_TRAIT_DEFAULTS[field_name]
@@ -161,8 +196,53 @@ def test_subtask33_run_wrapper_starts_player_mode_session(monkeypatch) -> None:
         "English",
     )
 
-    assert len(outputs) == 20
+    assert len(outputs) == 21
     assert outputs[7].startswith("Mode: Player mode")
     assert outputs[-1] == "Awaiting input"
     assert captured["scenario_name"] == "Dorm: two agents"
     assert captured["primary_name"] == "Customer"
+
+
+def test_subtask48_advance_player_mode_uses_stt_and_tts(monkeypatch) -> None:
+    session = {"language": "en", "player_agent_id": "player-1"}
+    result = SimpleNamespace(jsonl="{}")
+
+    monkeypatch.setattr(
+        playground_app,
+        "_render_result_outputs",
+        lambda *args, **kwargs: tuple(f"slot-{index}" for index in range(18)),
+    )
+    monkeypatch.setattr(
+        playground_app,
+        "transcribe_player_audio",
+        lambda audio_path, *, engine, language: ("Ask Bjorn for one beer", "Voice input transcribed."),
+    )
+    monkeypatch.setattr(
+        playground_app,
+        "advance_player_session",
+        lambda current_session, player_text: (current_session, result, "Awaiting input"),
+    )
+    monkeypatch.setattr(
+        playground_app,
+        "_latest_npc_response_text",
+        lambda current_result, current_session: "Bjorn nods and starts pouring.",
+    )
+    monkeypatch.setattr(
+        playground_app,
+        "synthesize_text_to_audio",
+        lambda text, *, engine, language: ("C:\\temp\\reply.wav", "Audio response is ready."),
+    )
+
+    outputs = playground_app._advance_player_mode(
+        session,
+        "",
+        "C:\\temp\\voice.wav",
+        "whisper_cpp",
+        "pyttsx3",
+    )
+
+    assert len(outputs) == 22
+    assert outputs[18]["value"] == "C:\\temp\\reply.wav"
+    assert "Voice input transcribed." in outputs[20]
+    assert "Audio response is ready." in outputs[20]
+    assert outputs[21]["value"] == ""

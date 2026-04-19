@@ -38,6 +38,12 @@ try:
         start_player_session,
         trait_correlation_summary,
     )
+    from .voice import (
+        stt_engine_choices,
+        synthesize_text_to_audio,
+        transcribe_player_audio,
+        tts_engine_choices,
+    )
 except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
     from simulation import (
         AGENT_COUNT_MAX,
@@ -64,6 +70,12 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         scenario_default_agent_count,
         start_player_session,
         trait_correlation_summary,
+    )
+    from voice import (
+        stt_engine_choices,
+        synthesize_text_to_audio,
+        transcribe_player_audio,
+        tts_engine_choices,
     )
 
 
@@ -632,11 +644,19 @@ LABELS["ko"]["player_input"] = "플레이어 행동"
 LABELS["ko"]["player_input_placeholder"] = "예: Bjorn에게 맥주 1개 주문"
 LABELS["ko"]["player_submit"] = "행동 실행"
 LABELS["ko"]["player_status"] = "플레이어 진행 상태"
+LABELS["ko"]["player_voice_input"] = "음성 입력"
+LABELS["ko"]["player_voice_output"] = "에이전트 음성 응답"
+LABELS["ko"]["player_stt_engine"] = "STT 엔진"
+LABELS["ko"]["player_tts_engine"] = "TTS 엔진"
 LABELS["en"]["player_mode"] = "Player mode"
 LABELS["en"]["player_input"] = "Player action"
 LABELS["en"]["player_input_placeholder"] = "Example: Ask Bjorn for one beer"
 LABELS["en"]["player_submit"] = "Submit action"
 LABELS["en"]["player_status"] = "Player session status"
+LABELS["en"]["player_voice_input"] = "Voice input"
+LABELS["en"]["player_voice_output"] = "Agent voice response"
+LABELS["en"]["player_stt_engine"] = "STT engine"
+LABELS["en"]["player_tts_engine"] = "TTS engine"
 LABELS["ko"]["routine_preset"] = "일일 루틴 프리셋"
 LABELS["ko"]["routine_preset_info"] = "학생, 직장인, 야간 근로자, NPC 상인, 자유 상태 중 하나를 선택할 수 있습니다."
 LABELS["ko"]["routine_text"] = "일일 루틴 (선택)"
@@ -1772,6 +1792,7 @@ def _run_with_player_mode(
                 api_key="",
                 language=str(request["language"]),
             ),
+            gr.update(value=None),
             session,
             status,
         )
@@ -1809,6 +1830,7 @@ def _run_with_player_mode(
             api_key=str(request["api_key"]),
             language=str(request["language"]),
         ),
+        gr.update(value=None),
         None,
         "",
     )
@@ -1818,15 +1840,87 @@ def _noop_run_outputs() -> tuple[Any, ...]:
     return tuple(gr.update() for _ in range(18))
 
 
+def _status_with_voice_notes(status: str, voice_notes: list[str]) -> str:
+    filtered = [note.strip() for note in voice_notes if note and note.strip()]
+    if not filtered:
+        return status
+    if status.strip():
+        return status.strip() + "\n\n" + "\n".join(f"- {note}" for note in filtered)
+    return "\n".join(f"- {note}" for note in filtered)
+
+
+def _latest_npc_response_text(
+    result: Any,
+    session: dict[str, Any] | None,
+) -> str:
+    player_agent_id = str((session or {}).get("player_agent_id", "")).strip()
+    if not player_agent_id:
+        return ""
+    for line in reversed(str(getattr(result, "jsonl", "")).splitlines()):
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if str(payload.get("agent_id", "")) == player_agent_id:
+            continue
+        action = payload.get("action", {})
+        if isinstance(action, dict):
+            content = str(action.get("content", "")).strip()
+            if content:
+                return content
+    return ""
+
+
 def _advance_player_mode(
     session: dict[str, Any] | None,
     player_text: str,
+    player_audio_path: str | None,
+    stt_engine: str,
+    tts_engine: str,
 ) -> tuple[Any, ...]:
-    updated_session, result, status = advance_player_session(session, player_text)
-    if result is None:
-        return (*_noop_run_outputs(), updated_session, status, gr.update(value=""))
+    language = str((session or {}).get("language", "en"))
+    voice_notes: list[str] = []
+    resolved_text = str(player_text or "").strip()
+    if not resolved_text and player_audio_path:
+        transcript, stt_status = transcribe_player_audio(
+            player_audio_path,
+            engine=str(stt_engine or "off"),
+            language=language,
+        )
+        if stt_status:
+            voice_notes.append(stt_status)
+        resolved_text = transcript.strip()
+    if not resolved_text:
+        empty_input_status = (
+            "먼저 텍스트를 입력하거나 음성 입력을 제공하세요."
+            if language == "ko"
+            else "Provide text or voice input first."
+        )
+        return (
+            *_noop_run_outputs(),
+            gr.update(value=None),
+            session,
+            _status_with_voice_notes(empty_input_status, voice_notes),
+            gr.update(value=""),
+        )
 
-    language = str((updated_session or session or {}).get("language", "en"))
+    updated_session, result, status = advance_player_session(session, resolved_text)
+    if result is None:
+        return (
+            *_noop_run_outputs(),
+            gr.update(value=None),
+            updated_session,
+            _status_with_voice_notes(status, voice_notes),
+            gr.update(value=""),
+        )
+
+    response_audio, tts_status = synthesize_text_to_audio(
+        _latest_npc_response_text(result, updated_session or session),
+        engine=str(tts_engine or "off"),
+        language=language,
+    )
+    if tts_status:
+        voice_notes.append(tts_status)
     return (
         *_render_result_outputs(
             result,
@@ -1835,8 +1929,9 @@ def _advance_player_mode(
             api_key="",
             language=language,
         ),
+        gr.update(value=response_audio),
         updated_session,
-        status,
+        _status_with_voice_notes(status, voice_notes),
         gr.update(value=""),
     )
 
@@ -1852,11 +1947,33 @@ def _player_mode_language_updates(provider: str, language_choice: str) -> list[A
             placeholder=labels["player_input_placeholder"],
         ),
         gr.update(value=labels["player_submit"]),
+        gr.update(
+            label=labels["player_voice_input"],
+        ),
+        gr.update(
+            label=labels["player_voice_output"],
+        ),
+        gr.update(
+            label=labels["player_stt_engine"],
+            choices=stt_engine_choices(language),
+        ),
+        gr.update(
+            label=labels["player_tts_engine"],
+            choices=tts_engine_choices(language),
+        ),
     ]
 
 
 def _player_mode_provider_updates(provider: str, language_choice: str) -> list[Any]:
-    panel_update, input_update, submit_update = _player_mode_language_updates(
+    (
+        panel_update,
+        input_update,
+        submit_update,
+        voice_input_update,
+        voice_output_update,
+        stt_update,
+        tts_update,
+    ) = _player_mode_language_updates(
         provider,
         language_choice,
     )
@@ -1865,6 +1982,10 @@ def _player_mode_provider_updates(provider: str, language_choice: str) -> list[A
         gr.update(value=""),
         input_update,
         submit_update,
+        voice_input_update,
+        voice_output_update,
+        stt_update,
+        tts_update,
         None,
     ]
 
@@ -3578,6 +3699,24 @@ def build_app() -> gr.Blocks:
         player_session_state = gr.State(value=None)
         with gr.Column(visible=False, elem_id="player-mode-panel") as player_panel:
             player_status = gr.Markdown("", elem_id="player-status")
+            player_stt_engine = gr.Dropdown(
+                label=labels["player_stt_engine"],
+                choices=stt_engine_choices("ko"),
+                value="off",
+                elem_id="player-stt-engine",
+            )
+            player_tts_engine = gr.Dropdown(
+                label=labels["player_tts_engine"],
+                choices=tts_engine_choices("ko"),
+                value="off",
+                elem_id="player-tts-engine",
+            )
+            player_voice_input = gr.Audio(
+                label=labels["player_voice_input"],
+                sources=["microphone", "upload"],
+                type="filepath",
+                elem_id="player-voice-input",
+            )
             player_input = gr.Textbox(
                 label=labels["player_input"],
                 placeholder=labels["player_input_placeholder"],
@@ -3585,6 +3724,12 @@ def build_app() -> gr.Blocks:
                 elem_id="player-input",
             )
             player_submit = gr.Button(labels["player_submit"], elem_id="player-submit")
+            player_voice_output = gr.Audio(
+                label=labels["player_voice_output"],
+                type="filepath",
+                interactive=False,
+                elem_id="player-voice-output",
+            )
         summary = gr.Textbox(label=labels["summary"], interactive=False)
         action_chart = gr.Plot(
             label=labels["action_chart"],
@@ -3824,7 +3969,15 @@ def build_app() -> gr.Blocks:
         language.change(
             _player_mode_language_updates,
             inputs=[provider, language],
-            outputs=[player_panel, player_input, player_submit],
+            outputs=[
+                player_panel,
+                player_input,
+                player_submit,
+                player_voice_input,
+                player_voice_output,
+                player_stt_engine,
+                player_tts_engine,
+            ],
         )
         scenario.change(
             _scenario_agent_count_update,
@@ -3864,7 +4017,17 @@ def build_app() -> gr.Blocks:
         provider.change(
             _player_mode_provider_updates,
             inputs=[provider, language],
-            outputs=[player_panel, player_status, player_input, player_submit, player_session_state],
+            outputs=[
+                player_panel,
+                player_status,
+                player_input,
+                player_submit,
+                player_voice_input,
+                player_voice_output,
+                player_stt_engine,
+                player_tts_engine,
+                player_session_state,
+            ],
         )
         tick_scrubber.change(
             _tick_focus_markdown,
@@ -3953,6 +4116,7 @@ def build_app() -> gr.Blocks:
                 spatial_heatmap_view,
                 action_flow_view,
                 mini_map_view,
+                player_voice_output,
                 player_session_state,
                 player_status,
             ],
@@ -3960,7 +4124,13 @@ def build_app() -> gr.Blocks:
         )
         player_submit.click(
             _advance_player_mode,
-            inputs=[player_session_state, player_input],
+            inputs=[
+                player_session_state,
+                player_input,
+                player_voice_input,
+                player_stt_engine,
+                player_tts_engine,
+            ],
             outputs=[
                 timeline,
                 thread_view,
@@ -3980,6 +4150,7 @@ def build_app() -> gr.Blocks:
                 spatial_heatmap_view,
                 action_flow_view,
                 mini_map_view,
+                player_voice_output,
                 player_session_state,
                 player_status,
                 player_input,
@@ -3987,7 +4158,13 @@ def build_app() -> gr.Blocks:
         )
         player_input.submit(
             _advance_player_mode,
-            inputs=[player_session_state, player_input],
+            inputs=[
+                player_session_state,
+                player_input,
+                player_voice_input,
+                player_stt_engine,
+                player_tts_engine,
+            ],
             outputs=[
                 timeline,
                 thread_view,
@@ -4007,6 +4184,7 @@ def build_app() -> gr.Blocks:
                 spatial_heatmap_view,
                 action_flow_view,
                 mini_map_view,
+                player_voice_output,
                 player_session_state,
                 player_status,
                 player_input,
