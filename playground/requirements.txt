@@ -1,6 +1,4 @@
 knoema-engine @ git+https://github.com/Celovin/knoema.git@main
-gradio>=5.20,<6
-gradio_client>=1.7
 huggingface_hub>=0.24,<1.0
 pydantic>=2.8,<2.10
 plotly>=5.24
