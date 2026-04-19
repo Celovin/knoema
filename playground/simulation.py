@@ -10,7 +10,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-from knoema.cli import SimulationRunConfig, load_run_config
+from knoema.cli import (
+    CliAgentConfig,
+    CliEventConfig,
+    CliPersonalityConfig,
+    SimulationRunConfig,
+    load_run_config,
+)
 from knoema.llm import AnthropicClient, LocalClient, OpenAIClient
 from knoema.persona import Persona
 from knoema.protocols import LLMClient, Message
@@ -18,6 +24,17 @@ from knoema.simulator import SimulationLogEntry, Simulator
 from knoema.types import Personality
 
 Provider = Literal["Replay only", "OpenAI", "Anthropic"]
+AGENT_COUNT_MIN = 1
+AGENT_COUNT_MAX = 30
+AGENT_RESIZE_JITTER = 0.05
+PERSONALITY_FIELDS = (
+    "openness",
+    "conscientiousness",
+    "extraversion",
+    "agreeableness",
+    "neuroticism",
+)
+JITTER_STEPS = (-0.05, -0.025, 0.0, 0.025, 0.05)
 
 SCENARIO_DIR = Path(__file__).resolve().parent / "scenarios"
 DEFAULT_SCENARIOS: dict[str, str] = {
@@ -52,6 +69,10 @@ def scenario_path(name: str) -> Path:
     return SCENARIO_DIR / filename
 
 
+def scenario_default_agent_count(name: str) -> int:
+    return len(load_run_config(scenario_path(name)).agents)
+
+
 def run_playground_scenario(
     *,
     scenario_name: str,
@@ -66,6 +87,7 @@ def run_playground_scenario(
     agreeableness: float,
     neuroticism: float,
     ticks: int,
+    agent_count: int | None = None,
     language: str = "en",
 ) -> PlaygroundResult:
     """Run a short scenario and return UI-ready artifacts.
@@ -75,7 +97,9 @@ def run_playground_scenario(
     """
 
     config = load_run_config(scenario_path(scenario_name))
-    agents = [agent.to_domain() for agent in config.agents]
+    target_agent_count = len(config.agents) if agent_count is None else int(agent_count)
+    agent_configs = _resize_agent_pool(config.agents, target_agent_count)
+    agents = [agent.to_domain() for agent in agent_configs]
     agents[0] = _customize_primary_agent(
         agents[0],
         name=primary_name,
@@ -87,7 +111,7 @@ def run_playground_scenario(
         neuroticism=neuroticism,
     )
     environment = config.environment.to_domain()
-    for agent_config in config.agents:
+    for agent_config in agent_configs:
         if agent_config.location_path is not None:
             environment.set_agent_location(agent_config.agent_id, agent_config.location_path)
 
@@ -105,7 +129,7 @@ def run_playground_scenario(
         ),
         language=language if language in {"ko", "ja", "zh"} else config.prompt_language,
     )
-    for event in config.events:
+    for event in _filter_events_for_agent_pool(config.events, agent_configs):
         simulator.scheduler.schedule(event.to_domain())
 
     _run_ticks(simulator, ticks=max(1, min(ticks, 24)))
@@ -122,6 +146,66 @@ def run_playground_scenario(
         agent_count=len(agents),
         tick_count=len({entry.tick for entry in simulator.logs}),
     )
+
+
+def _resize_agent_pool(
+    agent_configs: list[CliAgentConfig], target_count: int
+) -> list[CliAgentConfig]:
+    clamped_target = max(AGENT_COUNT_MIN, min(int(target_count), AGENT_COUNT_MAX))
+    resized = [agent.model_copy(deep=True) for agent in agent_configs[:clamped_target]]
+    if clamped_target <= len(agent_configs):
+        return resized
+
+    base_agent = agent_configs[-1]
+    while len(resized) < clamped_target:
+        duplicate_index = len(resized) + 1
+        resized.append(
+            base_agent.model_copy(
+                deep=True,
+                update={
+                    "agent_id": f"{base_agent.agent_id}-{duplicate_index}",
+                    "name": f"{base_agent.name}-{duplicate_index}",
+                    "personality": _jitter_personality(base_agent, duplicate_index),
+                    "location_path": None,
+                },
+            )
+        )
+    return resized
+
+
+def _filter_events_for_agent_pool(
+    events: list[CliEventConfig], agent_configs: list[CliAgentConfig]
+) -> list[CliEventConfig]:
+    allowed_agent_ids = {agent.agent_id for agent in agent_configs}
+    filtered_events: list[CliEventConfig] = []
+    for event in events:
+        participants = [
+            participant for participant in event.participants if participant in allowed_agent_ids
+        ]
+        if event.participants and not participants:
+            continue
+        filtered_events.append(
+            event.model_copy(deep=True, update={"participants": participants})
+        )
+    return filtered_events
+
+
+def _jitter_personality(
+    agent_config: CliAgentConfig, duplicate_index: int
+) -> CliPersonalityConfig:
+    base_values = agent_config.personality.model_dump()
+    jittered_values: dict[str, float] = {}
+    for offset, trait_name in enumerate(PERSONALITY_FIELDS):
+        jitter = JITTER_STEPS[(duplicate_index + offset) % len(JITTER_STEPS)]
+        jittered_values[trait_name] = round(
+            _clamp_unit(float(base_values[trait_name]) + jitter),
+            3,
+        )
+    return agent_config.personality.model_copy(update=jittered_values)
+
+
+def _clamp_unit(value: float) -> float:
+    return max(0.0, min(1.0, value))
 
 
 def _customize_primary_agent(
@@ -201,7 +285,11 @@ def _scripted_responder(*, agent_ids: list[str], fallback: str, language: str = 
             "",
         )
         user_prompt = next(
-            (message.get("content", "") for message in reversed(messages) if message.get("role") == "user"),
+            (
+                message.get("content", "")
+                for message in reversed(messages)
+                if message.get("role") == "user"
+            ),
             "",
         )
         agent_id = _extract_agent_id(system_prompt) or (agent_ids[0] if agent_ids else "agent")

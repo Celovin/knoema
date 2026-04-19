@@ -8,9 +8,28 @@ import gradio as gr
 import plotly.graph_objects as go
 
 try:
-    from .simulation import Provider, host_key_active, run_playground_scenario, scenario_choices
+    from .simulation import (
+        AGENT_COUNT_MAX,
+        AGENT_COUNT_MIN,
+        Provider,
+        host_key_active,
+        run_playground_scenario,
+        scenario_choices,
+        scenario_default_agent_count,
+    )
 except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
-    from simulation import Provider, host_key_active, run_playground_scenario, scenario_choices
+    from simulation import (
+        AGENT_COUNT_MAX,
+        AGENT_COUNT_MIN,
+        Provider,
+        host_key_active,
+        run_playground_scenario,
+        scenario_choices,
+        scenario_default_agent_count,
+    )
+
+
+LANGUAGE_CHOICES = ["한국어", "English"]
 
 
 def _normalize_provider(provider: str) -> Provider:
@@ -36,6 +55,7 @@ def _run(
     agreeableness: float,
     neuroticism: float,
     ticks: int,
+    agent_count: int,
     language_choice: str = "한국어",
 ) -> tuple[str, go.Figure, str, str, str]:
     lang = "ko" if language_choice == "한국어" else "en"
@@ -52,6 +72,7 @@ def _run(
         agreeableness=agreeableness,
         neuroticism=neuroticism,
         ticks=ticks,
+        agent_count=agent_count,
         language=lang,
     )
     host_provider = host_key_active(_normalize_provider(provider), api_key)
@@ -61,14 +82,14 @@ def _run(
             f"틱: {result.tick_count} | 로그 항목: {result.log_count}개"
         )
         if host_provider:
-            summary += f" | (셀로빈 호스팅 {host_provider} 키 사용 중 — 데모 한정)"
+            summary += f" | (셀로빈 호스팅 {host_provider} 키 사용 중 - 데모 한정)"
     else:
         summary = (
             f"Mode: {result.mode} | Agents: {result.agent_count} | "
             f"Ticks: {result.tick_count} | Log entries: {result.log_count}"
         )
         if host_provider:
-            summary += f" | (Celovin host {host_provider} key in use — demo only)"
+            summary += f" | (Celovin host {host_provider} key in use - demo only)"
     return (
         result.timeline_markdown,
         _relationship_figure(result.relationship_rows, language=lang),
@@ -76,6 +97,10 @@ def _run(
         result.download_path,
         summary,
     )
+
+
+def _scenario_agent_count_update(scenario_name: str) -> dict[str, Any]:
+    return gr.update(value=scenario_default_agent_count(scenario_name))
 
 
 def _relationship_figure(rows: list[dict[str, Any]], *, language: str = "en") -> go.Figure:
@@ -234,6 +259,10 @@ LABELS = {
         "extraversion": "외향성",
         "agreeableness": "친화성",
         "neuroticism": "신경성",
+        "agents": "에이전트 수",
+        "agents_info": (
+            "시나리오 기본값보다 크게 설정하면 마지막 페르소나를 바탕으로 추가 에이전트를 자동 생성합니다."
+        ),
         "ticks": "틱 수",
         "run": "시뮬레이션 실행",
         "summary": "실행 요약",
@@ -265,6 +294,10 @@ LABELS = {
         "extraversion": "Extraversion",
         "agreeableness": "Agreeableness",
         "neuroticism": "Neuroticism",
+        "agents": "Agents",
+        "agents_info": (
+            "How many agents take part. Extras above the scenario default are auto-generated."
+        ),
         "ticks": "Ticks",
         "run": "Run simulation",
         "summary": "Run summary",
@@ -298,12 +331,13 @@ footer {{display: none !important;}}
 
 def build_app() -> gr.Blocks:
     labels = LABELS["ko"]
+    default_scenario = scenario_choices()[0]
     with gr.Blocks(title="Knoema Playground", css=FOOTER_CSS, analytics_enabled=False) as demo:
         with gr.Row():
             language = gr.Radio(
                 label=labels["lang"],
-                choices=["한국어", "English"],
-                value="한국어",
+                choices=LANGUAGE_CHOICES,
+                value=LANGUAGE_CHOICES[0],
                 scale=0,
             )
         header = gr.Markdown(labels["header"])
@@ -311,7 +345,7 @@ def build_app() -> gr.Blocks:
             scenario = gr.Dropdown(
                 label=labels["scenario"],
                 choices=scenario_choices(),
-                value=scenario_choices()[0],
+                value=default_scenario,
             )
             provider = gr.Radio(
                 label=labels["mode"],
@@ -369,6 +403,15 @@ def build_app() -> gr.Blocks:
                 neuroticism = gr.Slider(
                     label=labels["neuroticism"], minimum=0, maximum=1, value=0.36
                 )
+                agent_count = gr.Slider(
+                    label=labels["agents"],
+                    info=labels["agents_info"],
+                    minimum=AGENT_COUNT_MIN,
+                    maximum=AGENT_COUNT_MAX,
+                    step=1,
+                    value=scenario_default_agent_count(default_scenario),
+                )
+            with gr.Row():
                 ticks = gr.Slider(
                     label=labels["ticks"], minimum=1, maximum=24, step=1, value=4
                 )
@@ -386,18 +429,23 @@ def build_app() -> gr.Blocks:
         download = gr.File(label=labels["download"])
 
         def _switch(lang_choice: str) -> list[Any]:
-            key = "ko" if lang_choice == "한국어" else "en"
+            key = "ko" if lang_choice == LANGUAGE_CHOICES[0] else "en"
             t = LABELS[key]
             current_provider = provider.value
             new_provider_choices = [t["replay"], "OpenAI", "Anthropic"]
             new_provider_value = (
-                t["replay"] if current_provider in (LABELS["ko"]["replay"], LABELS["en"]["replay"])
+                t["replay"]
+                if current_provider in (LABELS["ko"]["replay"], LABELS["en"]["replay"])
                 else current_provider
             )
             return [
                 t["header"],
                 gr.update(label=t["scenario"]),
-                gr.update(label=t["mode"], choices=new_provider_choices, value=new_provider_value),
+                gr.update(
+                    label=t["mode"],
+                    choices=new_provider_choices,
+                    value=new_provider_value,
+                ),
                 gr.update(label=t["api_key"], placeholder=t["api_key_ph"]),
                 gr.update(label=t["model"]),
                 gr.update(label=t["agent_panel"]),
@@ -408,6 +456,7 @@ def build_app() -> gr.Blocks:
                 gr.update(label=t["extraversion"]),
                 gr.update(label=t["agreeableness"]),
                 gr.update(label=t["neuroticism"]),
+                gr.update(label=t["agents"], info=t["agents_info"]),
                 gr.update(label=t["ticks"]),
                 gr.update(value=t["run"]),
                 gr.update(label=t["summary"]),
@@ -435,6 +484,7 @@ def build_app() -> gr.Blocks:
                 extraversion,
                 agreeableness,
                 neuroticism,
+                agent_count,
                 ticks,
                 run_button,
                 summary,
@@ -445,7 +495,11 @@ def build_app() -> gr.Blocks:
                 language,
             ],
         )
-
+        scenario.change(
+            _scenario_agent_count_update,
+            inputs=[scenario],
+            outputs=[agent_count],
+        )
         run_button.click(
             _run,
             inputs=[
@@ -461,6 +515,7 @@ def build_app() -> gr.Blocks:
                 agreeableness,
                 neuroticism,
                 ticks,
+                agent_count,
                 language,
             ],
             outputs=[timeline, graph, jsonl, download, summary],
