@@ -257,6 +257,8 @@ def build_app() -> gr.Blocks:
             model = gr.Dropdown(
                 label=L["model"],
                 choices=[
+                    "gpt-5.4",
+                    "gpt-5.4-mini",
                     "gpt-5",
                     "gpt-5-mini",
                     "gpt-4.1",
@@ -267,7 +269,7 @@ def build_app() -> gr.Blocks:
                     "claude-sonnet-4-6",
                     "claude-haiku-4-5-20251001",
                 ],
-                value="gpt-5-mini",
+                value="gpt-5.4-mini",
                 allow_custom_value=True,
             )
         agent_panel = gr.Accordion(L["agent_panel"], open=True)
