@@ -1370,14 +1370,30 @@ def _run(
             )
         if host_provider:
             summary += f" | (Celovin host {host_provider} key in use - demo only)"
+    agent_ids = sorted(
+        set(result.action_breakdown)
+        | set(result.memory_snapshot)
+        | {str(row["source"]) for row in result.relationship_rows}
+        | {str(row["target"]) for row in result.relationship_rows}
+    )
+    agent_colors = _agent_color_map(agent_ids)
     memory_snapshot, memory_agent, memory_markdown = _memory_inspector_outputs(
         result.memory_snapshot,
         language=language,
         batch_mode=batch_result is not None,
     )
     return (
-        result.timeline_markdown,
-        _relationship_figure(result.relationship_rows, language=language),
+        _timeline_markdown_with_agent_colors(
+            result.jsonl,
+            result.timeline_markdown,
+            agent_colors,
+            language=language,
+        ),
+        _relationship_figure(
+            result.relationship_rows,
+            language=language,
+            agent_colors=agent_colors,
+        ),
         result.monologue_markdown,
         result.plan_markdown,
         result.jsonl,
@@ -1807,7 +1823,16 @@ def _memory_inspector_markdown(
         return LABELS[language]["memory_empty"]
 
     memory = snapshot[agent_id]
-    lines = [f"### {escape(agent_id)}"]
+    color_map = _agent_color_map(sorted(snapshot))
+    agent_color = color_map.get(agent_id, "#0f172a")
+    lines = [
+        (
+            "<div style="
+            f"background:{agent_color}22;border-left:4px solid {agent_color};"
+            "padding:8px 12px;margin:0 0 12px 0;border-radius:6px;"
+            f'"><strong>{escape(agent_id)}</strong></div>'
+        )
+    ]
     lines.extend(
         _memory_section_lines(
             LABELS[language]["memory_short_term"],
@@ -1974,6 +1999,49 @@ def _batch_tick_focus_markdown(
     )
 
 
+def _timeline_markdown_with_agent_colors(
+    jsonl_text: str,
+    fallback_markdown: str,
+    agent_colors: dict[str, str],
+    *,
+    language: str = "en",
+) -> str:
+    rows: list[dict[str, Any]] = []
+    for line in str(jsonl_text).splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            payload = json.loads(stripped)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            rows.append(payload)
+
+    if not rows or any("record_type" in row for row in rows):
+        return fallback_markdown
+
+    header = "### 타임라인" if language == "ko" else "### Timeline"
+    tick_label = "틱" if language == "ko" else "Tick"
+    lines = [header]
+    for row in rows[:80]:
+        if "tick" not in row or not isinstance(row.get("action"), dict):
+            continue
+        action = row["action"]
+        agent_id = str(row.get("agent_id", "agent"))
+        target = str(action.get("target") or "").strip()
+        target_text = f" -> {escape(target)}" if target else ""
+        color = agent_colors.get(agent_id, "#0f172a")
+        timestamp = escape(str(row.get("timestamp", "")))
+        content = escape(str(action.get("content", "")).strip())
+        lines.append(
+            f"- **{tick_label} {int(row['tick']):02d}** `{timestamp}` "
+            f"<span style=\"color:{color}\">●</span> "
+            f"**{escape(agent_id)}{target_text}**: {content}"
+        )
+    return "\n".join(lines)
+
+
 def _top_action_counts_text(action_counts: dict[str, int]) -> str:
     if not action_counts:
         return "none"
@@ -1981,7 +2049,12 @@ def _top_action_counts_text(action_counts: dict[str, int]) -> str:
     return ", ".join(f"{action_type} ({count})" for action_type, count in ordered[:3])
 
 
-def _relationship_figure(rows: list[dict[str, Any]], *, language: str = "en") -> go.Figure:
+def _relationship_figure(
+    rows: list[dict[str, Any]],
+    *,
+    language: str = "en",
+    agent_colors: dict[str, str] | None = None,
+) -> go.Figure:
     title = "관계 그래프" if language == "ko" else "Relationship graph"
     empty_msg = (
         "관계 엣지가 아직 없습니다. 틱을 더 늘리거나 대화형 시나리오를 사용해 보세요."
@@ -2007,6 +2080,7 @@ def _relationship_figure(rows: list[dict[str, Any]], *, language: str = "en") ->
         return figure
 
     agents = sorted({str(row["source"]) for row in rows} | {str(row["target"]) for row in rows})
+    color_map = agent_colors or _agent_color_map(agents)
     positions = _sphere_positions(agents)
     edge_x: list[float | None] = []
     edge_y: list[float | None] = []
@@ -2020,18 +2094,11 @@ def _relationship_figure(rows: list[dict[str, Any]], *, language: str = "en") ->
         edge_y.extend([sy, ty, None])
         edge_z.extend([sz, tz, None])
 
-    trust_lookup: dict[str, float] = {}
-    for row in rows:
-        trust_lookup[str(row["source"])] = max(
-            trust_lookup.get(str(row["source"]), 0.0),
-            float(row.get("trust", 0.5)),
-        )
-
     node_x = [positions[agent][0] for agent in agents]
     node_y = [positions[agent][1] for agent in agents]
     node_z = [positions[agent][2] for agent in agents]
     node_text = list(agents)
-    node_color = [trust_lookup.get(agent, 0.5) for agent in agents]
+    node_color = [color_map.get(agent, "#0f172a") for agent in agents]
 
     figure = go.Figure(
         data=[
