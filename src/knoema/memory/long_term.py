@@ -102,6 +102,18 @@ class MemorySearchResult:
     final_score: float
 
 
+@dataclass(frozen=True, slots=True)
+class SelectiveForgettingResult:
+    """Summary of a selective forgetting pass."""
+
+    dropped_ids: tuple[str, ...]
+    retained_count: int
+
+    @property
+    def dropped_count(self) -> int:
+        return len(self.dropped_ids)
+
+
 class SQLiteFaissMemoryStore:
     """Persistent store that combines metadata in SQLite with vector search in FAISS."""
 
@@ -239,6 +251,65 @@ class SQLiteFaissMemoryStore:
             self._memory_ids.append(memory.id)
         self._index.add(np.asarray(embeddings, dtype=np.float32))
 
+    def apply_selective_forgetting(
+        self,
+        *,
+        as_of: datetime | None = None,
+        temporal_half_life_hours: float = 72.0,
+        importance_floor: float = 0.45,
+        retention_threshold: float = 0.50,
+        retain_at_least: int = 8,
+        preserve_memory_types: tuple[str, ...] = ("semantic", "procedural"),
+    ) -> SelectiveForgettingResult:
+        if temporal_half_life_hours <= 0.0 or not math.isfinite(temporal_half_life_hours):
+            raise ValueError("temporal_half_life_hours must be a positive finite value")
+        if not 0.0 <= importance_floor <= 1.0:
+            raise ValueError("importance_floor must be between 0.0 and 1.0")
+        if not 0.0 <= retention_threshold <= 1.0:
+            raise ValueError("retention_threshold must be between 0.0 and 1.0")
+        if retain_at_least < 0:
+            raise ValueError("retain_at_least must be non-negative")
+        if not self._memory_ids:
+            return SelectiveForgettingResult(dropped_ids=(), retained_count=0)
+
+        reference_time = as_of or max(memory.timestamp for memory in self._records.values())
+        candidate_scores: list[tuple[float, float, datetime, str]] = []
+        for memory_id in self._memory_ids:
+            memory = self._records[memory_id]
+            if memory.memory_type in preserve_memory_types:
+                continue
+            temporal_score = self._temporal_score(
+                memory.timestamp,
+                reference_time,
+                temporal_half_life_hours=temporal_half_life_hours,
+            )
+            retention_score = (0.6 * temporal_score) + (0.4 * memory.importance)
+            if memory.importance < importance_floor and retention_score < retention_threshold:
+                candidate_scores.append(
+                    (retention_score, memory.importance, memory.timestamp, memory_id)
+                )
+
+        if not candidate_scores:
+            return SelectiveForgettingResult(
+                dropped_ids=(),
+                retained_count=len(self._memory_ids),
+            )
+
+        drop_budget = max(0, len(self._memory_ids) - retain_at_least)
+        if drop_budget == 0:
+            return SelectiveForgettingResult(
+                dropped_ids=(),
+                retained_count=len(self._memory_ids),
+            )
+
+        candidate_scores.sort(key=lambda item: (item[0], item[1], item[2], item[3]))
+        dropped_ids = tuple(memory_id for *_, memory_id in candidate_scores[:drop_budget])
+        self._delete_memories(dropped_ids)
+        return SelectiveForgettingResult(
+            dropped_ids=dropped_ids,
+            retained_count=len(self._memory_ids),
+        )
+
     def retrieve(self, query: str, k: int = 5, recency_bias: float = 0.3) -> list[Memory]:
         if k < 1:
             raise ValueError(f"k must be positive, got {k!r}")
@@ -325,6 +396,30 @@ class SQLiteFaissMemoryStore:
     def all(self) -> list[Memory]:
         return [self._records[memory_id] for memory_id in self._memory_ids]
 
+    def _delete_memories(self, memory_ids: tuple[str, ...]) -> None:
+        if not memory_ids:
+            return
+        self._connection.executemany(
+            "DELETE FROM memories WHERE id = ?",
+            [(memory_id,) for memory_id in memory_ids],
+        )
+        self._connection.commit()
+        removed = set(memory_ids)
+        self._memory_ids = [memory_id for memory_id in self._memory_ids if memory_id not in removed]
+        for memory_id in memory_ids:
+            self._records.pop(memory_id, None)
+        self._rebuild_index()
+
+    def _rebuild_index(self) -> None:
+        self._index = faiss.IndexFlatIP(self.encoder.dimension)
+        if not self._memory_ids:
+            return
+        embeddings = [
+            self._records[memory_id].embedding or self.encoder.encode(self._records[memory_id].content)
+            for memory_id in self._memory_ids
+        ]
+        self._index.add(np.asarray(embeddings, dtype=np.float32))
+
     def close(self) -> None:
         self._connection.close()
 
@@ -364,4 +459,5 @@ __all__ = [
     "MemorySearchResult",
     "RetrievalWeights",
     "SQLiteFaissMemoryStore",
+    "SelectiveForgettingResult",
 ]
