@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 23:14 UTC by Codex
+**Last updated**: 2026-04-19 23:21 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -90,7 +90,7 @@
 - [x] 44. ToM Sally-Anne ablation across personality tiers - 2026-04-19 23:04 UTC, commit 67d6b99
 - [x] 45. HTN depth scaling experiment (depth 2→5) - 2026-04-19 23:08 UTC, commit f9eb25f
 - [x] 54. LoCoMo + MemoryAgentBench + MemoryArena benchmark integration - 2026-04-19 23:14 UTC, commit 1a00f7a
-- [ ] 55. Selective forgetting mechanism (4th competency)
+- [x] 55. Selective forgetting mechanism (4th competency) - 2026-04-19 23:21 UTC, commit b05f350
 - [ ] 56. NVIDIA ACE / Inworld latency comparison
 - [ ] 59. MLMF multi-layer memory framework
 - [ ] 60. Honesty-Humility cross-cultural caveat banner
