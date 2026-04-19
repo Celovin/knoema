@@ -167,8 +167,27 @@ def build_app() -> gr.Blocks:
                 value="Replay only",
             )
         with gr.Row():
-            api_key = gr.Textbox(label="API key", type="password", placeholder="Optional")
-            model = gr.Textbox(label="Model", value="gpt-4o-mini")
+            api_key = gr.Textbox(
+                label="API key",
+                type="password",
+                placeholder="Required for OpenAI/Anthropic, leave blank for Replay only",
+            )
+            model = gr.Dropdown(
+                label="Model",
+                choices=[
+                    "gpt-5",
+                    "gpt-5-mini",
+                    "gpt-4.1",
+                    "gpt-4o",
+                    "gpt-4o-mini",
+                    "o3-mini",
+                    "claude-opus-4-7",
+                    "claude-sonnet-4-6",
+                    "claude-haiku-4-5-20251001",
+                ],
+                value="gpt-5-mini",
+                allow_custom_value=True,
+            )
         with gr.Accordion("Primary agent controls", open=True):
             with gr.Row():
                 primary_name = gr.Textbox(label="Name", value="Mina")
@@ -211,7 +230,9 @@ def build_app() -> gr.Blocks:
                 ticks,
             ],
             outputs=[timeline, graph, jsonl, download, summary],
+            api_name="run",
         )
+    demo.queue()
     return demo
 
 
