@@ -46,7 +46,9 @@ from knoema.evaluation import (
 from knoema.game import NPC, GameSession, NPCResponse
 from knoema.llm import (
     AnthropicClient,
+    CachedLLMClient,
     LlamaCppClient,
+    LLMCacheStats,
     LLMCallRecord,
     LLMGateway,
     LocalClient,
@@ -131,6 +133,7 @@ __all__ = [
     "BenchmarkConfig",
     "BenchmarkReport",
     "BenchmarkRun",
+    "CachedLLMClient",
     "ComparisonPair",
     "ComparisonRow",
     "ContentFilter",
@@ -148,6 +151,7 @@ __all__ = [
     "HierarchicalPlanner",
     "InteractionOutcome",
     "KnoemaConfig",
+    "LLMCacheStats",
     "LLMCallRecord",
     "LLMClient",
     "LLMGateway",

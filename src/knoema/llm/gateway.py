@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from dataclasses import dataclass
+import json
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass, field
+from hashlib import sha256
+from threading import Event, Lock
 from time import perf_counter
 
 from knoema.protocols import LLMClient, Message
@@ -18,6 +21,23 @@ class LLMCallRecord:
     elapsed_seconds: float
     success: bool
     error: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class LLMCacheStats:
+    hits: int
+    misses: int
+    entries: int
+
+    @property
+    def requests(self) -> int:
+        return self.hits + self.misses
+
+    @property
+    def hit_rate(self) -> float:
+        if self.requests == 0:
+            return 0.0
+        return self.hits / self.requests
 
 
 class LLMGateway:
@@ -67,6 +87,73 @@ class LLMGateway:
         raise RuntimeError("all LLM providers failed") from last_error
 
 
+class CachedLLMClient:
+    """Thread-safe in-memory cache for identical LLM prompts."""
+
+    def __init__(self, client: LLMClient) -> None:
+        self._client = client
+        self._cache: dict[str, str] = {}
+        self._inflight: dict[str, _PendingCall] = {}
+        self._lock = Lock()
+        self._hits = 0
+        self._misses = 0
+
+    def complete(self, messages: Sequence[Message], **kwargs: object) -> str:
+        cache_key = _cache_key(messages, kwargs)
+        is_leader = False
+        with self._lock:
+            cached = self._cache.get(cache_key)
+            if cached is not None:
+                self._hits += 1
+                return cached
+            pending = self._inflight.get(cache_key)
+            if pending is None:
+                pending = _PendingCall()
+                self._inflight[cache_key] = pending
+                self._misses += 1
+                is_leader = True
+            else:
+                self._hits += 1
+
+        if is_leader:
+            try:
+                response = self._client.complete(messages, **kwargs)
+            except Exception as exc:
+                with self._lock:
+                    pending.error = exc
+                    pending.event.set()
+                    self._inflight.pop(cache_key, None)
+                raise
+            with self._lock:
+                self._cache[cache_key] = response
+                pending.response = response
+                pending.event.set()
+                self._inflight.pop(cache_key, None)
+            return response
+
+        pending.event.wait()
+        if pending.error is not None:
+            raise pending.error
+        if pending.response is None:
+            raise RuntimeError("cached LLM request completed without a response")
+        return pending.response
+
+    def cache_stats(self) -> LLMCacheStats:
+        with self._lock:
+            return LLMCacheStats(
+                hits=self._hits,
+                misses=self._misses,
+                entries=len(self._cache),
+            )
+
+
+@dataclass(slots=True)
+class _PendingCall:
+    event: Event = field(default_factory=Event)
+    response: str | None = None
+    error: Exception | None = None
+
+
 def estimate_tokens(text: str) -> int:
     if not text:
         return 0
@@ -81,4 +168,26 @@ def _messages_to_text(messages: Sequence[Message]) -> str:
     return "\n".join(message.get("content", "") for message in messages)
 
 
-__all__ = ["LLMCallRecord", "LLMGateway", "estimate_cost_usd", "estimate_tokens"]
+def _cache_key(messages: Sequence[Message], kwargs: Mapping[str, object]) -> str:
+    payload = {
+        "messages": [
+            {
+                "role": message.get("role", ""),
+                "content": message.get("content", ""),
+            }
+            for message in messages
+        ],
+        "kwargs": sorted(kwargs.items()),
+    }
+    encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    return sha256(encoded.encode("utf-8")).hexdigest()
+
+
+__all__ = [
+    "CachedLLMClient",
+    "LLMCacheStats",
+    "LLMCallRecord",
+    "LLMGateway",
+    "estimate_cost_usd",
+    "estimate_tokens",
+]

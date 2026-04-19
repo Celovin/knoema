@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import suppress
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
@@ -24,12 +25,12 @@ from knoema.game import (
 from knoema.llm import LocalClient
 from knoema.memory import ShortTermMemoryBuffer, SQLiteFaissMemoryStore
 from knoema.persona import Persona
-from knoema.planning import AgentContext, HierarchicalPlanner, WorldState
+from knoema.planning import AgentContext, HierarchicalPlanner, Task, WorldState
 from knoema.prompts import PromptLanguage, normalize_prompt_language
 from knoema.protocols import LLMClient
-from knoema.relationship import RelationshipGraph
+from knoema.relationship import Relationship, RelationshipGraph
 from knoema.theory_of_mind import TheoryOfMindEngine
-from knoema.types import Action, Memory, WorldEvent
+from knoema.types import Action, Emotion, Memory, WorldEvent
 
 
 @dataclass(slots=True)
@@ -72,6 +73,18 @@ class RoutineConflict:
         return self.queue[self.position]
 
 
+@dataclass(slots=True)
+class PreparedAgentTick:
+    agent: Persona
+    context: EnvironmentContext
+    memories: list[Memory]
+    relationships: dict[str, Relationship]
+    emotion: Emotion
+    trigger: WorldEvent | None
+    current_task: Task | None
+    immediate_action: Action | None
+
+
 def _shared_resource_id(location_path: tuple[str, ...]) -> str | None:
     leaf = location_path[-1].strip().lower()
     if not leaf:
@@ -94,6 +107,7 @@ class Simulator:
         llm: LLMClient | None = None,
         language: str | PromptLanguage = "en",
         planning_depth: int = 3,
+        parallel_decisions: bool = False,
     ) -> None:
         if not agents:
             raise ValueError("agents must not be empty")
@@ -128,6 +142,7 @@ class Simulator:
         self.theory_of_mind = TheoryOfMindEngine.from_personas(agents)
         self.planner = HierarchicalPlanner(default_depth=planning_depth)
         self.planning_depth = planning_depth
+        self.parallel_decisions = bool(parallel_decisions)
         self.social_learner = SocialLearner()
         self.logs: list[SimulationLogEntry] = []
         self.monologues: list[Monologue] = []
@@ -197,6 +212,27 @@ class Simulator:
             self.dispatcher.dispatch(event)
         routine_entries = {agent.agent_id: self._apply_routine(agent) for agent in self.agents}
         routine_conflicts = self._routine_conflicts(routine_entries)
+        if self._parallel_tick_enabled():
+            prepared_steps = [
+                self._prepare_agent_tick(
+                    agent,
+                    routine_entry=routine_entries[agent.agent_id],
+                    routine_conflict=routine_conflicts.get(agent.agent_id),
+                )
+                for agent in self.agents
+            ]
+            worker_count = min(len(prepared_steps), 8)
+            with ThreadPoolExecutor(max_workers=worker_count) as executor:
+                resolved_steps = list(
+                    executor.map(
+                        lambda prepared: self._execute_prepared_agent_tick(prepared, tick=tick),
+                        prepared_steps,
+                    )
+                )
+            for prepared, (monologue, action) in zip(prepared_steps, resolved_steps, strict=True):
+                self._record_monologue(monologue)
+                self._record_action(tick, prepared.agent, action)
+            return
         for agent in self.agents:
             routine_entry = routine_entries[agent.agent_id]
             routine_conflict = routine_conflicts.get(agent.agent_id)
@@ -221,6 +257,87 @@ class Simulator:
                 routine_conflict=routine_conflict,
             )
             self._record_action(tick, agent, action)
+
+    def _parallel_tick_enabled(self) -> bool:
+        return self.parallel_decisions and len(self.agents) > 1 and not isinstance(
+            self.decision_engine.llm,
+            LocalClient,
+        )
+
+    def _prepare_agent_tick(
+        self,
+        agent: Persona,
+        *,
+        routine_entry: RoutineEntry | None,
+        routine_conflict: RoutineConflict | None,
+    ) -> PreparedAgentTick:
+        context = self.environment.get_context(agent.agent_id)
+        if routine_entry is not None:
+            context = self._routine_context_with_conflict(
+                context,
+                routine_entry,
+                routine_conflict=routine_conflict,
+            )
+        current_task = None
+        if agent.planning:
+            current_task = self.planner.select_next_task(
+                agent.agent_id,
+                WorldState(tick=len(self.logs), facts={"planning_enabled": True}),
+            )
+        immediate_action = None
+        if agent.social_learning:
+            immediate_action = self.social_learner.consider_imitation(
+                agent.agent_id,
+                WorldState(tick=len(self.logs), facts={"social_learning_enabled": True}),
+            )
+        trigger = self._salient_trigger(context, agent.agent_id)
+        if immediate_action is None and routine_entry is not None and routine_conflict is not None:
+            immediate_action = self._routine_conflict_action(
+                agent,
+                context,
+                routine_entry,
+                routine_conflict,
+            )
+        if immediate_action is None and routine_entry is not None and trigger is None:
+            immediate_action = self._routine_default_action(agent, context, routine_entry)
+        return PreparedAgentTick(
+            agent=agent,
+            context=context,
+            memories=list(self.short_term_memories[agent.agent_id].recent(8)),
+            relationships=dict(self.relationships.neighbors(agent.agent_id)),
+            emotion=self.emotions[agent.agent_id].current,
+            trigger=trigger,
+            current_task=current_task,
+            immediate_action=immediate_action,
+        )
+
+    def _execute_prepared_agent_tick(
+        self,
+        prepared: PreparedAgentTick,
+        *,
+        tick: int,
+    ) -> tuple[Monologue, Action]:
+        monologue = self.monologue_generator.generate(
+            prepared.agent,
+            prepared.context,
+            tick=tick,
+            language=self.language,
+        )
+        if prepared.immediate_action is not None:
+            return monologue, prepared.immediate_action
+        return (
+            monologue,
+            self.decision_engine.decide(
+                persona=prepared.agent,
+                memories=prepared.memories,
+                relationships=prepared.relationships,
+                environment=prepared.context,
+                emotion=prepared.emotion,
+                trigger=prepared.trigger,
+                theory_of_mind_context=self.theory_of_mind.context_for(prepared.agent.agent_id),
+                current_task=prepared.current_task,
+            ),
+        )
 
     def _decide_for_agent(
         self,

@@ -27,7 +27,7 @@ from knoema.cli import (
 from knoema.cognition import Monologue
 from knoema.game.inventory import Inventory
 from knoema.game.schedule import RoutineEntry
-from knoema.llm import AnthropicClient, LocalClient, OpenAIClient
+from knoema.llm import AnthropicClient, CachedLLMClient, LLMCacheStats, LocalClient, OpenAIClient
 from knoema.persona import Persona
 from knoema.planning import HierarchicalPlanner, Task
 from knoema.protocols import LLMClient, Message
@@ -386,6 +386,8 @@ class PlaygroundResult:
     agent_count: int
     tick_count: int
     batch_result: BatchResult | None = None
+    llm_cache_stats: LLMCacheStats | None = None
+    parallel_llm_enabled: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -1178,6 +1180,11 @@ def run_playground_scenario(
             agent_count=len(sample_artifacts.agents),
             tick_count=len({entry.tick for entry in sample_artifacts.simulator.logs}),
             batch_result=batch_result,
+            llm_cache_stats=_aggregate_llm_cache_stats(artifacts_by_seed),
+            parallel_llm_enabled=any(
+                bool(getattr(artifacts.simulator, "parallel_decisions", False))
+                for artifacts in artifacts_by_seed
+            ),
         )
     finally:
         for artifacts in artifacts_by_seed:
@@ -1221,6 +1228,8 @@ def playground_result_from_artifacts(
         log_count=len(artifacts.simulator.logs),
         agent_count=len(artifacts.agents),
         tick_count=len({entry.tick for entry in artifacts.simulator.logs}),
+        llm_cache_stats=_extract_llm_cache_stats(artifacts.simulator.decision_engine.llm),
+        parallel_llm_enabled=bool(getattr(artifacts.simulator, "parallel_decisions", False)),
     )
 
 
@@ -1507,20 +1516,23 @@ def _prepare_playground_run(
         seed=seed,
     )
 
+    llm_client = _build_client(
+        provider=provider,
+        api_key=api_key,
+        model=model,
+        config=config,
+        agents=agents,
+        language=language,
+    )
+
     simulator = Simulator(
         agents=agents,
         environment=environment,
         tick_duration_minutes=config.runtime.tick_duration_minutes,
-        llm=_build_client(
-            provider=provider,
-            api_key=api_key,
-            model=model,
-            config=config,
-            agents=agents,
-            language=language,
-        ),
+        llm=llm_client,
         language=language if language in {"ko", "ja", "zh"} else config.prompt_language,
         planning_depth=max(2, min(int(planning_depth), 4)),
+        parallel_decisions=_parallel_llm_enabled(llm_client),
     )
     for event in _filter_events_for_agent_pool(config.events, agent_configs):
         simulator.scheduler.schedule(event.to_domain())
@@ -2360,16 +2372,45 @@ def _build_client(
     if provider == "OpenAI":
         key = user_key or host_openai_key
         if key:
-            return OpenAIClient(model=model.strip() or "gpt-4o-mini", api_key=key)
+            return CachedLLMClient(OpenAIClient(model=model.strip() or "gpt-4o-mini", api_key=key))
     if provider == "Anthropic":
         key = user_key or host_anthropic_key
         if key:
-            return AnthropicClient(
-                model=model.strip() or "claude-3-5-haiku-latest",
-                api_key=key,
+            return CachedLLMClient(
+                AnthropicClient(
+                    model=model.strip() or "claude-3-5-haiku-latest",
+                    api_key=key,
+                )
             )
     return LocalClient(
         _scripted_responder(agents=agents, fallback=config.local_response, language=language)
+    )
+
+
+def _parallel_llm_enabled(client: LLMClient) -> bool:
+    return not isinstance(client, LocalClient)
+
+
+def _extract_llm_cache_stats(client: LLMClient) -> LLMCacheStats | None:
+    if isinstance(client, CachedLLMClient):
+        return client.cache_stats()
+    return None
+
+
+def _aggregate_llm_cache_stats(
+    artifacts_by_seed: list[PlaygroundRunArtifacts],
+) -> LLMCacheStats | None:
+    stats = [
+        cache_stats
+        for artifacts in artifacts_by_seed
+        if (cache_stats := _extract_llm_cache_stats(artifacts.simulator.decision_engine.llm)) is not None
+    ]
+    if not stats:
+        return None
+    return LLMCacheStats(
+        hits=sum(stat.hits for stat in stats),
+        misses=sum(stat.misses for stat in stats),
+        entries=sum(stat.entries for stat in stats),
     )
 
 
