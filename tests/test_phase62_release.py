@@ -42,7 +42,7 @@ def test_phase62_changelog_promotes_unreleased_notes() -> None:
     assert "Phase 53 red-team safety suite" in release_section
 
 
-def test_phase62_release_docs_surface_current_version_and_pending_doi() -> None:
+def test_phase62_release_docs_surface_current_version_and_doi() -> None:
     for readme_path in sorted(Path(".").glob("README*.md")):
         readme = readme_path.read_text(encoding="utf-8")
         assert f"## Current version\n\n{RELEASE_VERSION}" in readme
@@ -53,6 +53,6 @@ def test_phase62_release_docs_surface_current_version_and_pending_doi() -> None:
 
     assert f"git tag {RELEASE_TAG}" in release
     assert f"Release | `{RELEASE_TAG}`" in indexing
-    assert "v0.2.0 DOI | Pending Zenodo webhook wire-in" in indexing
+    assert "v0.2.0 DOI | Wired: `10.5281/zenodo.19645166`" in indexing
     assert r"\textbf{Software version:} \knoemaversion" in paper
     assert r"\newcommand{\knoemaversion}{0.2.0}" in paper

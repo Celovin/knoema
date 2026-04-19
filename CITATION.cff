@@ -8,7 +8,7 @@ authors:
 version: 0.2.0
 date-released: 2026-04-19
 license: MIT
-doi: 10.5281/zenodo.19643410
+doi: 10.5281/zenodo.19643409
 repository-code: "https://github.com/Celovin/knoema"
 url: "https://github.com/Celovin/knoema"
 abstract: "Knoema Engine is an MIT-licensed runtime for persistent social agents whose memory, relationships, emotions, environment context, deterministic logs, and optional LLM-backed decisions remain inspectable outside a model prompt."

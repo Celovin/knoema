@@ -3,7 +3,7 @@
   "paper": {
     "title": "Knoema Engine: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation",
     "arxiv_id": "ARXIV_ID_PENDING",
-    "doi": "10.5281/zenodo.19643410",
+    "doi": "10.5281/zenodo.19643409",
     "repository": "https://github.com/Celovin/knoema",
     "license": "MIT",
     "framework": "Python",

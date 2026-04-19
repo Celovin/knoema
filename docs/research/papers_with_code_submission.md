@@ -8,7 +8,7 @@ This packet is ready for external submission after the arXiv identifier is assig
 | --- | --- |
 | Title | Knoema Engine: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation |
 | arXiv ID | `ARXIV_ID_PENDING` |
-| DOI | `10.5281/zenodo.19643410` |
+| DOI | `10.5281/zenodo.19643409` |
 | Repository | `https://github.com/Celovin/knoema` |
 | License | MIT |
 | Framework | Python |

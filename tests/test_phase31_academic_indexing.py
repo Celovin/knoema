@@ -49,10 +49,11 @@ def test_phase31_readme_and_docs_surface_indexing_status() -> None:
     docs = Path("docs/research/academic-indexing.md").read_text(encoding="utf-8")
     mkdocs = Path("mkdocs.yml").read_text(encoding="utf-8")
 
-    assert "zenodo.org/badge/DOI/10.5281/zenodo.19643410.svg" in readme
-    assert "doi.org/10.5281/zenodo.19643410" in readme
+    assert "zenodo.org/badge/DOI/10.5281/zenodo.19643409.svg" in readme
+    assert "doi.org/10.5281/zenodo.19643409" in readme
     assert "Papers%20with%20Code-submission%20packet" in readme
-    assert "10.5281/zenodo.19643410" in docs
-    assert "v0.2.0 DOI | Pending Zenodo webhook wire-in" in docs
+    assert "10.5281/zenodo.19643409" in docs
+    assert "10.5281/zenodo.19645166" in docs
+    assert "v0.2.0 DOI | Wired: `10.5281/zenodo.19645166`" in docs
     assert "Papers with Code entry | Pending external submission" in docs
     assert "Academic Indexing: research/academic-indexing.md" in mkdocs

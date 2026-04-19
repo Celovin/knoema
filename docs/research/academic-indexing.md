@@ -8,7 +8,9 @@ Phase 31 prepared Knoema Engine for archival citation and research indexing. Pha
 | --- | --- |
 | Repository | `https://github.com/Celovin/knoema` |
 | Release | `v0.2.0` |
-| DOI | [`10.5281/zenodo.19643410`](https://doi.org/10.5281/zenodo.19643410) |
+| Concept DOI (always-latest) | [`10.5281/zenodo.19643409`](https://doi.org/10.5281/zenodo.19643409) |
+| v0.2.0 DOI | [`10.5281/zenodo.19645166`](https://doi.org/10.5281/zenodo.19645166) |
+| v0.1.1 DOI | [`10.5281/zenodo.19643410`](https://doi.org/10.5281/zenodo.19643410) |
 | License | MIT |
 | Software metadata | `CITATION.cff` |
 | Zenodo metadata | `.zenodo.json` |
@@ -28,7 +30,9 @@ Use this packet when connecting the repository to Zenodo:
 - Contact: `hello@celovin.com`
 - Upload type: `software`
 - Version: `0.2.0`
-- Latest issued DOI evidence: `10.5281/zenodo.19643410` (v0.1.1)
+- Concept DOI (recommended for citation, always resolves to latest version): `10.5281/zenodo.19643409`
+- Latest version DOI: `10.5281/zenodo.19645166` (v0.2.0)
+- Earlier version DOI: `10.5281/zenodo.19643410` (v0.1.1)
 - License: MIT, encoded for Zenodo as `mit`
 - Repository: `https://github.com/Celovin/knoema`
 - Related paper source: `https://github.com/Celovin/knoema/blob/main/paper/main.tex`
@@ -38,9 +42,9 @@ Recommended owner steps:
 
 1. Sign in to Zenodo with the Celovin-controlled account.
 2. Enable GitHub integration for `Celovin/knoema`.
-3. Import or archive the `v0.2.0` release. Keep `v0.1.1` as the first issued DOI evidence until Zenodo assigns the new release DOI.
+3. Import or archive the `v0.2.0` release; both `v0.1.1` (`19643410`) and `v0.2.0` (`19645166`) are now archived under the shared concept record (`19643409`).
 4. Confirm Zenodo imported `.zenodo.json` and `CITATION.cff`.
-5. Copy the assigned DOI into `CITATION.cff`, `.zenodo.json`, `README.md`, `README.ko.md`, `paper/README.md`, and the website research page.
+5. Reference the concept DOI (`10.5281/zenodo.19643409`) in citations and badges so readers always resolve to the latest archived version.
 
 README badge replacement after DOI assignment:
 
@@ -86,8 +90,9 @@ Knoema Engine is an open runtime for persistent social agents. It exposes memory
 | --- | --- |
 | `CITATION.cff` | Prepared |
 | `.zenodo.json` | Prepared |
-| Zenodo DOI | Issued: `10.5281/zenodo.19643410` (2026-04-19, v0.1.1) |
-| v0.2.0 DOI | Pending Zenodo webhook wire-in |
+| Zenodo concept DOI | Wired: `10.5281/zenodo.19643409` (always-latest) |
+| v0.2.0 DOI | Wired: `10.5281/zenodo.19645166` (2026-04-19) |
+| v0.1.1 DOI | Archived: `10.5281/zenodo.19643410` |
 | Papers with Code packet | Prepared locally with `ARXIV_ID_PENDING` |
 | Papers with Code entry | Pending external submission after arXiv ID |
 | README badges | DOI badge live (all eight language variants) |
