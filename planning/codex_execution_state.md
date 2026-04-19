@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 19:27 UTC by Codex
+**Last updated**: 2026-04-19 19:35 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -75,7 +75,7 @@
 
 ## Group 8 — 성능·UX·접근성 (4-5h)
 
-- [ ] 12. Export run as HTML report
+- [x] 12. Export run as HTML report - 2026-04-19 19:35 UTC, commit 361368c
 - [ ] 18. WebSocket live tick streaming
 - [ ] 30. LLM cache + async parallel I/O
 - [ ] 52. Dark mode + theme system
