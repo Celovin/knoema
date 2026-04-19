@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 16:05 UTC by Codex
+**Last updated**: 2026-04-19 16:19 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -36,7 +36,7 @@
 
 - [x] 7. 3-tab multi-agent personality customization - 2026-04-19 15:51 UTC, commit 677952c
 - [x] 16. 20 social action verbs - 2026-04-19 16:05 UTC, commit 6e9f115
-- [ ] 25. Batch run mode (N=10/30/100)
+- [x] 25. Batch run mode (N=10/30/100) - 2026-04-19 16:19 UTC, commit 64bd0c5
 - [ ] 31. 15 game-domain action verbs (combat/inventory/quest/faction)
 
 ## Group 5 — 시각화 (6-7h)
