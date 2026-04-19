@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 20:37 UTC by Codex
+**Last updated**: 2026-04-19 20:47 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -62,7 +62,7 @@
 
 ## Group 7 — Application C (Academic depth) (8-10h)
 
-- [ ] 24. Statistical analysis panel (chi-square + Mann-Whitney baseline)
+- [x] 24. Statistical analysis panel (chi-square + Mann-Whitney baseline) - 2026-04-19 20:47 UTC, commit cca3ca6
 - [ ] 27. CSV + LaTeX export
 - [ ] 29. Competitive comparison cards
 - [ ] 35. OSF Preregistration generator (generic template)
