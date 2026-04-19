@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from html import escape
-from typing import Any
+from typing import Any, cast
 
 import gradio as gr
 import plotly.graph_objects as go
@@ -19,6 +19,7 @@ try:
         PERSONA_TRAIT_DEFAULTS,
         PERSONA_TRAIT_FIELDS,
         Provider,
+        advance_player_session,
         agent_editor_defaults,
         build_playground_hint,
         compute_trait_correlation_study,
@@ -34,6 +35,7 @@ try:
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
+        start_player_session,
         trait_correlation_summary,
     )
 except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
@@ -44,6 +46,7 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         PERSONA_TRAIT_DEFAULTS,
         PERSONA_TRAIT_FIELDS,
         Provider,
+        advance_player_session,
         agent_editor_defaults,
         build_playground_hint,
         compute_trait_correlation_study,
@@ -59,6 +62,7 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
+        start_player_session,
         trait_correlation_summary,
     )
 
@@ -623,6 +627,16 @@ LABELS["en"]["current_plan_empty"] = "No HTN plan has been generated yet."
 LABELS["en"]["agent_panel"] = "Agent personalities"
 LABELS["en"]["agent_tab_prefix"] = "Agent"
 LABELS["en"]["agent_tab_disabled"] = "Increase the agent count to unlock this editor."
+LABELS["ko"]["player_mode"] = "플레이어 모드"
+LABELS["ko"]["player_input"] = "플레이어 행동"
+LABELS["ko"]["player_input_placeholder"] = "예: Bjorn에게 맥주 1개 주문"
+LABELS["ko"]["player_submit"] = "행동 실행"
+LABELS["ko"]["player_status"] = "플레이어 진행 상태"
+LABELS["en"]["player_mode"] = "Player mode"
+LABELS["en"]["player_input"] = "Player action"
+LABELS["en"]["player_input_placeholder"] = "Example: Ask Bjorn for one beer"
+LABELS["en"]["player_submit"] = "Submit action"
+LABELS["en"]["player_status"] = "Player session status"
 LABELS["ko"]["routine_preset"] = "일일 루틴 프리셋"
 LABELS["ko"]["routine_preset_info"] = "학생, 직장인, 야간 근로자, NPC 상인, 자유 상태 중 하나를 선택할 수 있습니다."
 LABELS["ko"]["routine_text"] = "일일 루틴 (선택)"
@@ -1018,17 +1032,50 @@ def _cultural_prior_choices(language: str) -> list[tuple[str, str]]:
 
 def _provider_choices(language: str) -> list[str]:
     labels = LABELS[language]
-    return [labels["replay"], "OpenAI", "Anthropic"]
+    return [labels["replay"], "OpenAI", "Anthropic", labels["player_mode"]]
 
 
-def _normalize_provider(provider: str) -> Provider:
+def _normalize_provider(provider: str) -> str:
     if provider in {LABELS["ko"]["replay"], LABELS["en"]["replay"]}:
         return "Replay only"
+    if provider in {LABELS["ko"]["player_mode"], LABELS["en"]["player_mode"]}:
+        return "Player mode"
     if provider == "OpenAI":
         return "OpenAI"
     if provider == "Anthropic":
         return "Anthropic"
     return "Replay only"
+
+
+def _provider_label(provider: str, language: str) -> str:
+    labels = LABELS[language]
+    if provider == "Replay only":
+        return labels["replay"]
+    if provider == "Player mode":
+        return labels["player_mode"]
+    return provider
+
+
+RunOutputs = tuple[
+    str,
+    str,
+    go.Figure,
+    str,
+    str,
+    str,
+    str,
+    str,
+    go.Figure,
+    dict[str, Any],
+    str,
+    dict[str, dict[str, list[dict[str, Any]]]],
+    dict[str, Any],
+    str,
+    go.Figure,
+    go.Figure,
+    go.Figure,
+    go.Figure,
+]
 
 
 def _trait_slider(
@@ -1238,7 +1285,7 @@ def _build_agent_editor_tab(
     return controls
 
 
-def _run(
+def _resolve_run_request(
     scenario_name: str,
     environment_preset_id: str | None,
     cultural_prior_id: str | None,
@@ -1248,26 +1295,7 @@ def _run(
     primary_name: str,
     primary_age: int,
     *trait_and_runtime: Any,
-) -> tuple[
-    str,
-    str,
-    go.Figure,
-    str,
-    str,
-    str,
-    str,
-    str,
-    go.Figure,
-    dict[str, Any],
-    str,
-    dict[str, dict[str, list[dict[str, Any]]]],
-    dict[str, Any],
-    str,
-    go.Figure,
-    go.Figure,
-    go.Figure,
-    go.Figure,
-]:
+) -> dict[str, Any]:
     primary_routine_text = ""
     primary_routine_specified = False
     extra_agent_routine_specified = False
@@ -1519,36 +1547,43 @@ def _run(
                 override["routine_text"] = routine_text
             agent_overrides.append(override)
 
-    result = run_playground_scenario(
-        scenario_name=scenario_name,
-        provider=_normalize_provider(provider),
-        api_key=api_key,
-        model=model,
-        primary_name=primary_name,
-        primary_age=int(primary_age),
-        openness=float(personality_overrides["openness"]),
-        conscientiousness=float(personality_overrides["conscientiousness"]),
-        extraversion=float(personality_overrides["extraversion"]),
-        agreeableness=float(personality_overrides["agreeableness"]),
-        neuroticism=float(personality_overrides["neuroticism"]),
-        personality_overrides=personality_overrides,
-        ticks=int(ticks),
-        agent_count=int(agent_count),
-        environment_preset_id=environment_preset_id,
-        cultural_prior_id=cultural_prior_id,
-        agent_overrides=agent_overrides,
-        primary_planning_enabled=bool(htn_enabled),
-        planning_depth=int(planning_depth),
-        batch_mode=bool(batch_mode),
-        batch_runs=int(batch_runs),
-        master_seed=int(master_seed),
-        language=language,
-    )
-    host_provider = host_key_active(_normalize_provider(provider), api_key)
+    normalized_provider = _normalize_provider(provider)
+    return {
+        "scenario_name": scenario_name,
+        "environment_preset_id": environment_preset_id,
+        "cultural_prior_id": cultural_prior_id,
+        "provider": normalized_provider,
+        "provider_label": _provider_label(normalized_provider, language),
+        "api_key": api_key,
+        "model": model,
+        "primary_name": primary_name,
+        "primary_age": int(primary_age),
+        "personality_overrides": personality_overrides,
+        "ticks": int(ticks),
+        "agent_count": int(agent_count),
+        "agent_overrides": agent_overrides,
+        "primary_planning_enabled": bool(htn_enabled),
+        "planning_depth": int(planning_depth),
+        "batch_mode": bool(batch_mode),
+        "batch_runs": int(batch_runs),
+        "master_seed": int(master_seed),
+        "language": language,
+    }
+
+
+def _render_result_outputs(
+    result: Any,
+    *,
+    mode_label: str,
+    provider: str,
+    api_key: str,
+    language: str,
+) -> RunOutputs:
+    host_provider = host_key_active(provider, api_key)
     batch_result = getattr(result, "batch_result", None)
     if language == "ko":
         summary = (
-            f"모드: {result.mode} | 에이전트: {result.agent_count}명 | "
+            f"모드: {mode_label} | 에이전트: {result.agent_count}명 | "
             f"틱: {result.tick_count} | 로그 항목: {result.log_count}"
         )
         if batch_result is not None:
@@ -1561,7 +1596,7 @@ def _run(
             summary += f" | (Celovin 호스트 {host_provider} 키 사용 중 - 데모 전용)"
     else:
         summary = (
-            f"Mode: {result.mode} | Agents: {result.agent_count} | "
+            f"Mode: {mode_label} | Agents: {result.agent_count} | "
             f"Ticks: {result.tick_count} | Log entries: {result.log_count}"
         )
         if batch_result is not None:
@@ -1618,6 +1653,220 @@ def _run(
         _action_flow_figure(result.jsonl, language=language),
         _mini_map_figure(result.jsonl, -1, language=language),
     )
+
+
+def _run(
+    scenario_name: str,
+    environment_preset_id: str | None,
+    cultural_prior_id: str | None,
+    provider: str,
+    api_key: str,
+    model: str,
+    primary_name: str,
+    primary_age: int,
+    *trait_and_runtime: Any,
+) -> RunOutputs:
+    request = _resolve_run_request(
+        scenario_name,
+        environment_preset_id,
+        cultural_prior_id,
+        provider,
+        api_key,
+        model,
+        primary_name,
+        primary_age,
+        *trait_and_runtime,
+    )
+    if request["provider"] == "Player mode":
+        _session, result, _status = start_player_session(
+            scenario_name=str(request["scenario_name"]),
+            primary_name=str(request["primary_name"]),
+            primary_age=int(request["primary_age"]),
+            personality_overrides=dict(request["personality_overrides"]),
+            ticks=int(request["ticks"]),
+            agent_count=int(request["agent_count"]),
+            environment_preset_id=cast("str | None", request["environment_preset_id"]),
+            cultural_prior_id=cast("str | None", request["cultural_prior_id"]),
+            agent_overrides=cast("list[dict[str, Any]]", request["agent_overrides"]),
+            primary_planning_enabled=bool(request["primary_planning_enabled"]),
+            planning_depth=int(request["planning_depth"]),
+            language=str(request["language"]),
+        )
+    else:
+        result = run_playground_scenario(
+            scenario_name=str(request["scenario_name"]),
+            provider=cast("Provider", request["provider"]),
+            api_key=str(request["api_key"]),
+            model=str(request["model"]),
+            primary_name=str(request["primary_name"]),
+            primary_age=int(request["primary_age"]),
+            openness=float(dict(request["personality_overrides"])["openness"]),
+            conscientiousness=float(dict(request["personality_overrides"])["conscientiousness"]),
+            extraversion=float(dict(request["personality_overrides"])["extraversion"]),
+            agreeableness=float(dict(request["personality_overrides"])["agreeableness"]),
+            neuroticism=float(dict(request["personality_overrides"])["neuroticism"]),
+            personality_overrides=dict(request["personality_overrides"]),
+            ticks=int(request["ticks"]),
+            agent_count=int(request["agent_count"]),
+            environment_preset_id=cast("str | None", request["environment_preset_id"]),
+            cultural_prior_id=cast("str | None", request["cultural_prior_id"]),
+            agent_overrides=cast("list[dict[str, Any]]", request["agent_overrides"]),
+            primary_planning_enabled=bool(request["primary_planning_enabled"]),
+            planning_depth=int(request["planning_depth"]),
+            batch_mode=bool(request["batch_mode"]),
+            batch_runs=int(request["batch_runs"]),
+            master_seed=int(request["master_seed"]),
+            language=str(request["language"]),
+        )
+    return _render_result_outputs(
+        result,
+        mode_label=str(request["provider_label"]),
+        provider=str(request["provider"]),
+        api_key=str(request["api_key"]),
+        language=str(request["language"]),
+    )
+
+
+def _run_with_player_mode(
+    scenario_name: str,
+    environment_preset_id: str | None,
+    cultural_prior_id: str | None,
+    provider: str,
+    api_key: str,
+    model: str,
+    primary_name: str,
+    primary_age: int,
+    *trait_and_runtime: Any,
+) -> tuple[Any, ...]:
+    request = _resolve_run_request(
+        scenario_name,
+        environment_preset_id,
+        cultural_prior_id,
+        provider,
+        api_key,
+        model,
+        primary_name,
+        primary_age,
+        *trait_and_runtime,
+    )
+    if request["provider"] == "Player mode":
+        session, result, status = start_player_session(
+            scenario_name=str(request["scenario_name"]),
+            primary_name=str(request["primary_name"]),
+            primary_age=int(request["primary_age"]),
+            personality_overrides=dict(request["personality_overrides"]),
+            ticks=int(request["ticks"]),
+            agent_count=int(request["agent_count"]),
+            environment_preset_id=cast("str | None", request["environment_preset_id"]),
+            cultural_prior_id=cast("str | None", request["cultural_prior_id"]),
+            agent_overrides=cast("list[dict[str, Any]]", request["agent_overrides"]),
+            primary_planning_enabled=bool(request["primary_planning_enabled"]),
+            planning_depth=int(request["planning_depth"]),
+            language=str(request["language"]),
+        )
+        return (
+            *_render_result_outputs(
+                result,
+                mode_label=str(request["provider_label"]),
+                provider=str(request["provider"]),
+                api_key="",
+                language=str(request["language"]),
+            ),
+            session,
+            status,
+        )
+
+    result = run_playground_scenario(
+        scenario_name=str(request["scenario_name"]),
+        provider=cast("Provider", request["provider"]),
+        api_key=str(request["api_key"]),
+        model=str(request["model"]),
+        primary_name=str(request["primary_name"]),
+        primary_age=int(request["primary_age"]),
+        openness=float(dict(request["personality_overrides"])["openness"]),
+        conscientiousness=float(dict(request["personality_overrides"])["conscientiousness"]),
+        extraversion=float(dict(request["personality_overrides"])["extraversion"]),
+        agreeableness=float(dict(request["personality_overrides"])["agreeableness"]),
+        neuroticism=float(dict(request["personality_overrides"])["neuroticism"]),
+        personality_overrides=dict(request["personality_overrides"]),
+        ticks=int(request["ticks"]),
+        agent_count=int(request["agent_count"]),
+        environment_preset_id=cast("str | None", request["environment_preset_id"]),
+        cultural_prior_id=cast("str | None", request["cultural_prior_id"]),
+        agent_overrides=cast("list[dict[str, Any]]", request["agent_overrides"]),
+        primary_planning_enabled=bool(request["primary_planning_enabled"]),
+        planning_depth=int(request["planning_depth"]),
+        batch_mode=bool(request["batch_mode"]),
+        batch_runs=int(request["batch_runs"]),
+        master_seed=int(request["master_seed"]),
+        language=str(request["language"]),
+    )
+    return (
+        *_render_result_outputs(
+            result,
+            mode_label=str(request["provider_label"]),
+            provider=str(request["provider"]),
+            api_key=str(request["api_key"]),
+            language=str(request["language"]),
+        ),
+        None,
+        "",
+    )
+
+
+def _noop_run_outputs() -> tuple[Any, ...]:
+    return tuple(gr.update() for _ in range(18))
+
+
+def _advance_player_mode(
+    session: dict[str, Any] | None,
+    player_text: str,
+) -> tuple[Any, ...]:
+    updated_session, result, status = advance_player_session(session, player_text)
+    if result is None:
+        return (*_noop_run_outputs(), updated_session, status, gr.update(value=""))
+
+    language = str((updated_session or session or {}).get("language", "en"))
+    return (
+        *_render_result_outputs(
+            result,
+            mode_label=_provider_label("Player mode", language),
+            provider="Player mode",
+            api_key="",
+            language=language,
+        ),
+        updated_session,
+        status,
+        gr.update(value=""),
+    )
+
+
+def _player_mode_language_updates(provider: str, language_choice: str) -> list[Any]:
+    language = _language_key(language_choice)
+    labels = LABELS[language]
+    is_player_mode = _normalize_provider(provider) == "Player mode"
+    return [
+        gr.update(visible=is_player_mode),
+        gr.update(
+            label=labels["player_input"],
+            placeholder=labels["player_input_placeholder"],
+        ),
+        gr.update(value=labels["player_submit"]),
+    ]
+
+
+def _player_mode_provider_updates(provider: str, language_choice: str) -> list[Any]:
+    panel_update, input_update, submit_update = _player_mode_language_updates(
+        provider,
+        language_choice,
+    )
+    return [
+        panel_update,
+        gr.update(value=""),
+        input_update,
+        submit_update,
+        None,
+    ]
 
 
 def _scenario_agent_count_update(scenario_name: str) -> dict[str, Any]:
@@ -1777,7 +2026,10 @@ def _language_updates(
 ) -> list[Any]:
     key = _language_key(lang_choice)
     labels = LABELS[key]
-    provider_value = labels["replay"] if _normalize_provider(current_provider or labels["replay"]) == "Replay only" else current_provider
+    provider_value = _provider_label(
+        _normalize_provider(current_provider or labels["replay"]),
+        key,
+    )
     scenario_value = current_scenario or scenario_choices()[0]
     environment_value = current_environment or _default_environment_id()
     agent_count_value = int(current_agent_count or scenario_default_agent_count(scenario_value))
@@ -3323,6 +3575,16 @@ def build_app() -> gr.Blocks:
                 elem_id="master-seed-number",
             )
             run_button = gr.Button(labels["run"], variant="primary", elem_id="run-button")
+        player_session_state = gr.State(value=None)
+        with gr.Column(visible=False, elem_id="player-mode-panel") as player_panel:
+            player_status = gr.Markdown("", elem_id="player-status")
+            player_input = gr.Textbox(
+                label=labels["player_input"],
+                placeholder=labels["player_input_placeholder"],
+                lines=2,
+                elem_id="player-input",
+            )
+            player_submit = gr.Button(labels["player_submit"], elem_id="player-submit")
         summary = gr.Textbox(label=labels["summary"], interactive=False)
         action_chart = gr.Plot(
             label=labels["action_chart"],
@@ -3559,6 +3821,11 @@ def build_app() -> gr.Blocks:
             inputs=[language],
             outputs=language_outputs,
         )
+        language.change(
+            _player_mode_language_updates,
+            inputs=[provider, language],
+            outputs=[player_panel, player_input, player_submit],
+        )
         scenario.change(
             _scenario_agent_count_update,
             inputs=[scenario],
@@ -3594,6 +3861,11 @@ def build_app() -> gr.Blocks:
             inputs=[batch_mode],
             outputs=[batch_runs, master_seed],
         )
+        provider.change(
+            _player_mode_provider_updates,
+            inputs=[provider, language],
+            outputs=[player_panel, player_status, player_input, player_submit, player_session_state],
+        )
         tick_scrubber.change(
             _tick_focus_markdown,
             inputs=[jsonl, tick_scrubber, language],
@@ -3624,7 +3896,7 @@ def build_app() -> gr.Blocks:
                 outputs=[controls["routine_text"]],
             )
         run_button.click(
-            _run,
+            _run_with_player_mode,
             inputs=[
                 scenario,
                 environment_preset,
@@ -3681,8 +3953,64 @@ def build_app() -> gr.Blocks:
                 spatial_heatmap_view,
                 action_flow_view,
                 mini_map_view,
+                player_session_state,
+                player_status,
             ],
             api_name="run",
+        )
+        player_submit.click(
+            _advance_player_mode,
+            inputs=[player_session_state, player_input],
+            outputs=[
+                timeline,
+                thread_view,
+                graph,
+                monologue_view,
+                current_plan_view,
+                jsonl,
+                download,
+                summary,
+                action_chart,
+                tick_scrubber,
+                tick_focus,
+                memory_snapshot_state,
+                inspector_agent,
+                memory_view,
+                emotion_view,
+                spatial_heatmap_view,
+                action_flow_view,
+                mini_map_view,
+                player_session_state,
+                player_status,
+                player_input,
+            ],
+        )
+        player_input.submit(
+            _advance_player_mode,
+            inputs=[player_session_state, player_input],
+            outputs=[
+                timeline,
+                thread_view,
+                graph,
+                monologue_view,
+                current_plan_view,
+                jsonl,
+                download,
+                summary,
+                action_chart,
+                tick_scrubber,
+                tick_focus,
+                memory_snapshot_state,
+                inspector_agent,
+                memory_view,
+                emotion_view,
+                spatial_heatmap_view,
+                action_flow_view,
+                mini_map_view,
+                player_session_state,
+                player_status,
+                player_input,
+            ],
         )
 
     demo.queue()

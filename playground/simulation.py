@@ -13,7 +13,7 @@ from datetime import datetime
 from functools import lru_cache
 from html import escape
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import yaml
 
@@ -37,6 +37,7 @@ from knoema.types import (
     GAME_ACTION_TYPES,
     PERSONALITY_NEUTRAL_DEFAULTS,
     SOCIAL_ACTION_TYPES,
+    Action,
     Personality,
 )
 
@@ -410,6 +411,14 @@ class BatchResult:
 class PlaygroundRunArtifacts:
     agents: list[Persona]
     simulator: Simulator
+
+
+@dataclass(frozen=True, slots=True)
+class StoredPlayerAction:
+    action_type: str
+    target: str | None
+    content: str
+    metadata: dict[str, Any]
 
 
 @dataclass(frozen=True, slots=True)
@@ -941,30 +950,11 @@ def run_playground_scenario(
             seed=master_seed if batch_mode else None,
         )
         try:
-            jsonl = _logs_to_jsonl(artifacts.simulator.logs)
-            download_path = _write_download_file(jsonl)
-            return PlaygroundResult(
+            return playground_result_from_artifacts(
                 scenario_name=scenario_name,
                 mode=provider,
-                timeline_markdown=_timeline_markdown(artifacts.simulator.logs, language=language),
-                monologue_markdown=_monologue_markdown(
-                    artifacts.simulator.monologues,
-                    artifacts.simulator.monologue_valence,
-                    language=language,
-                ),
-                plan_markdown=_plan_markdown(
-                    artifacts.simulator.planner,
-                    artifacts.agents,
-                    language=language,
-                ),
-                action_breakdown=_action_breakdown(artifacts.simulator.logs),
-                memory_snapshot=_memory_snapshot(artifacts.simulator),
-                relationship_rows=_relationship_rows(artifacts.simulator),
-                jsonl=jsonl,
-                download_path=download_path,
-                log_count=len(artifacts.simulator.logs),
-                agent_count=len(artifacts.agents),
-                tick_count=len({entry.tick for entry in artifacts.simulator.logs}),
+                artifacts=artifacts,
+                language=language,
             )
         finally:
             artifacts.simulator.close()
@@ -1031,6 +1021,156 @@ def run_playground_scenario(
             artifacts.simulator.close()
 
 
+def playground_result_from_artifacts(
+    *,
+    scenario_name: str,
+    mode: Provider,
+    artifacts: PlaygroundRunArtifacts,
+    language: str = "en",
+) -> PlaygroundResult:
+    jsonl = _logs_to_jsonl(artifacts.simulator.logs)
+    download_path = _write_download_file(jsonl)
+    return PlaygroundResult(
+        scenario_name=scenario_name,
+        mode=mode,
+        timeline_markdown=_timeline_markdown(artifacts.simulator.logs, language=language),
+        monologue_markdown=_monologue_markdown(
+            artifacts.simulator.monologues,
+            artifacts.simulator.monologue_valence,
+            language=language,
+        ),
+        plan_markdown=_plan_markdown(
+            artifacts.simulator.planner,
+            artifacts.agents,
+            language=language,
+        ),
+        action_breakdown=_action_breakdown(artifacts.simulator.logs),
+        memory_snapshot=_memory_snapshot(artifacts.simulator),
+        relationship_rows=_relationship_rows(artifacts.simulator),
+        jsonl=jsonl,
+        download_path=download_path,
+        log_count=len(artifacts.simulator.logs),
+        agent_count=len(artifacts.agents),
+        tick_count=len({entry.tick for entry in artifacts.simulator.logs}),
+    )
+
+
+def start_player_session(
+    *,
+    scenario_name: str,
+    primary_name: str,
+    primary_age: int,
+    personality_overrides: dict[str, float],
+    ticks: int,
+    agent_count: int | None = None,
+    environment_preset_id: str | None = None,
+    cultural_prior_id: str | None = None,
+    agent_overrides: list[dict[str, Any]] | None = None,
+    primary_planning_enabled: bool = False,
+    planning_depth: int = 3,
+    language: str = "en",
+) -> tuple[dict[str, Any], PlaygroundResult, str]:
+    session = {
+        "scenario_name": scenario_name,
+        "primary_name": primary_name,
+        "primary_age": int(primary_age),
+        "personality_overrides": dict(personality_overrides),
+        "ticks": max(1, min(int(ticks), 24)),
+        "agent_count": None if agent_count is None else int(agent_count),
+        "environment_preset_id": environment_preset_id,
+        "cultural_prior_id": cultural_prior_id,
+        "agent_overrides": list(agent_overrides or []),
+        "primary_planning_enabled": bool(primary_planning_enabled),
+        "planning_depth": int(planning_depth),
+        "language": language,
+        "player_actions": [],
+    }
+    artifacts = _player_session_artifacts(session)
+    try:
+        player_agent_id = artifacts.agents[0].agent_id
+        player_name = artifacts.agents[0].name
+        session["player_agent_id"] = player_agent_id
+        session["player_name"] = player_name
+        result = playground_result_from_artifacts(
+            scenario_name=scenario_name,
+            mode="Replay only",
+            artifacts=artifacts,
+            language=language,
+        )
+    finally:
+        artifacts.simulator.close()
+    return session, result, _player_status_text(session, awaiting_input=True)
+
+
+def advance_player_session(
+    session: dict[str, Any] | None,
+    player_text: str,
+) -> tuple[dict[str, Any] | None, PlaygroundResult | None, str]:
+    if session is None:
+        return None, None, "Run Player mode first."
+
+    artifacts = _player_session_artifacts(session)
+    try:
+        language = str(session.get("language", "en"))
+        current_tick = len(session.get("player_actions", []))
+        if current_tick >= int(session.get("ticks", 1)):
+            result = playground_result_from_artifacts(
+                scenario_name=str(session["scenario_name"]),
+                mode="Replay only",
+                artifacts=artifacts,
+                language=language,
+            )
+            return session, result, _player_status_text(session, complete=True)
+
+        player_agent_id = str(session["player_agent_id"])
+        player_context = artifacts.simulator.environment.get_context(player_agent_id)
+        parsed = _parse_player_input(
+            player_text,
+            agent_id=player_agent_id,
+            timestamp=player_context.timestamp,
+            location=player_context.location,
+            roster=[(agent.agent_id, agent.name) for agent in artifacts.agents],
+            language=language,
+        )
+        if parsed is None:
+            result = playground_result_from_artifacts(
+                scenario_name=str(session["scenario_name"]),
+                mode="Replay only",
+                artifacts=artifacts,
+                language=language,
+            )
+            return session, result, _player_help_text(language)
+
+        _run_player_tick(
+            artifacts.simulator,
+            tick=current_tick,
+            player_agent_id=player_agent_id,
+            player_action=parsed,
+            language=language,
+        )
+        updated_session = {
+            **session,
+            "player_actions": [
+                *list(session.get("player_actions", [])),
+                {
+                    "action_type": parsed.action_type,
+                    "target": parsed.target,
+                    "content": parsed.content,
+                    "metadata": dict(parsed.metadata),
+                },
+            ],
+        }
+        result = playground_result_from_artifacts(
+            scenario_name=str(updated_session["scenario_name"]),
+            mode="Replay only",
+            artifacts=artifacts,
+            language=language,
+        )
+        return updated_session, result, _player_status_text(updated_session, awaiting_input=True)
+    finally:
+        artifacts.simulator.close()
+
+
 def _execute_playground_run(
     *,
     scenario_name: str,
@@ -1046,6 +1186,55 @@ def _execute_playground_run(
     neuroticism: float,
     personality_overrides: dict[str, float] | None,
     ticks: int,
+    agent_count: int | None,
+    environment_preset_id: str | None,
+    cultural_prior_id: str | None,
+    agent_overrides: list[dict[str, Any]] | None,
+    primary_planning_enabled: bool,
+    planning_depth: int,
+    language: str,
+    seed: int | None,
+) -> PlaygroundRunArtifacts:
+    artifacts = _prepare_playground_run(
+        scenario_name=scenario_name,
+        provider=provider,
+        api_key=api_key,
+        model=model,
+        primary_name=primary_name,
+        primary_age=primary_age,
+        openness=openness,
+        conscientiousness=conscientiousness,
+        extraversion=extraversion,
+        agreeableness=agreeableness,
+        neuroticism=neuroticism,
+        personality_overrides=personality_overrides,
+        agent_count=agent_count,
+        environment_preset_id=environment_preset_id,
+        cultural_prior_id=cultural_prior_id,
+        agent_overrides=agent_overrides,
+        primary_planning_enabled=primary_planning_enabled,
+        planning_depth=planning_depth,
+        language=language,
+        seed=seed,
+    )
+    _run_ticks(artifacts.simulator, ticks=max(1, min(int(ticks), 24)))
+    return artifacts
+
+
+def _prepare_playground_run(
+    *,
+    scenario_name: str,
+    provider: Provider,
+    api_key: str,
+    model: str,
+    primary_name: str,
+    primary_age: int,
+    openness: float,
+    conscientiousness: float,
+    extraversion: float,
+    agreeableness: float,
+    neuroticism: float,
+    personality_overrides: dict[str, float] | None,
     agent_count: int | None,
     environment_preset_id: str | None,
     cultural_prior_id: str | None,
@@ -1150,8 +1339,131 @@ def _execute_playground_run(
     for event in _filter_events_for_agent_pool(config.events, agent_configs):
         simulator.scheduler.schedule(event.to_domain())
 
-    _run_ticks(simulator, ticks=max(1, min(int(ticks), 24)))
     return PlaygroundRunArtifacts(agents=agents, simulator=simulator)
+
+
+def _player_session_artifacts(session: dict[str, Any]) -> PlaygroundRunArtifacts:
+    personality_overrides = dict(session.get("personality_overrides", {}))
+    artifacts = _prepare_playground_run(
+        scenario_name=str(session["scenario_name"]),
+        provider="Replay only",
+        api_key="",
+        model="",
+        primary_name=str(session["primary_name"]),
+        primary_age=int(session["primary_age"]),
+        openness=float(personality_overrides.get("openness", 0.5)),
+        conscientiousness=float(personality_overrides.get("conscientiousness", 0.5)),
+        extraversion=float(personality_overrides.get("extraversion", 0.5)),
+        agreeableness=float(personality_overrides.get("agreeableness", 0.5)),
+        neuroticism=float(personality_overrides.get("neuroticism", 0.5)),
+        personality_overrides=personality_overrides,
+        agent_count=(None if session.get("agent_count") is None else int(session["agent_count"])),
+        environment_preset_id=cast("str | None", session.get("environment_preset_id")),
+        cultural_prior_id=cast("str | None", session.get("cultural_prior_id")),
+        agent_overrides=cast("list[dict[str, Any]] | None", session.get("agent_overrides")),
+        primary_planning_enabled=bool(session.get("primary_planning_enabled", False)),
+        planning_depth=int(session.get("planning_depth", 3)),
+        language=str(session.get("language", "en")),
+        seed=None,
+    )
+    player_agent_id = str(session.get("player_agent_id", artifacts.agents[0].agent_id))
+    language = str(session.get("language", "en"))
+    for tick, payload in enumerate(list(session.get("player_actions", []))):
+        if not isinstance(payload, dict):
+            continue
+        _run_player_tick(
+            artifacts.simulator,
+            tick=tick,
+            player_agent_id=player_agent_id,
+            player_action=StoredPlayerAction(
+                action_type=str(payload.get("action_type", "speak")),
+                target=cast("str | None", payload.get("target")),
+                content=str(payload.get("content", "")),
+                metadata=dict(payload.get("metadata", {})),
+            ),
+            language=language,
+        )
+    return artifacts
+
+
+def _run_player_tick(
+    simulator: Simulator,
+    *,
+    tick: int,
+    player_agent_id: str,
+    player_action: Any,
+    language: str = "en",
+) -> None:
+    for event in simulator.scheduler.due(simulator.environment.current_time):
+        simulator.environment.record_event(event)
+        simulator.dispatcher.dispatch(event)
+
+    for agent in simulator.agents:
+        routine_entry = simulator._apply_routine(agent)
+        context = simulator.environment.get_context(agent.agent_id)
+        if routine_entry is not None:
+            context = simulator._routine_context(context, routine_entry)
+        monologue = simulator.monologue_generator.generate(
+            agent,
+            context,
+            tick=tick,
+            language=simulator.language,
+        )
+        simulator._record_monologue(monologue)
+        if agent.agent_id == player_agent_id:
+            action = Action(
+                agent_id=agent.agent_id,
+                timestamp=context.timestamp,
+                action_type=str(player_action.action_type),
+                target=player_action.target,
+                content=str(player_action.content),
+                location=context.location,
+                metadata={**dict(player_action.metadata), "player_mode": True, "language": language},
+            )
+        else:
+            action = simulator._decide_for_agent(agent, context=context, routine_entry=routine_entry)
+        simulator._record_action(tick, agent, action)
+    simulator.environment.advance_time(simulator.tick_duration)
+
+
+def _parse_player_input(*args: Any, **kwargs: Any) -> Any:
+    try:
+        from .player_input_parser import parse_player_input
+    except ImportError:  # pragma: no cover - script fallback
+        from player_input_parser import parse_player_input
+
+    return parse_player_input(*args, **kwargs)
+
+
+def _player_help_text(language: str = "en") -> str:
+    try:
+        from .player_input_parser import player_help_text
+    except ImportError:  # pragma: no cover - script fallback
+        from player_input_parser import player_help_text
+
+    return player_help_text(language)
+
+
+def _player_status_text(
+    session: dict[str, Any],
+    *,
+    awaiting_input: bool = False,
+    complete: bool = False,
+) -> str:
+    language = str(session.get("language", "en"))
+    tick = len(session.get("player_actions", []))
+    total_ticks = int(session.get("ticks", 1))
+    player_name = str(session.get("player_name", session.get("primary_name", "Player")))
+    next_tick = min(tick + 1, total_ticks)
+    if complete or tick >= total_ticks:
+        if language == "ko":
+            return f"{player_name} 플레이어 모드가 완료되었습니다. 총 {total_ticks}틱을 실행했습니다."
+        return f"{player_name} player mode is complete after {total_ticks} ticks."
+    if awaiting_input:
+        if language == "ko":
+            return f"{player_name}의 행동 입력을 기다리는 중입니다. 다음 입력: {next_tick}/{total_ticks}."
+        return f"Awaiting {player_name}'s action for tick {next_tick}/{total_ticks}."
+    return _player_help_text(language)
 
 
 def _build_batch_result(
