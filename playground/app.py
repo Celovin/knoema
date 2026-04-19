@@ -489,6 +489,9 @@ BASE_LABELS = {
         "run": "시뮬레이션 실행",
         "summary": "실행 요약",
         "action_chart": "액션 타입 분해도",
+        "tick_scrubber": "틱 스크러버",
+        "tick_focus": "선택된 틱",
+        "tick_focus_empty": "아직 선택된 틱 정보가 없습니다.",
         "timeline": "타임라인",
         "graph": "관계 그래프",
         "export_panel": "결과 내보내기",
@@ -533,6 +536,9 @@ BASE_LABELS = {
         "run": "Run simulation",
         "summary": "Run summary",
         "action_chart": "Action type breakdown",
+        "tick_scrubber": "Tick scrubber",
+        "tick_focus": "Tick focus",
+        "tick_focus_empty": "No tick focus data yet.",
         "timeline": "Timeline",
         "graph": "Relationship graph",
         "export_panel": "Result exports",
@@ -1145,7 +1151,7 @@ def _run(
     primary_name: str,
     primary_age: int,
     *trait_and_runtime: Any,
-) -> tuple[str, go.Figure, str, str, str, str, str, go.Figure]:
+) -> tuple[str, go.Figure, str, str, str, str, str, go.Figure, dict[str, Any], str]:
     legacy_with_language = len(PERSONA_TRAIT_FIELDS) + 5
     legacy_without_language = len(PERSONA_TRAIT_FIELDS) + 4
     legacy_batch_with_language = legacy_with_language + 3
@@ -1338,6 +1344,8 @@ def _run(
         result.download_path,
         summary,
         _action_chart_figure(result.action_breakdown, language=language),
+        gr.update(minimum=-1, maximum=max(-1, int(result.tick_count) - 1), value=-1),
+        _tick_focus_markdown(result.jsonl, -1, language=language),
     )
 
 
@@ -1557,8 +1565,10 @@ def _language_updates(
             label=labels["action_chart"],
             value=_action_chart_figure({}, language=key),
         ),
-        gr.update(label=labels["timeline"]),
         gr.update(label=labels["graph"]),
+        gr.update(label=labels["tick_scrubber"]),
+        gr.update(label=labels["tick_focus"]),
+        gr.update(label=labels["timeline"]),
         gr.update(label=labels["monologue_panel"]),
         labels["monologue_empty"],
         gr.update(label=labels["current_plan_panel"]),
@@ -1686,6 +1696,133 @@ def _action_chart_figure(
         paper_bgcolor="rgba(248,250,252,1)",
     )
     return figure
+
+
+def _tick_focus_markdown(jsonl_text: str, tick: int, language: str = "en") -> str:
+    rows: list[dict[str, Any]] = []
+    for line in str(jsonl_text).splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            payload = json.loads(stripped)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            rows.append(payload)
+
+    if not rows:
+        return LABELS[language]["tick_focus_empty"]
+    if any("record_type" in row for row in rows):
+        return _batch_tick_focus_markdown(rows, tick, language=language)
+    return _single_run_tick_focus_markdown(rows, tick, language=language)
+
+
+def _single_run_tick_focus_markdown(
+    rows: list[dict[str, Any]],
+    tick: int,
+    *,
+    language: str = "en",
+) -> str:
+    log_rows = [
+        row
+        for row in rows
+        if "tick" in row and isinstance(row.get("action"), dict)
+    ]
+    if not log_rows:
+        return LABELS[language]["tick_focus_empty"]
+
+    if tick < 0:
+        action_counts: dict[str, int] = {}
+        for row in log_rows:
+            action_type = str(row["action"].get("action_type", "")).strip()
+            if not action_type:
+                continue
+            action_counts[action_type] = action_counts.get(action_type, 0) + 1
+        tick_count = len({int(row["tick"]) for row in log_rows})
+        title = "### 전체 틱 요약" if language == "ko" else "### All ticks summary"
+        tick_label = "틱 수" if language == "ko" else "Ticks"
+        event_label = "이벤트 수" if language == "ko" else "Events"
+        action_label = "주요 행동" if language == "ko" else "Top actions"
+        return "\n".join(
+            [
+                title,
+                f"- **{tick_label}:** {tick_count}",
+                f"- **{event_label}:** {len(log_rows)}",
+                f"- **{action_label}:** {_top_action_counts_text(action_counts)}",
+            ]
+        )
+
+    tick_rows = [row for row in log_rows if int(row["tick"]) == int(tick)]
+    if not tick_rows:
+        return (
+            f"### 틱 {tick}\n- 아직 기록된 이벤트가 없습니다."
+            if language == "ko"
+            else f"### Tick {tick}\n- No events recorded."
+        )
+    title = f"### 틱 {tick}" if language == "ko" else f"### Tick {tick}"
+    lines = [title]
+    for row in tick_rows:
+        action = row["action"]
+        agent_id = str(row.get("agent_id", "agent"))
+        action_type = str(action.get("action_type", "act"))
+        target = str(action.get("target") or ("전체" if language == "ko" else "group"))
+        content = str(action.get("content", "")).strip()
+        lines.append(f"- **{agent_id}** `{action_type}` -> {target}: {content}")
+    return "\n".join(lines)
+
+
+def _batch_tick_focus_markdown(
+    rows: list[dict[str, Any]],
+    tick: int,
+    *,
+    language: str = "en",
+) -> str:
+    tick_rows = [row for row in rows if row.get("record_type") == "tick_stat"]
+    if not tick_rows:
+        return LABELS[language]["tick_focus_empty"]
+    if tick < 0:
+        title = "### 전체 틱 요약" if language == "ko" else "### All ticks summary"
+        tick_label = "집계 틱" if language == "ko" else "Aggregated ticks"
+        action_label = "주요 행동" if language == "ko" else "Top actions"
+        aggregate_counts: dict[str, int] = {}
+        for row in tick_rows:
+            for action_type, count in dict(row.get("action_type_counts", {})).items():
+                aggregate_counts[str(action_type)] = aggregate_counts.get(str(action_type), 0) + int(
+                    count
+                )
+        return "\n".join(
+            [
+                title,
+                f"- **{tick_label}:** {len(tick_rows)}",
+                f"- **{action_label}:** {_top_action_counts_text(aggregate_counts)}",
+            ]
+        )
+
+    selected = next((row for row in tick_rows if int(row.get("tick", -999)) == int(tick)), None)
+    if selected is None:
+        return (
+            f"### 틱 {tick}\n- 아직 집계된 결과가 없습니다."
+            if language == "ko"
+            else f"### Tick {tick}\n- No aggregate data recorded."
+        )
+    title = f"### 틱 {tick}" if language == "ko" else f"### Tick {tick}"
+    mean_label = "평균 행동 수" if language == "ko" else "Mean actions"
+    action_label = "주요 행동" if language == "ko" else "Top actions"
+    return "\n".join(
+        [
+            title,
+            f"- **{mean_label}:** {float(selected.get('mean_actions', 0.0)):.1f}",
+            f"- **{action_label}:** {_top_action_counts_text(dict(selected.get('action_type_counts', {})))}",
+        ]
+    )
+
+
+def _top_action_counts_text(action_counts: dict[str, int]) -> str:
+    if not action_counts:
+        return "none"
+    ordered = sorted(action_counts.items(), key=lambda item: (-int(item[1]), item[0]))
+    return ", ".join(f"{action_type} ({count})" for action_type, count in ordered[:3])
 
 
 def _relationship_figure(rows: list[dict[str, Any]], *, language: str = "en") -> go.Figure:
@@ -2010,6 +2147,20 @@ def build_app() -> gr.Blocks:
             elem_id="action-breakdown-chart",
         )
         graph = gr.Plot(label=labels["graph"], elem_id="relationship-graph")
+        tick_scrubber = gr.Slider(
+            label=labels["tick_scrubber"],
+            minimum=-1,
+            maximum=0,
+            step=1,
+            value=-1,
+            interactive=True,
+            elem_id="tick-scrubber",
+        )
+        tick_focus = gr.Markdown(
+            labels["tick_focus_empty"],
+            label=labels["tick_focus"],
+            elem_id="tick-focus-panel",
+        )
         timeline = gr.Markdown(
             label=labels["timeline"],
             elem_id="timeline-panel",
@@ -2100,8 +2251,10 @@ def build_app() -> gr.Blocks:
             export_heading,
             summary,
             action_chart,
-            timeline,
             graph,
+            tick_scrubber,
+            tick_focus,
+            timeline,
             monologue_panel,
             monologue_view,
             current_plan_panel,
@@ -2179,6 +2332,11 @@ def build_app() -> gr.Blocks:
             inputs=[batch_mode],
             outputs=[batch_runs, master_seed],
         )
+        tick_scrubber.change(
+            _tick_focus_markdown,
+            inputs=[jsonl, tick_scrubber, language],
+            outputs=[tick_focus],
+        )
         for controls in agent_tabs:
             controls["persona_preset"].change(
                 _apply_persona_preset,
@@ -2233,6 +2391,8 @@ def build_app() -> gr.Blocks:
                 download,
                 summary,
                 action_chart,
+                tick_scrubber,
+                tick_focus,
             ],
             api_name="run",
         )
