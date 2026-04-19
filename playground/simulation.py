@@ -9,6 +9,7 @@ import tempfile
 from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
+from html import escape
 from pathlib import Path
 from typing import Any, Literal
 
@@ -21,6 +22,7 @@ from knoema.cli import (
     SimulationRunConfig,
     load_run_config,
 )
+from knoema.cognition import Monologue
 from knoema.llm import AnthropicClient, LocalClient, OpenAIClient
 from knoema.persona import Persona
 from knoema.protocols import LLMClient, Message
@@ -118,6 +120,7 @@ class PlaygroundResult:
     scenario_name: str
     mode: Provider
     timeline_markdown: str
+    monologue_markdown: str
     relationship_rows: list[dict[str, object]]
     jsonl: str
     download_path: str
@@ -389,6 +392,11 @@ def run_playground_scenario(
         scenario_name=scenario_name,
         mode=provider,
         timeline_markdown=_timeline_markdown(simulator.logs, language=language),
+        monologue_markdown=_monologue_markdown(
+            simulator.monologues,
+            simulator.monologue_valence,
+            language=language,
+        ),
         relationship_rows=_relationship_rows(simulator),
         jsonl=jsonl,
         download_path=download_path,
@@ -700,6 +708,30 @@ def _timeline_markdown(logs: list[SimulationLogEntry], *, language: str = "en") 
         lines.append(
             f"- **{tick_label} {entry.tick:02d}** `{entry.timestamp.isoformat()}` "
             f"**{entry.agent_id}{target}**: {action.content}"
+        )
+    return "\n".join(lines)
+
+
+def _monologue_markdown(
+    monologues: list[Monologue],
+    valence_by_tick: dict[tuple[str, int], float],
+    *,
+    language: str = "en",
+) -> str:
+    if not monologues:
+        return (
+            "아직 기록된 내적 독백이 없습니다. 시뮬레이션을 실행하면 에이전트별 사적 생각이 여기에 표시됩니다."
+            if language == "ko"
+            else "No inner monologues yet. Run the simulation to see each agent's private thoughts."
+        )
+
+    lines: list[str] = []
+    for monologue in monologues:
+        valence = valence_by_tick.get((monologue.agent_id, monologue.tick), 0.0)
+        color = "#15803d" if valence > 0.2 else "#b91c1c" if valence < -0.2 else "#64748b"
+        label = f"{monologue.agent_id} · t{monologue.tick}"
+        lines.append(
+            f"- <span style=\"color:{color}\"><strong>{escape(label)}</strong> {escape(monologue.text)}</span>"
         )
     return "\n".join(lines)
 

@@ -9,16 +9,16 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Literal
 
-from knoema.cognition import SocialLearner
+from knoema.cognition import Monologue, MonologueGenerator, SocialLearner
 from knoema.decision import DecisionEngine
 from knoema.emotion import EmotionState
-from knoema.environment import Environment
+from knoema.environment import Environment, EnvironmentContext
 from knoema.events import EventDispatcher, EventScheduler
 from knoema.llm import LocalClient
 from knoema.memory import ShortTermMemoryBuffer
 from knoema.persona import Persona
 from knoema.planning import AgentContext, HierarchicalPlanner, WorldState
-from knoema.prompts import PromptLanguage
+from knoema.prompts import PromptLanguage, normalize_prompt_language
 from knoema.protocols import LLMClient
 from knoema.relationship import RelationshipGraph
 from knoema.theory_of_mind import TheoryOfMindEngine
@@ -68,14 +68,21 @@ class Simulator:
         }
         self.scheduler = EventScheduler()
         self.dispatcher = EventDispatcher()
+        self.language = normalize_prompt_language(language)
+        resolved_llm = llm or LocalClient(_default_action_response)
         self.decision_engine = DecisionEngine(
-            llm or LocalClient(_default_action_response),
-            language=language,
+            resolved_llm,
+            language=self.language,
+        )
+        self.monologue_generator = MonologueGenerator(
+            None if isinstance(resolved_llm, LocalClient) else resolved_llm
         )
         self.theory_of_mind = TheoryOfMindEngine.from_personas(agents)
         self.planner = HierarchicalPlanner()
         self.social_learner = SocialLearner()
         self.logs: list[SimulationLogEntry] = []
+        self.monologues: list[Monologue] = []
+        self.monologue_valence: dict[tuple[str, int], float] = {}
         for agent in agents:
             self.relationships.add_agent(agent.agent_id)
             if agent.planning and agent.goals:
@@ -126,11 +133,24 @@ class Simulator:
             self.environment.record_event(event)
             self.dispatcher.dispatch(event)
         for agent in self.agents:
-            action = self._decide_for_agent(agent)
+            context = self.environment.get_context(agent.agent_id)
+            monologue = self.monologue_generator.generate(
+                agent,
+                context,
+                tick=tick,
+                language=self.language,
+            )
+            self._record_monologue(monologue)
+            action = self._decide_for_agent(agent, context=context)
             self._record_action(tick, agent, action)
 
-    def _decide_for_agent(self, agent: Persona) -> Action:
-        context = self.environment.get_context(agent.agent_id)
+    def _decide_for_agent(
+        self,
+        agent: Persona,
+        *,
+        context: EnvironmentContext | None = None,
+    ) -> Action:
+        resolved_context = context or self.environment.get_context(agent.agent_id)
         current_task = None
         if agent.planning:
             current_task = self.planner.select_next_task(
@@ -148,12 +168,18 @@ class Simulator:
             persona=agent,
             memories=self.short_term_memories[agent.agent_id].recent(8),
             relationships=self.relationships.neighbors(agent.agent_id),
-            environment=context,
+            environment=resolved_context,
             emotion=self.emotions[agent.agent_id].current,
-            trigger=context.recent_events[-1] if context.recent_events else None,
+            trigger=resolved_context.recent_events[-1] if resolved_context.recent_events else None,
             theory_of_mind_context=self.theory_of_mind.context_for(agent.agent_id),
             current_task=current_task,
         )
+
+    def _record_monologue(self, monologue: Monologue) -> None:
+        self.monologues.append(monologue)
+        self.monologue_valence[(monologue.agent_id, monologue.tick)] = self.emotions[
+            monologue.agent_id
+        ].current.valence
 
     def _record_action(self, tick: int, agent: Persona, action: Action) -> None:
         self.logs.append(

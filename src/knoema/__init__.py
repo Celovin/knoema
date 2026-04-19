@@ -13,7 +13,13 @@ from knoema.benchmark import (
     format_markdown_report,
     run_knoema_benchmark,
 )
-from knoema.cognition import LearnedSkill, ObservedBehavior, SocialLearner
+from knoema.cognition import (
+    LearnedSkill,
+    Monologue,
+    MonologueGenerator,
+    ObservedBehavior,
+    SocialLearner,
+)
 from knoema.config import KnoemaConfig, load_config
 from knoema.decision import DecisionEngine, decide
 from knoema.distributed import (
@@ -155,6 +161,8 @@ __all__ = [
     "MemorySummarizer",
     "MemoryType",
     "MemoryWriter",
+    "Monologue",
+    "MonologueGenerator",
     "NPCResponse",
     "NullTelemetryClient",
     "ObservedBehavior",

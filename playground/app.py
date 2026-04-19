@@ -546,10 +546,14 @@ def _build_labels() -> dict[str, dict[str, str]]:
 LABELS = _build_labels()
 LABELS["ko"]["cultural_prior"] = "문화 prior"
 LABELS["ko"]["cultural_prior_info"] = "선택한 문화 모듈이 Schwartz 가치와 도덕 기반의 기본값을 먼저 이동시킵니다."
+LABELS["ko"]["monologue_panel"] = "내적 독백"
+LABELS["ko"]["monologue_empty"] = "아직 기록된 내적 독백이 없습니다."
 LABELS["en"]["cultural_prior"] = "Cultural prior"
 LABELS["en"]["cultural_prior_info"] = (
     "The selected cultural module shifts Schwartz and moral-foundation defaults before any archetype override."
 )
+LABELS["en"]["monologue_panel"] = "Inner monologue"
+LABELS["en"]["monologue_empty"] = "No inner monologues yet."
 ENVIRONMENT_PRESETS = load_environment_presets()
 GRAPH_HEIGHT_PX = 620
 TIMELINE_MAX_HEIGHT_PX = 360
@@ -917,7 +921,7 @@ def _run(
     primary_name: str,
     primary_age: int,
     *trait_and_runtime: Any,
-) -> tuple[str, go.Figure, str, str, str]:
+) -> tuple[str, go.Figure, str, str, str, str]:
     expected_with_language = len(PERSONA_TRAIT_FIELDS) + 3
     expected_without_language = len(PERSONA_TRAIT_FIELDS) + 2
     if len(trait_and_runtime) == expected_with_language:
@@ -972,6 +976,7 @@ def _run(
     return (
         result.timeline_markdown,
         _relationship_figure(result.relationship_rows, language=language),
+        result.monologue_markdown,
         result.jsonl,
         result.download_path,
         summary,
@@ -1073,6 +1078,8 @@ def _language_updates(
         gr.update(label=labels["summary"]),
         gr.update(label=labels["timeline"]),
         gr.update(label=labels["graph"]),
+        gr.update(label=labels["monologue_panel"]),
+        labels["monologue_empty"],
         gr.update(label=labels["jsonl"]),
         gr.update(label=labels["download"]),
         gr.update(label=labels["lang"]),
@@ -1404,6 +1411,13 @@ def build_app() -> gr.Blocks:
             max_height=TIMELINE_MAX_HEIGHT_PX,
             container=True,
         )
+        monologue_panel = gr.Accordion(
+            labels["monologue_panel"],
+            open=False,
+            elem_id="inner-monologue-panel",
+        )
+        with monologue_panel:
+            monologue_view = gr.Markdown(labels["monologue_empty"])
 
         with gr.Column(elem_id="export-panel"):
             export_heading = gr.Markdown(f"#### {labels['export_panel']}")
@@ -1440,6 +1454,8 @@ def build_app() -> gr.Blocks:
             summary,
             timeline,
             graph,
+            monologue_panel,
+            monologue_view,
             jsonl,
             download,
             language,
@@ -1510,7 +1526,7 @@ def build_app() -> gr.Blocks:
                 agent_count,
                 language,
             ],
-            outputs=[timeline, graph, jsonl, download, summary],
+            outputs=[timeline, graph, monologue_view, jsonl, download, summary],
             api_name="run",
         )
 
