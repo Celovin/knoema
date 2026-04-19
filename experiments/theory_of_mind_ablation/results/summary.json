@@ -1,0 +1,61 @@
+{
+  "baseline_accuracy": 1.0,
+  "material_drop_threshold": 0.05,
+  "material_tiers": [
+    "tier_a",
+    "tier_bd",
+    "tier_e",
+    "tier_f",
+    "tier_g"
+  ],
+  "rows": [
+    {
+      "ablated_accuracy": 0.85,
+      "accuracy_drop": 0.15,
+      "label": "Tier A - Big Five",
+      "material_effect": true,
+      "note": "Neutralizing openness, conscientiousness, extraversion, agreeableness, and neuroticism reduces stable perspective tracking the most in this deterministic harness.",
+      "tier_id": "tier_a"
+    },
+    {
+      "ablated_accuracy": 0.9,
+      "accuracy_drop": 0.1,
+      "label": "Tier B+D - HEXACO + Light Triad",
+      "material_effect": true,
+      "note": "Neutral sincerity and prosocial reasoning weaken false-belief maintenance for observer summaries.",
+      "tier_id": "tier_bd"
+    },
+    {
+      "ablated_accuracy": 1.0,
+      "accuracy_drop": 0.0,
+      "label": "Tier C - Dark Tetrad",
+      "material_effect": false,
+      "note": "Adversarial-trait features do not improve the symbolic Sally-Anne harness and are treated as non-material here.",
+      "tier_id": "tier_c"
+    },
+    {
+      "ablated_accuracy": 0.9,
+      "accuracy_drop": 0.1,
+      "label": "Tier E - Behavioral dispositions",
+      "material_effect": true,
+      "note": "Need-for-cognition and empathy neutralization reduces consistent retrieval of what the subject last witnessed.",
+      "tier_id": "tier_e"
+    },
+    {
+      "ablated_accuracy": 0.95,
+      "accuracy_drop": 0.05,
+      "label": "Tier F - Moral foundations",
+      "material_effect": true,
+      "note": "Care and fairness cues slightly improve stability when the observer models what another child still believes.",
+      "tier_id": "tier_f"
+    },
+    {
+      "ablated_accuracy": 0.95,
+      "accuracy_drop": 0.05,
+      "label": "Tier G - Schwartz values",
+      "material_effect": true,
+      "note": "Self-direction and benevolence slightly improve perspective-maintenance in the prompt-surface ablation.",
+      "tier_id": "tier_g"
+    }
+  ]
+}

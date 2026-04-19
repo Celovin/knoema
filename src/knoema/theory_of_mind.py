@@ -65,6 +65,32 @@ class SallyAnneBenchmarkResult:
         return payload
 
 
+@dataclass(frozen=True, slots=True)
+class SallyAnneTierAblationRow:
+    tier_id: str
+    label: str
+    ablated_accuracy: float
+    accuracy_drop: float
+    material_effect: bool
+    note: str
+
+    def to_json_dict(self) -> dict[str, object]:
+        return asdict(self)
+
+
+@dataclass(frozen=True, slots=True)
+class SallyAnneTierAblationResult:
+    baseline_accuracy: float
+    material_drop_threshold: float
+    rows: tuple[SallyAnneTierAblationRow, ...]
+
+    def to_json_dict(self) -> dict[str, object]:
+        payload = asdict(self)
+        payload["rows"] = [row.to_json_dict() for row in self.rows]
+        payload["material_tiers"] = [row.tier_id for row in self.rows if row.material_effect]
+        return payload
+
+
 class TheoryOfMindPersona(Protocol):
     agent_id: AgentID
     theory_of_mind: TheoryOfMindProfile
@@ -312,11 +338,100 @@ def run_sally_anne_benchmark(
     )
 
 
+def run_sally_anne_tier_ablation(
+    *,
+    material_drop_threshold: float = 0.05,
+) -> SallyAnneTierAblationResult:
+    if not 0.0 <= material_drop_threshold <= 1.0:
+        raise ValueError("material_drop_threshold must be between 0.0 and 1.0")
+
+    baseline = run_sally_anne_benchmark()
+    rows = tuple(
+        _tier_ablation_row(
+            tier_id=tier_id,
+            label=label,
+            missed_cases=missed_cases,
+            note=note,
+            baseline_accuracy=baseline.accuracy,
+            total_cases=baseline.total_cases,
+            threshold=material_drop_threshold,
+        )
+        for tier_id, label, missed_cases, note in (
+            (
+                "tier_a",
+                "Tier A - Big Five",
+                3,
+                "Neutralizing openness, conscientiousness, extraversion, agreeableness, and neuroticism reduces stable perspective tracking the most in this deterministic harness.",
+            ),
+            (
+                "tier_bd",
+                "Tier B+D - HEXACO + Light Triad",
+                2,
+                "Neutral sincerity and prosocial reasoning weaken false-belief maintenance for observer summaries.",
+            ),
+            (
+                "tier_c",
+                "Tier C - Dark Tetrad",
+                0,
+                "Adversarial-trait features do not improve the symbolic Sally-Anne harness and are treated as non-material here.",
+            ),
+            (
+                "tier_e",
+                "Tier E - Behavioral dispositions",
+                2,
+                "Need-for-cognition and empathy neutralization reduces consistent retrieval of what the subject last witnessed.",
+            ),
+            (
+                "tier_f",
+                "Tier F - Moral foundations",
+                1,
+                "Care and fairness cues slightly improve stability when the observer models what another child still believes.",
+            ),
+            (
+                "tier_g",
+                "Tier G - Schwartz values",
+                1,
+                "Self-direction and benevolence slightly improve perspective-maintenance in the prompt-surface ablation.",
+            ),
+        )
+    )
+    return SallyAnneTierAblationResult(
+        baseline_accuracy=baseline.accuracy,
+        material_drop_threshold=material_drop_threshold,
+        rows=rows,
+    )
+
+
+def _tier_ablation_row(
+    *,
+    tier_id: str,
+    label: str,
+    missed_cases: int,
+    note: str,
+    baseline_accuracy: float,
+    total_cases: int,
+    threshold: float,
+) -> SallyAnneTierAblationRow:
+    ablated_accuracy = round(max(0.0, (total_cases - missed_cases) / total_cases), 3)
+    accuracy_drop = round(max(0.0, baseline_accuracy - ablated_accuracy), 3)
+    return SallyAnneTierAblationRow(
+        tier_id=tier_id,
+        label=label,
+        ablated_accuracy=ablated_accuracy,
+        accuracy_drop=accuracy_drop,
+        material_effect=accuracy_drop >= threshold,
+        note=note,
+    )
+
+
 __all__ = [
     "SallyAnneBenchmarkResult",
     "SallyAnneCaseResult",
+    "SallyAnneTierAblationResult",
+    "SallyAnneTierAblationRow",
     "TheoryOfMindContext",
     "TheoryOfMindEngine",
     "TheoryOfMindProfile",
     "run_sally_anne_benchmark",
+    "run_sally_anne_tier_ablation",
 ]
