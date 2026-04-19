@@ -97,7 +97,7 @@ def test_playground_run_round_trips_htn_controls_through_run() -> None:
         for field_name in playground_simulation.PERSONA_TRAIT_FIELDS
     ]
 
-    timeline, _, monologue_markdown, plan_markdown, jsonl, download_path, summary = playground_app._run(
+    timeline, _, monologue_markdown, plan_markdown, jsonl, download_path, summary, action_chart = playground_app._run(
         "Dorm: two agents",
         "university_dorm_evening",
         "",
@@ -120,3 +120,4 @@ def test_playground_run_round_trips_htn_controls_through_run() -> None:
     assert jsonl
     assert download_path
     assert "Mode: Replay only" in summary
+    assert action_chart.data

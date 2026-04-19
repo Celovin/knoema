@@ -76,6 +76,7 @@ def test_subtask7_run_passes_three_agent_overrides_to_simulation(monkeypatch) ->
             timeline_markdown="### Timeline",
             monologue_markdown="t0",
             plan_markdown="### Current plan",
+            action_breakdown={"agent-1": {"speak": 1}},
             jsonl="{}",
             download_path="C:\\temp\\playground.jsonl",
             agent_count=3,

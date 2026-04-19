@@ -7,6 +7,7 @@ from typing import Any
 
 import gradio as gr
 import plotly.graph_objects as go
+from plotly.colors import qualitative
 
 try:
     from .simulation import (
@@ -487,6 +488,7 @@ BASE_LABELS = {
         "ticks": "틱 수",
         "run": "시뮬레이션 실행",
         "summary": "실행 요약",
+        "action_chart": "액션 타입 분해도",
         "timeline": "타임라인",
         "graph": "관계 그래프",
         "export_panel": "결과 내보내기",
@@ -530,6 +532,7 @@ BASE_LABELS = {
         "ticks": "Ticks",
         "run": "Run simulation",
         "summary": "Run summary",
+        "action_chart": "Action type breakdown",
         "timeline": "Timeline",
         "graph": "Relationship graph",
         "export_panel": "Result exports",
@@ -601,6 +604,9 @@ LABELS["en"]["master_seed_info"] = "Batch seeds are derived as master_seed + run
 ENVIRONMENT_PRESETS = load_environment_presets()
 GRAPH_HEIGHT_PX = 620
 TIMELINE_MAX_HEIGHT_PX = 360
+ACTION_CHART_HEIGHT_PX = 380
+AGENT_COLOR_SEQUENCE: tuple[str, ...] = tuple(qualitative.Bold)
+ACTION_PATTERN_SEQUENCE: tuple[str, ...] = ("", "/", "\\", "x", "-", "|", "+", ".", "o")
 
 BIG_FIVE_FIELDS = PERSONA_TRAIT_FIELDS[:5]
 TIER_BD_FIELDS = (
@@ -1139,7 +1145,7 @@ def _run(
     primary_name: str,
     primary_age: int,
     *trait_and_runtime: Any,
-) -> tuple[str, go.Figure, str, str, str, str, str]:
+) -> tuple[str, go.Figure, str, str, str, str, str, go.Figure]:
     legacy_with_language = len(PERSONA_TRAIT_FIELDS) + 5
     legacy_without_language = len(PERSONA_TRAIT_FIELDS) + 4
     legacy_batch_with_language = legacy_with_language + 3
@@ -1331,6 +1337,7 @@ def _run(
         result.jsonl,
         result.download_path,
         summary,
+        _action_chart_figure(result.action_breakdown, language=language),
     )
 
 
@@ -1546,6 +1553,10 @@ def _language_updates(
         gr.update(value=labels["run"]),
         gr.update(value=f"#### {labels['export_panel']}"),
         gr.update(label=labels["summary"]),
+        gr.update(
+            label=labels["action_chart"],
+            value=_action_chart_figure({}, language=key),
+        ),
         gr.update(label=labels["timeline"]),
         gr.update(label=labels["graph"]),
         gr.update(label=labels["monologue_panel"]),
@@ -1597,6 +1608,82 @@ def _trait_correlation_figure(language: str) -> go.Figure:
         margin={"l": 0, "r": 0, "t": 48, "b": 0},
         xaxis={"tickangle": -45},
         yaxis={"autorange": "reversed"},
+    )
+    return figure
+
+
+def _agent_color_map(agent_ids: list[str]) -> dict[str, str]:
+    ordered_agent_ids = sorted(dict.fromkeys(agent_ids))
+    if not ordered_agent_ids:
+        return {}
+    return {
+        agent_id: AGENT_COLOR_SEQUENCE[index % len(AGENT_COLOR_SEQUENCE)]
+        for index, agent_id in enumerate(ordered_agent_ids)
+    }
+
+
+def _action_chart_figure(
+    breakdown: dict[str, dict[str, int]],
+    *,
+    language: str = "en",
+) -> go.Figure:
+    title = "액션 타입 분해도" if language == "ko" else "Action type breakdown"
+    empty_text = "데이터가 충분하지 않습니다." if language == "ko" else "Not enough data yet"
+    xaxis_title = "에이전트" if language == "ko" else "Agent"
+    yaxis_title = "행동 수" if language == "ko" else "Action count"
+    legend_title = "행동 타입" if language == "ko" else "Action type"
+    ordered_agents = sorted(breakdown)
+    action_types = sorted(
+        {
+            action_type
+            for action_counts in breakdown.values()
+            for action_type, count in action_counts.items()
+            if int(count) > 0
+        }
+    )
+    if not ordered_agents or not action_types:
+        figure = go.Figure()
+        figure.update_layout(
+            title=title,
+            height=ACTION_CHART_HEIGHT_PX,
+            margin={"l": 0, "r": 0, "t": 40, "b": 0},
+            annotations=[{"text": empty_text, "showarrow": False}],
+        )
+        return figure
+
+    color_map = _agent_color_map(ordered_agents)
+    figure = go.Figure()
+    for index, action_type in enumerate(action_types):
+        y_values = [
+            int(breakdown.get(agent_id, {}).get(action_type, 0))
+            for agent_id in ordered_agents
+        ]
+        if not any(y_values):
+            continue
+        figure.add_bar(
+            name=action_type,
+            x=ordered_agents,
+            y=y_values,
+            marker={
+                "color": [color_map[agent_id] for agent_id in ordered_agents],
+                "line": {"color": "#0f172a", "width": 0.6},
+                "pattern": {
+                    "shape": ACTION_PATTERN_SEQUENCE[index % len(ACTION_PATTERN_SEQUENCE)]
+                },
+            },
+            hovertemplate="%{x}<br>%{fullData.name}: %{y}<extra></extra>",
+        )
+
+    figure.update_layout(
+        title=title,
+        barmode="stack",
+        height=ACTION_CHART_HEIGHT_PX,
+        margin={"l": 0, "r": 0, "t": 40, "b": 0},
+        xaxis={"title": xaxis_title},
+        yaxis={"title": yaxis_title},
+        legend={"title": {"text": legend_title}},
+        plot_bgcolor="rgba(248,250,252,1)",
+        paper_bgcolor="rgba(248,250,252,1)",
     )
     return figure
 
@@ -1752,6 +1839,7 @@ def build_app() -> gr.Blocks:
         cultural_prior_id=None,
         language="ko",
     )
+    initial_action_chart_figure = _action_chart_figure({}, language="ko")
     initial_trait_matrix_figure, initial_trait_matrix_summary = _trait_correlation_outputs("ko")
 
     with gr.Blocks(
@@ -1916,6 +2004,11 @@ def build_app() -> gr.Blocks:
             )
             run_button = gr.Button(labels["run"], variant="primary", elem_id="run-button")
         summary = gr.Textbox(label=labels["summary"], interactive=False)
+        action_chart = gr.Plot(
+            label=labels["action_chart"],
+            value=initial_action_chart_figure,
+            elem_id="action-breakdown-chart",
+        )
         graph = gr.Plot(label=labels["graph"], elem_id="relationship-graph")
         timeline = gr.Markdown(
             label=labels["timeline"],
@@ -2006,6 +2099,7 @@ def build_app() -> gr.Blocks:
             run_button,
             export_heading,
             summary,
+            action_chart,
             timeline,
             graph,
             monologue_panel,
@@ -2130,7 +2224,16 @@ def build_app() -> gr.Blocks:
                 master_seed,
                 language,
             ],
-            outputs=[timeline, graph, monologue_view, current_plan_view, jsonl, download, summary],
+            outputs=[
+                timeline,
+                graph,
+                monologue_view,
+                current_plan_view,
+                jsonl,
+                download,
+                summary,
+                action_chart,
+            ],
             api_name="run",
         )
 

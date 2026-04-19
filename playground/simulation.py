@@ -171,6 +171,7 @@ class PlaygroundResult:
     timeline_markdown: str
     monologue_markdown: str
     plan_markdown: str
+    action_breakdown: dict[str, dict[str, int]]
     relationship_rows: list[dict[str, object]]
     jsonl: str
     download_path: str
@@ -715,6 +716,7 @@ def run_playground_scenario(
                 artifacts.agents,
                 language=language,
             ),
+            action_breakdown=_action_breakdown(artifacts.simulator.logs),
             relationship_rows=_relationship_rows(artifacts.simulator),
             jsonl=jsonl,
             download_path=download_path,
@@ -769,6 +771,7 @@ def run_playground_scenario(
         timeline_markdown=_batch_timeline_markdown(batch_result, language=language),
         monologue_markdown=_batch_monologue_markdown(language=language),
         plan_markdown=_batch_plan_markdown(language=language),
+        action_breakdown=_aggregate_action_breakdown(artifacts_by_seed),
         relationship_rows=_aggregate_relationship_rows(artifacts_by_seed),
         jsonl=jsonl,
         download_path=download_path,
@@ -1066,6 +1069,29 @@ def _aggregate_relationship_rows(
             }
         )
     return rows
+
+
+def _action_breakdown(logs: list[SimulationLogEntry]) -> dict[str, dict[str, int]]:
+    breakdown: dict[str, Counter[str]] = defaultdict(Counter)
+    for entry in logs:
+        breakdown[entry.agent_id][entry.action.action_type] += 1
+    return {
+        agent_id: dict(sorted(action_counts.items()))
+        for agent_id, action_counts in sorted(breakdown.items())
+    }
+
+
+def _aggregate_action_breakdown(
+    artifacts_by_seed: list[PlaygroundRunArtifacts],
+) -> dict[str, dict[str, int]]:
+    aggregated: dict[str, Counter[str]] = defaultdict(Counter)
+    for artifacts in artifacts_by_seed:
+        for agent_id, action_counts in _action_breakdown(artifacts.simulator.logs).items():
+            aggregated[agent_id].update(action_counts)
+    return {
+        agent_id: dict(sorted(action_counts.items()))
+        for agent_id, action_counts in sorted(aggregated.items())
+    }
 
 
 def _mean(values: list[int]) -> float:

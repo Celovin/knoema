@@ -85,7 +85,7 @@ def test_subtask25_run_round_trips_batch_controls_into_summary() -> None:
         for field_name in playground_simulation.PERSONA_TRAIT_FIELDS
     ]
 
-    timeline, _, monologue_markdown, plan_markdown, jsonl, download_path, summary = playground_app._run(
+    timeline, _, monologue_markdown, plan_markdown, jsonl, download_path, summary, action_chart = playground_app._run(
         "Dorm: two agents",
         "university_dorm_evening",
         "",
@@ -111,3 +111,4 @@ def test_subtask25_run_round_trips_batch_controls_into_summary() -> None:
     assert "multiple seeds" in plan_markdown
     assert jsonl
     assert download_path
+    assert action_chart.data
