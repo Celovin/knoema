@@ -283,35 +283,35 @@ footer {display: none !important;}
 
 
 def build_app() -> gr.Blocks:
-    L = LABELS["ko"]
+    labels = LABELS["ko"]
     with gr.Blocks(title="Knoema Playground", css=FOOTER_CSS, analytics_enabled=False) as demo:
         with gr.Row():
             language = gr.Radio(
-                label=L["lang"],
+                label=labels["lang"],
                 choices=["한국어", "English"],
                 value="한국어",
                 scale=0,
             )
-        header = gr.Markdown(L["header"])
+        header = gr.Markdown(labels["header"])
         with gr.Row():
             scenario = gr.Dropdown(
-                label=L["scenario"],
+                label=labels["scenario"],
                 choices=scenario_choices(),
                 value=scenario_choices()[0],
             )
             provider = gr.Radio(
-                label=L["mode"],
-                choices=[L["replay"], "OpenAI", "Anthropic"],
-                value=L["replay"],
+                label=labels["mode"],
+                choices=[labels["replay"], "OpenAI", "Anthropic"],
+                value=labels["replay"],
             )
         with gr.Row():
             api_key = gr.Textbox(
-                label=L["api_key"],
+                label=labels["api_key"],
                 type="password",
-                placeholder=L["api_key_ph"],
+                placeholder=labels["api_key_ph"],
             )
             model = gr.Dropdown(
-                label=L["model"],
+                label=labels["model"],
                 choices=[
                     "gpt-5.4",
                     "gpt-5.4-mini",
@@ -328,31 +328,43 @@ def build_app() -> gr.Blocks:
                 value="gpt-5.4-mini",
                 allow_custom_value=True,
             )
-        agent_panel = gr.Accordion(L["agent_panel"], open=True)
+        agent_panel = gr.Accordion(labels["agent_panel"], open=True)
         with agent_panel:
             with gr.Row():
-                primary_name = gr.Textbox(label=L["name"], value="Mina")
-                primary_age = gr.Slider(label=L["age"], minimum=12, maximum=80, step=1, value=21)
+                primary_name = gr.Textbox(label=labels["name"], value="Mina")
+                primary_age = gr.Slider(
+                    label=labels["age"], minimum=12, maximum=80, step=1, value=21
+                )
             with gr.Row():
-                openness = gr.Slider(label=L["openness"], minimum=0, maximum=1, value=0.75)
+                openness = gr.Slider(
+                    label=labels["openness"], minimum=0, maximum=1, value=0.75
+                )
                 conscientiousness = gr.Slider(
-                    label=L["conscientiousness"],
+                    label=labels["conscientiousness"],
                     minimum=0,
                     maximum=1,
                     value=0.62,
                 )
-                extraversion = gr.Slider(label=L["extraversion"], minimum=0, maximum=1, value=0.52)
+                extraversion = gr.Slider(
+                    label=labels["extraversion"], minimum=0, maximum=1, value=0.52
+                )
             with gr.Row():
-                agreeableness = gr.Slider(label=L["agreeableness"], minimum=0, maximum=1, value=0.68)
-                neuroticism = gr.Slider(label=L["neuroticism"], minimum=0, maximum=1, value=0.36)
-                ticks = gr.Slider(label=L["ticks"], minimum=1, maximum=24, step=1, value=4)
-        run_button = gr.Button(L["run"], variant="primary")
-        summary = gr.Textbox(label=L["summary"], interactive=False)
+                agreeableness = gr.Slider(
+                    label=labels["agreeableness"], minimum=0, maximum=1, value=0.68
+                )
+                neuroticism = gr.Slider(
+                    label=labels["neuroticism"], minimum=0, maximum=1, value=0.36
+                )
+                ticks = gr.Slider(
+                    label=labels["ticks"], minimum=1, maximum=24, step=1, value=4
+                )
+        run_button = gr.Button(labels["run"], variant="primary")
+        summary = gr.Textbox(label=labels["summary"], interactive=False)
         with gr.Row():
-            timeline = gr.Markdown(label=L["timeline"])
-            graph = gr.Plot(label=L["graph"])
-        jsonl = gr.Code(label=L["jsonl"], language="json")
-        download = gr.File(label=L["download"])
+            timeline = gr.Markdown(label=labels["timeline"])
+            graph = gr.Plot(label=labels["graph"])
+        jsonl = gr.Code(label=labels["jsonl"], language="json")
+        download = gr.File(label=labels["download"])
 
         def _switch(lang_choice: str) -> list[Any]:
             key = "ko" if lang_choice == "한국어" else "en"
