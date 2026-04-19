@@ -1,6 +1,5 @@
 knoema-engine @ git+https://github.com/Celovin/knoema.git@main
 huggingface_hub>=0.24,<1.0
-pydantic>=2.8,<2.10
 plotly>=5.24
 pyyaml>=6.0
 audioop-lts; python_version >= "3.13"
