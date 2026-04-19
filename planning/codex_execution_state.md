@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 22:46 UTC by Codex
+**Last updated**: 2026-04-19 22:52 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -84,7 +84,7 @@
 ## Group 9 — Engine depth + 심사 mitigation (6-8h)
 
 - [x] 39. Dark Tetrad IRB consent gate - 2026-04-19 22:46 UTC, commit 995aef4
-- [ ] 40. 본문1 ↔ Sub-task mapping document
+- [x] 40. 본문1 ↔ Sub-task mapping document - 2026-04-19 22:52 UTC, commit 7ded3f9
 - [ ] 42. 인건비 / effort allocation document
 - [ ] 43. Memory retrieval recall@k benchmark
 - [ ] 44. ToM Sally-Anne ablation across personality tiers
