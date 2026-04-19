@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 19:06 UTC by Codex
+**Last updated**: 2026-04-19 19:15 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -57,7 +57,7 @@
 - [x] 33. Player-as-agent mode (hybrid loop) - 2026-04-19 18:39 UTC, commit 7227841
 - [x] 34. Godot + Unity tavern_demo samples + WebGL exports - 2026-04-19 18:50 UTC, commit 25b9c26
 - [x] 46. Procedural quest generation - 2026-04-19 19:06 UTC, commit e850c47
-- [ ] 47. NPC schedule conflicts + coordination
+- [x] 47. NPC schedule conflicts + coordination - 2026-04-19 19:15 UTC, commit 6358f51
 - [ ] 48. Voice conversation mode (TTS/STT)
 
 ## Group 7 — Application C (Academic depth) (8-10h)
