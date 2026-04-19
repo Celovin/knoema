@@ -85,7 +85,7 @@ release = [
     "twine>=5.1",
 ]
 docs = [
-    "mkdocs-material>=9.5,<9.7",
+    "mkdocs-material>=9.5,<9.8",
     "mkdocstrings[python]>=0.26",
 ]
 security = [
