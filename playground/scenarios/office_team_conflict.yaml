@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/office_team_conflict.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T14:00:00"
+  location_path: ["Harbor City", "North Tower", "Project Room"]
+  conditions:
+    weather: clear
+    social_context: product team deadline conflict
+agents:
+  - agent_id: ara
+    name: Ara
+    age: 29
+    background: Product manager trying to reset a slipping delivery date.
+    personality: {openness: 0.64, conscientiousness: 0.78, extraversion: 0.56, agreeableness: 0.48, neuroticism: 0.34}
+    values: ["clarity", "delivery", "team trust"]
+    goals: ["stabilize the sprint", "reduce tension"]
+    location_path: ["Harbor City", "North Tower", "Project Room"]
+  - agent_id: minho
+    name: Minho
+    age: 32
+    background: Senior engineer who feels the launch plan is unrealistic.
+    personality: {openness: 0.52, conscientiousness: 0.82, extraversion: 0.38, agreeableness: 0.42, neuroticism: 0.44}
+    values: ["quality", "fair workload", "directness"]
+    goals: ["protect the team", "argue for a realistic deadline"]
+    location_path: ["Harbor City", "North Tower", "Project Room"]
+events:
+  - timestamp: "2026-04-20T14:00:00"
+    event_type: office.deadline_review
+    participants: ["ara", "minho"]
+    location: Project Room
+    description: Leadership asks the team to explain a missed milestone before end of day.
+description_ko: "출시 지연을 둘러싸고 제품 매니저와 엔지니어가 우선순위를 조정하는 사무실 갈등 시나리오입니다."
+description_en: "A product manager and engineer negotiate accountability and scope after a slipped milestone."
+local_response: '{"action_type": "speak", "target": null, "content": "I acknowledge the deadline pressure and suggest one concrete next step."}'
+

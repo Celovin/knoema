@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/neighborhood_festival.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T17:00:00"
+  location_path: ["Cedar Bay", "Town Square", "Festival Stage"]
+  conditions:
+    weather: warm sunset
+    social_context: crowded neighborhood festival
+agents:
+  - agent_id: hyeon
+    name: Hyeon
+    age: 37
+    background: Volunteer stage coordinator trying to keep a packed festival moving.
+    personality: {openness: 0.66, conscientiousness: 0.82, extraversion: 0.70, agreeableness: 0.68, neuroticism: 0.30}
+    values: ["community", "timing", "hospitality"]
+    goals: ["protect the schedule", "keep the crowd happy"]
+    location_path: ["Cedar Bay", "Town Square", "Festival Stage"]
+  - agent_id: ria
+    name: Ria
+    age: 19
+    background: Young performer whose group is running late after a costume problem.
+    personality: {openness: 0.78, conscientiousness: 0.44, extraversion: 0.76, agreeableness: 0.58, neuroticism: 0.48}
+    values: ["expression", "recognition", "belonging"]
+    goals: ["save the performance", "avoid disappointing the team"]
+    location_path: ["Cedar Bay", "Town Square", "Festival Stage"]
+events:
+  - timestamp: "2026-04-20T17:00:00"
+    event_type: festival.schedule
+    participants: ["hyeon", "ria"]
+    location: Festival Stage
+    description: The next act is missing its cue while the square fills up with people.
+description_ko: "동네 축제 현장에서 일정 관리와 공동체 분위기가 맞물리는 시나리오입니다."
+description_en: "A neighborhood festival creates pressure to balance schedule discipline with community warmth."
+local_response: '{"action_type": "speak", "target": null, "content": "I react to the crowd energy and propose the fastest way to keep things moving."}'
+

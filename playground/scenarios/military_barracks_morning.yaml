@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/military_barracks_morning.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T06:15:00"
+  location_path: ["Fictional Base", "Alpha Barracks", "Equipment Bay"]
+  conditions:
+    weather: cold morning
+    social_context: morning barracks preparation
+agents:
+  - agent_id: park
+    name: Park
+    age: 24
+    background: Squad leader trying to keep the unit on schedule before inspection.
+    personality: {openness: 0.34, conscientiousness: 0.90, extraversion: 0.58, agreeableness: 0.44, neuroticism: 0.24}
+    values: ["discipline", "reliability", "group safety"]
+    goals: ["complete inspection prep", "prevent avoidable mistakes"]
+    location_path: ["Fictional Base", "Alpha Barracks", "Equipment Bay"]
+  - agent_id: kang
+    name: Kang
+    age: 21
+    background: Sleep-deprived recruit struggling to keep up with a strict routine.
+    personality: {openness: 0.38, conscientiousness: 0.50, extraversion: 0.36, agreeableness: 0.48, neuroticism: 0.56}
+    values: ["avoid punishment", "competence", "rest"]
+    goals: ["finish gear check", "not fall behind"]
+    location_path: ["Fictional Base", "Alpha Barracks", "Equipment Bay"]
+events:
+  - timestamp: "2026-04-20T06:15:00"
+    event_type: barracks.inspection_warning
+    participants: ["park", "kang"]
+    location: Equipment Bay
+    description: A notice says the inspection will start ten minutes earlier than expected.
+description_ko: "군 막사 아침 점검 준비 과정에서 규율과 피로가 충돌하는 시나리오입니다."
+description_en: "A morning inspection shift tests discipline, stress, and peer correction in a barracks setting."
+local_response: '{"action_type": "speak", "target": null, "content": "I respond to the earlier inspection and focus on the most urgent coordination step."}'
+

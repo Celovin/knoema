@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/school_group_project.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T15:10:00"
+  location_path: ["Elm School", "Science Wing", "Project Table"]
+  conditions:
+    weather: indoor afternoon
+    social_context: uneven group work contributions
+agents:
+  - agent_id: eun
+    name: Eun
+    age: 17
+    background: Student trying to keep the group project on schedule before the deadline.
+    personality: {openness: 0.62, conscientiousness: 0.82, extraversion: 0.44, agreeableness: 0.60, neuroticism: 0.42}
+    values: ["fair effort", "grades", "cooperation"]
+    goals: ["finish the slides", "get everyone to contribute"]
+    location_path: ["Elm School", "Science Wing", "Project Table"]
+  - agent_id: taeyang
+    name: Taeyang
+    age: 17
+    background: Creative classmate who keeps improvising instead of following the plan.
+    personality: {openness: 0.84, conscientiousness: 0.30, extraversion: 0.66, agreeableness: 0.50, neuroticism: 0.36}
+    values: ["creativity", "recognition", "freedom"]
+    goals: ["improve the presentation", "avoid being controlled"]
+    location_path: ["Elm School", "Science Wing", "Project Table"]
+events:
+  - timestamp: "2026-04-20T15:10:00"
+    event_type: school.deadline
+    participants: ["eun", "taeyang"]
+    location: Project Table
+    description: The teacher announces that presentation files must be uploaded before the final bell.
+description_ko: "조별 과제에서 책임 분담과 창의성 요구가 충돌하는 학교 시나리오입니다."
+description_en: "A school group project surfaces tension between discipline and improvisation."
+local_response: '{"action_type": "speak", "target": null, "content": "I frame the task pressure and ask for a specific contribution."}'
+

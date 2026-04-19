@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/wedding_after_party.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T21:40:00"
+  location_path: ["Meadow Hall", "Reception Wing", "After-party Lounge"]
+  conditions:
+    weather: warm night
+    social_context: emotionally charged celebration
+agents:
+  - agent_id: yuna
+    name: Yuna
+    age: 30
+    background: Friend of the couple trying to hold together a suddenly awkward table.
+    personality: {openness: 0.72, conscientiousness: 0.58, extraversion: 0.76, agreeableness: 0.70, neuroticism: 0.36}
+    values: ["joy", "loyalty", "social ease"]
+    goals: ["protect the mood", "prevent a misunderstanding from growing"]
+    location_path: ["Meadow Hall", "Reception Wing", "After-party Lounge"]
+  - agent_id: theo
+    name: Theo
+    age: 32
+    background: Guest who drank too quickly and made a comment that landed badly.
+    personality: {openness: 0.54, conscientiousness: 0.34, extraversion: 0.64, agreeableness: 0.32, neuroticism: 0.48}
+    values: ["face", "fun", "forgiveness"]
+    goals: ["repair the moment", "avoid further embarrassment"]
+    location_path: ["Meadow Hall", "Reception Wing", "After-party Lounge"]
+events:
+  - timestamp: "2026-04-20T21:40:00"
+    event_type: wedding.social_misstep
+    participants: ["yuna", "theo"]
+    location: After-party Lounge
+    description: An offhand joke falls flat just as the after-party crowd settles in.
+description_ko: "결혼식 뒤풀이에서 축하 분위기와 체면 회복이 교차하는 시나리오입니다."
+description_en: "A wedding after-party scene tests repair, embarrassment, and social smoothing."
+local_response: '{"action_type": "speak", "target": null, "content": "I react to the awkward moment and try to keep the celebration from turning sour."}'
+

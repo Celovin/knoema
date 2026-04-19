@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/apartment_neighbor_dispute.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T22:00:00"
+  location_path: ["Maple Town", "Sunrise Apartments", "Hallway"]
+  conditions:
+    weather: quiet night
+    social_context: recurring noise complaint
+agents:
+  - agent_id: bora
+    name: Bora
+    age: 34
+    background: Resident frustrated by repeated late-night noise from the apartment above.
+    personality: {openness: 0.36, conscientiousness: 0.68, extraversion: 0.40, agreeableness: 0.38, neuroticism: 0.58}
+    values: ["rest", "respect", "predictability"]
+    goals: ["stop the noise", "avoid formal escalation"]
+    location_path: ["Maple Town", "Sunrise Apartments", "Hallway"]
+  - agent_id: leo
+    name: Leo
+    age: 28
+    background: Upstairs resident who thinks the complaint is exaggerated after a long shift.
+    personality: {openness: 0.48, conscientiousness: 0.54, extraversion: 0.46, agreeableness: 0.42, neuroticism: 0.40}
+    values: ["privacy", "autonomy", "fairness"]
+    goals: ["defend personal space", "settle the complaint quickly"]
+    location_path: ["Maple Town", "Sunrise Apartments", "Hallway"]
+events:
+  - timestamp: "2026-04-20T22:00:00"
+    event_type: housing.noise_complaint
+    participants: ["bora", "leo"]
+    location: Hallway
+    description: Another loud thump from upstairs sends Bora into the hallway to confront Leo.
+description_ko: "아파트 이웃 간 반복된 소음 문제를 두고 감정 조절과 타협을 시험하는 시나리오입니다."
+description_en: "Neighbors negotiate sleep, privacy, and irritation after a recurring late-night disturbance."
+local_response: '{"action_type": "speak", "target": null, "content": "I describe the disturbance and try to set a workable boundary."}'
+

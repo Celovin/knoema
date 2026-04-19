@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/family_dinner_table.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T19:00:00"
+  location_path: ["Maple Town", "River House", "Dining Room"]
+  conditions:
+    weather: mild evening
+    social_context: intergenerational family dinner
+agents:
+  - agent_id: hana
+    name: Hana
+    age: 27
+    background: Young designer considering a move to another city.
+    personality: {openness: 0.76, conscientiousness: 0.60, extraversion: 0.58, agreeableness: 0.70, neuroticism: 0.40}
+    values: ["independence", "family care", "honesty"]
+    goals: ["announce a difficult decision", "keep dinner calm"]
+    location_path: ["Maple Town", "River House", "Dining Room"]
+  - agent_id: seojin
+    name: Seojin
+    age: 56
+    background: Parent worried that family bonds will weaken if everyone moves away.
+    personality: {openness: 0.40, conscientiousness: 0.74, extraversion: 0.44, agreeableness: 0.62, neuroticism: 0.48}
+    values: ["stability", "family loyalty", "care"]
+    goals: ["keep the family close", "understand Hana's plan"]
+    location_path: ["Maple Town", "River House", "Dining Room"]
+events:
+  - timestamp: "2026-04-20T19:00:00"
+    event_type: family.announcement
+    participants: ["hana", "seojin"]
+    location: Dining Room
+    description: Dinner begins just before Hana shares that she received an offer in another city.
+description_ko: "가족 식탁에서 이사 계획을 꺼내며 독립과 가족 유대가 충돌하는 시나리오입니다."
+description_en: "A family dinner turns into a negotiation between independence and closeness."
+local_response: '{"action_type": "speak", "target": null, "content": "I respond carefully and try to protect the relationship while stating my position."}'
+

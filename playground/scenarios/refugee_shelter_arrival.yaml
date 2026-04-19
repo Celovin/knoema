@@ -1,0 +1,39 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/refugee_shelter_arrival.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T20:10:00"
+  location_path: ["Fictional Relief Zone", "Winter Shelter", "Registration Table"]
+  conditions:
+    weather: freezing wind
+    social_context: fictional research-only shelter intake
+agents:
+  - agent_id: amal
+    name: Amal
+    age: 29
+    background: Intake volunteer trying to maintain dignity and speed during a cold arrival rush.
+    personality: {openness: 0.66, conscientiousness: 0.82, extraversion: 0.52, agreeableness: 0.86, neuroticism: 0.34}
+    values: ["dignity", "care", "order"]
+    goals: ["process arrivals kindly", "reduce confusion"]
+    location_path: ["Fictional Relief Zone", "Winter Shelter", "Registration Table"]
+  - agent_id: nabil
+    name: Nabil
+    age: 35
+    background: New arrival exhausted by travel and uncertain about what happens next.
+    personality: {openness: 0.42, conscientiousness: 0.48, extraversion: 0.30, agreeableness: 0.62, neuroticism: 0.72}
+    values: ["safety", "family", "clarity"]
+    goals: ["secure a place indoors", "understand the process"]
+    location_path: ["Fictional Relief Zone", "Winter Shelter", "Registration Table"]
+events:
+  - timestamp: "2026-04-20T20:10:00"
+    event_type: shelter.arrival
+    participants: ["amal", "nabil"]
+    location: Registration Table
+    description: A new bus arrives as the shelter intake line starts to lengthen.
+description_ko: "겨울 보호소 도착 상황에서 존엄성, 설명 책임, 피로가 교차하는 허구 재현 연구용 시나리오입니다."
+description_en: "A fictional research-only shelter arrival scene focuses on dignity, confusion, and intake coordination."
+ethics_tag: fictional research only
+local_response: '{"action_type": "speak", "target": null, "content": "I give a brief, respectful explanation of the process and the immediate next step."}'
+

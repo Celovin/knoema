@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/cafe_first_meeting.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T11:30:00"
+  location_path: ["Linden City", "Old Quarter", "Corner Cafe"]
+  conditions:
+    weather: sunny
+    social_context: first-time conversation
+agents:
+  - agent_id: noa
+    name: Noa
+    age: 25
+    background: Graduate student meeting a potential collaborator for the first time.
+    personality: {openness: 0.82, conscientiousness: 0.64, extraversion: 0.62, agreeableness: 0.72, neuroticism: 0.34}
+    values: ["curiosity", "respect", "clarity"]
+    goals: ["make a good impression", "find common ground"]
+    location_path: ["Linden City", "Old Quarter", "Corner Cafe"]
+  - agent_id: yuri
+    name: Yuri
+    age: 26
+    background: Freelance researcher deciding whether this new partnership feels safe and promising.
+    personality: {openness: 0.70, conscientiousness: 0.68, extraversion: 0.48, agreeableness: 0.66, neuroticism: 0.36}
+    values: ["autonomy", "reliability", "warmth"]
+    goals: ["evaluate compatibility", "share boundaries early"]
+    location_path: ["Linden City", "Old Quarter", "Corner Cafe"]
+events:
+  - timestamp: "2026-04-20T11:30:00"
+    event_type: social.introduction
+    participants: ["noa", "yuri"]
+    location: Corner Cafe
+    description: The two arrive at a quiet cafe table for their first in-person meeting.
+description_ko: "카페에서 처음 만난 두 사람이 긴장을 풀고 공통 관심사를 찾는 시나리오입니다."
+description_en: "Two strangers meet in a cafe and try to turn first impressions into collaboration."
+local_response: '{"action_type": "speak", "target": null, "content": "I offer a light observation and look for a safe conversational opening."}'
+

@@ -1,0 +1,39 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/er_triage.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T02:20:00"
+  location_path: ["Fictional Medical Center", "Emergency Wing", "Triage Desk"]
+  conditions:
+    weather: stormy night
+    social_context: fictional research-only emergency triage pressure
+agents:
+  - agent_id: lena
+    name: Lena
+    age: 36
+    background: Triage nurse balancing empathy with severe time pressure.
+    personality: {openness: 0.56, conscientiousness: 0.92, extraversion: 0.50, agreeableness: 0.80, neuroticism: 0.34}
+    values: ["care", "speed", "accuracy"]
+    goals: ["sort patients safely", "communicate urgency clearly"]
+    location_path: ["Fictional Medical Center", "Emergency Wing", "Triage Desk"]
+  - agent_id: reid
+    name: Reid
+    age: 44
+    background: Family member anxious about being told to wait during a surge.
+    personality: {openness: 0.40, conscientiousness: 0.52, extraversion: 0.42, agreeableness: 0.44, neuroticism: 0.74}
+    values: ["family safety", "clarity", "respect"]
+    goals: ["get immediate help", "understand the delay"]
+    location_path: ["Fictional Medical Center", "Emergency Wing", "Triage Desk"]
+events:
+  - timestamp: "2026-04-20T02:20:00"
+    event_type: er.surge
+    participants: ["lena", "reid"]
+    location: Triage Desk
+    description: Multiple urgent cases arrive together as Reid asks why his family member is still waiting.
+description_ko: "응급실 접수 압박 속에서 설명 책임과 감정 조절이 시험되는 허구 재현 연구용 시나리오입니다."
+description_en: "A fictional research-only triage scene tests calm explanation under acute emergency pressure."
+ethics_tag: fictional research only
+local_response: '{"action_type": "speak", "target": null, "content": "I explain the queue, the urgency, and the safest next step as clearly as possible."}'
+

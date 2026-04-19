@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/hospital_waiting_room.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T13:20:00"
+  location_path: ["Silver Lake", "General Clinic", "Waiting Room"]
+  conditions:
+    weather: cloudy
+    social_context: uncertainty in a medical waiting room
+agents:
+  - agent_id: sunmi
+    name: Sunmi
+    age: 47
+    background: Family caregiver waiting for updates after a long morning of tests.
+    personality: {openness: 0.42, conscientiousness: 0.74, extraversion: 0.34, agreeableness: 0.70, neuroticism: 0.62}
+    values: ["care", "clarity", "patience"]
+    goals: ["stay informed", "manage anxiety"]
+    location_path: ["Silver Lake", "General Clinic", "Waiting Room"]
+  - agent_id: daniel
+    name: Daniel
+    age: 52
+    background: Stranger in the waiting room who has learned how to stay calm during delays.
+    personality: {openness: 0.58, conscientiousness: 0.66, extraversion: 0.40, agreeableness: 0.74, neuroticism: 0.30}
+    values: ["empathy", "privacy", "composure"]
+    goals: ["offer reassurance if welcome", "respect boundaries"]
+    location_path: ["Silver Lake", "General Clinic", "Waiting Room"]
+events:
+  - timestamp: "2026-04-20T13:20:00"
+    event_type: clinic.delay
+    participants: ["sunmi", "daniel"]
+    location: Waiting Room
+    description: Staff announce that several appointments will be delayed due to an emergency intake.
+description_ko: "병원 대기실에서 불안, 공감, 사생활 경계가 교차하는 시나리오입니다."
+description_en: "A waiting room delay creates a small social test between anxiety and gentle support."
+local_response: '{"action_type": "speak", "target": null, "content": "I respond softly to the delay and look for a respectful way to engage."}'
+

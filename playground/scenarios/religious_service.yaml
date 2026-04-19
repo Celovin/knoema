@@ -1,0 +1,37 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/religious_service.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T10:30:00"
+  location_path: ["Crescent Town", "Community Temple", "Main Hall"]
+  conditions:
+    weather: quiet morning
+    social_context: formal community gathering
+agents:
+  - agent_id: elin
+    name: Elin
+    age: 45
+    background: Longtime volunteer guiding visitors during a crowded service.
+    personality: {openness: 0.50, conscientiousness: 0.82, extraversion: 0.48, agreeableness: 0.82, neuroticism: 0.24}
+    values: ["reverence", "care", "order"]
+    goals: ["protect the service flow", "welcome newcomers gently"]
+    location_path: ["Crescent Town", "Community Temple", "Main Hall"]
+  - agent_id: omar
+    name: Omar
+    age: 33
+    background: First-time visitor unsure about local customs and timing.
+    personality: {openness: 0.70, conscientiousness: 0.56, extraversion: 0.34, agreeableness: 0.72, neuroticism: 0.44}
+    values: ["respect", "learning", "belonging"]
+    goals: ["avoid offense", "understand the ritual cues"]
+    location_path: ["Crescent Town", "Community Temple", "Main Hall"]
+events:
+  - timestamp: "2026-04-20T10:30:00"
+    event_type: service.begin
+    participants: ["elin", "omar"]
+    location: Main Hall
+    description: The service is about to begin as Omar hesitates near the entrance.
+description_ko: "종교 예식 공간에서 환대와 규범 설명이 동시에 필요한 시나리오입니다."
+description_en: "A religious service tests how newcomers are welcomed without disrupting formal norms."
+local_response: '{"action_type": "speak", "target": null, "content": "I respond with respect for the setting and make the next social cue explicit."}'

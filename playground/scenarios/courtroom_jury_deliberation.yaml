@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/courtroom_jury_deliberation.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T15:30:00"
+  location_path: ["Civic Center", "Courthouse", "Jury Room"]
+  conditions:
+    weather: indoor afternoon
+    social_context: structured deliberation
+agents:
+  - agent_id: irene
+    name: Irene
+    age: 49
+    background: Juror focused on process and the burden of proof.
+    personality: {openness: 0.54, conscientiousness: 0.88, extraversion: 0.30, agreeableness: 0.64, neuroticism: 0.28}
+    values: ["fairness", "procedure", "restraint"]
+    goals: ["keep the discussion evidence-based", "avoid hasty conclusions"]
+    location_path: ["Civic Center", "Courthouse", "Jury Room"]
+  - agent_id: mason
+    name: Mason
+    age: 39
+    background: Juror who wants the room to converge quickly after a long trial day.
+    personality: {openness: 0.42, conscientiousness: 0.70, extraversion: 0.46, agreeableness: 0.40, neuroticism: 0.38}
+    values: ["efficiency", "closure", "certainty"]
+    goals: ["push toward a decision", "challenge weak arguments"]
+    location_path: ["Civic Center", "Courthouse", "Jury Room"]
+events:
+  - timestamp: "2026-04-20T15:30:00"
+    event_type: jury.deliberation_start
+    participants: ["irene", "mason"]
+    location: Jury Room
+    description: The jurors are instructed to begin deliberation after hearing the final charge.
+description_ko: "배심 평의실에서 증거 해석과 절차적 신중함이 맞서는 시나리오입니다."
+description_en: "A jury room scene explores the tension between careful procedure and pressure for quick closure."
+local_response: '{"action_type": "speak", "target": null, "content": "I reference the evidence and argue for a careful next step in deliberation."}'
+

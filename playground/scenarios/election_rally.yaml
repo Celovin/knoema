@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/election_rally.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T18:00:00"
+  location_path: ["Harbor City", "Civic Plaza", "Rally Barricade"]
+  conditions:
+    weather: windy evening
+    social_context: campaign rally crowd management
+agents:
+  - agent_id: dora
+    name: Dora
+    age: 28
+    background: Campaign volunteer trying to guide attendees and protect the event schedule.
+    personality: {openness: 0.60, conscientiousness: 0.80, extraversion: 0.78, agreeableness: 0.62, neuroticism: 0.30}
+    values: ["order", "persuasion", "team loyalty"]
+    goals: ["keep the line moving", "hold enthusiasm together"]
+    location_path: ["Harbor City", "Civic Plaza", "Rally Barricade"]
+  - agent_id: felix
+    name: Felix
+    age: 34
+    background: Skeptical attendee who came to evaluate the candidate in person.
+    personality: {openness: 0.68, conscientiousness: 0.54, extraversion: 0.40, agreeableness: 0.36, neuroticism: 0.42}
+    values: ["accountability", "freedom", "clarity"]
+    goals: ["ask a hard question", "avoid being swept up by the crowd"]
+    location_path: ["Harbor City", "Civic Plaza", "Rally Barricade"]
+events:
+  - timestamp: "2026-04-20T18:00:00"
+    event_type: rally.queue_shift
+    participants: ["dora", "felix"]
+    location: Rally Barricade
+    description: Security changes the entrance flow just as the crowd grows louder.
+description_ko: "선거 유세 현장에서 열기, 회의감, 군중 동선 관리가 만나는 시나리오입니다."
+description_en: "An election rally scene tests persuasion and crowd etiquette under rising political energy."
+local_response: '{"action_type": "speak", "target": null, "content": "I react to the crowd shift and choose whether to persuade, clarify, or steady the line."}'
+

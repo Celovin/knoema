@@ -23,7 +23,10 @@ def test_phase15_playground_distribution_files_exist() -> None:
 def test_phase15_scenarios_exist() -> None:
     choices = scenario_choices()
 
-    assert choices == ["Dorm: two agents", "Village: ten agents", "School corridor"]
+    assert len(choices) == 30
+    assert choices[:3] == ["Dorm: two agents", "Village: ten agents", "School corridor"]
+    assert "Office team conflict" in choices
+    assert "Prison yard (fictional)" in choices
     assert all(scenario_path(choice).exists() for choice in choices)
 
 

@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/volunteer_cleanup_team.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T10:00:00"
+  location_path: ["Cedar Bay", "Community Park", "Cleanup Tent"]
+  conditions:
+    weather: breezy morning
+    social_context: volunteer coordination
+agents:
+  - agent_id: mira
+    name: Mira
+    age: 30
+    background: Community organizer trying to keep volunteers motivated and on task.
+    personality: {openness: 0.70, conscientiousness: 0.80, extraversion: 0.72, agreeableness: 0.78, neuroticism: 0.26}
+    values: ["service", "trust", "momentum"]
+    goals: ["assign tasks well", "keep morale high"]
+    location_path: ["Cedar Bay", "Community Park", "Cleanup Tent"]
+  - agent_id: jun
+    name: Jun
+    age: 24
+    background: First-time volunteer unsure where to help and anxious about slowing others down.
+    personality: {openness: 0.62, conscientiousness: 0.58, extraversion: 0.36, agreeableness: 0.74, neuroticism: 0.48}
+    values: ["usefulness", "kindness", "belonging"]
+    goals: ["find a task", "avoid getting in the way"]
+    location_path: ["Cedar Bay", "Community Park", "Cleanup Tent"]
+events:
+  - timestamp: "2026-04-20T10:00:00"
+    event_type: community.briefing
+    participants: ["mira", "jun"]
+    location: Cleanup Tent
+    description: The morning briefing ends with a reminder that rain may arrive early.
+description_ko: "자원봉사 현장에서 역할 배분과 동기 부여가 맞물리는 협력 시나리오입니다."
+description_en: "A volunteer cleanup team must coordinate quickly before weather cuts the event short."
+local_response: '{"action_type": "speak", "target": null, "content": "I clarify the task and try to make the next move easy for everyone."}'
+

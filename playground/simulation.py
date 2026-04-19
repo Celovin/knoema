@@ -43,11 +43,38 @@ JITTER_STEPS = (-0.05, -0.025, 0.0, 0.025, 0.05)
 SCENARIO_DIR = Path(__file__).resolve().parent / "scenarios"
 ENVIRONMENTS_PATH = Path(__file__).resolve().parent / "environments.yaml"
 PERSONA_PRESETS_PATH = Path(__file__).resolve().parent / "persona_presets.yaml"
-DEFAULT_SCENARIOS: dict[str, str] = {
-    "Dorm: two agents": "dorm_two_agents.yaml",
-    "Village: ten agents": "village_ten.yaml",
-    "School corridor": "school_corridor.yaml",
-}
+DEFAULT_SCENARIOS: tuple[dict[str, str], ...] = (
+    {"name": "Dorm: two agents", "filename": "dorm_two_agents.yaml"},
+    {"name": "Village: ten agents", "filename": "village_ten.yaml"},
+    {"name": "School corridor", "filename": "school_corridor.yaml"},
+    {"name": "Office team conflict", "filename": "office_team_conflict.yaml"},
+    {"name": "Family dinner table", "filename": "family_dinner_table.yaml"},
+    {"name": "Cafe first meeting", "filename": "cafe_first_meeting.yaml"},
+    {"name": "Subway rush crowd", "filename": "subway_rush_crowd.yaml"},
+    {"name": "School group project", "filename": "school_group_project.yaml"},
+    {"name": "Apartment neighbor dispute", "filename": "apartment_neighbor_dispute.yaml"},
+    {"name": "Volunteer cleanup team", "filename": "volunteer_cleanup_team.yaml"},
+    {"name": "Startup pivot meeting", "filename": "startup_pivot_meeting.yaml"},
+    {"name": "Late-night convenience store", "filename": "late_night_convenience_store.yaml"},
+    {"name": "Book club debate", "filename": "book_club_debate.yaml"},
+    {"name": "Hospital waiting room", "filename": "hospital_waiting_room.yaml"},
+    {"name": "Neighborhood festival", "filename": "neighborhood_festival.yaml"},
+    {"name": "Classroom pop quiz", "filename": "classroom_pop_quiz.yaml"},
+    {"name": "Religious service", "filename": "religious_service.yaml"},
+    {"name": "Military barracks morning", "filename": "military_barracks_morning.yaml"},
+    {"name": "ER triage", "filename": "er_triage.yaml"},
+    {"name": "Courtroom jury deliberation", "filename": "courtroom_jury_deliberation.yaml"},
+    {"name": "Election rally", "filename": "election_rally.yaml"},
+    {"name": "Refugee shelter arrival", "filename": "refugee_shelter_arrival.yaml"},
+    {"name": "Tech demo day", "filename": "tech_demo_day.yaml"},
+    {"name": "Wedding after-party", "filename": "wedding_after_party.yaml"},
+    {"name": "Funeral wake", "filename": "funeral_wake.yaml"},
+    {"name": "Prison yard (fictional)", "filename": "prison_yard_fictional.yaml"},
+    {"name": "Zoom team standup", "filename": "zoom_team_standup.yaml"},
+    {"name": "Kindergarten storytime", "filename": "kindergarten_storytime.yaml"},
+    {"name": "Senior center chess", "filename": "senior_center_chess.yaml"},
+    {"name": "Concert lobby intermission", "filename": "concert_lobby_intermission.yaml"},
+)
 PERSONA_TRAIT_FIELDS = (
     "openness",
     "conscientiousness",
@@ -96,15 +123,14 @@ class PlaygroundResult:
 
 
 def scenario_choices() -> list[str]:
-    return list(DEFAULT_SCENARIOS)
+    return [scenario["name"] for scenario in DEFAULT_SCENARIOS]
 
 
 def scenario_path(name: str) -> Path:
-    try:
-        filename = DEFAULT_SCENARIOS[name]
-    except KeyError as exc:
-        raise ValueError(f"Unknown scenario: {name}") from exc
-    return SCENARIO_DIR / filename
+    for scenario in DEFAULT_SCENARIOS:
+        if scenario["name"] == name:
+            return SCENARIO_DIR / scenario["filename"]
+    raise ValueError(f"Unknown scenario: {name}")
 
 
 def scenario_default_agent_count(name: str) -> int:

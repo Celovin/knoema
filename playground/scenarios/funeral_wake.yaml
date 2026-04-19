@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/funeral_wake.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T18:50:00"
+  location_path: ["Willow House", "Memorial Hall", "Reception Corner"]
+  conditions:
+    weather: rainy dusk
+    social_context: quiet mourning gathering
+agents:
+  - agent_id: soo
+    name: Soo
+    age: 43
+    background: Family member trying to receive visitors while staying emotionally composed.
+    personality: {openness: 0.44, conscientiousness: 0.72, extraversion: 0.26, agreeableness: 0.82, neuroticism: 0.66}
+    values: ["respect", "family duty", "care"]
+    goals: ["honor the moment", "get through the evening"]
+    location_path: ["Willow House", "Memorial Hall", "Reception Corner"]
+  - agent_id: min
+    name: Min
+    age: 40
+    background: Old friend unsure whether to speak, comfort, or stay silent.
+    personality: {openness: 0.56, conscientiousness: 0.60, extraversion: 0.30, agreeableness: 0.78, neuroticism: 0.44}
+    values: ["presence", "respect", "gentleness"]
+    goals: ["offer support without intruding", "read the room correctly"]
+    location_path: ["Willow House", "Memorial Hall", "Reception Corner"]
+events:
+  - timestamp: "2026-04-20T18:50:00"
+    event_type: memorial.arrival
+    participants: ["soo", "min"]
+    location: Reception Corner
+    description: Another wave of visitors arrives while the room remains hushed and heavy.
+description_ko: "빈소에서 침묵, 위로, 예절 판단이 섬세하게 요구되는 시나리오입니다."
+description_en: "A funeral wake scene explores restraint, comfort, and reading emotional boundaries."
+local_response: '{"action_type": "speak", "target": null, "content": "I keep my words measured and respond to the tone of the room."}'
+

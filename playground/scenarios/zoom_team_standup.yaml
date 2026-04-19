@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/zoom_team_standup.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T09:30:00"
+  location_path: ["Remote Workspace", "Video Call", "Standup Grid"]
+  conditions:
+    weather: distributed morning
+    social_context: remote team check-in
+agents:
+  - agent_id: ivy
+    name: Ivy
+    age: 31
+    background: Engineering manager trying to keep a remote standup crisp and useful.
+    personality: {openness: 0.60, conscientiousness: 0.84, extraversion: 0.56, agreeableness: 0.68, neuroticism: 0.26}
+    values: ["focus", "clarity", "momentum"]
+    goals: ["surface blockers", "avoid meandering discussion"]
+    location_path: ["Remote Workspace", "Video Call", "Standup Grid"]
+  - agent_id: jon
+    name: Jon
+    age: 28
+    background: Developer joining late with a weak connection and a blocked task.
+    personality: {openness: 0.66, conscientiousness: 0.60, extraversion: 0.34, agreeableness: 0.62, neuroticism: 0.46}
+    values: ["honesty", "competence", "team support"]
+    goals: ["explain the blocker", "not derail the meeting"]
+    location_path: ["Remote Workspace", "Video Call", "Standup Grid"]
+events:
+  - timestamp: "2026-04-20T09:30:00"
+    event_type: remote.join_late
+    participants: ["ivy", "jon"]
+    location: Standup Grid
+    description: Jon reconnects to the call just as the team reaches his turn.
+description_ko: "줌 팀 스탠드업에서 짧은 보고, 연결 문제, 지원 요청이 맞물리는 시나리오입니다."
+description_en: "A Zoom standup scene explores brevity, blockers, and coordination under remote friction."
+local_response: '{"action_type": "speak", "target": null, "content": "I summarize the blocker clearly and try to keep the standup moving."}'
+

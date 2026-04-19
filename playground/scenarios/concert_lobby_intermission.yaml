@@ -1,0 +1,37 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/concert_lobby_intermission.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T20:20:00"
+  location_path: ["Aurora Hall", "Grand Lobby", "Refreshment Line"]
+  conditions:
+    weather: indoor evening
+    social_context: crowded intermission conversation
+agents:
+  - agent_id: claire
+    name: Claire
+    age: 29
+    background: Music student energized by the performance and eager to discuss it.
+    personality: {openness: 0.88, conscientiousness: 0.56, extraversion: 0.72, agreeableness: 0.64, neuroticism: 0.30}
+    values: ["art", "expression", "connection"]
+    goals: ["share an interpretation", "keep the conversation warm"]
+    location_path: ["Aurora Hall", "Grand Lobby", "Refreshment Line"]
+  - agent_id: neil
+    name: Neil
+    age: 33
+    background: Friend who enjoyed the music but feels less certain about the strong reaction around him.
+    personality: {openness: 0.60, conscientiousness: 0.60, extraversion: 0.38, agreeableness: 0.58, neuroticism: 0.34}
+    values: ["honesty", "comfort", "curiosity"]
+    goals: ["respond authentically", "avoid sounding dismissive"]
+    location_path: ["Aurora Hall", "Grand Lobby", "Refreshment Line"]
+events:
+  - timestamp: "2026-04-20T20:20:00"
+    event_type: concert.intermission
+    participants: ["claire", "neil"]
+    location: Refreshment Line
+    description: The lobby fills with excited conversation as the line for drinks slows down.
+description_ko: "콘서트 로비 인터미션에서 감상 공유와 사회적 조율이 일어나는 시나리오입니다."
+description_en: "A concert lobby intermission scene explores enthusiasm, uncertainty, and small talk under crowd pressure."
+local_response: '{"action_type": "speak", "target": null, "content": "I react to the performance and try to turn the intermission into a meaningful exchange."}'

@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/startup_pivot_meeting.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T16:30:00"
+  location_path: ["Harbor City", "Dock Labs", "War Room"]
+  conditions:
+    weather: overcast
+    social_context: startup pivot discussion
+agents:
+  - agent_id: nari
+    name: Nari
+    age: 33
+    background: Founder pushing for a pivot after months of weak customer pull.
+    personality: {openness: 0.88, conscientiousness: 0.64, extraversion: 0.70, agreeableness: 0.44, neuroticism: 0.40}
+    values: ["speed", "survival", "vision"]
+    goals: ["win support for a pivot", "preserve team confidence"]
+    location_path: ["Harbor City", "Dock Labs", "War Room"]
+  - agent_id: eon
+    name: Eon
+    age: 35
+    background: Operations lead worried the team is changing direction too often.
+    personality: {openness: 0.46, conscientiousness: 0.84, extraversion: 0.38, agreeableness: 0.46, neuroticism: 0.42}
+    values: ["focus", "credibility", "execution"]
+    goals: ["challenge weak assumptions", "protect runway"]
+    location_path: ["Harbor City", "Dock Labs", "War Room"]
+events:
+  - timestamp: "2026-04-20T16:30:00"
+    event_type: startup.metrics_review
+    participants: ["nari", "eon"]
+    location: War Room
+    description: Fresh usage data shows the current product plateaued again.
+description_ko: "스타트업 피벗 회의에서 비전과 실행 안정성이 충돌하는 시나리오입니다."
+description_en: "A startup pivot meeting pits urgency and vision against execution discipline."
+local_response: '{"action_type": "speak", "target": null, "content": "I point to the new data and argue for the next strategic move."}'
+

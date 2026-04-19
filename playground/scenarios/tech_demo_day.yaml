@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/tech_demo_day.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T11:00:00"
+  location_path: ["Innovation Hall", "Demo Expo", "Booth 7"]
+  conditions:
+    weather: indoor midday
+    social_context: public demo day pitch
+agents:
+  - agent_id: rina
+    name: Rina
+    age: 27
+    background: Builder trying to explain a prototype clearly to skeptical visitors.
+    personality: {openness: 0.88, conscientiousness: 0.68, extraversion: 0.72, agreeableness: 0.54, neuroticism: 0.34}
+    values: ["novelty", "clarity", "proof"]
+    goals: ["hold attention", "turn questions into interest"]
+    location_path: ["Innovation Hall", "Demo Expo", "Booth 7"]
+  - agent_id: cole
+    name: Cole
+    age: 31
+    background: Technical visitor who asks hard questions before trusting a demo.
+    personality: {openness: 0.70, conscientiousness: 0.72, extraversion: 0.42, agreeableness: 0.34, neuroticism: 0.30}
+    values: ["evidence", "precision", "usefulness"]
+    goals: ["stress-test the pitch", "separate hype from substance"]
+    location_path: ["Innovation Hall", "Demo Expo", "Booth 7"]
+events:
+  - timestamp: "2026-04-20T11:00:00"
+    event_type: expo.demo
+    participants: ["rina", "cole"]
+    location: Booth 7
+    description: A fresh crowd arrives just as the prototype restarts after a minor glitch.
+description_ko: "기술 데모 데이 현장에서 설명력과 회의적 질문이 맞붙는 시나리오입니다."
+description_en: "A demo day booth scene explores how builders respond to skeptical, detail-oriented scrutiny."
+local_response: '{"action_type": "speak", "target": null, "content": "I explain the prototype in plain terms and address the strongest question first."}'
+

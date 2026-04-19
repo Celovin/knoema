@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/book_club_debate.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T18:30:00"
+  location_path: ["Linden City", "Public Library", "Reading Circle"]
+  conditions:
+    weather: indoor evening
+    social_context: interpretive disagreement in a book club
+agents:
+  - agent_id: jiwoo
+    name: Jiwoo
+    age: 41
+    background: Club moderator trying to keep a literary debate productive.
+    personality: {openness: 0.80, conscientiousness: 0.68, extraversion: 0.54, agreeableness: 0.76, neuroticism: 0.28}
+    values: ["curiosity", "fairness", "conversation"]
+    goals: ["keep the discussion open", "prevent personal attacks"]
+    location_path: ["Linden City", "Public Library", "Reading Circle"]
+  - agent_id: dae
+    name: Dae
+    age: 38
+    background: Reader who thinks the group is overlooking the novel's political core.
+    personality: {openness: 0.86, conscientiousness: 0.56, extraversion: 0.52, agreeableness: 0.40, neuroticism: 0.34}
+    values: ["truth", "intensity", "interpretation"]
+    goals: ["defend a strong reading", "shift the room's perspective"]
+    location_path: ["Linden City", "Public Library", "Reading Circle"]
+events:
+  - timestamp: "2026-04-20T18:30:00"
+    event_type: club.discussion
+    participants: ["jiwoo", "dae"]
+    location: Reading Circle
+    description: A comment about the book's ending turns the room toward a sharper debate.
+description_ko: "독서 모임에서 해석 차이가 토론 규칙과 감정 관리로 이어지는 시나리오입니다."
+description_en: "A book club debate tests how disagreement can stay thoughtful instead of personal."
+local_response: '{"action_type": "speak", "target": null, "content": "I state my reading clearly and try to keep the discussion grounded in the text."}'
+

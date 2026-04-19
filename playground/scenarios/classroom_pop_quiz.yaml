@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/classroom_pop_quiz.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T09:10:00"
+  location_path: ["Elm School", "History Room", "Front Row"]
+  conditions:
+    weather: indoor morning
+    social_context: surprise classroom quiz
+agents:
+  - agent_id: mina
+    name: Mina
+    age: 16
+    background: Prepared student trying to stay calm when classmates start panicking.
+    personality: {openness: 0.58, conscientiousness: 0.84, extraversion: 0.40, agreeableness: 0.66, neuroticism: 0.36}
+    values: ["fair effort", "focus", "kindness"]
+    goals: ["do well on the quiz", "steady a classmate"]
+    location_path: ["Elm School", "History Room", "Front Row"]
+  - agent_id: jisu
+    name: Jisu
+    age: 16
+    background: Sleepy classmate caught off guard by the surprise assessment.
+    personality: {openness: 0.52, conscientiousness: 0.34, extraversion: 0.48, agreeableness: 0.58, neuroticism: 0.62}
+    values: ["support", "self-respect", "getting through the day"]
+    goals: ["avoid embarrassment", "borrow confidence from Mina"]
+    location_path: ["Elm School", "History Room", "Front Row"]
+events:
+  - timestamp: "2026-04-20T09:10:00"
+    event_type: school.pop_quiz
+    participants: ["mina", "jisu"]
+    location: Front Row
+    description: The teacher places quizzes face down on every desk without warning.
+description_ko: "예고 없는 쪽지시험 앞에서 준비도 차이가 사회적 상호작용으로 드러나는 교실 시나리오입니다."
+description_en: "A surprise quiz reveals how students manage stress, reassurance, and self-presentation."
+local_response: '{"action_type": "speak", "target": null, "content": "I react to the surprise and decide whether to reassure, focus, or ask for calm."}'
+

@@ -1,0 +1,39 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/late_night_convenience_store.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T00:40:00"
+  location_path: ["Fictional City", "Night Market", "Corner Store"]
+  conditions:
+    weather: humid night
+    social_context: fatigue and suspicion after midnight
+agents:
+  - agent_id: yebin
+    name: Yebin
+    age: 26
+    background: Cashier finishing a long late shift and watching the quiet store carefully.
+    personality: {openness: 0.38, conscientiousness: 0.76, extraversion: 0.30, agreeableness: 0.46, neuroticism: 0.50}
+    values: ["safety", "fairness", "routine"]
+    goals: ["finish the shift safely", "defuse uncertainty"]
+    location_path: ["Fictional City", "Night Market", "Corner Store"]
+  - agent_id: hyun
+    name: Hyun
+    age: 21
+    background: Exhausted customer rushing in shortly before closing.
+    personality: {openness: 0.52, conscientiousness: 0.42, extraversion: 0.44, agreeableness: 0.40, neuroticism: 0.58}
+    values: ["speed", "self-respect", "privacy"]
+    goals: ["buy essentials", "avoid being judged"]
+    location_path: ["Fictional City", "Night Market", "Corner Store"]
+events:
+  - timestamp: "2026-04-20T00:40:00"
+    event_type: retail.late_entry
+    participants: ["yebin", "hyun"]
+    location: Corner Store
+    description: The door chime rings minutes before closing in an otherwise empty store.
+description_ko: "심야 편의점에서 피로와 경계심이 겹치는 허구 재현 연구용 시나리오입니다."
+description_en: "A tired cashier and a rushed customer navigate suspicion in a fictional research-only late-night store scene."
+ethics_tag: fictional research only
+local_response: '{"action_type": "speak", "target": null, "content": "I keep the exchange factual and look for a calm, practical resolution."}'
+

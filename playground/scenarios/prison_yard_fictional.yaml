@@ -1,0 +1,39 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/prison_yard_fictional.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T14:10:00"
+  location_path: ["Fictional Facility", "North Yard", "Walking Track"]
+  conditions:
+    weather: dry afternoon
+    social_context: fictional research-only tense supervised yard period
+agents:
+  - agent_id: rowe
+    name: Rowe
+    age: 37
+    background: Resident trying to avoid unnecessary trouble during a tightly monitored break.
+    personality: {openness: 0.30, conscientiousness: 0.70, extraversion: 0.22, agreeableness: 0.28, neuroticism: 0.58}
+    values: ["self-preservation", "clarity", "routine"]
+    goals: ["finish the period quietly", "avoid provocation"]
+    location_path: ["Fictional Facility", "North Yard", "Walking Track"]
+  - agent_id: miles
+    name: Miles
+    age: 34
+    background: Another resident trying to interpret a rumor without exposing himself.
+    personality: {openness: 0.42, conscientiousness: 0.56, extraversion: 0.34, agreeableness: 0.24, neuroticism: 0.50}
+    values: ["information", "face", "caution"]
+    goals: ["clarify a rumor", "not appear weak"]
+    location_path: ["Fictional Facility", "North Yard", "Walking Track"]
+events:
+  - timestamp: "2026-04-20T14:10:00"
+    event_type: yard.rumor
+    participants: ["rowe", "miles"]
+    location: Walking Track
+    description: A whispered rumor spreads through the yard as guards watch the track closely.
+description_ko: "교정 시설 운동장이라는 허구 재현 연구용 환경에서 긴장과 신중한 정보 교환을 다루는 시나리오입니다."
+description_en: "A fictional research-only prison yard scene explores rumor, caution, and de-escalation under surveillance."
+ethics_tag: fictional research only
+local_response: '{"action_type": "speak", "target": null, "content": "I keep my response controlled and avoid escalating the tension in the yard."}'
+

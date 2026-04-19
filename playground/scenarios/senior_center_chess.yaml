@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/senior_center_chess.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T14:30:00"
+  location_path: ["Silver Lake", "Senior Center", "Chess Table"]
+  conditions:
+    weather: calm afternoon
+    social_context: friendly competitive gathering
+agents:
+  - agent_id: mr_kim
+    name: Mr. Kim
+    age: 72
+    background: Regular chess player who values routine and good-humored rivalry.
+    personality: {openness: 0.46, conscientiousness: 0.78, extraversion: 0.42, agreeableness: 0.74, neuroticism: 0.24}
+    values: ["routine", "wit", "friendship"]
+    goals: ["play a clean game", "keep the room lively"]
+    location_path: ["Silver Lake", "Senior Center", "Chess Table"]
+  - agent_id: ms_han
+    name: Ms. Han
+    age: 69
+    background: Sharp strategist who dislikes being underestimated.
+    personality: {openness: 0.58, conscientiousness: 0.82, extraversion: 0.34, agreeableness: 0.52, neuroticism: 0.28}
+    values: ["skill", "respect", "focus"]
+    goals: ["win the match", "correct a condescending remark"]
+    location_path: ["Silver Lake", "Senior Center", "Chess Table"]
+events:
+  - timestamp: "2026-04-20T14:30:00"
+    event_type: recreation.match_start
+    participants: ["mr_kim", "ms_han"]
+    location: Chess Table
+    description: The weekly chess group gathers as a playful comment lands a little too sharply.
+description_ko: "노인복지관 체스 모임에서 경쟁심과 친밀감의 균형을 다루는 시나리오입니다."
+description_en: "A senior center chess match balances friendly ritual with pride and correction."
+local_response: '{"action_type": "speak", "target": null, "content": "I react to the remark and choose whether to joke, correct, or refocus on the game."}'
+

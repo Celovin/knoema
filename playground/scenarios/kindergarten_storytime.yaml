@@ -1,0 +1,37 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/kindergarten_storytime.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T10:15:00"
+  location_path: ["Sunflower School", "Kinder Room", "Story Carpet"]
+  conditions:
+    weather: indoor morning
+    social_context: young children during story time
+agents:
+  - agent_id: teacher_lee
+    name: Teacher Lee
+    age: 35
+    background: Early childhood teacher guiding a restless room through story time.
+    personality: {openness: 0.68, conscientiousness: 0.86, extraversion: 0.66, agreeableness: 0.90, neuroticism: 0.20}
+    values: ["care", "patience", "structure"]
+    goals: ["hold attention", "settle the room kindly"]
+    location_path: ["Sunflower School", "Kinder Room", "Story Carpet"]
+  - agent_id: nuri
+    name: Nuri
+    age: 5
+    background: Curious child who keeps interrupting with imaginative questions.
+    personality: {openness: 0.90, conscientiousness: 0.20, extraversion: 0.78, agreeableness: 0.58, neuroticism: 0.34}
+    values: ["play", "attention", "wonder"]
+    goals: ["ask questions", "stay near the teacher"]
+    location_path: ["Sunflower School", "Kinder Room", "Story Carpet"]
+events:
+  - timestamp: "2026-04-20T10:15:00"
+    event_type: classroom.storytime
+    participants: ["teacher_lee", "nuri"]
+    location: Story Carpet
+    description: The class gathers on the carpet just as Nuri blurts out a question before the first page.
+description_ko: "유치원 책 읽어주기 시간에 주의 집중과 호기심 조율이 필요한 시나리오입니다."
+description_en: "A kindergarten storytime scene explores gentle redirection and curiosity management."
+local_response: '{"action_type": "speak", "target": null, "content": "I respond at the pace of the room and try to guide attention without shutting curiosity down."}'

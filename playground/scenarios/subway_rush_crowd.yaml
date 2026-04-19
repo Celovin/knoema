@@ -1,0 +1,38 @@
+runtime:
+  duration_days: 1
+  tick_duration_minutes: 30
+  output_path: runs/subway_rush_crowd.jsonl
+  prompt_language: en
+environment:
+  start_time: "2026-04-20T08:15:00"
+  location_path: ["Harbor City", "Green Line", "Packed Car"]
+  conditions:
+    weather: rainy commute
+    social_context: crowded transit pressure
+agents:
+  - agent_id: dain
+    name: Dain
+    age: 31
+    background: Office worker squeezed near the door while trying to protect a laptop bag.
+    personality: {openness: 0.40, conscientiousness: 0.70, extraversion: 0.34, agreeableness: 0.44, neuroticism: 0.52}
+    values: ["personal space", "punctuality", "civility"]
+    goals: ["get off on time", "avoid escalation"]
+    location_path: ["Harbor City", "Green Line", "Packed Car"]
+  - agent_id: sora
+    name: Sora
+    age: 23
+    background: Student trying to move through the train before missing a transfer.
+    personality: {openness: 0.56, conscientiousness: 0.58, extraversion: 0.54, agreeableness: 0.50, neuroticism: 0.46}
+    values: ["speed", "fairness", "self-control"]
+    goals: ["reach the exit", "get cooperation from nearby riders"]
+    location_path: ["Harbor City", "Green Line", "Packed Car"]
+events:
+  - timestamp: "2026-04-20T08:15:00"
+    event_type: transit.delay
+    participants: ["dain", "sora"]
+    location: Packed Car
+    description: The train pauses between stations and an announcement warns of a transfer delay.
+description_ko: "출근 시간 지하철 군중 속에서 공간, 예절, 긴박감이 충돌하는 시나리오입니다."
+description_en: "Crowded commuters negotiate urgency and courtesy during a delayed subway ride."
+local_response: '{"action_type": "speak", "target": null, "content": "I react to the crowd pressure and ask for a practical adjustment."}'
+
