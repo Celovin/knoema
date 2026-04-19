@@ -24,7 +24,13 @@ from plotly.subplots import make_subplots
 from scipy.stats import chi2_contingency, mannwhitneyu  # type: ignore[import-untyped]
 from scipy.stats import t as student_t
 
-from knoema.research import PowerAnalysisPlan, estimate_sample_size, summarize_seed_tick_effect
+from knoema.research import (
+    PowerAnalysisPlan,
+    ZenodoDepositResult,
+    estimate_sample_size,
+    submit_zenodo_bundle,
+    summarize_seed_tick_effect,
+)
 
 try:
     from .simulation import (
@@ -744,6 +750,26 @@ LABELS["ko"]["replication_download"] = "Replication package ?ㅼ슫濡쒕뱶"
 LABELS["en"]["replication_button"] = "Export replication package"
 LABELS["en"]["replication_download"] = "Download replication package"
 LABELS["ko"]["reviewer_mode"] = "由щ럭?댁뼱 紐⑤뱶"
+LABELS["ko"]["deposit_panel"] = "Zenodo / arXiv deposit"
+LABELS["ko"]["deposit_creators"] = "Creators (one per line, optional | affiliation)"
+LABELS["ko"]["deposit_description"] = "Dataset description"
+LABELS["ko"]["deposit_keywords"] = "Keywords"
+LABELS["ko"]["deposit_token"] = "Zenodo access token"
+LABELS["ko"]["deposit_sandbox"] = "Use Zenodo sandbox"
+LABELS["ko"]["deposit_publish"] = "Publish immediately after upload"
+LABELS["ko"]["deposit_button"] = "Create deposit packet"
+LABELS["ko"]["deposit_download"] = "Download deposit bundle"
+LABELS["ko"]["deposit_status"] = "No deposit packet yet."
+LABELS["en"]["deposit_panel"] = "Zenodo / arXiv deposit"
+LABELS["en"]["deposit_creators"] = "Creators (one per line, optional | affiliation)"
+LABELS["en"]["deposit_description"] = "Dataset description"
+LABELS["en"]["deposit_keywords"] = "Keywords"
+LABELS["en"]["deposit_token"] = "Zenodo access token"
+LABELS["en"]["deposit_sandbox"] = "Use Zenodo sandbox"
+LABELS["en"]["deposit_publish"] = "Publish immediately after upload"
+LABELS["en"]["deposit_button"] = "Create deposit packet"
+LABELS["en"]["deposit_download"] = "Download deposit bundle"
+LABELS["en"]["deposit_status"] = "No deposit packet yet."
 LABELS["en"]["reviewer_mode"] = "Reviewer mode"
 LABELS["en"]["compare_panel"] = "A/B compare"
 LABELS["en"]["compare_seed_a"] = "Compare seed A"
@@ -2658,6 +2684,21 @@ def _power_analysis_updates(
     )
 
 
+def _deposit_defaults(language: str) -> dict[str, str]:
+    key = language if language in {"ko", "en"} else _language_key(language)
+    if key == "ko":
+        return {
+            "creators": "Celovin",
+            "description": "Knoema playground run export with JSONL log, current pre-registration draft, and upload metadata.",
+            "keywords": "knoema, simulation, zenodo, arxiv",
+        }
+    return {
+        "creators": "Celovin",
+        "description": "Knoema playground run export with JSONL log, current pre-registration draft, and upload metadata.",
+        "keywords": "knoema, simulation, zenodo, arxiv",
+    }
+
+
 def _digest_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
@@ -2901,6 +2942,82 @@ def _export_preregistration(
     export_path = Path(tempfile.gettempdir()) / f"knoema_preregistration_{uuid.uuid4().hex}.md"
     export_path.write_text(document, encoding="utf-8")
     return document, str(export_path)
+
+
+def _deposit_status_markdown(result: ZenodoDepositResult, language: str) -> str:
+    key = language if language in {"ko", "en"} else _language_key(language)
+    if key == "ko":
+        lines = [
+            f"- Mode: `{result.mode}`",
+            f"- Bundle: `{result.bundle_path.name}`",
+            f"- API base: `{result.api_base}`",
+        ]
+        if result.deposition_id is not None:
+            lines.append(f"- Deposition id: `{result.deposition_id}`")
+        if result.doi:
+            lines.append(f"- DOI: `{result.doi}`")
+        if result.html_url:
+            lines.append(f"- Link: {result.html_url}")
+        lines.append(f"- Note: {result.message}")
+        return "\n".join(lines)
+    lines = [
+        f"- Mode: `{result.mode}`",
+        f"- Bundle: `{result.bundle_path.name}`",
+        f"- API base: `{result.api_base}`",
+    ]
+    if result.deposition_id is not None:
+        lines.append(f"- Deposition id: `{result.deposition_id}`")
+    if result.doi:
+        lines.append(f"- DOI: `{result.doi}`")
+    if result.html_url:
+        lines.append(f"- Link: {result.html_url}")
+    lines.append(f"- Note: {result.message}")
+    return "\n".join(lines)
+
+
+def _export_deposit_bundle(
+    summary: str,
+    jsonl_text: str,
+    preregistration_markdown: str,
+    language: str,
+    title: str,
+    creators: str,
+    description: str,
+    keywords: str,
+    access_token: str,
+    sandbox: bool,
+    publish: bool,
+) -> tuple[str, str]:
+    resolved_title = title.strip() or "Knoema playground run dataset"
+    try:
+        result = submit_zenodo_bundle(
+            title=resolved_title,
+            creators_text=creators,
+            description=description,
+            keywords_text=keywords,
+            summary=summary,
+            jsonl_text=jsonl_text,
+            preregistration_markdown=preregistration_markdown,
+            access_token=access_token,
+            sandbox=sandbox,
+            publish=publish,
+        )
+        return _deposit_status_markdown(result, language), str(result.bundle_path)
+    except Exception as exc:
+        fallback = submit_zenodo_bundle(
+            title=resolved_title,
+            creators_text=creators,
+            description=description,
+            keywords_text=keywords,
+            summary=summary,
+            jsonl_text=jsonl_text,
+            preregistration_markdown=preregistration_markdown,
+            access_token="",
+            sandbox=sandbox,
+            publish=False,
+        )
+        status = _deposit_status_markdown(fallback, language)
+        return f"{status}\n- Error: `{escape(str(exc))}`", str(fallback.bundle_path)
 
 
 def _environment_freeze() -> str:
@@ -4840,6 +4957,16 @@ def _language_updates(
         gr.update(label=labels["latex_table_download"]),
         gr.update(value=labels["replication_button"]),
         gr.update(label=labels["replication_download"]),
+        gr.update(label=labels["deposit_panel"]),
+        gr.update(label=labels["deposit_creators"]),
+        gr.update(label=labels["deposit_description"]),
+        gr.update(label=labels["deposit_keywords"]),
+        gr.update(label=labels["deposit_token"]),
+        gr.update(label=labels["deposit_sandbox"]),
+        gr.update(label=labels["deposit_publish"]),
+        gr.update(value=labels["deposit_button"]),
+        labels["deposit_status"],
+        gr.update(label=labels["deposit_download"]),
         labels["report_agent_empty"],
         labels["compare_empty"],
         labels["interview_empty"],
@@ -6111,6 +6238,7 @@ def build_app() -> gr.Blocks:
     initial_trait_matrix_figure, initial_trait_matrix_summary = _trait_correlation_outputs("ko")
     prereg_defaults = _prereg_defaults("ko")
     power_defaults = _power_defaults()
+    deposit_defaults = _deposit_defaults("ko")
 
     with gr.Blocks(
         title="Knoema Playground",
@@ -6660,6 +6788,61 @@ def build_app() -> gr.Blocks:
                 label=labels["replication_download"],
                 elem_id="replication-package-download",
             )
+            deposit_panel = gr.Accordion(
+                labels["deposit_panel"],
+                open=False,
+                elem_id="deposit-panel",
+            )
+            with deposit_panel:
+                deposit_creators = gr.Textbox(
+                    label=labels["deposit_creators"],
+                    value=deposit_defaults["creators"],
+                    lines=2,
+                    elem_id="deposit-creators",
+                )
+                deposit_description = gr.Textbox(
+                    label=labels["deposit_description"],
+                    value=deposit_defaults["description"],
+                    lines=3,
+                    elem_id="deposit-description",
+                )
+                deposit_keywords = gr.Textbox(
+                    label=labels["deposit_keywords"],
+                    value=deposit_defaults["keywords"],
+                    lines=1,
+                    elem_id="deposit-keywords",
+                )
+                deposit_token = gr.Textbox(
+                    label=labels["deposit_token"],
+                    value="",
+                    type="password",
+                    lines=1,
+                    elem_id="deposit-token",
+                )
+                with gr.Row():
+                    deposit_sandbox = gr.Checkbox(
+                        label=labels["deposit_sandbox"],
+                        value=True,
+                        elem_id="deposit-sandbox",
+                    )
+                    deposit_publish = gr.Checkbox(
+                        label=labels["deposit_publish"],
+                        value=False,
+                        elem_id="deposit-publish",
+                    )
+                deposit_button = gr.Button(
+                    labels["deposit_button"],
+                    variant="secondary",
+                    elem_id="deposit-button",
+                )
+                deposit_status = gr.Markdown(
+                    labels["deposit_status"],
+                    elem_id="deposit-status",
+                )
+                deposit_download = gr.File(
+                    label=labels["deposit_download"],
+                    elem_id="deposit-download",
+                )
         report_agent_panel = gr.Accordion(
             labels["report_agent_panel"],
             open=False,
@@ -6867,6 +7050,16 @@ def build_app() -> gr.Blocks:
             latex_table_download,
             replication_package_button,
             replication_package_download,
+            deposit_panel,
+            deposit_creators,
+            deposit_description,
+            deposit_keywords,
+            deposit_token,
+            deposit_sandbox,
+            deposit_publish,
+            deposit_button,
+            deposit_status,
+            deposit_download,
             report_agent_output,
             compare_output,
             interview_output,
@@ -7082,6 +7275,24 @@ def build_app() -> gr.Blocks:
             inputs=[jsonl, memory_snapshot_state, summary, language],
             outputs=[replication_package_download],
             api_name="export_replication_package",
+        )
+        deposit_button.click(
+            _export_deposit_bundle,
+            inputs=[
+                summary,
+                jsonl,
+                prereg_preview,
+                language,
+                prereg_title,
+                deposit_creators,
+                deposit_description,
+                deposit_keywords,
+                deposit_token,
+                deposit_sandbox,
+                deposit_publish,
+            ],
+            outputs=[deposit_status, deposit_download],
+            api_name="export_deposit_bundle",
         )
         seed_prompt_apply.click(
             _seed_prompt_updates,
