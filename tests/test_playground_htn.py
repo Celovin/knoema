@@ -115,6 +115,7 @@ def test_playground_run_round_trips_htn_controls_through_run() -> None:
         emotion_trajectory,
         spatial_heatmap,
         action_flow,
+        mini_map,
     ) = playground_app._run(
         "Dorm: two agents",
         "university_dorm_evening",
@@ -148,3 +149,4 @@ def test_playground_run_round_trips_htn_controls_through_run() -> None:
     assert len(emotion_trajectory.data) == 3
     assert spatial_heatmap.data
     assert action_flow.data
+    assert mini_map.data

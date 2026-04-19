@@ -562,6 +562,10 @@ BASE_LABELS = {
         "action_flow": "Action flow",
         "action_flow_empty": "No action flow data yet.",
         "action_flow_batch": "Action flow is available in single-run mode only.",
+        "mini_map_panel": "2D mini-map",
+        "mini_map": "2D mini-map",
+        "mini_map_empty": "No location data yet.",
+        "mini_map_batch": "2D mini-map is available in single-run mode only.",
         "timeline": "Timeline",
         "threads_tab": "Conversation threads",
         "threads_empty": "No conversation threads yet. Run a scenario with directed speech to group replies together.",
@@ -654,6 +658,10 @@ LABELS["ko"]["action_flow_panel"] = "행동 흐름도"
 LABELS["ko"]["action_flow"] = "행동 흐름도"
 LABELS["ko"]["action_flow_empty"] = "아직 행동 흐름 데이터가 없습니다."
 LABELS["ko"]["action_flow_batch"] = "행동 흐름도는 단일 실행에서만 확인할 수 있습니다."
+LABELS["ko"]["mini_map_panel"] = "2D 미니맵"
+LABELS["ko"]["mini_map"] = "2D 미니맵"
+LABELS["ko"]["mini_map_empty"] = "아직 위치 데이터가 없습니다."
+LABELS["ko"]["mini_map_batch"] = "2D 미니맵은 단일 실행에서만 확인할 수 있습니다."
 LABELS["ko"]["threads_tab"] = "대화 스레드"
 LABELS["ko"]["threads_empty"] = "아직 대화 스레드가 없습니다. 직접 대상이 있는 발화가 나오는 시나리오를 실행하세요."
 LABELS["ko"]["threads_batch"] = "대화 스레드는 단일 실행에서만 확인할 수 있습니다."
@@ -1222,6 +1230,7 @@ def _run(
     go.Figure,
     go.Figure,
     go.Figure,
+    go.Figure,
 ]:
     legacy_with_language = len(PERSONA_TRAIT_FIELDS) + 5
     legacy_without_language = len(PERSONA_TRAIT_FIELDS) + 4
@@ -1450,6 +1459,7 @@ def _run(
         emotion_trajectory,
         _spatial_heatmap_figure(result.jsonl, result.memory_snapshot, language=language),
         _action_flow_figure(result.jsonl, language=language),
+        _mini_map_figure(result.jsonl, -1, language=language),
     )
 
 
@@ -1697,6 +1707,11 @@ def _language_updates(
         gr.update(
             label=labels["action_flow"],
             value=_action_flow_figure("", language=key),
+        ),
+        gr.update(label=labels["mini_map_panel"]),
+        gr.update(
+            label=labels["mini_map"],
+            value=_mini_map_figure("", -1, language=key),
         ),
         gr.update(label=labels["monologue_panel"]),
         labels["monologue_empty"],
@@ -2337,6 +2352,142 @@ def _action_type_palette(action_types: Any) -> dict[str, str]:
 
 
 def _action_flow_empty_figure(title: str, message: str) -> go.Figure:
+    figure = go.Figure()
+    figure.update_layout(
+        title=title,
+        height=220,
+        margin={"l": 0, "r": 0, "t": 48, "b": 0},
+        annotations=[{"text": message, "showarrow": False}],
+        paper_bgcolor="rgba(248,250,252,1)",
+        plot_bgcolor="rgba(248,250,252,1)",
+    )
+    return figure
+
+
+def _mini_map_figure(jsonl_text: str, tick: int, language: str = "en") -> go.Figure:
+    title = LABELS[language]["mini_map"]
+    rows: list[dict[str, Any]] = []
+    for line in str(jsonl_text).splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            payload = json.loads(stripped)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            rows.append(payload)
+
+    if not rows:
+        return _mini_map_empty_figure(title, LABELS[language]["mini_map_empty"])
+    if any("record_type" in row for row in rows):
+        return _mini_map_empty_figure(title, LABELS[language]["mini_map_batch"])
+
+    log_rows = [
+        row
+        for row in rows
+        if "tick" in row and isinstance(row.get("action"), dict)
+    ]
+    if not log_rows:
+        return _mini_map_empty_figure(title, LABELS[language]["mini_map_empty"])
+
+    unique_locations = sorted(
+        {
+            str(row["action"].get("location") or "").strip()
+            for row in log_rows
+            if str(row["action"].get("location") or "").strip()
+        }
+    )
+    if not unique_locations:
+        return _mini_map_empty_figure(title, LABELS[language]["mini_map_empty"])
+
+    column_count = max(1, int(len(unique_locations) ** 0.5))
+    if column_count * column_count < len(unique_locations):
+        column_count += 1
+    location_positions = {
+        location: (index % column_count, -(index // column_count))
+        for index, location in enumerate(unique_locations)
+    }
+    selected_tick = max(int(row["tick"]) for row in log_rows) if tick < 0 else int(tick)
+    latest_by_agent: dict[str, dict[str, Any]] = {}
+    for row in log_rows:
+        row_tick = int(row["tick"])
+        if row_tick > selected_tick:
+            continue
+        latest_by_agent[str(row.get("agent_id", "agent"))] = row
+
+    if not latest_by_agent:
+        return _mini_map_empty_figure(title, LABELS[language]["mini_map_empty"])
+
+    agent_colors = _agent_color_map(sorted(latest_by_agent))
+    occupant_slots: dict[str, list[str]] = {}
+    for agent_id, row in latest_by_agent.items():
+        location = str(row["action"].get("location") or "").strip()
+        occupant_slots.setdefault(location, []).append(agent_id)
+
+    x_values: list[float] = []
+    y_values: list[float] = []
+    marker_colors: list[str] = []
+    labels: list[str] = []
+    hover_text: list[str] = []
+    for agent_id in sorted(latest_by_agent):
+        row = latest_by_agent[agent_id]
+        location = str(row["action"].get("location") or "").strip()
+        base_x, base_y = location_positions.get(location, (0, 0))
+        occupants = sorted(occupant_slots.get(location, [agent_id]))
+        slot_index = occupants.index(agent_id)
+        offset_x = ((slot_index % 3) - 1) * 0.18
+        offset_y = ((slot_index // 3) * -0.18) + 0.18
+        x_values.append(base_x + offset_x)
+        y_values.append(base_y + offset_y)
+        marker_colors.append(agent_colors[agent_id])
+        labels.append(agent_id)
+        hover_text.append(f"{agent_id}<br>{location}")
+
+    figure = go.Figure()
+    figure.add_scatter(
+        x=x_values,
+        y=y_values,
+        mode="markers+text",
+        text=labels,
+        textposition="top center",
+        hovertext=hover_text,
+        hoverinfo="text",
+        marker={"size": 16, "color": marker_colors, "line": {"width": 1, "color": "#0f172a"}},
+        name="agents",
+    )
+    for location, (base_x, base_y) in location_positions.items():
+        figure.add_shape(
+            type="rect",
+            x0=base_x - 0.45,
+            x1=base_x + 0.45,
+            y0=base_y - 0.45,
+            y1=base_y + 0.45,
+            line={"color": "#94a3b8", "width": 1},
+            fillcolor="rgba(241,245,249,0.9)",
+        )
+        figure.add_annotation(
+            x=base_x,
+            y=base_y - 0.5,
+            text=escape(location.split(" > ")[-1]),
+            showarrow=False,
+            font={"size": 10, "color": "#475569"},
+        )
+
+    figure.update_layout(
+        title=title,
+        height=320,
+        margin={"l": 0, "r": 0, "t": 48, "b": 8},
+        xaxis={"visible": False},
+        yaxis={"visible": False, "scaleanchor": "x", "scaleratio": 1},
+        plot_bgcolor="rgba(248,250,252,1)",
+        paper_bgcolor="rgba(248,250,252,1)",
+        showlegend=False,
+    )
+    return figure
+
+
+def _mini_map_empty_figure(title: str, message: str) -> go.Figure:
     figure = go.Figure()
     figure.update_layout(
         title=title,
@@ -3080,6 +3231,17 @@ def build_app() -> gr.Blocks:
                 value=_action_flow_figure("", language="ko"),
                 elem_id="action-flow-sankey",
             )
+        mini_map_panel = gr.Accordion(
+            labels["mini_map_panel"],
+            open=False,
+            elem_id="mini-map-panel",
+        )
+        with mini_map_panel:
+            mini_map_view = gr.Plot(
+                label=labels["mini_map"],
+                value=_mini_map_figure("", -1, language="ko"),
+                elem_id="mini-map-plot",
+            )
         monologue_panel = gr.Accordion(
             labels["monologue_panel"],
             open=False,
@@ -3178,6 +3340,8 @@ def build_app() -> gr.Blocks:
             spatial_heatmap_view,
             action_flow_panel,
             action_flow_view,
+            mini_map_panel,
+            mini_map_view,
             monologue_panel,
             monologue_view,
             current_plan_panel,
@@ -3260,6 +3424,11 @@ def build_app() -> gr.Blocks:
             inputs=[jsonl, tick_scrubber, language],
             outputs=[tick_focus],
         )
+        tick_scrubber.change(
+            _mini_map_figure,
+            inputs=[jsonl, tick_scrubber, language],
+            outputs=[mini_map_view],
+        )
         inspector_agent.change(
             _memory_inspector_views,
             inputs=[memory_snapshot_state, inspector_agent, language],
@@ -3328,6 +3497,7 @@ def build_app() -> gr.Blocks:
                 emotion_view,
                 spatial_heatmap_view,
                 action_flow_view,
+                mini_map_view,
             ],
             api_name="run",
         )

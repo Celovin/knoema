@@ -103,6 +103,7 @@ def test_subtask25_run_round_trips_batch_controls_into_summary() -> None:
         emotion_trajectory,
         spatial_heatmap,
         action_flow,
+        mini_map,
     ) = playground_app._run(
         "Dorm: two agents",
         "university_dorm_evening",
@@ -139,3 +140,4 @@ def test_subtask25_run_round_trips_batch_controls_into_summary() -> None:
     assert emotion_trajectory.layout.annotations[0].text
     assert spatial_heatmap.layout.annotations[0].text
     assert action_flow.layout.annotations[0].text
+    assert mini_map.layout.annotations[0].text
