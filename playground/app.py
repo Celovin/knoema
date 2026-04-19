@@ -554,6 +554,10 @@ BASE_LABELS = {
         "memory_emotion": "Emotion trajectory",
         "memory_emotion_empty": "No emotion trajectory yet.",
         "memory_multi_hint": "Showing memory details for the first selected agent. The chart includes every selected agent.",
+        "spatial_heatmap_panel": "Spatial heatmap",
+        "spatial_heatmap": "Spatial heatmap",
+        "spatial_heatmap_empty": "No spatial occupancy data yet.",
+        "spatial_heatmap_batch": "Spatial heatmap is available in single-run mode only.",
         "timeline": "Timeline",
         "threads_tab": "Conversation threads",
         "threads_empty": "No conversation threads yet. Run a scenario with directed speech to group replies together.",
@@ -638,6 +642,10 @@ LABELS["ko"]["memory_monologue_empty"] = "아직 내적 독백이 없습니다."
 LABELS["ko"]["memory_emotion"] = "감정 궤적"
 LABELS["ko"]["memory_emotion_empty"] = "아직 감정 궤적이 없습니다."
 LABELS["ko"]["memory_multi_hint"] = "메모리 상세는 첫 번째 선택 에이전트를 기준으로 보여주고, 차트는 선택한 모든 에이전트를 포함합니다."
+LABELS["ko"]["spatial_heatmap_panel"] = "공간 히트맵"
+LABELS["ko"]["spatial_heatmap"] = "공간 히트맵"
+LABELS["ko"]["spatial_heatmap_empty"] = "아직 공간 점유 데이터가 없습니다."
+LABELS["ko"]["spatial_heatmap_batch"] = "공간 히트맵은 단일 실행에서만 확인할 수 있습니다."
 LABELS["ko"]["threads_tab"] = "대화 스레드"
 LABELS["ko"]["threads_empty"] = "아직 대화 스레드가 없습니다. 직접 대상이 있는 발화가 나오는 시나리오를 실행하세요."
 LABELS["ko"]["threads_batch"] = "대화 스레드는 단일 실행에서만 확인할 수 있습니다."
@@ -1202,6 +1210,7 @@ def _run(
     dict[str, Any],
     str,
     go.Figure,
+    go.Figure,
 ]:
     legacy_with_language = len(PERSONA_TRAIT_FIELDS) + 5
     legacy_without_language = len(PERSONA_TRAIT_FIELDS) + 4
@@ -1428,6 +1437,7 @@ def _run(
         memory_agent,
         memory_markdown,
         emotion_trajectory,
+        _spatial_heatmap_figure(result.jsonl, result.memory_snapshot, language=language),
     )
 
 
@@ -1665,6 +1675,11 @@ def _language_updates(
         gr.update(
             label=labels["memory_emotion"],
             value=_emotion_trajectory_figure({}, [], language=key),
+        ),
+        gr.update(label=labels["spatial_heatmap_panel"]),
+        gr.update(
+            label=labels["spatial_heatmap"],
+            value=_spatial_heatmap_figure("", {}, language=key),
         ),
         gr.update(label=labels["monologue_panel"]),
         labels["monologue_empty"],
@@ -2042,6 +2057,144 @@ def _emotion_trajectory_figure(
         height=max(180, 120 * len(selected_agents)),
         margin={"l": 0, "r": 0, "t": 64, "b": 0},
         legend={"orientation": "h", "y": 1.08},
+        paper_bgcolor="rgba(248,250,252,1)",
+        plot_bgcolor="rgba(248,250,252,1)",
+    )
+    return figure
+
+
+def _spatial_heatmap_figure(
+    jsonl_text: str,
+    snapshot: dict[str, dict[str, list[dict[str, Any]]]],
+    *,
+    language: str = "en",
+) -> go.Figure:
+    title = LABELS[language]["spatial_heatmap"]
+    rows: list[dict[str, Any]] = []
+    for line in str(jsonl_text).splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            payload = json.loads(stripped)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            rows.append(payload)
+
+    if not rows:
+        return _spatial_heatmap_empty_figure(title, LABELS[language]["spatial_heatmap_empty"])
+    if any("record_type" in row for row in rows):
+        return _spatial_heatmap_empty_figure(title, LABELS[language]["spatial_heatmap_batch"])
+
+    valence_by_tick: dict[tuple[str, int], float] = {}
+    for agent_id, memory in snapshot.items():
+        for entry in list(memory.get("emotion", [])):
+            valence_by_tick[(agent_id, int(entry.get("tick", -1)))] = float(
+                entry.get("valence", 0.0)
+            )
+
+    root_label = "Simulation world" if language == "en" else "시뮬레이션 세계"
+    dominant_labels = {
+        "positive": "Positive" if language == "en" else "긍정",
+        "neutral": "Neutral" if language == "en" else "중립",
+        "negative": "Negative" if language == "en" else "부정",
+    }
+    aggregate: dict[tuple[str, ...], dict[str, Any]] = {}
+    for row in rows:
+        action = row.get("action")
+        if not isinstance(action, dict):
+            continue
+        raw_location = str(action.get("location") or "").strip()
+        segments = [segment.strip() for segment in raw_location.split(" > ") if segment.strip()]
+        if not segments:
+            segments = ["Unknown" if language == "en" else "미상 위치"]
+        path = [root_label, *segments]
+        agent_id = str(row.get("agent_id", "agent"))
+        tick = int(row.get("tick", -1))
+        valence = valence_by_tick.get((agent_id, tick), 0.0)
+        emotion_key = "positive" if valence > 0.2 else "negative" if valence < -0.2 else "neutral"
+        for depth in range(1, len(path) + 1):
+            key = tuple(path[:depth])
+            bucket = aggregate.setdefault(
+                key,
+                {
+                    "count": 0,
+                    "valence_total": 0.0,
+                    "positive": 0,
+                    "neutral": 0,
+                    "negative": 0,
+                },
+            )
+            bucket["count"] = int(bucket["count"]) + 1
+            bucket["valence_total"] = float(bucket["valence_total"]) + valence
+            bucket[emotion_key] = int(bucket[emotion_key]) + 1
+
+    if not aggregate:
+        return _spatial_heatmap_empty_figure(title, LABELS[language]["spatial_heatmap_empty"])
+
+    ids: list[str] = []
+    labels: list[str] = []
+    parents: list[str] = []
+    values: list[int] = []
+    colors: list[float] = []
+    customdata: list[list[Any]] = []
+    for path in sorted(aggregate, key=lambda value: (len(value), value)):
+        bucket = aggregate[path]
+        dominant_emotion = max(
+            ("positive", "neutral", "negative"),
+            key=lambda key: (int(bucket[key]), key),
+        )
+        ids.append(" / ".join(path))
+        labels.append(path[-1])
+        parents.append("" if len(path) == 1 else " / ".join(path[:-1]))
+        values.append(int(bucket["count"]))
+        colors.append(float(bucket["valence_total"]) / max(1, int(bucket["count"])))
+        customdata.append([int(bucket["count"]), dominant_labels[dominant_emotion]])
+
+    tick_label = "Total tick count" if language == "en" else "총 틱 수"
+    emotion_label = "Dominant emotion" if language == "en" else "우세 정서"
+    figure = go.Figure(
+        go.Treemap(
+            ids=ids,
+            labels=labels,
+            parents=parents,
+            values=values,
+            branchvalues="total",
+            customdata=customdata,
+            marker={
+                "colors": colors,
+                "colorscale": "RdYlGn",
+                "cmin": -1,
+                "cmax": 1,
+                "showscale": True,
+                "colorbar": {"title": "Valence"},
+            },
+            hovertemplate=(
+                "%{label}<br>"
+                + f"{tick_label}: "
+                + "%{customdata[0]}<br>"
+                + f"{emotion_label}: "
+                + "%{customdata[1]}<extra></extra>"
+            ),
+        )
+    )
+    figure.update_layout(
+        title=title,
+        height=380,
+        margin={"l": 0, "r": 0, "t": 48, "b": 0},
+        paper_bgcolor="rgba(248,250,252,1)",
+    )
+    return figure
+
+
+def _spatial_heatmap_empty_figure(title: str, message: str) -> go.Figure:
+    figure = go.Figure()
+    figure.update_layout(
+        title=title,
+        height=220,
+        margin={"l": 0, "r": 0, "t": 48, "b": 0},
+        annotations=[{"text": message, "showarrow": False}],
         paper_bgcolor="rgba(248,250,252,1)",
         plot_bgcolor="rgba(248,250,252,1)",
     )
@@ -2757,6 +2910,17 @@ def build_app() -> gr.Blocks:
                 value=_emotion_trajectory_figure({}, [], language="ko"),
                 elem_id="emotion-trajectory-plot",
             )
+        spatial_heatmap_panel = gr.Accordion(
+            labels["spatial_heatmap_panel"],
+            open=False,
+            elem_id="spatial-heatmap-panel",
+        )
+        with spatial_heatmap_panel:
+            spatial_heatmap_view = gr.Plot(
+                label=labels["spatial_heatmap"],
+                value=_spatial_heatmap_figure("", {}, language="ko"),
+                elem_id="spatial-heatmap-treemap",
+            )
         monologue_panel = gr.Accordion(
             labels["monologue_panel"],
             open=False,
@@ -2851,6 +3015,8 @@ def build_app() -> gr.Blocks:
             inspector_agent,
             memory_view,
             emotion_view,
+            spatial_heatmap_panel,
+            spatial_heatmap_view,
             monologue_panel,
             monologue_view,
             current_plan_panel,
@@ -2999,6 +3165,7 @@ def build_app() -> gr.Blocks:
                 inspector_agent,
                 memory_view,
                 emotion_view,
+                spatial_heatmap_view,
             ],
             api_name="run",
         )

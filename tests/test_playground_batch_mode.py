@@ -101,6 +101,7 @@ def test_subtask25_run_round_trips_batch_controls_into_summary() -> None:
         memory_agent,
         memory_markdown,
         emotion_trajectory,
+        spatial_heatmap,
     ) = playground_app._run(
         "Dorm: two agents",
         "university_dorm_evening",
@@ -135,3 +136,4 @@ def test_subtask25_run_round_trips_batch_controls_into_summary() -> None:
     assert memory_agent["interactive"] is False
     assert "single simulation" in memory_markdown
     assert emotion_trajectory.layout.annotations[0].text
+    assert spatial_heatmap.layout.annotations[0].text

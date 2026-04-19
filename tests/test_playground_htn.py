@@ -113,6 +113,7 @@ def test_playground_run_round_trips_htn_controls_through_run() -> None:
         memory_agent,
         memory_markdown,
         emotion_trajectory,
+        spatial_heatmap,
     ) = playground_app._run(
         "Dorm: two agents",
         "university_dorm_evening",
@@ -144,3 +145,4 @@ def test_playground_run_round_trips_htn_controls_through_run() -> None:
     assert memory_agent["value"][0] in memory_snapshot
     assert "Short-term memory" in memory_markdown
     assert len(emotion_trajectory.data) == 3
+    assert spatial_heatmap.data
