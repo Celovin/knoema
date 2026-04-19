@@ -1,0 +1,79 @@
+{
+  "evaluation_mode": "deterministic synthetic long-horizon retrieval with a shared decay scheduler",
+  "layers_covered": [
+    "episodic",
+    "semantic",
+    "procedural",
+    "emotional"
+  ],
+  "measured_retention": 0.875,
+  "passed": true,
+  "per_query": [
+    {
+      "final_score": 0.795119,
+      "hit": true,
+      "query_id": "q1",
+      "relevant_memory_id": "alpha-semantic-01",
+      "retrieved_layer": "semantic",
+      "retrieved_memory_id": "alpha-semantic-01"
+    },
+    {
+      "final_score": 0.783311,
+      "hit": true,
+      "query_id": "q2",
+      "relevant_memory_id": "alpha-procedural-01",
+      "retrieved_layer": "procedural",
+      "retrieved_memory_id": "alpha-procedural-01"
+    },
+    {
+      "final_score": 0.682054,
+      "hit": true,
+      "query_id": "q3",
+      "relevant_memory_id": "alpha-emotional-01",
+      "retrieved_layer": "emotional",
+      "retrieved_memory_id": "alpha-emotional-01"
+    },
+    {
+      "final_score": 0.722632,
+      "hit": false,
+      "query_id": "q4",
+      "relevant_memory_id": "alpha-episodic-02",
+      "retrieved_layer": "procedural",
+      "retrieved_memory_id": "beta-procedural-01"
+    },
+    {
+      "final_score": 0.742258,
+      "hit": true,
+      "query_id": "q5",
+      "relevant_memory_id": "beta-semantic-01",
+      "retrieved_layer": "semantic",
+      "retrieved_memory_id": "beta-semantic-01"
+    },
+    {
+      "final_score": 0.760063,
+      "hit": true,
+      "query_id": "q6",
+      "relevant_memory_id": "beta-procedural-01",
+      "retrieved_layer": "procedural",
+      "retrieved_memory_id": "beta-procedural-01"
+    },
+    {
+      "final_score": 0.723313,
+      "hit": true,
+      "query_id": "q7",
+      "relevant_memory_id": "beta-emotional-01",
+      "retrieved_layer": "emotional",
+      "retrieved_memory_id": "beta-emotional-01"
+    },
+    {
+      "final_score": 0.688104,
+      "hit": true,
+      "query_id": "q8",
+      "relevant_memory_id": "beta-episodic-01",
+      "retrieved_layer": "episodic",
+      "retrieved_memory_id": "beta-episodic-01"
+    }
+  ],
+  "published_baseline": 0.569,
+  "target_retention": 0.569
+}
