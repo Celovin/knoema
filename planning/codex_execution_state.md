@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 17:10 UTC by Codex
+**Last updated**: 2026-04-19 17:17 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -44,7 +44,7 @@
 - [x] 8. Action type breakdown chart (stacked bar) - 2026-04-19 16:46 UTC, commit 2310239
 - [x] 9. Tick scrubber + per-tick highlight panel - 2026-04-19 16:53 UTC, commit a148bd1
 - [x] 10. Memory inspector (short-term + long-term + monologue) - 2026-04-19 17:10 UTC, commit 66b99a9
-- [ ] 11. Consistent agent color coding across 4 surfaces
+- [x] 11. Consistent agent color coding across 4 surfaces - 2026-04-19 17:17 UTC, commit 6fb7a4b
 - [ ] 20. Conversation thread view
 - [ ] 21. Per-agent emotion timeline (PAD over ticks)
 - [ ] 22. Spatial heatmap (treemap)
