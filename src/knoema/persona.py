@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from knoema.game.inventory import Inventory
+from knoema.game.schedule import RoutineEntry
 from knoema.theory_of_mind import TheoryOfMindProfile
 from knoema.types import AgentID, Personality
 
@@ -32,6 +33,7 @@ class Persona:
     theory_of_mind: TheoryOfMindProfile = field(default_factory=TheoryOfMindProfile)
     inventory: Inventory | None = None
     factions: dict[str, float] | None = None
+    routine: list[RoutineEntry] | None = None
     planning: bool = False
     social_learning: bool = False
 
@@ -45,6 +47,8 @@ class Persona:
         _validate_string_list("goals", self.goals)
         if self.factions is not None:
             self.factions = {str(faction_id): float(score) for faction_id, score in self.factions.items()}
+        if self.routine is not None:
+            self.routine = list(self.routine)
 
     def to_system_prompt(self, language: str = "en") -> str:
         from knoema.prompts import render_persona_system_prompt

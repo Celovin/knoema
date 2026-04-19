@@ -15,7 +15,12 @@ from knoema.decision import DecisionEngine
 from knoema.emotion import EmotionState
 from knoema.environment import Environment, EnvironmentContext
 from knoema.events import EventDispatcher, EventScheduler
-from knoema.game import apply_faction_action, apply_inventory_action
+from knoema.game import (
+    RoutineEntry,
+    active_routine_entry,
+    apply_faction_action,
+    apply_inventory_action,
+)
 from knoema.llm import LocalClient
 from knoema.memory import ShortTermMemoryBuffer, SQLiteFaissMemoryStore
 from knoema.persona import Persona
@@ -158,7 +163,10 @@ class Simulator:
             self.environment.record_event(event)
             self.dispatcher.dispatch(event)
         for agent in self.agents:
+            routine_entry = self._apply_routine(agent)
             context = self.environment.get_context(agent.agent_id)
+            if routine_entry is not None:
+                context = self._routine_context(context, routine_entry)
             monologue = self.monologue_generator.generate(
                 agent,
                 context,
@@ -166,7 +174,7 @@ class Simulator:
                 language=self.language,
             )
             self._record_monologue(monologue)
-            action = self._decide_for_agent(agent, context=context)
+            action = self._decide_for_agent(agent, context=context, routine_entry=routine_entry)
             self._record_action(tick, agent, action)
 
     def _decide_for_agent(
@@ -174,8 +182,10 @@ class Simulator:
         agent: Persona,
         *,
         context: EnvironmentContext | None = None,
+        routine_entry: RoutineEntry | None = None,
     ) -> Action:
         resolved_context = context or self.environment.get_context(agent.agent_id)
+        salient_trigger = self._salient_trigger(resolved_context, agent.agent_id)
         current_task = None
         if agent.planning:
             current_task = self.planner.select_next_task(
@@ -189,15 +199,84 @@ class Simulator:
             )
             if imitation is not None:
                 return imitation
+        if routine_entry is not None and salient_trigger is None:
+            return self._routine_default_action(agent, resolved_context, routine_entry)
         return self.decision_engine.decide(
             persona=agent,
             memories=self.short_term_memories[agent.agent_id].recent(8),
             relationships=self.relationships.neighbors(agent.agent_id),
             environment=resolved_context,
             emotion=self.emotions[agent.agent_id].current,
-            trigger=resolved_context.recent_events[-1] if resolved_context.recent_events else None,
+            trigger=salient_trigger,
             theory_of_mind_context=self.theory_of_mind.context_for(agent.agent_id),
             current_task=current_task,
+        )
+
+    def _apply_routine(self, agent: Persona) -> RoutineEntry | None:
+        routine_entry = active_routine_entry(agent.routine, self.environment.current_time)
+        if routine_entry is not None:
+            self.environment.set_agent_location(agent.agent_id, routine_entry.location_path)
+        return routine_entry
+
+    def _routine_context(
+        self,
+        context: EnvironmentContext,
+        routine_entry: RoutineEntry,
+    ) -> EnvironmentContext:
+        if self.language == "ko":
+            routine_note = (
+                f"일과에 따라 현재 위치는 {context.location}이며 기본 행동은 "
+                f"{routine_entry.default_action}입니다."
+            )
+        else:
+            routine_note = (
+                f"Currently at {context.location} per daily routine. "
+                f"Default action: {routine_entry.default_action}."
+            )
+        return EnvironmentContext(
+            agent_id=context.agent_id,
+            timestamp=context.timestamp,
+            location_path=context.location_path,
+            conditions=dict(context.conditions),
+            recent_events=list(context.recent_events),
+            routine_note=routine_note,
+        )
+
+    def _salient_trigger(
+        self,
+        context: EnvironmentContext,
+        agent_id: str,
+    ) -> WorldEvent | None:
+        for event in reversed(context.recent_events):
+            if event.timestamp != context.timestamp:
+                continue
+            if event.event_type.startswith("agent.") and agent_id not in event.participants:
+                continue
+            return event
+        return None
+
+    def _routine_default_action(
+        self,
+        agent: Persona,
+        context: EnvironmentContext,
+        routine_entry: RoutineEntry,
+    ) -> Action:
+        if self.language == "ko":
+            content = f"{agent.name}은 일과에 따라 {context.location}에서 움직인다."
+        else:
+            content = f"{agent.name} follows the daily routine at {context.location}."
+        return Action(
+            agent_id=agent.agent_id,
+            timestamp=context.timestamp,
+            action_type=str(routine_entry.default_action),
+            target=routine_entry.default_target,
+            content=content,
+            location=context.location,
+            metadata={
+                "routine": True,
+                "start_hour": routine_entry.start_hour,
+                "end_hour": routine_entry.end_hour,
+            },
         )
 
     def _record_monologue(self, monologue: Monologue) -> None:

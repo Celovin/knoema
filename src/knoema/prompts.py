@@ -319,19 +319,26 @@ def render_decision_user_prompt(
         for target, relationship in relationships.items()
     )
     trigger_text = trigger.description if trigger is not None else copy["no_trigger"]
+    routine_note = getattr(environment, "routine_note", None)
     lines = [
         copy["instruction"],
         copy["schema"],
         f"{copy['time']}: {environment.timestamp.isoformat()}",
         f"{copy['location']}: {environment.location}",
-        f"{copy['conditions']}: {json.dumps(environment.conditions, ensure_ascii=False, sort_keys=True)}",
-        f"{copy['emotion']}: valence={emotion.valence:.2f}, arousal={emotion.arousal:.2f}, dominance={emotion.dominance:.2f}",
-        f"{copy['trigger']}: {trigger_text}",
-        f"{copy['memories']}:",
-        memory_lines or copy["none"],
-        f"{copy['relationships']}:",
-        relationship_lines or copy["none"],
     ]
+    if routine_note:
+        lines.append(f"{copy.get('routine', 'Routine')}: {routine_note}")
+    lines.extend(
+        [
+            f"{copy['conditions']}: {json.dumps(environment.conditions, ensure_ascii=False, sort_keys=True)}",
+            f"{copy['emotion']}: valence={emotion.valence:.2f}, arousal={emotion.arousal:.2f}, dominance={emotion.dominance:.2f}",
+            f"{copy['trigger']}: {trigger_text}",
+            f"{copy['memories']}:",
+            memory_lines or copy["none"],
+            f"{copy['relationships']}:",
+            relationship_lines or copy["none"],
+        ]
+    )
     if theory_of_mind_notes:
         lines.extend(
             [

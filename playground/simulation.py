@@ -26,6 +26,7 @@ from knoema.cli import (
 )
 from knoema.cognition import Monologue
 from knoema.game.inventory import Inventory
+from knoema.game.schedule import RoutineEntry
 from knoema.llm import AnthropicClient, LocalClient, OpenAIClient
 from knoema.persona import Persona
 from knoema.planning import HierarchicalPlanner, Task
@@ -197,6 +198,168 @@ PERSONA_TRAIT_FIELDS = (
 PERSONA_TRAIT_DEFAULTS = {
     field_name: float(PERSONALITY_NEUTRAL_DEFAULTS[field_name]) for field_name in PERSONA_TRAIT_FIELDS
 }
+ROUTINE_PRESETS: tuple[dict[str, Any], ...] = (
+    {
+        "id": "student",
+        "label_ko": "학생",
+        "label_en": "Student",
+        "entries": (
+            {
+                "start_hour": 6,
+                "end_hour": 9,
+                "location_path": ["Campus", "Dormitory", "Room"],
+                "default_action": "alone",
+            },
+            {
+                "start_hour": 9,
+                "end_hour": 12,
+                "location_path": ["Campus", "Lecture Hall"],
+                "default_action": "observe",
+            },
+            {
+                "start_hour": 12,
+                "end_hour": 13,
+                "location_path": ["Campus", "Cafeteria"],
+                "default_action": "speak",
+            },
+            {
+                "start_hour": 13,
+                "end_hour": 22,
+                "location_path": ["Campus", "Library"],
+                "default_action": "query_memory",
+            },
+            {
+                "start_hour": 22,
+                "end_hour": 6,
+                "location_path": ["Campus", "Dormitory", "Room"],
+                "default_action": "alone",
+            },
+        ),
+    },
+    {
+        "id": "office_worker",
+        "label_ko": "직장인",
+        "label_en": "Office worker",
+        "entries": (
+            {
+                "start_hour": 7,
+                "end_hour": 9,
+                "location_path": ["City", "Commute"],
+                "default_action": "move",
+            },
+            {
+                "start_hour": 9,
+                "end_hour": 12,
+                "location_path": ["City", "Office", "Desk"],
+                "default_action": "propose_plan",
+            },
+            {
+                "start_hour": 12,
+                "end_hour": 13,
+                "location_path": ["City", "Office", "Cafe"],
+                "default_action": "speak",
+            },
+            {
+                "start_hour": 13,
+                "end_hour": 18,
+                "location_path": ["City", "Office", "Desk"],
+                "default_action": "observe",
+            },
+            {
+                "start_hour": 18,
+                "end_hour": 23,
+                "location_path": ["City", "Home"],
+                "default_action": "alone",
+            },
+            {
+                "start_hour": 23,
+                "end_hour": 7,
+                "location_path": ["City", "Home", "Bedroom"],
+                "default_action": "alone",
+            },
+        ),
+    },
+    {
+        "id": "night_shift",
+        "label_ko": "야간 근로자",
+        "label_en": "Night-shift worker",
+        "entries": (
+            {
+                "start_hour": 18,
+                "end_hour": 22,
+                "location_path": ["Industrial Zone", "Dormitory"],
+                "default_action": "alone",
+            },
+            {
+                "start_hour": 22,
+                "end_hour": 6,
+                "location_path": ["Industrial Zone", "Plant Floor"],
+                "default_action": "observe",
+            },
+            {
+                "start_hour": 6,
+                "end_hour": 8,
+                "location_path": ["Industrial Zone", "Transit"],
+                "default_action": "move",
+            },
+            {
+                "start_hour": 8,
+                "end_hour": 14,
+                "location_path": ["Industrial Zone", "Dormitory", "Room"],
+                "default_action": "alone",
+            },
+            {
+                "start_hour": 14,
+                "end_hour": 18,
+                "location_path": ["Industrial Zone", "Mess Hall"],
+                "default_action": "speak",
+            },
+        ),
+    },
+    {
+        "id": "shopkeeper",
+        "label_ko": "NPC 상인",
+        "label_en": "NPC shopkeeper",
+        "entries": (
+            {
+                "start_hour": 7,
+                "end_hour": 9,
+                "location_path": ["Town", "Tavern", "Kitchen"],
+                "default_action": "craft_item",
+            },
+            {
+                "start_hour": 9,
+                "end_hour": 12,
+                "location_path": ["Town", "Tavern", "Bar"],
+                "default_action": "speak",
+            },
+            {
+                "start_hour": 12,
+                "end_hour": 13,
+                "location_path": ["Town", "Market", "Square"],
+                "default_action": "trade_offer",
+            },
+            {
+                "start_hour": 13,
+                "end_hour": 22,
+                "location_path": ["Town", "Tavern", "Bar"],
+                "default_action": "speak",
+            },
+            {
+                "start_hour": 22,
+                "end_hour": 7,
+                "location_path": ["Town", "Tavern", "Bedroom"],
+                "default_action": "alone",
+            },
+        ),
+    },
+    {
+        "id": "free",
+        "label_ko": "자유 (no routine)",
+        "label_en": "Free (no routine)",
+        "entries": (),
+    },
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -504,6 +667,45 @@ def persona_trait_values(
     return tuple(float(personality[field]) for field in fields)
 
 
+def routine_preset_choices(language: str = "en") -> list[tuple[str, str]]:
+    label_key = "label_ko" if language == "ko" else "label_en"
+    return [
+        (str(preset[label_key]), str(preset["id"]))
+        for preset in ROUTINE_PRESETS
+    ]
+
+
+def routine_preset_text(preset_id: str | None) -> str:
+    preset = next((entry for entry in ROUTINE_PRESETS if entry["id"] == preset_id), None)
+    if preset is None or not preset["entries"]:
+        return ""
+    return yaml.safe_dump(
+        list(preset["entries"]),
+        allow_unicode=True,
+        sort_keys=False,
+    ).strip()
+
+
+def routine_to_text(routine: list[RoutineEntry] | None) -> str:
+    if not routine:
+        return ""
+    payload = [
+        {
+            "start_hour": entry.start_hour,
+            "end_hour": entry.end_hour,
+            "location_path": list(entry.location_path),
+            "default_action": entry.default_action,
+            "default_target": entry.default_target,
+        }
+        for entry in routine
+    ]
+    normalized = [
+        {key: value for key, value in entry.items() if value not in (None, [], "")}
+        for entry in payload
+    ]
+    return yaml.safe_dump(normalized, allow_unicode=True, sort_keys=False).strip()
+
+
 @lru_cache(maxsize=1)
 def load_cultural_priors() -> tuple[dict[str, Any], ...]:
     with CULTURAL_PRIORS_PATH.open(encoding="utf-8") as handle:
@@ -595,6 +797,7 @@ def agent_editor_defaults(
                     "name": agent.name,
                     "age": agent.age,
                     "personality": agent.personality.to_dict(),
+                    "routine_text": routine_to_text(agent.routine),
                 }
             )
         else:
@@ -604,6 +807,7 @@ def agent_editor_defaults(
                     "name": f"Agent {slot_index + 1}",
                     "age": 21,
                     "personality": dict(PERSONA_TRAIT_DEFAULTS),
+                    "routine_text": "",
                 }
             )
     return tuple(defaults)
@@ -899,6 +1103,16 @@ def _execute_playground_run(
                 if "factions" in applied_override
                 else None
             ),
+            routine=(
+                _coerce_routine(applied_override.get("routine_text"))
+                if "routine_text" in applied_override
+                else (
+                    _coerce_routine(applied_override.get("routine"))
+                    if "routine" in applied_override
+                    else None
+                )
+            ),
+            routine_specified=("routine_text" in applied_override or "routine" in applied_override),
             planning=(
                 bool(applied_override["planning"])
                 if "planning" in applied_override
@@ -1374,6 +1588,8 @@ def _rebuild_persona(
     personality_values: dict[str, float] | None = None,
     inventory: Inventory | None = None,
     factions: dict[str, float] | None = None,
+    routine: list[RoutineEntry] | None = None,
+    routine_specified: bool = False,
     planning: bool | None = None,
 ) -> Persona:
     return Persona(
@@ -1387,6 +1603,11 @@ def _rebuild_persona(
         theory_of_mind=agent.theory_of_mind,
         inventory=agent.inventory if inventory is None else inventory,
         factions=dict(agent.factions or {}) if factions is None else dict(factions),
+        routine=(
+            (list(agent.routine) if agent.routine else None)
+            if not routine_specified
+            else (list(routine) if routine else None)
+        ),
         planning=agent.planning if planning is None else planning,
         social_learning=agent.social_learning,
     )
@@ -1429,6 +1650,8 @@ def _customize_agent(
     personality_overrides: dict[str, float] | None = None,
     inventory: Inventory | None = None,
     factions: dict[str, float] | None = None,
+    routine: list[RoutineEntry] | None = None,
+    routine_specified: bool = False,
     planning: bool | None = None,
 ) -> Persona:
     personality_values = agent.personality.to_dict()
@@ -1442,6 +1665,8 @@ def _customize_agent(
         personality_values=personality_values,
         inventory=inventory,
         factions=factions,
+        routine=routine,
+        routine_specified=routine_specified,
         planning=planning,
     )
 
@@ -1491,6 +1716,48 @@ def _coerce_factions(value: object) -> dict[str, float] | None:
     if not isinstance(value, dict):
         raise TypeError(f"unsupported factions override: {type(value)!r}")
     return {str(faction_id): float(score) for faction_id, score in value.items()}
+
+
+def _coerce_routine(value: object) -> list[RoutineEntry] | None:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return None
+        payload = yaml.safe_load(text)
+    else:
+        payload = value
+
+    if payload is None:
+        return None
+    if not isinstance(payload, list):
+        raise TypeError("routine override must be a YAML list of entries")
+
+    routine: list[RoutineEntry] = []
+    for entry in payload:
+        if isinstance(entry, RoutineEntry):
+            routine.append(entry)
+            continue
+        if not isinstance(entry, dict):
+            raise TypeError("routine entries must be mappings")
+        location_path = entry.get("location_path")
+        if not isinstance(location_path, (list, tuple)):
+            raise TypeError("routine location_path must be a list of segments")
+        routine.append(
+            RoutineEntry(
+                start_hour=int(entry.get("start_hour", 0)),
+                end_hour=int(entry.get("end_hour", 0)),
+                location_path=tuple(str(part) for part in location_path),
+                default_action=str(entry.get("default_action", "observe")),
+                default_target=(
+                    None
+                    if entry.get("default_target") in {None, ""}
+                    else str(entry.get("default_target"))
+                ),
+            )
+        )
+    return routine or None
 
 
 def _build_client(
@@ -1675,6 +1942,10 @@ def _scripted_action_type(
     target_trust = 1.0 if target_candidate is None else trust_by_target.get(target_candidate, 1.0)
     arousal = _extract_arousal(user_prompt)
     has_leader_role = _has_leader_role(persona)
+    routine_action = _extract_routine_default_action(user_prompt)
+
+    if not has_trigger and routine_action is not None:
+        return routine_action
 
     if has_target and has_leader_role and personality.conscientiousness > 0.7 and tick in {1, 4, 7}:
         return "quest_offer"
@@ -1926,8 +2197,9 @@ def _resolved_scripted_target(
 
 def _extract_prompt_line(text: str, *, key: str, language: str) -> str | None:
     preferred_language = _prompt_line_language(language)
-    prefixes = [PROMPT_LINE_PREFIXES[preferred_language][key], *(
-        values[key]
+    fallback_prefix = "Routine: " if key == "routine" else f"{key.title()}: "
+    prefixes = [PROMPT_LINE_PREFIXES[preferred_language].get(key, fallback_prefix), *(
+        values.get(key, fallback_prefix)
         for candidate, values in PROMPT_LINE_PREFIXES.items()
         if candidate != preferred_language
     )]
@@ -1935,6 +2207,19 @@ def _extract_prompt_line(text: str, *, key: str, language: str) -> str | None:
         value = _extract_line_value(text, prefix)
         if value is not None:
             return value
+    return None
+
+
+def _extract_routine_default_action(user_prompt: str) -> str | None:
+    routine_line = _extract_prompt_line(user_prompt, key="routine", language="en")
+    if not routine_line:
+        return None
+    match = re.search(r"default action:\s*([a-z_]+)", routine_line, re.IGNORECASE)
+    if match:
+        return match.group(1).strip()
+    match = re.search(r"기본 행동은\s*([a-z_]+)", routine_line)
+    if match:
+        return match.group(1).strip()
     return None
 
 

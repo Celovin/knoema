@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from knoema.dsl import collect_validation_issues, load_scenario
 from knoema.environment import Environment
+from knoema.game.schedule import RoutineEntry
 from knoema.llm import LocalClient
 from knoema.metrics import score_log
 from knoema.persona import Persona
@@ -79,6 +80,7 @@ class CliAgentConfig(BaseModel):
     values: list[str] = Field(default_factory=list)
     goals: list[str] = Field(default_factory=list)
     location_path: tuple[str, ...] | None = None
+    routine: list[CliRoutineEntryConfig] = Field(default_factory=list)
 
     def to_domain(self) -> Persona:
         return Persona(
@@ -89,6 +91,26 @@ class CliAgentConfig(BaseModel):
             personality=self.personality.to_domain(),
             values=list(self.values),
             goals=list(self.goals),
+            routine=[entry.to_domain() for entry in self.routine] or None,
+        )
+
+
+class CliRoutineEntryConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    start_hour: int = Field(ge=0, le=24)
+    end_hour: int = Field(ge=0, le=24)
+    location_path: tuple[str, ...] = Field(min_length=1)
+    default_action: str = Field(min_length=1)
+    default_target: str | None = None
+
+    def to_domain(self) -> RoutineEntry:
+        return RoutineEntry(
+            start_hour=self.start_hour,
+            end_hour=self.end_hour,
+            location_path=self.location_path,
+            default_action=self.default_action,
+            default_target=self.default_target,
         )
 
 
@@ -133,6 +155,9 @@ class CliRuntimeConfig(BaseModel):
     tick_duration_minutes: int = Field(default=30, ge=1)
     output_path: Path = Path("runs/knoema_cli.jsonl")
     prompt_language: str = "en"
+
+
+CliAgentConfig.model_rebuild()
 
 
 class SimulationRunConfig(BaseModel):

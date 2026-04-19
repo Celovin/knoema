@@ -24,6 +24,7 @@ class EnvironmentContext:
     location_path: tuple[str, ...]
     conditions: dict[str, Any]
     recent_events: list[WorldEvent] = field(default_factory=list)
+    routine_note: str | None = None
 
     @property
     def location(self) -> str:

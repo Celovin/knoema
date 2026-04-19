@@ -29,6 +29,8 @@ try:
         load_environment_presets,
         persona_choices,
         persona_trait_values,
+        routine_preset_choices,
+        routine_preset_text,
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
@@ -52,6 +54,8 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         load_environment_presets,
         persona_choices,
         persona_trait_values,
+        routine_preset_choices,
+        routine_preset_text,
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
@@ -619,6 +623,16 @@ LABELS["en"]["current_plan_empty"] = "No HTN plan has been generated yet."
 LABELS["en"]["agent_panel"] = "Agent personalities"
 LABELS["en"]["agent_tab_prefix"] = "Agent"
 LABELS["en"]["agent_tab_disabled"] = "Increase the agent count to unlock this editor."
+LABELS["ko"]["routine_preset"] = "일일 루틴 프리셋"
+LABELS["ko"]["routine_preset_info"] = "학생, 직장인, 야간 근로자, NPC 상인, 자유 상태 중 하나를 선택할 수 있습니다."
+LABELS["ko"]["routine_text"] = "일일 루틴 (선택)"
+LABELS["ko"]["routine_text_info"] = "YAML 목록으로 start_hour, end_hour, location_path, default_action을 입력합니다."
+LABELS["ko"]["routine_text_placeholder"] = "- start_hour: 7\n  end_hour: 9\n  location_path: [Town, Tavern, Kitchen]\n  default_action: craft_item"
+LABELS["en"]["routine_preset"] = "Daily routine preset"
+LABELS["en"]["routine_preset_info"] = "Choose a student, office worker, night-shift, shopkeeper, or free no-routine template."
+LABELS["en"]["routine_text"] = "Daily routine (optional)"
+LABELS["en"]["routine_text_info"] = "Paste a YAML list with start_hour, end_hour, location_path, and default_action."
+LABELS["en"]["routine_text_placeholder"] = "- start_hour: 7\n  end_hour: 9\n  location_path: [Town, Tavern, Kitchen]\n  default_action: craft_item"
 LABELS["ko"]["trait_matrix_panel"] = "Trait 상관/ablation"
 LABELS["ko"]["trait_matrix_plot"] = "Trait correlation matrix"
 LABELS["ko"]["trait_matrix_summary"] = "Trait ablation summary"
@@ -994,6 +1008,10 @@ def _persona_choices(language: str) -> list[tuple[str, str]]:
     return persona_choices(language, include_blank=True)
 
 
+def _routine_preset_choices(language: str) -> list[tuple[str, str]]:
+    return routine_preset_choices(language)
+
+
 def _cultural_prior_choices(language: str) -> list[tuple[str, str]]:
     return cultural_prior_choices(language, include_blank=True)
 
@@ -1073,6 +1091,22 @@ def _build_agent_editor_tab(
                 value="",
                 info=labels["persona_preset_info"],
                 elem_id=f"persona-preset-dropdown{suffix}",
+            )
+
+            routine_preset = gr.Dropdown(
+                label=labels["routine_preset"],
+                choices=_routine_preset_choices("ko"),
+                value="free",
+                info=labels["routine_preset_info"],
+                elem_id=f"routine-preset-dropdown{suffix}",
+            )
+            routine_text = gr.Textbox(
+                label=labels["routine_text"],
+                info=labels["routine_text_info"],
+                lines=6,
+                value=str(defaults.get("routine_text", "")),
+                placeholder=labels["routine_text_placeholder"],
+                elem_id=f"agent-routine-text{suffix}",
             )
 
             tier_a_panel = gr.Accordion(
@@ -1188,6 +1222,8 @@ def _build_agent_editor_tab(
             "name": name,
             "age": age,
             "persona_preset": persona_preset,
+            "routine_preset": routine_preset,
+            "routine_text": routine_text,
             "tier_a_panel": tier_a_panel,
             "extended_panel": extended_panel,
             "extended_panel_note": extended_panel_note,
@@ -1232,21 +1268,88 @@ def _run(
     go.Figure,
     go.Figure,
 ]:
+    primary_routine_text = ""
+    primary_routine_specified = False
+    extra_agent_routine_specified = False
     legacy_with_language = len(PERSONA_TRAIT_FIELDS) + 5
     legacy_without_language = len(PERSONA_TRAIT_FIELDS) + 4
+    routine_with_language = len(PERSONA_TRAIT_FIELDS) + 6
+    routine_without_language = len(PERSONA_TRAIT_FIELDS) + 5
     legacy_batch_with_language = legacy_with_language + 3
     legacy_batch_without_language = legacy_without_language + 3
+    routine_batch_with_language = routine_with_language + 3
+    routine_batch_without_language = routine_without_language + 3
     extra_agent_block = (AGENT_EDITOR_SLOT_COUNT - 1) * (2 + len(PERSONA_TRAIT_FIELDS))
+    routine_extra_agent_block = (AGENT_EDITOR_SLOT_COUNT - 1) * (3 + len(PERSONA_TRAIT_FIELDS))
     multi_with_language = legacy_with_language + extra_agent_block
     multi_without_language = legacy_without_language + extra_agent_block
+    multi_with_language_routine = routine_with_language + routine_extra_agent_block
+    multi_without_language_routine = routine_without_language + routine_extra_agent_block
     multi_batch_with_language = multi_with_language + 3
     multi_batch_without_language = multi_without_language + 3
+    multi_batch_with_language_routine = multi_with_language_routine + 3
+    multi_batch_without_language_routine = multi_without_language_routine + 3
 
     multi_agent_values: list[Any] = []
     batch_mode = False
     batch_runs = 10
     master_seed = 20260419
-    if len(trait_and_runtime) == multi_batch_with_language:
+    if len(trait_and_runtime) == multi_batch_with_language_routine:
+        values = list(trait_and_runtime)
+        primary_routine_specified = True
+        extra_agent_routine_specified = True
+        primary_routine_text = str(values[0])
+        trait_values = values[1 : 1 + len(PERSONA_TRAIT_FIELDS)]
+        remainder = values[1 + len(PERSONA_TRAIT_FIELDS) :]
+        multi_agent_values = remainder[:-8]
+        (
+            htn_enabled,
+            planning_depth,
+            ticks,
+            agent_count,
+            batch_mode,
+            batch_runs,
+            master_seed,
+            language_choice,
+        ) = remainder[-8:]
+    elif len(trait_and_runtime) == multi_batch_without_language_routine:
+        values = list(trait_and_runtime)
+        primary_routine_specified = True
+        extra_agent_routine_specified = True
+        primary_routine_text = str(values[0])
+        trait_values = values[1 : 1 + len(PERSONA_TRAIT_FIELDS)]
+        remainder = values[1 + len(PERSONA_TRAIT_FIELDS) :]
+        multi_agent_values = remainder[:-7]
+        (
+            htn_enabled,
+            planning_depth,
+            ticks,
+            agent_count,
+            batch_mode,
+            batch_runs,
+            master_seed,
+        ) = remainder[-7:]
+        language_choice = KOREAN_CHOICE
+    elif len(trait_and_runtime) == multi_with_language_routine:
+        values = list(trait_and_runtime)
+        primary_routine_specified = True
+        extra_agent_routine_specified = True
+        primary_routine_text = str(values[0])
+        trait_values = values[1 : 1 + len(PERSONA_TRAIT_FIELDS)]
+        remainder = values[1 + len(PERSONA_TRAIT_FIELDS) :]
+        multi_agent_values = remainder[:-5]
+        htn_enabled, planning_depth, ticks, agent_count, language_choice = remainder[-5:]
+    elif len(trait_and_runtime) == multi_without_language_routine:
+        values = list(trait_and_runtime)
+        primary_routine_specified = True
+        extra_agent_routine_specified = True
+        primary_routine_text = str(values[0])
+        trait_values = values[1 : 1 + len(PERSONA_TRAIT_FIELDS)]
+        remainder = values[1 + len(PERSONA_TRAIT_FIELDS) :]
+        multi_agent_values = remainder[:-4]
+        htn_enabled, planning_depth, ticks, agent_count = remainder[-4:]
+        language_choice = KOREAN_CHOICE
+    elif len(trait_and_runtime) == multi_batch_with_language:
         values = list(trait_and_runtime)
         trait_values = values[: len(PERSONA_TRAIT_FIELDS)]
         remainder = values[len(PERSONA_TRAIT_FIELDS) :]
@@ -1289,6 +1392,39 @@ def _run(
         multi_agent_values = remainder[:-4]
         htn_enabled, planning_depth, ticks, agent_count = remainder[-4:]
         language_choice = KOREAN_CHOICE
+    elif len(trait_and_runtime) == routine_batch_with_language:
+        values = list(trait_and_runtime)
+        primary_routine_specified = True
+        primary_routine_text = str(values[0])
+        (
+            *trait_values,
+            htn_enabled,
+            planning_depth,
+            ticks,
+            agent_count,
+            batch_mode,
+            batch_runs,
+            master_seed,
+            language_choice,
+        ) = values[1:]
+    elif (
+        len(trait_and_runtime) == routine_batch_without_language
+        and str(trait_and_runtime[-1]) not in LANGUAGE_CHOICES
+    ):
+        values = list(trait_and_runtime)
+        primary_routine_specified = True
+        primary_routine_text = str(values[0])
+        (
+            *trait_values,
+            htn_enabled,
+            planning_depth,
+            ticks,
+            agent_count,
+            batch_mode,
+            batch_runs,
+            master_seed,
+        ) = values[1:]
+        language_choice = KOREAN_CHOICE
     elif len(trait_and_runtime) == legacy_batch_with_language:
         (
             *trait_values,
@@ -1312,6 +1448,20 @@ def _run(
             batch_runs,
             master_seed,
         ) = trait_and_runtime
+        language_choice = KOREAN_CHOICE
+    elif len(trait_and_runtime) == routine_with_language:
+        values = list(trait_and_runtime)
+        primary_routine_specified = True
+        primary_routine_text = str(values[0])
+        *trait_values, htn_enabled, planning_depth, ticks, agent_count, language_choice = values[1:]
+    elif (
+        len(trait_and_runtime) == routine_without_language
+        and str(trait_and_runtime[-1]) not in LANGUAGE_CHOICES
+    ):
+        values = list(trait_and_runtime)
+        primary_routine_specified = True
+        primary_routine_text = str(values[0])
+        *trait_values, htn_enabled, planning_depth, ticks, agent_count = values[1:]
         language_choice = KOREAN_CHOICE
     elif len(trait_and_runtime) == legacy_with_language:
         *trait_values, htn_enabled, planning_depth, ticks, agent_count, language_choice = (
@@ -1337,30 +1487,37 @@ def _run(
             "age": int(primary_age),
             "personality_overrides": personality_overrides,
             "planning": bool(htn_enabled),
+            **({"routine_text": primary_routine_text} if primary_routine_specified else {}),
         }
     ]
     if multi_agent_values:
-        block_size = 2 + len(PERSONA_TRAIT_FIELDS)
+        block_size = (3 if extra_agent_routine_specified else 2) + len(PERSONA_TRAIT_FIELDS)
         for slot_index in range(0, len(multi_agent_values), block_size):
             name = str(multi_agent_values[slot_index])
             age = int(multi_agent_values[slot_index + 1])
+            trait_start = slot_index + 2
+            routine_text = ""
+            if extra_agent_routine_specified:
+                routine_text = str(multi_agent_values[slot_index + 2])
+                trait_start += 1
             slot_traits = multi_agent_values[
-                slot_index + 2 : slot_index + 2 + len(PERSONA_TRAIT_FIELDS)
+                trait_start : trait_start + len(PERSONA_TRAIT_FIELDS)
             ]
-            agent_overrides.append(
-                {
-                    "name": name,
-                    "age": age,
-                    "personality_overrides": {
-                        field_name: float(value)
-                        for field_name, value in zip(
-                            PERSONA_TRAIT_FIELDS,
-                            slot_traits,
-                            strict=True,
-                        )
-                    },
-                }
-            )
+            override = {
+                "name": name,
+                "age": age,
+                "personality_overrides": {
+                    field_name: float(value)
+                    for field_name, value in zip(
+                        PERSONA_TRAIT_FIELDS,
+                        slot_traits,
+                        strict=True,
+                    )
+                },
+            }
+            if extra_agent_routine_specified:
+                override["routine_text"] = routine_text
+            agent_overrides.append(override)
 
     result = run_playground_scenario(
         scenario_name=scenario_name,
@@ -1474,6 +1631,10 @@ def _apply_persona_preset(preset_id: str | None) -> list[dict[str, Any]]:
     return [gr.update(value=value) for value in values]
 
 
+def _apply_routine_preset(preset_id: str | None) -> dict[str, Any]:
+    return gr.update(value=routine_preset_text(preset_id), placeholder=LABELS["en"]["routine_text_placeholder"])
+
+
 def _apply_cultural_prior(prior_id: str | None) -> list[dict[str, Any]]:
     values = cultural_prior_trait_values(prior_id, PERSONA_TRAIT_FIELDS)
     return [gr.update(value=value) for value in values]
@@ -1526,6 +1687,18 @@ def _agent_editor_updates(
                     choices=_persona_choices(language),
                     value="",
                     info=labels["persona_preset_info"],
+                ),
+                gr.update(
+                    label=labels["routine_preset"],
+                    choices=_routine_preset_choices(language),
+                    value="free",
+                    info=labels["routine_preset_info"],
+                ),
+                gr.update(
+                    label=labels["routine_text"],
+                    value=str(default.get("routine_text", "")),
+                    info=labels["routine_text_info"],
+                    placeholder=labels["routine_text_placeholder"],
                 ),
                 gr.update(label=labels["tier_a_panel"]),
                 gr.update(label=labels["extended_panel"]),
@@ -3287,6 +3460,8 @@ def build_app() -> gr.Blocks:
                     controls["name"],
                     controls["age"],
                     controls["persona_preset"],
+                    controls["routine_preset"],
+                    controls["routine_text"],
                     controls["tier_a_panel"],
                     controls["extended_panel"],
                     controls["extended_panel_note"],
@@ -3443,6 +3618,11 @@ def build_app() -> gr.Blocks:
                     for field_name in PERSONA_TRAIT_FIELDS
                 ],
             )
+            controls["routine_preset"].change(
+                _apply_routine_preset,
+                inputs=[controls["routine_preset"]],
+                outputs=[controls["routine_text"]],
+            )
         run_button.click(
             _run,
             inputs=[
@@ -3454,18 +3634,21 @@ def build_app() -> gr.Blocks:
                 model,
                 primary_name,
                 primary_age,
+                agent_tabs[0]["routine_text"],
                 *[
                     agent_tabs[0]["trait_sliders"][field_name]
                     for field_name in PERSONA_TRAIT_FIELDS
                 ],
                 agent_tabs[1]["name"],
                 agent_tabs[1]["age"],
+                agent_tabs[1]["routine_text"],
                 *[
                     agent_tabs[1]["trait_sliders"][field_name]
                     for field_name in PERSONA_TRAIT_FIELDS
                 ],
                 agent_tabs[2]["name"],
                 agent_tabs[2]["age"],
+                agent_tabs[2]["routine_text"],
                 *[
                     agent_tabs[2]["trait_sliders"][field_name]
                     for field_name in PERSONA_TRAIT_FIELDS

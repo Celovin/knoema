@@ -8,6 +8,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from knoema.environment import Environment
+from knoema.game.schedule import RoutineEntry
 from knoema.llm import LocalClient
 from knoema.persona import Persona
 from knoema.simulator import Simulator
@@ -66,6 +67,7 @@ class AgentSpec(BaseModel):
     values: list[str] = Field(default_factory=list)
     goals: list[str] = Field(default_factory=list)
     location_path: tuple[str, ...] | None = None
+    routine: list[RoutineSpec] = Field(default_factory=list)
     synthetic: bool = True
 
     def to_domain(self) -> Persona:
@@ -77,6 +79,26 @@ class AgentSpec(BaseModel):
             personality=self.personality.to_domain(),
             values=list(self.values),
             goals=list(self.goals),
+            routine=[entry.to_domain() for entry in self.routine] or None,
+        )
+
+
+class RoutineSpec(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    start_hour: int = Field(ge=0, le=24)
+    end_hour: int = Field(ge=0, le=24)
+    location_path: tuple[str, ...] = Field(min_length=1)
+    default_action: str = Field(min_length=1)
+    default_target: str | None = None
+
+    def to_domain(self) -> RoutineEntry:
+        return RoutineEntry(
+            start_hour=self.start_hour,
+            end_hour=self.end_hour,
+            location_path=self.location_path,
+            default_action=self.default_action,
+            default_target=self.default_target,
         )
 
 
@@ -131,6 +153,9 @@ class EthicsSpec(BaseModel):
     no_suspect_scoring: bool = True
     sensitive_domain: bool = False
     irb_notes: str | None = None
+
+
+AgentSpec.model_rebuild()
 
 
 class Scenario(BaseModel):

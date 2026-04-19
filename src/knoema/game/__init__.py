@@ -11,6 +11,7 @@ from typing import Any, cast
 import yaml
 
 from .inventory import Faction, Inventory, apply_faction_action, apply_inventory_action
+from .schedule import RoutineEntry, active_routine_entry
 
 
 @dataclass(frozen=True, slots=True)
@@ -149,6 +150,8 @@ __all__ = [
     "GameSession",
     "Inventory",
     "NPCResponse",
+    "RoutineEntry",
+    "active_routine_entry",
     "apply_faction_action",
     "apply_inventory_action",
 ]

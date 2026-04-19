@@ -104,6 +104,7 @@ def build_decision_messages(
         for target, relationship in relationships.items()
     )
     trigger_text = trigger.description if trigger is not None else "No immediate trigger."
+    routine_note = getattr(environment, "routine_note", None)
     theory_of_mind_lines = None if theory_of_mind_context is None else theory_of_mind_context.render_lines()
     resolved_language = normalize_prompt_language(language)
     if resolved_language == "en":
@@ -112,14 +113,20 @@ def build_decision_messages(
             'Schema: {"action_type": str, "target": str | null, "content": str}',
             f"Time: {environment.timestamp.isoformat()}",
             f"Location: {environment.location}",
-            f"Conditions: {json.dumps(environment.conditions, ensure_ascii=False, sort_keys=True)}",
-            f"Emotion: valence={emotion.valence:.2f}, arousal={emotion.arousal:.2f}, dominance={emotion.dominance:.2f}",
-            f"Trigger: {trigger_text}",
-            "Memories:",
-            memory_lines or "- None",
-            "Relationships:",
-            relationship_lines or "- None",
         ]
+        if routine_note:
+            lines.append(f"Routine: {routine_note}")
+        lines.extend(
+            [
+                f"Conditions: {json.dumps(environment.conditions, ensure_ascii=False, sort_keys=True)}",
+                f"Emotion: valence={emotion.valence:.2f}, arousal={emotion.arousal:.2f}, dominance={emotion.dominance:.2f}",
+                f"Trigger: {trigger_text}",
+                "Memories:",
+                memory_lines or "- None",
+                "Relationships:",
+                relationship_lines or "- None",
+            ]
+        )
         if theory_of_mind_lines:
             lines.extend(
                 [
