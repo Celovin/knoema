@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import csv
 import json
 import math
 import tempfile
 import threading
 import uuid
+import zipfile
 from collections import Counter
 from datetime import UTC, datetime
 from html import escape
+from pathlib import Path
 from typing import Any, cast
 
 import gradio as gr
@@ -630,10 +633,18 @@ LABELS["ko"]["html_report_button"] = "HTML 보고서 내보내기"
 LABELS["ko"]["html_report_download"] = "HTML 보고서 다운로드"
 LABELS["ko"]["html_report_title"] = "Knoema Playground HTML 보고서"
 LABELS["ko"]["generated_at"] = "생성 시각"
+LABELS["ko"]["csv_bundle_button"] = "CSV 묶음 내보내기"
+LABELS["ko"]["csv_bundle_download"] = "CSV 묶음 다운로드"
+LABELS["ko"]["latex_table_button"] = "LaTeX 표 내보내기"
+LABELS["ko"]["latex_table_download"] = "LaTeX 표 다운로드"
 LABELS["en"]["html_report_button"] = "Export HTML report"
 LABELS["en"]["html_report_download"] = "Download HTML report"
 LABELS["en"]["html_report_title"] = "Knoema Playground HTML report"
 LABELS["en"]["generated_at"] = "Generated at"
+LABELS["en"]["csv_bundle_button"] = "Export CSV bundle"
+LABELS["en"]["csv_bundle_download"] = "Download CSV bundle"
+LABELS["en"]["latex_table_button"] = "Export LaTeX table"
+LABELS["en"]["latex_table_download"] = "Download LaTeX table"
 LABELS["ko"]["mirofish_panel"] = "MiroFish 스타일 실험실"
 LABELS["ko"]["seed_prompt"] = "시드 프롬프트"
 LABELS["ko"]["seed_prompt_placeholder"] = "예: 분주한 항구 술집, 세 명의 NPC, 경쟁과 협력"
@@ -2386,6 +2397,358 @@ def _export_html_report(
         return handle.name
 
 
+def _write_csv_table(
+    destination: Path,
+    *,
+    fieldnames: list[str],
+    rows: list[dict[str, object]],
+) -> None:
+    with destination.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+
+
+def _single_run_export_tables(
+    jsonl_text: str,
+    memory_snapshot: dict[str, Any],
+) -> dict[str, tuple[list[str], list[dict[str, object]]]]:
+    rows = [
+        row
+        for row in _jsonl_rows(jsonl_text)
+        if "tick" in row and isinstance(row.get("action"), dict)
+    ]
+    agent_buckets: dict[str, list[dict[str, Any]]] = {}
+    action_count_rows: list[dict[str, object]] = []
+    edge_buckets: dict[tuple[str, str], dict[str, object]] = {}
+    action_counts: Counter[tuple[str, str]] = Counter()
+
+    for row in rows:
+        agent_id = str(row.get("agent_id", "agent"))
+        action = cast("dict[str, Any]", row.get("action", {}))
+        action_type = str(action.get("action_type", "observe")).strip() or "observe"
+        tick = int(row.get("tick", 0))
+        agent_buckets.setdefault(agent_id, []).append(row)
+        action_counts[(agent_id, action_type)] += 1
+        target = str(action.get("target") or "").strip()
+        if target:
+            bucket = edge_buckets.setdefault(
+                (agent_id, target),
+                {
+                    "source": agent_id,
+                    "target": target,
+                    "edge_weight": 0,
+                    "first_tick": tick,
+                    "last_tick": tick,
+                    "action_counts": Counter(),
+                },
+            )
+            bucket["edge_weight"] = int(bucket["edge_weight"]) + 1
+            bucket["first_tick"] = min(int(bucket["first_tick"]), tick)
+            bucket["last_tick"] = max(int(bucket["last_tick"]), tick)
+            cast("Counter[str]", bucket["action_counts"])[action_type] += 1
+
+    for (agent_id, action_type), count in sorted(action_counts.items()):
+        action_count_rows.append(
+            {
+                "agent_id": agent_id,
+                "action_type": action_type,
+                "count": count,
+            }
+        )
+
+    per_agent_rows: list[dict[str, object]] = []
+    for agent_id in sorted(agent_buckets):
+        agent_rows = agent_buckets[agent_id]
+        per_agent_counter = Counter(
+            str(cast("dict[str, Any]", row.get("action", {})).get("action_type", "observe"))
+            for row in agent_rows
+        )
+        unique_targets = {
+            str(cast("dict[str, Any]", row.get("action", {})).get("target") or "").strip()
+            for row in agent_rows
+            if str(cast("dict[str, Any]", row.get("action", {})).get("target") or "").strip()
+        }
+        emotion_rows = list(dict(memory_snapshot.get(agent_id, {})).get("emotion", []))
+        valences = [float(entry.get("valence", 0.0)) for entry in emotion_rows]
+        per_agent_rows.append(
+            {
+                "agent_id": agent_id,
+                "total_actions": len(agent_rows),
+                "unique_targets": len(unique_targets),
+                "top_action_type": per_agent_counter.most_common(1)[0][0] if per_agent_counter else "n/a",
+                "first_tick": min(int(row.get("tick", 0)) for row in agent_rows),
+                "last_tick": max(int(row.get("tick", 0)) for row in agent_rows),
+                "mean_valence": round(_mean(valences), 4) if valences else 0.0,
+                "last_valence": round(valences[-1], 4) if valences else 0.0,
+            }
+        )
+
+    edge_rows: list[dict[str, object]] = []
+    for (source, target), bucket in sorted(edge_buckets.items()):
+        counter = cast("Counter[str]", bucket["action_counts"])
+        edge_rows.append(
+            {
+                "source": source,
+                "target": target,
+                "edge_weight": int(bucket["edge_weight"]),
+                "top_action_type": counter.most_common(1)[0][0] if counter else "n/a",
+                "first_tick": int(bucket["first_tick"]),
+                "last_tick": int(bucket["last_tick"]),
+            }
+        )
+
+    emotion_rows: list[dict[str, object]] = []
+    for agent_id in sorted(memory_snapshot):
+        for entry in list(dict(memory_snapshot.get(agent_id, {})).get("emotion", [])):
+            emotion_rows.append(
+                {
+                    "agent_id": agent_id,
+                    "tick": int(entry.get("tick", -1)),
+                    "valence": float(entry.get("valence", 0.0)),
+                    "arousal": float(entry.get("arousal", 0.0)),
+                    "dominance": float(entry.get("dominance", 0.0)),
+                    "timestamp": str(entry.get("timestamp", "")),
+                }
+            )
+
+    return {
+        "per_agent_stats.csv": (
+            [
+                "agent_id",
+                "total_actions",
+                "unique_targets",
+                "top_action_type",
+                "first_tick",
+                "last_tick",
+                "mean_valence",
+                "last_valence",
+            ],
+            per_agent_rows,
+        ),
+        "edge_weights.csv": (
+            ["source", "target", "edge_weight", "top_action_type", "first_tick", "last_tick"],
+            edge_rows,
+        ),
+        "action_counts.csv": (
+            ["agent_id", "action_type", "count"],
+            action_count_rows,
+        ),
+        "emotion_trajectories.csv": (
+            ["agent_id", "tick", "valence", "arousal", "dominance", "timestamp"],
+            emotion_rows,
+        ),
+    }
+
+
+def _batch_export_tables(
+    jsonl_text: str,
+) -> dict[str, tuple[list[str], list[dict[str, object]]]]:
+    rows = _jsonl_rows(jsonl_text)
+    tick_rows = [
+        row
+        for row in rows
+        if str(row.get("record_type", "")) == "tick_stat"
+    ]
+    agent_rows = [
+        row
+        for row in rows
+        if str(row.get("record_type", "")) == "agent_stat"
+    ]
+    per_agent_rows = [
+        {
+            "agent_id": str(row.get("agent_id", "agent")),
+            "mean_actions": float(row.get("mean_actions", 0.0)),
+            "top_action_type": str(row.get("top_action_type", "n/a")),
+        }
+        for row in agent_rows
+    ]
+    action_count_rows: list[dict[str, object]] = []
+    tick_stat_rows: list[dict[str, object]] = []
+    for row in tick_rows:
+        tick = int(row.get("tick", -1))
+        tick_stat_rows.append(
+            {
+                "tick": tick,
+                "mean_actions": float(row.get("mean_actions", 0.0)),
+                "top_action_type": str(row.get("top_action_type", "n/a")),
+            }
+        )
+        action_counts = row.get("action_type_counts", {})
+        if not isinstance(action_counts, dict):
+            continue
+        for action_type, count in sorted(action_counts.items()):
+            action_count_rows.append(
+                {
+                    "tick": tick,
+                    "action_type": str(action_type),
+                    "count": int(count),
+                }
+            )
+
+    return {
+        "per_agent_stats.csv": (
+            ["agent_id", "mean_actions", "top_action_type"],
+            per_agent_rows,
+        ),
+        "edge_weights.csv": (
+            ["source", "target", "edge_weight", "top_action_type", "first_tick", "last_tick"],
+            [],
+        ),
+        "action_counts.csv": (
+            ["tick", "action_type", "count"],
+            action_count_rows,
+        ),
+        "emotion_trajectories.csv": (
+            ["agent_id", "tick", "valence", "arousal", "dominance", "timestamp"],
+            [],
+        ),
+        "tick_stats.csv": (
+            ["tick", "mean_actions", "top_action_type"],
+            tick_stat_rows,
+        ),
+    }
+
+
+def _export_csv_bundle(
+    jsonl_text: str,
+    memory_snapshot: dict[str, Any],
+    summary: str,
+    language: str,
+) -> str:
+    del language
+    rows = _jsonl_rows(jsonl_text)
+    tables = (
+        _batch_export_tables(jsonl_text)
+        if any("record_type" in row for row in rows)
+        else _single_run_export_tables(jsonl_text, memory_snapshot)
+    )
+    with tempfile.TemporaryDirectory(prefix="knoema_playground_csv_") as directory:
+        directory_path = Path(directory)
+        (directory_path / "run_summary.txt").write_text(str(summary), encoding="utf-8")
+        for filename, (fieldnames, table_rows) in tables.items():
+            _write_csv_table(
+                directory_path / filename,
+                fieldnames=fieldnames,
+                rows=table_rows,
+            )
+        with tempfile.NamedTemporaryFile(
+            suffix=".zip",
+            prefix="knoema_playground_csv_bundle_",
+            delete=False,
+        ) as handle:
+            archive_path = Path(handle.name)
+        with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+            for file_path in sorted(directory_path.iterdir()):
+                archive.write(file_path, arcname=file_path.name)
+        return str(archive_path)
+
+
+def _latex_escape(text: object) -> str:
+    escaped = str(text)
+    replacements = {
+        "\\": r"\textbackslash{}",
+        "&": r"\&",
+        "%": r"\%",
+        "$": r"\$",
+        "#": r"\#",
+        "_": r"\_",
+        "{": r"\{",
+        "}": r"\}",
+    }
+    for source, target in replacements.items():
+        escaped = escaped.replace(source, target)
+    return escaped
+
+
+def _export_latex_table(
+    jsonl_text: str,
+    memory_snapshot: dict[str, Any],
+    summary: str,
+    language: str,
+) -> str:
+    key = _language_key(language)
+    rows = _jsonl_rows(jsonl_text)
+    batch_mode = any("record_type" in row for row in rows)
+    tables = (
+        _batch_export_tables(jsonl_text)
+        if batch_mode
+        else _single_run_export_tables(jsonl_text, memory_snapshot)
+    )
+    per_agent_fieldnames, per_agent_rows = tables["per_agent_stats.csv"]
+    if batch_mode:
+        headers = ["Agent", "Mean Actions", "Top Action"]
+        column_spec = "lrl"
+        body_rows = [
+            (
+                _latex_escape(row["agent_id"]),
+                _latex_escape(row["mean_actions"]),
+                _latex_escape(row["top_action_type"]),
+            )
+            for row in per_agent_rows[:8]
+        ]
+        caption = (
+            "배치 실행 에이전트 요약"
+            if key == "ko"
+            else "Batch per-agent summary"
+        )
+    else:
+        del per_agent_fieldnames
+        headers = ["Agent", "Total Actions", "Unique Targets", "Top Action"]
+        column_spec = "lrrl"
+        body_rows = [
+            (
+                _latex_escape(row["agent_id"]),
+                _latex_escape(row["total_actions"]),
+                _latex_escape(row["unique_targets"]),
+                _latex_escape(row["top_action_type"]),
+            )
+            for row in per_agent_rows[:8]
+        ]
+        caption = (
+            "단일 실행 에이전트 요약"
+            if key == "ko"
+            else "Single-run per-agent summary"
+        )
+
+    if not body_rows:
+        body_rows = [(r"\multicolumn{4}{c}{No data available.}",)] if not batch_mode else [(r"\multicolumn{3}{c}{No data available.}",)]
+
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        rf"\caption{{{_latex_escape(caption)}}}",
+        rf"\begin{{tabular}}{{{column_spec}}}",
+        r"\hline",
+        " & ".join(headers) + r" \\",
+        r"\hline",
+    ]
+    for row in body_rows:
+        lines.append(" & ".join(row) + r" \\")
+    lines.extend(
+        [
+            r"\hline",
+            r"\end{tabular}",
+            r"\label{tab:knoema_playground_export}",
+            r"\end{table}",
+            "",
+            "% Run summary",
+            f"% {_latex_escape(summary)}",
+        ]
+    )
+
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        suffix=".tex",
+        prefix="knoema_playground_table_",
+        delete=False,
+    ) as handle:
+        handle.write("\n".join(lines))
+        return handle.name
+
+
 def _seed_relationship_draft(suggestions: tuple[dict[str, Any], ...]) -> str:
     lines: list[str] = []
     for left_index in range(len(suggestions)):
@@ -3581,6 +3944,10 @@ def _language_updates(
         gr.update(label=labels["download"]),
         gr.update(value=labels["html_report_button"]),
         gr.update(label=labels["html_report_download"]),
+        gr.update(value=labels["csv_bundle_button"]),
+        gr.update(label=labels["csv_bundle_download"]),
+        gr.update(value=labels["latex_table_button"]),
+        gr.update(label=labels["latex_table_download"]),
         labels["report_agent_empty"],
         labels["compare_empty"],
         labels["interview_empty"],
@@ -5241,6 +5608,24 @@ def build_app() -> gr.Blocks:
                 label=labels["html_report_download"],
                 elem_id="html-report-download",
             )
+            csv_bundle_button = gr.Button(
+                labels["csv_bundle_button"],
+                variant="secondary",
+                elem_id="csv-bundle-button",
+            )
+            csv_bundle_download = gr.File(
+                label=labels["csv_bundle_download"],
+                elem_id="csv-bundle-download",
+            )
+            latex_table_button = gr.Button(
+                labels["latex_table_button"],
+                variant="secondary",
+                elem_id="latex-table-button",
+            )
+            latex_table_download = gr.File(
+                label=labels["latex_table_download"],
+                elem_id="latex-table-download",
+            )
         report_agent_panel = gr.Accordion(
             labels["report_agent_panel"],
             open=False,
@@ -5413,6 +5798,10 @@ def build_app() -> gr.Blocks:
             download,
             html_report_button,
             html_report_download,
+            csv_bundle_button,
+            csv_bundle_download,
+            latex_table_button,
+            latex_table_download,
             report_agent_output,
             compare_output,
             interview_output,
@@ -5566,6 +5955,18 @@ def build_app() -> gr.Blocks:
             inputs=[timeline, graph, jsonl, summary, language],
             outputs=[html_report_download],
             api_name="export_html_report",
+        )
+        csv_bundle_button.click(
+            _export_csv_bundle,
+            inputs=[jsonl, memory_snapshot_state, summary, language],
+            outputs=[csv_bundle_download],
+            api_name="export_csv_bundle",
+        )
+        latex_table_button.click(
+            _export_latex_table,
+            inputs=[jsonl, memory_snapshot_state, summary, language],
+            outputs=[latex_table_download],
+            api_name="export_latex_table",
         )
         seed_prompt_apply.click(
             _seed_prompt_updates,
