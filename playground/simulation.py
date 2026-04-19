@@ -31,6 +31,7 @@ from knoema.llm import AnthropicClient, LocalClient, OpenAIClient
 from knoema.persona import Persona
 from knoema.planning import HierarchicalPlanner, Task
 from knoema.protocols import LLMClient, Message
+from knoema.relationship import Relationship
 from knoema.simulator import SimulationLogEntry, Simulator
 from knoema.types import (
     ACTION_TYPES,
@@ -39,6 +40,7 @@ from knoema.types import (
     SOCIAL_ACTION_TYPES,
     Action,
     Personality,
+    WorldEvent,
 )
 from playground.quest_generation import generate_procedural_quest
 
@@ -427,6 +429,43 @@ class StoredPlayerAction:
 
 
 @dataclass(frozen=True, slots=True)
+class InjectedEventSpec:
+    tick: int
+    location: str
+    description: str
+    participants: tuple[str, ...]
+    event_type: str = "injected_event"
+
+
+SEED_NAME_POOLS: dict[str, tuple[str, ...]] = {
+    "en": (
+        "Mina",
+        "Theo",
+        "Jules",
+        "Elias",
+        "Nora",
+        "Iris",
+        "Sora",
+        "Felix",
+        "Lena",
+        "Jonah",
+    ),
+    "ko": (
+        "민서",
+        "지훈",
+        "서윤",
+        "도윤",
+        "하린",
+        "예준",
+        "수아",
+        "시우",
+        "유진",
+        "건우",
+    ),
+}
+
+
+@dataclass(frozen=True, slots=True)
 class TraitMergeCandidate:
     keep_trait: str
     drop_trait: str
@@ -720,6 +759,119 @@ def routine_to_text(routine: list[RoutineEntry] | None) -> str:
     return yaml.safe_dump(normalized, allow_unicode=True, sort_keys=False).strip()
 
 
+def seed_persona_suggestions(
+    seed_prompt: str,
+    *,
+    language: str = "en",
+    slot_count: int = AGENT_EDITOR_SLOT_COUNT,
+) -> tuple[dict[str, Any], ...]:
+    prompt = str(seed_prompt).strip()
+    if not prompt:
+        return ()
+    presets = load_persona_presets()
+    language_key = "ko" if language == "ko" else "en"
+    name_pool = SEED_NAME_POOLS[language_key]
+    label_key = "label_ko" if language_key == "ko" else "label_en"
+    seed_bucket = _stable_bucket(prompt, language_key)
+    suggestions: list[dict[str, Any]] = []
+    for slot_index in range(slot_count):
+        preset = presets[(seed_bucket + (slot_index * 7)) % len(presets)]
+        name = name_pool[(seed_bucket + (slot_index * 5)) % len(name_pool)]
+        personality = {
+            field_name: round(
+                _clamp_unit(
+                    float(preset["personality"][field_name])
+                    + ((((seed_bucket + (slot_index * 13) + offset) % 5) - 2) * 0.03)
+                ),
+                3,
+            )
+            for offset, field_name in enumerate(PERSONA_TRAIT_FIELDS)
+        }
+        suggestions.append(
+            {
+                "name": name,
+                "age": 20 + ((seed_bucket + (slot_index * 11)) % 23),
+                "preset_id": str(preset["id"]),
+                "preset_label": str(preset[label_key]),
+                "personality": personality,
+            }
+        )
+    return tuple(suggestions)
+
+
+def parse_event_injections_text(event_text: str) -> tuple[InjectedEventSpec, ...]:
+    specs: list[InjectedEventSpec] = []
+    for raw_line in str(event_text).splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = [part.strip() for part in line.split("|")]
+        if len(parts) < 3:
+            continue
+        tick = max(0, int(parts[0] or "0"))
+        location = parts[1] or "Shared space"
+        description = parts[2]
+        participants = ()
+        if len(parts) >= 4 and parts[3]:
+            participants = tuple(
+                participant.strip()
+                for participant in parts[3].split(",")
+                if participant.strip()
+            )
+        event_type = parts[4] if len(parts) >= 5 and parts[4] else "injected_event"
+        specs.append(
+            InjectedEventSpec(
+                tick=tick,
+                location=location,
+                description=description,
+                participants=participants,
+                event_type=event_type,
+            )
+        )
+    return tuple(specs)
+
+
+def parse_initial_relationships_text(relationship_text: str) -> tuple[Relationship, ...]:
+    relationships: list[Relationship] = []
+    for raw_line in str(relationship_text).splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = [part.strip() for part in line.split("|")]
+        if len(parts) < 6:
+            continue
+        source, target, relationship_type, weight, trust, familiarity = parts[:6]
+        if not source or not target:
+            continue
+        relationships.append(
+            Relationship(
+                source=source,
+                target=target,
+                relationship_type=cast("Any", relationship_type or "stranger"),
+                weight=float(weight or 0.0),
+                trust=float(trust or 0.5),
+                familiarity=float(familiarity or 0.0),
+            )
+        )
+    return tuple(relationships)
+
+
+def _resolve_agent_reference(reference: str, agents: list[Persona]) -> str | None:
+    value = str(reference).strip()
+    if not value:
+        return None
+    agent_ids = [agent.agent_id for agent in agents]
+    if value in agent_ids:
+        return value
+    match = re.fullmatch(r"agent_(\d+)", value.lower())
+    if match is None:
+        return None
+    index = int(match.group(1)) - 1
+    if 0 <= index < len(agent_ids):
+        return agent_ids[index]
+    return None
+
+
 @lru_cache(maxsize=1)
 def load_cultural_priors() -> tuple[dict[str, Any], ...]:
     with CULTURAL_PRIORS_PATH.open(encoding="utf-8") as handle:
@@ -920,6 +1072,8 @@ def run_playground_scenario(
     batch_runs: int = 10,
     master_seed: int = 20260419,
     language: str = "en",
+    event_injections_text: str = "",
+    initial_relationships_text: str = "",
 ) -> PlaygroundResult:
     """Run a short scenario and return UI-ready artifacts.
 
@@ -953,6 +1107,8 @@ def run_playground_scenario(
             planning_depth=planning_depth,
             language=language,
             seed=master_seed if batch_mode else None,
+            event_injections_text=event_injections_text,
+            initial_relationships_text=initial_relationships_text,
         )
         try:
             return playground_result_from_artifacts(
@@ -991,6 +1147,8 @@ def run_playground_scenario(
                     planning_depth=planning_depth,
                     language=language,
                     seed=seed,
+                    event_injections_text=event_injections_text,
+                    initial_relationships_text=initial_relationships_text,
                 ),
                 seeds,
             )
@@ -1080,6 +1238,8 @@ def start_player_session(
     primary_planning_enabled: bool = False,
     planning_depth: int = 3,
     language: str = "en",
+    event_injections_text: str = "",
+    initial_relationships_text: str = "",
 ) -> tuple[dict[str, Any], PlaygroundResult, str]:
     session = {
         "scenario_name": scenario_name,
@@ -1094,6 +1254,8 @@ def start_player_session(
         "primary_planning_enabled": bool(primary_planning_enabled),
         "planning_depth": int(planning_depth),
         "language": language,
+        "event_injections_text": str(event_injections_text),
+        "initial_relationships_text": str(initial_relationships_text),
         "player_actions": [],
     }
     artifacts = _player_session_artifacts(session)
@@ -1205,6 +1367,8 @@ def _execute_playground_run(
     planning_depth: int,
     language: str,
     seed: int | None,
+    event_injections_text: str,
+    initial_relationships_text: str,
 ) -> PlaygroundRunArtifacts:
     artifacts = _prepare_playground_run(
         scenario_name=scenario_name,
@@ -1227,6 +1391,8 @@ def _execute_playground_run(
         planning_depth=planning_depth,
         language=language,
         seed=seed,
+        event_injections_text=event_injections_text,
+        initial_relationships_text=initial_relationships_text,
     )
     _run_ticks(artifacts.simulator, ticks=max(1, min(int(ticks), 24)))
     return artifacts
@@ -1254,6 +1420,8 @@ def _prepare_playground_run(
     planning_depth: int,
     language: str,
     seed: int | None,
+    event_injections_text: str,
+    initial_relationships_text: str,
 ) -> PlaygroundRunArtifacts:
     config = load_run_config(scenario_path(scenario_name))
     target_agent_count = len(config.agents) if agent_count is None else int(agent_count)
@@ -1356,6 +1524,38 @@ def _prepare_playground_run(
     )
     for event in _filter_events_for_agent_pool(config.events, agent_configs):
         simulator.scheduler.schedule(event.to_domain())
+    valid_agent_ids = {agent.agent_id for agent in agents}
+    for relationship in parse_initial_relationships_text(initial_relationships_text):
+        source = _resolve_agent_reference(relationship.source, agents)
+        target = _resolve_agent_reference(relationship.target, agents)
+        if source in valid_agent_ids and target in valid_agent_ids:
+            simulator.relationships.set_relationship(
+                Relationship(
+                    source=source,
+                    target=target,
+                    relationship_type=relationship.relationship_type,
+                    weight=relationship.weight,
+                    trust=relationship.trust,
+                    familiarity=relationship.familiarity,
+                )
+            )
+    for injected_event in parse_event_injections_text(event_injections_text):
+        participants = [
+            resolved
+            for participant in injected_event.participants
+            if (resolved := _resolve_agent_reference(participant, agents)) is not None
+        ]
+        if not participants:
+            participants = [agent.agent_id for agent in agents]
+        simulator.scheduler.schedule(
+            WorldEvent(
+                timestamp=environment.current_time + (simulator.tick_duration * injected_event.tick),
+                event_type=injected_event.event_type,
+                participants=participants,
+                location=injected_event.location,
+                description=injected_event.description,
+            )
+        )
 
     return PlaygroundRunArtifacts(agents=agents, simulator=simulator)
 
@@ -1383,6 +1583,8 @@ def _player_session_artifacts(session: dict[str, Any]) -> PlaygroundRunArtifacts
         planning_depth=int(session.get("planning_depth", 3)),
         language=str(session.get("language", "en")),
         seed=None,
+        event_injections_text=str(session.get("event_injections_text", "")),
+        initial_relationships_text=str(session.get("initial_relationships_text", "")),
     )
     player_agent_id = str(session.get("player_agent_id", artifacts.agents[0].agent_id))
     language = str(session.get("language", "en"))

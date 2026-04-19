@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import tempfile
+from collections import Counter
 from datetime import UTC, datetime
 from html import escape
 from typing import Any, cast
@@ -37,6 +38,7 @@ try:
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
+        seed_persona_suggestions,
         start_player_session,
         trait_correlation_summary,
     )
@@ -70,6 +72,7 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
+        seed_persona_suggestions,
         start_player_session,
         trait_correlation_summary,
     )
@@ -621,6 +624,52 @@ LABELS["en"]["html_report_button"] = "Export HTML report"
 LABELS["en"]["html_report_download"] = "Download HTML report"
 LABELS["en"]["html_report_title"] = "Knoema Playground HTML report"
 LABELS["en"]["generated_at"] = "Generated at"
+LABELS["ko"]["mirofish_panel"] = "MiroFish 스타일 실험실"
+LABELS["ko"]["seed_prompt"] = "시드 프롬프트"
+LABELS["ko"]["seed_prompt_placeholder"] = "예: 분주한 항구 술집, 세 명의 NPC, 경쟁과 협력"
+LABELS["ko"]["seed_prompt_apply"] = "시드로 3명 페르소나 생성"
+LABELS["ko"]["seed_prompt_empty"] = "시드 프롬프트를 입력하면 첫 3명 에이전트와 초기 관계 초안을 채웁니다."
+LABELS["ko"]["event_injections"] = "이벤트 주입"
+LABELS["ko"]["event_injections_placeholder"] = "0 | Tavern Bar | A courier bursts in with a sealed letter | agent_1,agent_2 | urgent_news"
+LABELS["ko"]["initial_relationships"] = "초기 관계 시드"
+LABELS["ko"]["initial_relationships_placeholder"] = "agent_1 | agent_2 | colleague | 0.55 | 0.70 | 0.30"
+LABELS["ko"]["report_agent_panel"] = "ReportAgent Q&A"
+LABELS["ko"]["report_agent_question"] = "런 질문"
+LABELS["ko"]["report_agent_run"] = "현재 런 요약 답변"
+LABELS["ko"]["report_agent_empty"] = "런을 실행한 뒤 질문하면 JSONL 기반 요약을 돌려줍니다."
+LABELS["ko"]["compare_panel"] = "A/B 비교"
+LABELS["ko"]["compare_seed_a"] = "비교 시드 A"
+LABELS["ko"]["compare_seed_b"] = "비교 시드 B"
+LABELS["ko"]["compare_button"] = "두 시드 비교"
+LABELS["ko"]["compare_empty"] = "같은 설정으로 두 시드를 돌려 차이를 비교합니다."
+LABELS["ko"]["interview_panel"] = "에이전트 인터뷰"
+LABELS["ko"]["interview_agent"] = "에이전트 ID"
+LABELS["ko"]["interview_question"] = "인터뷰 질문"
+LABELS["ko"]["interview_button"] = "인터뷰 생성"
+LABELS["ko"]["interview_empty"] = "런 이후 에이전트 ID와 질문을 넣으면 최근 기억과 행동을 바탕으로 답변합니다."
+LABELS["en"]["mirofish_panel"] = "MiroFish-style lab"
+LABELS["en"]["seed_prompt"] = "Seed prompt"
+LABELS["en"]["seed_prompt_placeholder"] = "Example: a crowded harbor tavern with three NPCs balancing rivalry and cooperation"
+LABELS["en"]["seed_prompt_apply"] = "Generate three personas from seed"
+LABELS["en"]["seed_prompt_empty"] = "Enter a seed prompt to fill the first three agent editors and draft initial relationship seeds."
+LABELS["en"]["event_injections"] = "Event injections"
+LABELS["en"]["event_injections_placeholder"] = "0 | Tavern Bar | A courier bursts in with a sealed letter | agent_1,agent_2 | urgent_news"
+LABELS["en"]["initial_relationships"] = "Initial relationship seeds"
+LABELS["en"]["initial_relationships_placeholder"] = "agent_1 | agent_2 | colleague | 0.55 | 0.70 | 0.30"
+LABELS["en"]["report_agent_panel"] = "ReportAgent Q&A"
+LABELS["en"]["report_agent_question"] = "Run question"
+LABELS["en"]["report_agent_run"] = "Answer from current run"
+LABELS["en"]["report_agent_empty"] = "Run a scenario first, then ask a question to get a JSONL-grounded summary."
+LABELS["en"]["compare_panel"] = "A/B compare"
+LABELS["en"]["compare_seed_a"] = "Compare seed A"
+LABELS["en"]["compare_seed_b"] = "Compare seed B"
+LABELS["en"]["compare_button"] = "Compare two seeds"
+LABELS["en"]["compare_empty"] = "Run the current setup twice with two seeds and inspect the delta."
+LABELS["en"]["interview_panel"] = "Agent interview"
+LABELS["en"]["interview_agent"] = "Agent ID"
+LABELS["en"]["interview_question"] = "Interview question"
+LABELS["en"]["interview_button"] = "Generate interview"
+LABELS["en"]["interview_empty"] = "After a run, provide an agent id and question to synthesize an answer from recent memories and actions."
 LABELS["ko"]["cultural_prior"] = "문화 prior"
 LABELS["ko"]["cultural_prior_info"] = "선택한 문화 모듈이 Schwartz 가치와 도덕 기반의 기본값을 먼저 이동시킵니다."
 LABELS["ko"]["monologue_panel"] = "내적 독백"
@@ -1329,6 +1378,8 @@ def _resolve_run_request(
     primary_routine_text = ""
     primary_routine_specified = False
     extra_agent_routine_specified = False
+    event_injections_text = ""
+    initial_relationships_text = ""
     legacy_with_language = len(PERSONA_TRAIT_FIELDS) + 5
     legacy_without_language = len(PERSONA_TRAIT_FIELDS) + 4
     routine_with_language = len(PERSONA_TRAIT_FIELDS) + 6
@@ -1347,6 +1398,33 @@ def _resolve_run_request(
     multi_batch_without_language = multi_without_language + 3
     multi_batch_with_language_routine = multi_with_language_routine + 3
     multi_batch_without_language_routine = multi_without_language_routine + 3
+    legacy_lengths = {
+        multi_batch_with_language_routine,
+        multi_batch_without_language_routine,
+        multi_with_language_routine,
+        multi_without_language_routine,
+        multi_batch_with_language,
+        multi_batch_without_language,
+        multi_with_language,
+        multi_without_language,
+        routine_batch_with_language,
+        routine_batch_without_language,
+        legacy_batch_with_language,
+        legacy_batch_without_language,
+        routine_with_language,
+        routine_without_language,
+        legacy_with_language,
+        legacy_without_language,
+    }
+    if (
+        len(trait_and_runtime) >= 2
+        and isinstance(trait_and_runtime[-2], str)
+        and isinstance(trait_and_runtime[-1], str)
+        and (len(trait_and_runtime) - 2) in legacy_lengths
+    ):
+        event_injections_text = str(trait_and_runtime[-2])
+        initial_relationships_text = str(trait_and_runtime[-1])
+        trait_and_runtime = trait_and_runtime[:-2]
 
     multi_agent_values: list[Any] = []
     batch_mode = False
@@ -1598,6 +1676,8 @@ def _resolve_run_request(
         "batch_runs": int(batch_runs),
         "master_seed": int(master_seed),
         "language": language,
+        "event_injections_text": event_injections_text,
+        "initial_relationships_text": initial_relationships_text,
     }
 
 
@@ -1721,6 +1801,8 @@ def _run(
             primary_planning_enabled=bool(request["primary_planning_enabled"]),
             planning_depth=int(request["planning_depth"]),
             language=str(request["language"]),
+            event_injections_text=str(request["event_injections_text"]),
+            initial_relationships_text=str(request["initial_relationships_text"]),
         )
     else:
         result = run_playground_scenario(
@@ -1747,6 +1829,8 @@ def _run(
             batch_runs=int(request["batch_runs"]),
             master_seed=int(request["master_seed"]),
             language=str(request["language"]),
+            event_injections_text=str(request["event_injections_text"]),
+            initial_relationships_text=str(request["initial_relationships_text"]),
         )
     return _render_result_outputs(
         result,
@@ -1793,6 +1877,8 @@ def _run_with_player_mode(
             primary_planning_enabled=bool(request["primary_planning_enabled"]),
             planning_depth=int(request["planning_depth"]),
             language=str(request["language"]),
+            event_injections_text=str(request["event_injections_text"]),
+            initial_relationships_text=str(request["initial_relationships_text"]),
         )
         return (
             *_render_result_outputs(
@@ -1831,6 +1917,8 @@ def _run_with_player_mode(
         batch_runs=int(request["batch_runs"]),
         master_seed=int(request["master_seed"]),
         language=str(request["language"]),
+        event_injections_text=str(request["event_injections_text"]),
+        initial_relationships_text=str(request["initial_relationships_text"]),
     )
     return (
         *_render_result_outputs(
@@ -1967,6 +2055,331 @@ def _export_html_report(
     ) as handle:
         handle.write(document)
         return handle.name
+
+
+def _seed_relationship_draft(suggestions: tuple[dict[str, Any], ...]) -> str:
+    lines: list[str] = []
+    for left_index in range(len(suggestions)):
+        for right_index in range(left_index + 1, len(suggestions)):
+            left = suggestions[left_index]
+            right = suggestions[right_index]
+            left_personality = dict(left.get("personality", {}))
+            right_personality = dict(right.get("personality", {}))
+            trust = round(
+                (
+                    float(left_personality.get("agreeableness", 0.5))
+                    + float(right_personality.get("agreeableness", 0.5))
+                    + float(left_personality.get("honesty_humility", 0.5))
+                    + float(right_personality.get("honesty_humility", 0.5))
+                )
+                / 4.0,
+                2,
+            )
+            weight = round(
+                (
+                    float(left_personality.get("extraversion", 0.5))
+                    + float(right_personality.get("extraversion", 0.5))
+                )
+                / 2.0,
+                2,
+            )
+            familiarity = round(0.2 + ((left_index + right_index) * 0.08), 2)
+            relationship_type = "friend" if trust >= 0.65 else "colleague"
+            source_id = f"agent_{left_index + 1}"
+            target_id = f"agent_{right_index + 1}"
+            lines.append(
+                f"{source_id} | {target_id} | {relationship_type} | {weight:.2f} | {trust:.2f} | {familiarity:.2f}"
+            )
+            lines.append(
+                f"{target_id} | {source_id} | {relationship_type} | {weight:.2f} | {trust:.2f} | {familiarity:.2f}"
+            )
+    return "\n".join(lines)
+
+
+def _seed_prompt_summary(seed_prompt: str, suggestions: tuple[dict[str, Any], ...], language: str) -> str:
+    if not suggestions:
+        return LABELS[_language_key(language)]["seed_prompt_empty"]
+    if _language_key(language) == "ko":
+        lines = ["### 시드 결과", f"- 프롬프트: {seed_prompt.strip()}"]
+        for index, suggestion in enumerate(suggestions, start=1):
+            lines.append(
+                f"- agent_{index}: {suggestion['name']} ({suggestion['age']}) / {suggestion['preset_label']}"
+            )
+        return "\n".join(lines)
+    lines = ["### Seed output", f"- Prompt: {seed_prompt.strip()}"]
+    for index, suggestion in enumerate(suggestions, start=1):
+        lines.append(
+            f"- agent_{index}: {suggestion['name']} ({suggestion['age']}) / {suggestion['preset_label']}"
+        )
+    return "\n".join(lines)
+
+
+def _seed_prompt_updates(seed_prompt: str, language: str) -> tuple[Any, ...]:
+    suggestions = seed_persona_suggestions(seed_prompt, language=_language_key(language))
+    outputs: list[Any] = []
+    if not suggestions:
+        empty_updates = (3 + len(PERSONA_TRAIT_FIELDS)) * AGENT_EDITOR_SLOT_COUNT
+        outputs.extend(gr.update() for _ in range(empty_updates))
+        outputs.append(gr.update())
+        outputs.append(LABELS[_language_key(language)]["seed_prompt_empty"])
+        return tuple(outputs)
+    for suggestion in suggestions:
+        outputs.extend(
+            [
+                gr.update(value=suggestion["name"]),
+                gr.update(value=int(suggestion["age"])),
+                gr.update(value=suggestion["preset_id"]),
+            ]
+        )
+        outputs.extend(
+            gr.update(value=float(suggestion["personality"][field_name]))
+            for field_name in PERSONA_TRAIT_FIELDS
+        )
+    outputs.append(gr.update(value=_seed_relationship_draft(suggestions)))
+    outputs.append(_seed_prompt_summary(seed_prompt, suggestions, language))
+    return tuple(outputs)
+
+
+def _jsonl_rows(jsonl_text: str) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for line in str(jsonl_text).splitlines():
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            rows.append(payload)
+    return rows
+
+
+def _flatten_action_counts(action_breakdown: dict[str, dict[str, int]]) -> Counter[str]:
+    counts: Counter[str] = Counter()
+    for actions in action_breakdown.values():
+        for action_type, count in actions.items():
+            counts[str(action_type)] += int(count)
+    return counts
+
+
+def _report_agent_answer(question: str, jsonl_text: str, summary: str, language: str) -> str:
+    rows = _jsonl_rows(jsonl_text)
+    key = _language_key(language)
+    if not rows:
+        return LABELS[key]["report_agent_empty"]
+    question_text = question.strip() or ("이번 런에서 핵심은 무엇인가?" if key == "ko" else "What mattered most in this run?")
+    agent_counts = Counter(str(row.get("agent_id", "")) for row in rows)
+    action_counts = Counter(
+        str(dict(row.get("action", {})).get("action_type", ""))
+        for row in rows
+        if dict(row.get("action", {})).get("action_type")
+    )
+    directed_count = sum(1 for row in rows if dict(row.get("action", {})).get("target"))
+    top_agent, top_agent_count = agent_counts.most_common(1)[0]
+    top_action, top_action_count = action_counts.most_common(1)[0]
+    latest_tick = max(int(row.get("tick", 0)) for row in rows)
+    if key == "ko":
+        return "\n".join(
+            [
+                "### ReportAgent 응답",
+                f"- 질문: {question_text}",
+                f"- 실행 요약: {summary}",
+                f"- 가장 많이 움직인 에이전트: {top_agent} ({top_agent_count}회)",
+                f"- 지배적 액션: {top_action} ({top_action_count}회)",
+                f"- 지시형 상호작용 수: {directed_count}",
+                f"- 마지막 틱: {latest_tick}",
+            ]
+        )
+    return "\n".join(
+        [
+            "### ReportAgent answer",
+            f"- Question: {question_text}",
+            f"- Run summary: {summary}",
+            f"- Most active agent: {top_agent} ({top_agent_count} actions)",
+            f"- Dominant action: {top_action} ({top_action_count})",
+            f"- Directed interactions: {directed_count}",
+            f"- Final tick observed: {latest_tick}",
+        ]
+    )
+
+
+def _memory_items(memory_snapshot: dict[str, Any], agent_id: str, key: str) -> list[str]:
+    bucket = dict(memory_snapshot.get(agent_id, {}))
+    values = bucket.get(key, [])
+    if not isinstance(values, list):
+        return []
+    items: list[str] = []
+    for entry in values:
+        if isinstance(entry, dict):
+            content = str(entry.get("content", "")).strip()
+            if content:
+                items.append(content)
+    return items
+
+
+def _interview_agent_answer(
+    agent_id: str,
+    question: str,
+    jsonl_text: str,
+    memory_snapshot: dict[str, Any],
+    language: str,
+) -> str:
+    key = _language_key(language)
+    resolved_agent_id = agent_id.strip()
+    if not resolved_agent_id:
+        return LABELS[key]["interview_empty"]
+    rows = [row for row in _jsonl_rows(jsonl_text) if str(row.get("agent_id", "")) == resolved_agent_id]
+    if not rows and resolved_agent_id not in memory_snapshot:
+        return LABELS[key]["interview_empty"]
+    question_text = question.strip() or ("지금 무엇을 우선시하고 있나?" if key == "ko" else "What are you prioritizing right now?")
+    recent_actions = [
+        f"{dict(row.get('action', {})).get('action_type', 'act')}: {dict(row.get('action', {})).get('content', '')}"
+        for row in rows[-3:]
+    ]
+    short_term = _memory_items(memory_snapshot, resolved_agent_id, "short_term")[:2]
+    long_term = _memory_items(memory_snapshot, resolved_agent_id, "long_term")[:2]
+    monologues = _memory_items(memory_snapshot, resolved_agent_id, "monologue")[:1]
+    if key == "ko":
+        return "\n".join(
+            [
+                f"### 인터뷰: {resolved_agent_id}",
+                f"- 질문: {question_text}",
+                f"- 최근 행동: {' / '.join(recent_actions) if recent_actions else '없음'}",
+                f"- 단기 기억: {' / '.join(short_term) if short_term else '없음'}",
+                f"- 회수 기억: {' / '.join(long_term) if long_term else '없음'}",
+                f"- 내적 독백: {' / '.join(monologues) if monologues else '없음'}",
+            ]
+        )
+    return "\n".join(
+        [
+            f"### Interview: {resolved_agent_id}",
+            f"- Question: {question_text}",
+            f"- Recent actions: {' / '.join(recent_actions) if recent_actions else 'none'}",
+            f"- Short-term memory: {' / '.join(short_term) if short_term else 'none'}",
+            f"- Retrieved memory: {' / '.join(long_term) if long_term else 'none'}",
+            f"- Inner monologue: {' / '.join(monologues) if monologues else 'none'}",
+        ]
+    )
+
+
+def _comparison_markdown(left: Any, right: Any, seed_a: int, seed_b: int, language: str) -> str:
+    key = _language_key(language)
+    left_actions = _flatten_action_counts(dict(getattr(left, "action_breakdown", {})))
+    right_actions = _flatten_action_counts(dict(getattr(right, "action_breakdown", {})))
+    left_top_action, left_top_action_count = left_actions.most_common(1)[0]
+    right_top_action, right_top_action_count = right_actions.most_common(1)[0]
+    left_top_agent = max(
+        dict(getattr(left, "action_breakdown", {})).items(),
+        key=lambda item: sum(int(value) for value in item[1].values()),
+    )[0]
+    right_top_agent = max(
+        dict(getattr(right, "action_breakdown", {})).items(),
+        key=lambda item: sum(int(value) for value in item[1].values()),
+    )[0]
+    if key == "ko":
+        return "\n".join(
+            [
+                "### A/B 비교",
+                "| 지표 | 시드 A | 시드 B |",
+                "| --- | --- | --- |",
+                f"| seed | {seed_a} | {seed_b} |",
+                f"| 로그 수 | {left.log_count} | {right.log_count} |",
+                f"| 지배적 액션 | {left_top_action} ({left_top_action_count}) | {right_top_action} ({right_top_action_count}) |",
+                f"| 최다 행동 에이전트 | {left_top_agent} | {right_top_agent} |",
+                f"| 관계 엣지 수 | {len(left.relationship_rows)} | {len(right.relationship_rows)} |",
+            ]
+        )
+    return "\n".join(
+        [
+            "### A/B compare",
+            "| Metric | Seed A | Seed B |",
+            "| --- | --- | --- |",
+            f"| seed | {seed_a} | {seed_b} |",
+            f"| log entries | {left.log_count} | {right.log_count} |",
+            f"| dominant action | {left_top_action} ({left_top_action_count}) | {right_top_action} ({right_top_action_count}) |",
+            f"| busiest agent | {left_top_agent} | {right_top_agent} |",
+            f"| relationship edges | {len(left.relationship_rows)} | {len(right.relationship_rows)} |",
+        ]
+    )
+
+
+def _compare_runs(
+    scenario_name: str,
+    environment_preset_id: str | None,
+    cultural_prior_id: str | None,
+    provider: str,
+    api_key: str,
+    model: str,
+    primary_name: str,
+    primary_age: int,
+    *trait_runtime_and_compare: Any,
+) -> str:
+    compare_seed_a = int(trait_runtime_and_compare[-2])
+    compare_seed_b = int(trait_runtime_and_compare[-1])
+    request = _resolve_run_request(
+        scenario_name,
+        environment_preset_id,
+        cultural_prior_id,
+        provider,
+        api_key,
+        model,
+        primary_name,
+        primary_age,
+        *trait_runtime_and_compare[:-2],
+    )
+    left = run_playground_scenario(
+        scenario_name=str(request["scenario_name"]),
+        provider="Replay only",
+        api_key="",
+        model="",
+        primary_name=str(request["primary_name"]),
+        primary_age=int(request["primary_age"]),
+        openness=float(dict(request["personality_overrides"])["openness"]),
+        conscientiousness=float(dict(request["personality_overrides"])["conscientiousness"]),
+        extraversion=float(dict(request["personality_overrides"])["extraversion"]),
+        agreeableness=float(dict(request["personality_overrides"])["agreeableness"]),
+        neuroticism=float(dict(request["personality_overrides"])["neuroticism"]),
+        personality_overrides=dict(request["personality_overrides"]),
+        ticks=int(request["ticks"]),
+        agent_count=int(request["agent_count"]),
+        environment_preset_id=cast("str | None", request["environment_preset_id"]),
+        cultural_prior_id=cast("str | None", request["cultural_prior_id"]),
+        agent_overrides=cast("list[dict[str, Any]]", request["agent_overrides"]),
+        primary_planning_enabled=bool(request["primary_planning_enabled"]),
+        planning_depth=int(request["planning_depth"]),
+        batch_mode=False,
+        batch_runs=1,
+        master_seed=compare_seed_a,
+        language=str(request["language"]),
+        event_injections_text=str(request["event_injections_text"]),
+        initial_relationships_text=str(request["initial_relationships_text"]),
+    )
+    right = run_playground_scenario(
+        scenario_name=str(request["scenario_name"]),
+        provider="Replay only",
+        api_key="",
+        model="",
+        primary_name=str(request["primary_name"]),
+        primary_age=int(request["primary_age"]),
+        openness=float(dict(request["personality_overrides"])["openness"]),
+        conscientiousness=float(dict(request["personality_overrides"])["conscientiousness"]),
+        extraversion=float(dict(request["personality_overrides"])["extraversion"]),
+        agreeableness=float(dict(request["personality_overrides"])["agreeableness"]),
+        neuroticism=float(dict(request["personality_overrides"])["neuroticism"]),
+        personality_overrides=dict(request["personality_overrides"]),
+        ticks=int(request["ticks"]),
+        agent_count=int(request["agent_count"]),
+        environment_preset_id=cast("str | None", request["environment_preset_id"]),
+        cultural_prior_id=cast("str | None", request["cultural_prior_id"]),
+        agent_overrides=cast("list[dict[str, Any]]", request["agent_overrides"]),
+        primary_planning_enabled=bool(request["primary_planning_enabled"]),
+        planning_depth=int(request["planning_depth"]),
+        batch_mode=False,
+        batch_runs=1,
+        master_seed=compare_seed_b,
+        language=str(request["language"]),
+        event_injections_text=str(request["event_injections_text"]),
+        initial_relationships_text=str(request["initial_relationships_text"]),
+    )
+    return _comparison_markdown(left, right, compare_seed_a, compare_seed_b, str(request["language"]))
 
 
 def _status_with_voice_notes(status: str, voice_notes: list[str]) -> str:
@@ -2346,6 +2759,35 @@ def _language_updates(
             value=master_seed_value,
             interactive=bool(current_batch_mode),
         ),
+        gr.update(label=labels["mirofish_panel"]),
+        gr.update(
+            label=labels["seed_prompt"],
+            placeholder=labels["seed_prompt_placeholder"],
+        ),
+        gr.update(value=labels["seed_prompt_apply"]),
+        gr.update(
+            label=labels["event_injections"],
+            placeholder=labels["event_injections_placeholder"],
+        ),
+        gr.update(
+            label=labels["initial_relationships"],
+            placeholder=labels["initial_relationships_placeholder"],
+        ),
+        gr.update(label=labels["report_agent_panel"]),
+        gr.update(label=labels["report_agent_question"]),
+        gr.update(value=labels["report_agent_run"]),
+        gr.update(label=labels["compare_panel"]),
+        gr.update(label=labels["compare_seed_a"]),
+        gr.update(label=labels["compare_seed_b"]),
+        gr.update(value=labels["compare_button"]),
+        gr.update(label=labels["interview_panel"]),
+        gr.update(
+            label=labels["interview_agent"],
+            choices=[],
+            value="agent_1",
+        ),
+        gr.update(label=labels["interview_question"]),
+        gr.update(value=labels["interview_button"]),
         _hint_markdown_update(current_scenario, lang_choice, environment_value),
         gr.update(value=labels["run"]),
         gr.update(value=f"#### {labels['export_panel']}"),
@@ -2399,6 +2841,9 @@ def _language_updates(
         gr.update(label=labels["download"]),
         gr.update(value=labels["html_report_button"]),
         gr.update(label=labels["html_report_download"]),
+        labels["report_agent_empty"],
+        labels["compare_empty"],
+        labels["interview_empty"],
         gr.update(label=labels["lang"]),
     ]
 
@@ -3827,6 +4272,42 @@ def build_app() -> gr.Blocks:
                 elem_id="master-seed-number",
             )
             run_button = gr.Button(labels["run"], variant="primary", elem_id="run-button")
+        mirofish_panel = gr.Accordion(
+            labels["mirofish_panel"],
+            open=False,
+            elem_id="mirofish-lab-panel",
+        )
+        with mirofish_panel:
+            with gr.Row():
+                seed_prompt = gr.Textbox(
+                    label=labels["seed_prompt"],
+                    placeholder=labels["seed_prompt_placeholder"],
+                    lines=2,
+                    elem_id="seed-prompt-input",
+                )
+                seed_prompt_apply = gr.Button(
+                    labels["seed_prompt_apply"],
+                    elem_id="seed-prompt-apply",
+                )
+            seed_prompt_summary = gr.Markdown(
+                labels["seed_prompt_empty"],
+                elem_id="seed-prompt-summary",
+            )
+            with gr.Row():
+                event_injections = gr.Textbox(
+                    label=labels["event_injections"],
+                    placeholder=labels["event_injections_placeholder"],
+                    lines=4,
+                    value="",
+                    elem_id="event-injections-input",
+                )
+                initial_relationships = gr.Textbox(
+                    label=labels["initial_relationships"],
+                    placeholder=labels["initial_relationships_placeholder"],
+                    lines=4,
+                    value="",
+                    elem_id="initial-relationships-input",
+                )
         player_session_state = gr.State(value=None)
         with gr.Column(visible=False, elem_id="player-mode-panel") as player_panel:
             player_status = gr.Markdown("", elem_id="player-status")
@@ -3996,6 +4477,80 @@ def build_app() -> gr.Blocks:
                 label=labels["html_report_download"],
                 elem_id="html-report-download",
             )
+        report_agent_panel = gr.Accordion(
+            labels["report_agent_panel"],
+            open=False,
+            elem_id="report-agent-panel",
+        )
+        with report_agent_panel:
+            report_agent_question = gr.Textbox(
+                label=labels["report_agent_question"],
+                lines=2,
+                value="",
+                elem_id="report-agent-question",
+            )
+            report_agent_button = gr.Button(
+                labels["report_agent_run"],
+                elem_id="report-agent-button",
+            )
+            report_agent_output = gr.Markdown(
+                labels["report_agent_empty"],
+                elem_id="report-agent-output",
+            )
+        compare_panel = gr.Accordion(
+            labels["compare_panel"],
+            open=False,
+            elem_id="compare-panel",
+        )
+        with compare_panel:
+            with gr.Row():
+                compare_seed_a = gr.Number(
+                    label=labels["compare_seed_a"],
+                    value=20260419,
+                    precision=0,
+                    elem_id="compare-seed-a",
+                )
+                compare_seed_b = gr.Number(
+                    label=labels["compare_seed_b"],
+                    value=20260420,
+                    precision=0,
+                    elem_id="compare-seed-b",
+                )
+            compare_button = gr.Button(
+                labels["compare_button"],
+                elem_id="compare-button",
+            )
+            compare_output = gr.Markdown(
+                labels["compare_empty"],
+                elem_id="compare-output",
+            )
+        interview_panel = gr.Accordion(
+            labels["interview_panel"],
+            open=False,
+            elem_id="interview-panel",
+        )
+        with interview_panel:
+            interview_agent = gr.Dropdown(
+                label=labels["interview_agent"],
+                choices=[],
+                value="agent_1",
+                allow_custom_value=True,
+                elem_id="interview-agent",
+            )
+            interview_question = gr.Textbox(
+                label=labels["interview_question"],
+                lines=2,
+                value="",
+                elem_id="interview-question",
+            )
+            interview_button = gr.Button(
+                labels["interview_button"],
+                elem_id="interview-button",
+            )
+            interview_output = gr.Markdown(
+                labels["interview_empty"],
+                elem_id="interview-output",
+            )
 
         agent_editor_outputs: list[Any] = []
         for controls in agent_tabs:
@@ -4042,6 +4597,22 @@ def build_app() -> gr.Blocks:
             batch_mode,
             batch_runs,
             master_seed,
+            mirofish_panel,
+            seed_prompt,
+            seed_prompt_apply,
+            event_injections,
+            initial_relationships,
+            report_agent_panel,
+            report_agent_question,
+            report_agent_button,
+            compare_panel,
+            compare_seed_a,
+            compare_seed_b,
+            compare_button,
+            interview_panel,
+            interview_agent,
+            interview_question,
+            interview_button,
             scenario_hint,
             run_button,
             export_heading,
@@ -4075,8 +4646,25 @@ def build_app() -> gr.Blocks:
             download,
             html_report_button,
             html_report_download,
+            report_agent_output,
+            compare_output,
+            interview_output,
             language,
         ]
+        seed_prompt_outputs: list[Any] = []
+        for controls in agent_tabs:
+            seed_prompt_outputs.extend(
+                [
+                    controls["name"],
+                    controls["age"],
+                    controls["persona_preset"],
+                    *[
+                        controls["trait_sliders"][field_name]
+                        for field_name in PERSONA_TRAIT_FIELDS
+                    ],
+                ]
+            )
+        seed_prompt_outputs.extend([initial_relationships, seed_prompt_summary])
 
         def _switch(lang_choice: str) -> list[Any]:
             return _language_updates(
@@ -4187,6 +4775,21 @@ def build_app() -> gr.Blocks:
             outputs=[html_report_download],
             api_name="export_html_report",
         )
+        seed_prompt_apply.click(
+            _seed_prompt_updates,
+            inputs=[seed_prompt, language],
+            outputs=seed_prompt_outputs,
+        )
+        report_agent_button.click(
+            _report_agent_answer,
+            inputs=[report_agent_question, jsonl, summary, language],
+            outputs=[report_agent_output],
+        )
+        interview_button.click(
+            _interview_agent_answer,
+            inputs=[interview_agent, interview_question, jsonl, memory_snapshot_state, language],
+            outputs=[interview_output],
+        )
         inspector_agent.change(
             _memory_inspector_views,
             inputs=[memory_snapshot_state, inspector_agent, language],
@@ -4206,45 +4809,48 @@ def build_app() -> gr.Blocks:
                 inputs=[controls["routine_preset"]],
                 outputs=[controls["routine_text"]],
             )
+        common_run_inputs = [
+            scenario,
+            environment_preset,
+            cultural_prior,
+            provider,
+            api_key,
+            model,
+            primary_name,
+            primary_age,
+            agent_tabs[0]["routine_text"],
+            *[
+                agent_tabs[0]["trait_sliders"][field_name]
+                for field_name in PERSONA_TRAIT_FIELDS
+            ],
+            agent_tabs[1]["name"],
+            agent_tabs[1]["age"],
+            agent_tabs[1]["routine_text"],
+            *[
+                agent_tabs[1]["trait_sliders"][field_name]
+                for field_name in PERSONA_TRAIT_FIELDS
+            ],
+            agent_tabs[2]["name"],
+            agent_tabs[2]["age"],
+            agent_tabs[2]["routine_text"],
+            *[
+                agent_tabs[2]["trait_sliders"][field_name]
+                for field_name in PERSONA_TRAIT_FIELDS
+            ],
+            htn_enabled,
+            planning_depth,
+            ticks,
+            agent_count,
+            batch_mode,
+            batch_runs,
+            master_seed,
+            language,
+            event_injections,
+            initial_relationships,
+        ]
         run_button.click(
             _run_with_player_mode,
-            inputs=[
-                scenario,
-                environment_preset,
-                cultural_prior,
-                provider,
-                api_key,
-                model,
-                primary_name,
-                primary_age,
-                agent_tabs[0]["routine_text"],
-                *[
-                    agent_tabs[0]["trait_sliders"][field_name]
-                    for field_name in PERSONA_TRAIT_FIELDS
-                ],
-                agent_tabs[1]["name"],
-                agent_tabs[1]["age"],
-                agent_tabs[1]["routine_text"],
-                *[
-                    agent_tabs[1]["trait_sliders"][field_name]
-                    for field_name in PERSONA_TRAIT_FIELDS
-                ],
-                agent_tabs[2]["name"],
-                agent_tabs[2]["age"],
-                agent_tabs[2]["routine_text"],
-                *[
-                    agent_tabs[2]["trait_sliders"][field_name]
-                    for field_name in PERSONA_TRAIT_FIELDS
-                ],
-                htn_enabled,
-                planning_depth,
-                ticks,
-                agent_count,
-                batch_mode,
-                batch_runs,
-                master_seed,
-                language,
-            ],
+            inputs=common_run_inputs,
             outputs=[
                 timeline,
                 thread_view,
@@ -4269,6 +4875,11 @@ def build_app() -> gr.Blocks:
                 player_status,
             ],
             api_name="run",
+        )
+        compare_button.click(
+            _compare_runs,
+            inputs=[*common_run_inputs, compare_seed_a, compare_seed_b],
+            outputs=[compare_output],
         )
         player_submit.click(
             _advance_player_mode,
