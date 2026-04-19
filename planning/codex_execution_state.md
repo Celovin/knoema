@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 21:03 UTC by Codex
+**Last updated**: 2026-04-19 21:15 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -65,7 +65,7 @@
 - [x] 24. Statistical analysis panel (chi-square + Mann-Whitney baseline) - 2026-04-19 20:47 UTC, commit cca3ca6
 - [x] 27. CSV + LaTeX export - 2026-04-19 20:55 UTC, commit 0fa8944
 - [x] 29. Competitive comparison cards - 2026-04-19 21:03 UTC, commit ea97f3f
-- [ ] 35. OSF Preregistration generator (generic template)
+- [x] 35. OSF Preregistration generator (generic template) - 2026-04-19 21:15 UTC, commit 6a2305e
 - [ ] 36. Mixed effects models + Bayesian posterior (statsmodels + PyMC)
 - [ ] 37. DUX-standard replication package bundler
 - [ ] 38. Reviewer-mode UI (blind peer review path)
