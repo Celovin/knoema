@@ -172,6 +172,7 @@ class PlaygroundResult:
     monologue_markdown: str
     plan_markdown: str
     action_breakdown: dict[str, dict[str, int]]
+    memory_snapshot: dict[str, dict[str, list[dict[str, Any]]]]
     relationship_rows: list[dict[str, object]]
     jsonl: str
     download_path: str
@@ -700,30 +701,34 @@ def run_playground_scenario(
             language=language,
             seed=master_seed if batch_mode else None,
         )
-        jsonl = _logs_to_jsonl(artifacts.simulator.logs)
-        download_path = _write_download_file(jsonl)
-        return PlaygroundResult(
-            scenario_name=scenario_name,
-            mode=provider,
-            timeline_markdown=_timeline_markdown(artifacts.simulator.logs, language=language),
-            monologue_markdown=_monologue_markdown(
-                artifacts.simulator.monologues,
-                artifacts.simulator.monologue_valence,
-                language=language,
-            ),
-            plan_markdown=_plan_markdown(
-                artifacts.simulator.planner,
-                artifacts.agents,
-                language=language,
-            ),
-            action_breakdown=_action_breakdown(artifacts.simulator.logs),
-            relationship_rows=_relationship_rows(artifacts.simulator),
-            jsonl=jsonl,
-            download_path=download_path,
-            log_count=len(artifacts.simulator.logs),
-            agent_count=len(artifacts.agents),
-            tick_count=len({entry.tick for entry in artifacts.simulator.logs}),
-        )
+        try:
+            jsonl = _logs_to_jsonl(artifacts.simulator.logs)
+            download_path = _write_download_file(jsonl)
+            return PlaygroundResult(
+                scenario_name=scenario_name,
+                mode=provider,
+                timeline_markdown=_timeline_markdown(artifacts.simulator.logs, language=language),
+                monologue_markdown=_monologue_markdown(
+                    artifacts.simulator.monologues,
+                    artifacts.simulator.monologue_valence,
+                    language=language,
+                ),
+                plan_markdown=_plan_markdown(
+                    artifacts.simulator.planner,
+                    artifacts.agents,
+                    language=language,
+                ),
+                action_breakdown=_action_breakdown(artifacts.simulator.logs),
+                memory_snapshot=_memory_snapshot(artifacts.simulator),
+                relationship_rows=_relationship_rows(artifacts.simulator),
+                jsonl=jsonl,
+                download_path=download_path,
+                log_count=len(artifacts.simulator.logs),
+                agent_count=len(artifacts.agents),
+                tick_count=len({entry.tick for entry in artifacts.simulator.logs}),
+            )
+        finally:
+            artifacts.simulator.close()
 
     seeds = tuple(int(master_seed) + index for index in range(resolved_batch_runs))
     worker_count = min(len(seeds), 8)
@@ -757,29 +762,34 @@ def run_playground_scenario(
             )
         )
 
-    batch_result = _build_batch_result(
-        artifacts_by_seed,
-        seeds=seeds,
-        master_seed=int(master_seed),
-    )
-    jsonl = _batch_jsonl(batch_result)
-    download_path = _write_download_file(jsonl)
-    sample_artifacts = artifacts_by_seed[0]
-    return PlaygroundResult(
-        scenario_name=scenario_name,
-        mode=provider,
-        timeline_markdown=_batch_timeline_markdown(batch_result, language=language),
-        monologue_markdown=_batch_monologue_markdown(language=language),
-        plan_markdown=_batch_plan_markdown(language=language),
-        action_breakdown=_aggregate_action_breakdown(artifacts_by_seed),
-        relationship_rows=_aggregate_relationship_rows(artifacts_by_seed),
-        jsonl=jsonl,
-        download_path=download_path,
-        log_count=sum(len(artifacts.simulator.logs) for artifacts in artifacts_by_seed),
-        agent_count=len(sample_artifacts.agents),
-        tick_count=len({entry.tick for entry in sample_artifacts.simulator.logs}),
-        batch_result=batch_result,
-    )
+    try:
+        batch_result = _build_batch_result(
+            artifacts_by_seed,
+            seeds=seeds,
+            master_seed=int(master_seed),
+        )
+        jsonl = _batch_jsonl(batch_result)
+        download_path = _write_download_file(jsonl)
+        sample_artifacts = artifacts_by_seed[0]
+        return PlaygroundResult(
+            scenario_name=scenario_name,
+            mode=provider,
+            timeline_markdown=_batch_timeline_markdown(batch_result, language=language),
+            monologue_markdown=_batch_monologue_markdown(language=language),
+            plan_markdown=_batch_plan_markdown(language=language),
+            action_breakdown=_aggregate_action_breakdown(artifacts_by_seed),
+            memory_snapshot={},
+            relationship_rows=_aggregate_relationship_rows(artifacts_by_seed),
+            jsonl=jsonl,
+            download_path=download_path,
+            log_count=sum(len(artifacts.simulator.logs) for artifacts in artifacts_by_seed),
+            agent_count=len(sample_artifacts.agents),
+            tick_count=len({entry.tick for entry in sample_artifacts.simulator.logs}),
+            batch_result=batch_result,
+        )
+    finally:
+        for artifacts in artifacts_by_seed:
+            artifacts.simulator.close()
 
 
 def _execute_playground_run(
@@ -1092,6 +1102,62 @@ def _aggregate_action_breakdown(
         agent_id: dict(sorted(action_counts.items()))
         for agent_id, action_counts in sorted(aggregated.items())
     }
+
+
+def _memory_snapshot(simulator: Simulator) -> dict[str, dict[str, list[dict[str, Any]]]]:
+    tick_timestamps: dict[int, str] = {}
+    for entry in simulator.logs:
+        tick_timestamps.setdefault(entry.tick, entry.timestamp.isoformat())
+
+    monologues_by_agent: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for monologue in simulator.monologues:
+        monologues_by_agent[monologue.agent_id].append(
+            {
+                "tick": monologue.tick,
+                "timestamp": tick_timestamps.get(monologue.tick, f"t{monologue.tick}"),
+                "text": monologue.text,
+                "valence": round(
+                    float(simulator.monologue_valence.get((monologue.agent_id, monologue.tick), 0.0)),
+                    3,
+                ),
+            }
+        )
+
+    snapshot: dict[str, dict[str, list[dict[str, Any]]]] = {}
+    for agent in simulator.agents:
+        agent_id = agent.agent_id
+        short_term = [
+            {
+                "id": memory.id,
+                "timestamp": memory.timestamp.isoformat(),
+                "content": memory.content,
+                "memory_type": memory.memory_type,
+                "importance": round(float(memory.importance), 3),
+            }
+            for memory in simulator.short_term_memories[agent_id].recent(10)
+        ]
+        long_term = [
+            {
+                "id": result.memory.id,
+                "timestamp": result.memory.timestamp.isoformat(),
+                "content": result.memory.content,
+                "memory_type": result.memory.memory_type,
+                "importance": round(float(result.memory.importance), 3),
+                "score": round(float(result.final_score), 4),
+                "semantic_score": round(float(result.semantic_score), 4),
+                "temporal_score": round(float(result.temporal_score), 4),
+            }
+            for result in simulator.long_term_memories[agent_id].retrieve_with_scores(
+                "recent significant events",
+                k=5,
+            )
+        ]
+        snapshot[agent_id] = {
+            "short_term": short_term,
+            "long_term": long_term,
+            "monologue": monologues_by_agent.get(agent_id, []),
+        }
+    return snapshot
 
 
 def _mean(values: list[int]) -> float:

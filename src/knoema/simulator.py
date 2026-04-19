@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import uuid
+from contextlib import suppress
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -16,7 +17,7 @@ from knoema.environment import Environment, EnvironmentContext
 from knoema.events import EventDispatcher, EventScheduler
 from knoema.game import apply_faction_action, apply_inventory_action
 from knoema.llm import LocalClient
-from knoema.memory import ShortTermMemoryBuffer
+from knoema.memory import ShortTermMemoryBuffer, SQLiteFaissMemoryStore
 from knoema.persona import Persona
 from knoema.planning import AgentContext, HierarchicalPlanner, WorldState
 from knoema.prompts import PromptLanguage, normalize_prompt_language
@@ -71,6 +72,9 @@ class Simulator:
         self.emotions = {agent.agent_id: EmotionState() for agent in agents}
         self.short_term_memories = {
             agent.agent_id: ShortTermMemoryBuffer(capacity=50) for agent in agents
+        }
+        self.long_term_memories = {
+            agent.agent_id: SQLiteFaissMemoryStore(":memory:") for agent in agents
         }
         self.scheduler = EventScheduler()
         self.dispatcher = EventDispatcher()
@@ -135,6 +139,19 @@ class Simulator:
         with output_path.open("w", encoding="utf-8") as file:
             for entry in self.logs:
                 file.write(json.dumps(entry.to_json_dict(), ensure_ascii=False) + "\n")
+
+    def close(self) -> None:
+        stores = getattr(self, "long_term_memories", {})
+        for store in stores.values():
+            try:
+                store.close()
+            except Exception:
+                continue
+        self.long_term_memories = {}
+
+    def __del__(self) -> None:  # pragma: no cover - best-effort cleanup
+        with suppress(Exception):
+            self.close()
 
     def _run_tick(self, tick: int) -> None:
         for event in self.scheduler.due(self.environment.current_time):
@@ -206,16 +223,16 @@ class Simulator:
             description=action.content,
         )
         self.environment.record_event(event)
-        self.short_term_memories[agent.agent_id].add(
-            Memory(
-                id=f"mem-{uuid.uuid4().hex}",
-                agent_id=agent.agent_id,
-                timestamp=self.environment.current_time,
-                content=action.content,
-                memory_type="episodic",
-                importance=0.5,
-            )
+        memory = Memory(
+            id=f"mem-{uuid.uuid4().hex}",
+            agent_id=agent.agent_id,
+            timestamp=self.environment.current_time,
+            content=action.content,
+            memory_type="episodic",
+            importance=0.5,
         )
+        self.short_term_memories[agent.agent_id].add(memory)
+        self.long_term_memories[agent.agent_id].add(memory)
         agent.inventory = apply_inventory_action(agent.inventory, action)
         agent.factions = apply_faction_action(agent.factions, action)
         if action.target is not None:

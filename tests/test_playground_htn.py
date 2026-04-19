@@ -108,6 +108,9 @@ def test_playground_run_round_trips_htn_controls_through_run() -> None:
         action_chart,
         tick_scrubber,
         tick_focus,
+        memory_snapshot,
+        memory_agent,
+        memory_markdown,
     ) = playground_app._run(
         "Dorm: two agents",
         "university_dorm_evening",
@@ -134,3 +137,6 @@ def test_playground_run_round_trips_htn_controls_through_run() -> None:
     assert action_chart.data
     assert tick_scrubber["maximum"] == 1
     assert "All ticks summary" in tick_focus
+    assert memory_snapshot
+    assert memory_agent["value"] in memory_snapshot
+    assert "Short-term memory" in memory_markdown

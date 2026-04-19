@@ -8,6 +8,7 @@ import math
 import re
 import sqlite3
 from collections.abc import Iterable
+from contextlib import suppress
 from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
@@ -115,7 +116,7 @@ class SQLiteFaissMemoryStore:
         self._path = None if database == ":memory:" else Path(database)
         if self._path is not None:
             self._path.parent.mkdir(parents=True, exist_ok=True)
-        self._connection = sqlite3.connect(database)
+        self._connection = sqlite3.connect(database, check_same_thread=False)
         self._connection.row_factory = sqlite3.Row
         self._configure_connection()
         self._index = faiss.IndexFlatIP(self.encoder.dimension)
@@ -326,6 +327,10 @@ class SQLiteFaissMemoryStore:
 
     def close(self) -> None:
         self._connection.close()
+
+    def __del__(self) -> None:  # pragma: no cover - best-effort cleanup
+        with suppress(Exception):
+            self.close()
 
     def __len__(self) -> int:
         return len(self._memory_ids)

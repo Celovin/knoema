@@ -77,6 +77,13 @@ def test_subtask7_run_passes_three_agent_overrides_to_simulation(monkeypatch) ->
             monologue_markdown="t0",
             plan_markdown="### Current plan",
             action_breakdown={"agent-1": {"speak": 1}},
+            memory_snapshot={
+                "agent-1": {
+                    "short_term": [],
+                    "long_term": [],
+                    "monologue": [],
+                }
+            },
             jsonl="{}",
             download_path="C:\\temp\\playground.jsonl",
             agent_count=3,

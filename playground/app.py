@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from html import escape
 from typing import Any
 
 import gradio as gr
@@ -539,6 +540,16 @@ BASE_LABELS = {
         "tick_scrubber": "Tick scrubber",
         "tick_focus": "Tick focus",
         "tick_focus_empty": "No tick focus data yet.",
+        "memory_inspector": "Memory inspector",
+        "memory_agent": "Agent",
+        "memory_empty": "No memory snapshot yet.",
+        "memory_batch": "Batch mode aggregates multiple seeds. Run a single simulation to inspect per-agent memories.",
+        "memory_short_term": "Short-term memory",
+        "memory_short_term_empty": "No short-term memories yet.",
+        "memory_long_term": "Retrieved long-term memory",
+        "memory_long_term_empty": "No long-term retrievals yet.",
+        "memory_monologue": "Inner monologue",
+        "memory_monologue_empty": "No inner monologues yet.",
         "timeline": "Timeline",
         "graph": "Relationship graph",
         "export_panel": "Result exports",
@@ -607,6 +618,16 @@ LABELS["en"]["batch_runs"] = "Batch runs"
 LABELS["en"]["batch_runs_info"] = "Repeat the simulation 1 to 100 times. Single-run mode always uses 1."
 LABELS["en"]["master_seed"] = "Master seed"
 LABELS["en"]["master_seed_info"] = "Batch seeds are derived as master_seed + run_index."
+LABELS["ko"]["memory_inspector"] = "메모리 인스펙터"
+LABELS["ko"]["memory_agent"] = "에이전트"
+LABELS["ko"]["memory_empty"] = "아직 메모리 스냅샷이 없습니다."
+LABELS["ko"]["memory_batch"] = "배치 모드는 여러 시드를 집계합니다. 에이전트별 메모리는 단일 실행에서 확인하세요."
+LABELS["ko"]["memory_short_term"] = "단기 기억"
+LABELS["ko"]["memory_short_term_empty"] = "아직 단기 기억이 없습니다."
+LABELS["ko"]["memory_long_term"] = "장기 기억 검색"
+LABELS["ko"]["memory_long_term_empty"] = "아직 장기 기억 검색 결과가 없습니다."
+LABELS["ko"]["memory_monologue"] = "내적 독백"
+LABELS["ko"]["memory_monologue_empty"] = "아직 내적 독백이 없습니다."
 ENVIRONMENT_PRESETS = load_environment_presets()
 GRAPH_HEIGHT_PX = 620
 TIMELINE_MAX_HEIGHT_PX = 360
@@ -1151,7 +1172,21 @@ def _run(
     primary_name: str,
     primary_age: int,
     *trait_and_runtime: Any,
-) -> tuple[str, go.Figure, str, str, str, str, str, go.Figure, dict[str, Any], str]:
+) -> tuple[
+    str,
+    go.Figure,
+    str,
+    str,
+    str,
+    str,
+    str,
+    go.Figure,
+    dict[str, Any],
+    str,
+    dict[str, dict[str, list[dict[str, Any]]]],
+    dict[str, Any],
+    str,
+]:
     legacy_with_language = len(PERSONA_TRAIT_FIELDS) + 5
     legacy_without_language = len(PERSONA_TRAIT_FIELDS) + 4
     legacy_batch_with_language = legacy_with_language + 3
@@ -1335,6 +1370,11 @@ def _run(
             )
         if host_provider:
             summary += f" | (Celovin host {host_provider} key in use - demo only)"
+    memory_snapshot, memory_agent, memory_markdown = _memory_inspector_outputs(
+        result.memory_snapshot,
+        language=language,
+        batch_mode=batch_result is not None,
+    )
     return (
         result.timeline_markdown,
         _relationship_figure(result.relationship_rows, language=language),
@@ -1346,6 +1386,9 @@ def _run(
         _action_chart_figure(result.action_breakdown, language=language),
         gr.update(minimum=-1, maximum=max(-1, int(result.tick_count) - 1), value=-1),
         _tick_focus_markdown(result.jsonl, -1, language=language),
+        memory_snapshot,
+        memory_agent,
+        memory_markdown,
     )
 
 
@@ -1569,6 +1612,14 @@ def _language_updates(
         gr.update(label=labels["tick_scrubber"]),
         gr.update(label=labels["tick_focus"]),
         gr.update(label=labels["timeline"]),
+        gr.update(label=labels["memory_inspector"]),
+        gr.update(
+            label=labels["memory_agent"],
+            choices=[],
+            value=None,
+            interactive=False,
+        ),
+        labels["memory_empty"],
         gr.update(label=labels["monologue_panel"]),
         labels["monologue_empty"],
         gr.update(label=labels["current_plan_panel"]),
@@ -1716,6 +1767,111 @@ def _tick_focus_markdown(jsonl_text: str, tick: int, language: str = "en") -> st
     if any("record_type" in row for row in rows):
         return _batch_tick_focus_markdown(rows, tick, language=language)
     return _single_run_tick_focus_markdown(rows, tick, language=language)
+
+
+def _memory_inspector_outputs(
+    snapshot: dict[str, dict[str, list[dict[str, Any]]]],
+    *,
+    language: str = "en",
+    batch_mode: bool = False,
+) -> tuple[dict[str, dict[str, list[dict[str, Any]]]], dict[str, Any], str]:
+    if batch_mode:
+        return (
+            {},
+            gr.update(choices=[], value=None, interactive=False),
+            LABELS[language]["memory_batch"],
+        )
+
+    agent_ids = sorted(snapshot)
+    if not agent_ids:
+        return (
+            snapshot,
+            gr.update(choices=[], value=None, interactive=False),
+            LABELS[language]["memory_empty"],
+        )
+
+    selected_agent = agent_ids[0]
+    return (
+        snapshot,
+        gr.update(choices=agent_ids, value=selected_agent, interactive=True),
+        _memory_inspector_markdown(snapshot, selected_agent, language=language),
+    )
+
+
+def _memory_inspector_markdown(
+    snapshot: dict[str, dict[str, list[dict[str, Any]]]],
+    agent_id: str | None,
+    language: str = "en",
+) -> str:
+    if not snapshot or not agent_id or agent_id not in snapshot:
+        return LABELS[language]["memory_empty"]
+
+    memory = snapshot[agent_id]
+    lines = [f"### {escape(agent_id)}"]
+    lines.extend(
+        _memory_section_lines(
+            LABELS[language]["memory_short_term"],
+            list(memory.get("short_term", [])),
+            language=language,
+            section="short_term",
+        )
+    )
+    lines.extend(
+        _memory_section_lines(
+            LABELS[language]["memory_long_term"],
+            list(memory.get("long_term", [])),
+            language=language,
+            section="long_term",
+        )
+    )
+    lines.extend(
+        _memory_section_lines(
+            LABELS[language]["memory_monologue"],
+            list(memory.get("monologue", [])),
+            language=language,
+            section="monologue",
+        )
+    )
+    return "\n".join(lines)
+
+
+def _memory_section_lines(
+    title: str,
+    entries: list[dict[str, Any]],
+    *,
+    language: str,
+    section: str,
+) -> list[str]:
+    empty_key = {
+        "short_term": "memory_short_term_empty",
+        "long_term": "memory_long_term_empty",
+        "monologue": "memory_monologue_empty",
+    }[section]
+    lines = [f"#### {title}"]
+    if not entries:
+        lines.append(f"- {LABELS[language][empty_key]}")
+        return lines
+
+    for entry in entries:
+        timestamp = escape(str(entry.get("timestamp", "")))
+        if section == "short_term":
+            memory_type = escape(str(entry.get("memory_type", "episodic")))
+            content = escape(str(entry.get("content", "")).strip())
+            lines.append(f"- `{timestamp}` [{memory_type}] {content}")
+            continue
+        if section == "long_term":
+            score = float(entry.get("score", 0.0))
+            content = escape(str(entry.get("content", "")).strip())
+            lines.append(f"- `{timestamp}` (score {score:.3f}) {content}")
+            continue
+        tick = int(entry.get("tick", -1))
+        valence = float(entry.get("valence", 0.0))
+        color = "#15803d" if valence > 0.2 else "#b91c1c" if valence < -0.2 else "#64748b"
+        text = escape(str(entry.get("text", "")).strip())
+        lines.append(
+            f"- <span style=\"color:{color}\"><strong>{escape(f't{tick}')}</strong> `{timestamp}` {text}</span>"
+        )
+    return lines
 
 
 def _single_run_tick_focus_markdown(
@@ -2168,6 +2324,24 @@ def build_app() -> gr.Blocks:
             max_height=TIMELINE_MAX_HEIGHT_PX,
             container=True,
         )
+        memory_snapshot_state = gr.State({})
+        memory_panel = gr.Accordion(
+            labels["memory_inspector"],
+            open=False,
+            elem_id="memory-inspector-panel",
+        )
+        with memory_panel:
+            inspector_agent = gr.Dropdown(
+                label=labels["memory_agent"],
+                choices=[],
+                value=None,
+                interactive=False,
+                elem_id="memory-inspector-agent",
+            )
+            memory_view = gr.Markdown(
+                labels["memory_empty"],
+                elem_id="memory-inspector-markdown",
+            )
         monologue_panel = gr.Accordion(
             labels["monologue_panel"],
             open=False,
@@ -2255,6 +2429,9 @@ def build_app() -> gr.Blocks:
             tick_scrubber,
             tick_focus,
             timeline,
+            memory_panel,
+            inspector_agent,
+            memory_view,
             monologue_panel,
             monologue_view,
             current_plan_panel,
@@ -2337,6 +2514,11 @@ def build_app() -> gr.Blocks:
             inputs=[jsonl, tick_scrubber, language],
             outputs=[tick_focus],
         )
+        inspector_agent.change(
+            _memory_inspector_markdown,
+            inputs=[memory_snapshot_state, inspector_agent, language],
+            outputs=[memory_view],
+        )
         for controls in agent_tabs:
             controls["persona_preset"].change(
                 _apply_persona_preset,
@@ -2393,6 +2575,9 @@ def build_app() -> gr.Blocks:
                 action_chart,
                 tick_scrubber,
                 tick_focus,
+                memory_snapshot_state,
+                inspector_agent,
+                memory_view,
             ],
             api_name="run",
         )
