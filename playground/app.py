@@ -98,6 +98,7 @@ def _relationship_figure(rows: list[dict[str, Any]], *, language: str = "en") ->
             title=title,
             scene=scene_layout,
             annotations=[{"text": empty_msg, "showarrow": False}],
+            height=GRAPH_HEIGHT_PX,
             margin={"l": 0, "r": 0, "t": 40, "b": 0},
         )
         return figure
@@ -166,6 +167,7 @@ def _relationship_figure(rows: list[dict[str, Any]], *, language: str = "en") ->
         title=title,
         showlegend=False,
         scene=scene_layout,
+        height=GRAPH_HEIGHT_PX,
         margin={"l": 0, "r": 0, "t": 40, "b": 0},
     )
     return figure
@@ -275,10 +277,22 @@ LABELS = {
 }
 
 
-FOOTER_CSS = """
-footer {display: none !important;}
-.footer {display: none !important;}
-.api-docs {display: none !important;}
+GRAPH_HEIGHT_PX = 620
+TIMELINE_MAX_HEIGHT_PX = 360
+
+
+FOOTER_CSS = f"""
+footer {{display: none !important;}}
+.footer {{display: none !important;}}
+.api-docs {{display: none !important;}}
+#relationship-graph .js-plotly-plot,
+#relationship-graph .plot-container {{
+    min-height: {GRAPH_HEIGHT_PX}px;
+}}
+#timeline-panel {{
+    max-height: {TIMELINE_MAX_HEIGHT_PX}px;
+    overflow-y: auto;
+}}
 """
 
 
@@ -360,9 +374,14 @@ def build_app() -> gr.Blocks:
                 )
         run_button = gr.Button(labels["run"], variant="primary")
         summary = gr.Textbox(label=labels["summary"], interactive=False)
-        with gr.Row():
-            timeline = gr.Markdown(label=labels["timeline"])
-            graph = gr.Plot(label=labels["graph"])
+        graph = gr.Plot(label=labels["graph"], elem_id="relationship-graph")
+        timeline = gr.Markdown(
+            label=labels["timeline"],
+            elem_id="timeline-panel",
+            min_height=TIMELINE_MAX_HEIGHT_PX,
+            max_height=TIMELINE_MAX_HEIGHT_PX,
+            container=True,
+        )
         jsonl = gr.Code(label=labels["jsonl"], language="json")
         download = gr.File(label=labels["download"])
 
