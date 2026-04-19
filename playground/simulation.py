@@ -40,6 +40,7 @@ from knoema.types import (
     Action,
     Personality,
 )
+from playground.quest_generation import generate_procedural_quest
 
 Provider = Literal["Replay only", "OpenAI", "Anthropic"]
 AGENT_COUNT_MIN = 1
@@ -126,6 +127,10 @@ PROMPT_LINE_PREFIXES: dict[str, dict[str, str]] = {
     "ja": {"location": "場所: ", "trigger": "トリガー: "},
     "zh": {"location": "位置: ", "trigger": "触发事件: "},
 }
+PROMPT_LINE_PREFIXES["en"]["conditions"] = "Conditions: "
+PROMPT_LINE_PREFIXES["ko"]["conditions"] = "조건: "
+PROMPT_LINE_PREFIXES["ja"]["conditions"] = "条件: "
+PROMPT_LINE_PREFIXES["zh"]["conditions"] = "条件: "
 NO_TRIGGER_LINES = {
     "en": "No immediate trigger.",
     "ko": "즉시 반응할 트리거가 없습니다.",
@@ -1030,10 +1035,16 @@ def playground_result_from_artifacts(
 ) -> PlaygroundResult:
     jsonl = _logs_to_jsonl(artifacts.simulator.logs)
     download_path = _write_download_file(jsonl)
+    timeline_markdown = _timeline_markdown(artifacts.simulator.logs, language=language)
+    timeline_markdown = _prepend_session_quest_markdown(
+        timeline_markdown,
+        procedural_quest=_environment_procedural_quest(artifacts.simulator.environment),
+        language=language,
+    )
     return PlaygroundResult(
         scenario_name=scenario_name,
         mode=mode,
-        timeline_markdown=_timeline_markdown(artifacts.simulator.logs, language=language),
+        timeline_markdown=timeline_markdown,
         monologue_markdown=_monologue_markdown(
             artifacts.simulator.monologues,
             artifacts.simulator.monologue_valence,
@@ -1320,6 +1331,13 @@ def _prepare_playground_run(
                 environment.set_agent_location(agent_config.agent_id, agent_config.location_path)
     else:
         _apply_environment_preset(environment, preset)
+    _attach_procedural_quest(
+        scenario_name=scenario_name,
+        agents=agents,
+        environment=environment,
+        language=language,
+        seed=seed,
+    )
 
     simulator = Simulator(
         agents=agents,
@@ -1891,6 +1909,58 @@ def _apply_environment_preset(environment: object, preset: dict[str, Any]) -> No
     environment.conditions["preset_conditions"] = list(preset.get("conditions", []))
 
 
+def _attach_procedural_quest(
+    *,
+    scenario_name: str,
+    agents: list[Persona],
+    environment: Any,
+    language: str,
+    seed: int | None,
+) -> None:
+    session_signature = json.dumps(
+        {
+            "scenario_name": scenario_name,
+            "seed": seed,
+            "location_path": list(environment.location_path),
+            "conditions": dict(getattr(environment, "conditions", {})),
+            "agents": [
+                {
+                    "agent_id": agent.agent_id,
+                    "name": agent.name,
+                    "personality": agent.personality.to_dict(),
+                    "goals": list(agent.goals),
+                    "inventory": (
+                        []
+                        if agent.inventory is None
+                        else [item for item in agent.inventory.item_ids if item.strip()]
+                    ),
+                    "factions": dict(agent.factions or {}),
+                }
+                for agent in agents
+            ],
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+    )
+    procedural_quest = generate_procedural_quest(
+        agents,
+        environment,
+        session_id=session_signature,
+        language=language,
+    )
+    environment.conditions = dict(getattr(environment, "conditions", {}))
+    environment.conditions["procedural_quest"] = procedural_quest.to_metadata()
+    environment.conditions["procedural_quest_id"] = procedural_quest.quest_id
+
+
+def _environment_procedural_quest(environment: Any) -> dict[str, Any] | None:
+    conditions = getattr(environment, "conditions", {})
+    if not isinstance(conditions, dict):
+        return None
+    procedural_quest = conditions.get("procedural_quest")
+    return dict(procedural_quest) if isinstance(procedural_quest, dict) else None
+
+
 def _rebuild_persona(
     agent: Persona,
     *,
@@ -2180,6 +2250,7 @@ def _scripted_action_payload(
     language: str = "en",
 ) -> dict[str, Any]:
     trigger_text = _extract_trigger_text(user_prompt, language)
+    procedural_quest = _extract_procedural_quest(user_prompt, language)
     action_type = _scripted_action_type(
         persona=persona,
         agent_id=agent_id,
@@ -2189,11 +2260,14 @@ def _scripted_action_payload(
         trigger_text=trigger_text,
         default_target=default_target,
         trigger_target=trigger_target,
+        procedural_quest=procedural_quest,
     )
     target = _resolved_scripted_target(
         action_type,
+        agent_id=agent_id,
         default_target=default_target,
         trigger_target=trigger_target,
+        procedural_quest=procedural_quest,
     )
     metadata, topic = _scripted_metadata_and_topic(
         action_type=action_type,
@@ -2204,6 +2278,7 @@ def _scripted_action_payload(
         trigger_text=trigger_text,
         location=location,
         language=language,
+        procedural_quest=procedural_quest,
     )
     metadata.update(
         {
@@ -2239,6 +2314,7 @@ def _scripted_action_type(
     trigger_text: str,
     default_target: str | None,
     trigger_target: str | None,
+    procedural_quest: dict[str, Any] | None,
 ) -> str:
     has_trigger = _has_trigger(trigger_text)
     personality = (
@@ -2248,17 +2324,26 @@ def _scripted_action_type(
     )
     inventory = persona.inventory if persona is not None else None
     factions = dict(persona.factions or {}) if persona is not None and persona.factions else {}
-    target_candidate = trigger_target or default_target
+    target_candidate = (
+        trigger_target
+        or default_target
+        or _procedural_quest_target_for_offer(procedural_quest, agent_id=agent_id)
+    )
     has_target = target_candidate is not None
     trust_by_target = _extract_relationship_trusts(user_prompt)
     target_trust = 1.0 if target_candidate is None else trust_by_target.get(target_candidate, 1.0)
     arousal = _extract_arousal(user_prompt)
     has_leader_role = _has_leader_role(persona)
     routine_action = _extract_routine_default_action(user_prompt)
+    quest_giver_id = (
+        str(procedural_quest.get("giver_agent_id", "")).strip() if procedural_quest is not None else ""
+    )
 
     if not has_trigger and routine_action is not None:
         return routine_action
 
+    if has_target and quest_giver_id == agent_id and tick in {1, 4, 7}:
+        return "quest_offer"
     if has_target and has_leader_role and personality.conscientiousness > 0.7 and tick in {1, 4, 7}:
         return "quest_offer"
     if (
@@ -2347,6 +2432,7 @@ def _scripted_metadata_and_topic(
     trigger_text: str,
     location: str,
     language: str,
+    procedural_quest: dict[str, Any] | None,
 ) -> tuple[dict[str, Any], str]:
     if action_type not in GAME_ACTION_TYPES:
         return {}, _scripted_topic(trigger_text, location, language)
@@ -2368,6 +2454,11 @@ def _scripted_metadata_and_topic(
             "receive_items": [receive_item],
         }, f"{give_item} for {receive_item}"
     if action_type in {"quest_offer", "quest_accept", "quest_complete"}:
+        if procedural_quest is not None:
+            quest_metadata = dict(procedural_quest)
+            quest_metadata.setdefault("quest_source", "procedural")
+            quest_id = str(quest_metadata.get("quest_id", f"quest_{target or agent_id}_{tick}"))
+            return quest_metadata, str(quest_metadata.get("quest_title", quest_id))
         quest_id = f"quest_{target or agent_id}_{tick}"
         return {"quest_id": quest_id}, quest_id
     if action_type in {"faction_join", "faction_betray"}:
@@ -2429,7 +2520,10 @@ def _defend_self_trigger(trigger_text: str, agent_id: str) -> bool:
 
 def _has_quest_trigger(trigger_text: str) -> bool:
     normalized = trigger_text.lower()
-    return "quest" in normalized or "mission" in normalized
+    return any(
+        token in normalized
+        for token in ("quest", "mission", "퀘스트", "임무", "任務", "任务")
+    )
 
 
 def _primary_faction_id(persona: Persona | None) -> str | None:
@@ -2499,11 +2593,17 @@ def _scripted_topic(trigger_text: str, location: str, language: str) -> str:
 def _resolved_scripted_target(
     action_type: str,
     *,
+    agent_id: str,
     default_target: str | None,
     trigger_target: str | None,
+    procedural_quest: dict[str, Any] | None,
 ) -> str | None:
     if action_type in UNTARGETED_ACTION_TYPES:
         return None
+    if action_type == "quest_offer":
+        quest_target = _procedural_quest_target_for_offer(procedural_quest, agent_id=agent_id)
+        if quest_target is not None:
+            return quest_target
     return trigger_target or default_target
 
 
@@ -2520,6 +2620,36 @@ def _extract_prompt_line(text: str, *, key: str, language: str) -> str | None:
         if value is not None:
             return value
     return None
+
+
+def _extract_conditions_payload(user_prompt: str, language: str) -> dict[str, Any]:
+    conditions_line = _extract_prompt_line(user_prompt, key="conditions", language=language)
+    if not conditions_line:
+        return {}
+    try:
+        payload = json.loads(conditions_line)
+    except json.JSONDecodeError:
+        return {}
+    return dict(payload) if isinstance(payload, dict) else {}
+
+
+def _extract_procedural_quest(user_prompt: str, language: str) -> dict[str, Any] | None:
+    payload = _extract_conditions_payload(user_prompt, language)
+    procedural_quest = payload.get("procedural_quest")
+    return dict(procedural_quest) if isinstance(procedural_quest, dict) else None
+
+
+def _procedural_quest_target_for_offer(
+    procedural_quest: dict[str, Any] | None,
+    *,
+    agent_id: str,
+) -> str | None:
+    if procedural_quest is None:
+        return None
+    quest_target = str(procedural_quest.get("target_agent_id", "")).strip()
+    if not quest_target or quest_target == agent_id:
+        return None
+    return quest_target
 
 
 def _extract_routine_default_action(user_prompt: str) -> str | None:
@@ -2632,6 +2762,38 @@ def _write_download_file(jsonl: str) -> str:
         if jsonl:
             handle.write("\n")
         return handle.name
+
+
+def _prepend_session_quest_markdown(
+    timeline_markdown: str,
+    *,
+    procedural_quest: dict[str, Any] | None,
+    language: str,
+) -> str:
+    if procedural_quest is None:
+        return timeline_markdown
+    success_conditions = procedural_quest.get("success_conditions", [])
+    failure_conditions = procedural_quest.get("failure_conditions", [])
+    reward = str(procedural_quest.get("reward", "")).strip()
+    if language == "ko":
+        lines = [
+            "### 세션 퀘스트",
+            f"- 목표: {procedural_quest.get('quest_objective', '')}",
+            f"- 성공 조건: {' / '.join(str(item) for item in success_conditions) if success_conditions else '없음'}",
+            f"- 실패 조건: {' / '.join(str(item) for item in failure_conditions) if failure_conditions else '없음'}",
+        ]
+        if reward:
+            lines.append(f"- 보상: {reward}")
+    else:
+        lines = [
+            "### Session Quest",
+            f"- Objective: {procedural_quest.get('quest_objective', '')}",
+            f"- Success: {' / '.join(str(item) for item in success_conditions) if success_conditions else 'none'}",
+            f"- Failure: {' / '.join(str(item) for item in failure_conditions) if failure_conditions else 'none'}",
+        ]
+        if reward:
+            lines.append(f"- Reward: {reward}")
+    return "\n".join(lines) + "\n\n" + timeline_markdown
 
 
 def _timeline_markdown(logs: list[SimulationLogEntry], *, language: str = "en") -> str:
