@@ -8,9 +8,9 @@ import gradio as gr
 import plotly.graph_objects as go
 
 try:
-    from .simulation import Provider, run_playground_scenario, scenario_choices
+    from .simulation import Provider, host_key_active, run_playground_scenario, scenario_choices
 except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
-    from simulation import Provider, run_playground_scenario, scenario_choices
+    from simulation import Provider, host_key_active, run_playground_scenario, scenario_choices
 
 
 def _normalize_provider(provider: str) -> Provider:
@@ -54,16 +54,21 @@ def _run(
         ticks=ticks,
         language=lang,
     )
+    host_provider = host_key_active(_normalize_provider(provider), api_key)
     if lang == "ko":
         summary = (
             f"모드: {result.mode} | 에이전트: {result.agent_count}명 | "
             f"틱: {result.tick_count} | 로그 항목: {result.log_count}개"
         )
+        if host_provider:
+            summary += f" | (셀로빈 호스팅 {host_provider} 키 사용 중 — 데모 한정)"
     else:
         summary = (
             f"Mode: {result.mode} | Agents: {result.agent_count} | "
             f"Ticks: {result.tick_count} | Log entries: {result.log_count}"
         )
+        if host_provider:
+            summary += f" | (Celovin host {host_provider} key in use — demo only)"
     return (
         result.timeline_markdown,
         _relationship_figure(result.relationship_rows, language=lang),

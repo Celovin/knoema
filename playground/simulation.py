@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import tempfile
 from dataclasses import dataclass
@@ -161,16 +162,36 @@ def _build_client(
     agent_ids: list[str],
     language: str = "en",
 ) -> LLMClient:
-    if provider == "OpenAI" and api_key.strip():
-        return OpenAIClient(model=model.strip() or "gpt-4o-mini", api_key=api_key.strip())
-    if provider == "Anthropic" and api_key.strip():
-        return AnthropicClient(
-            model=model.strip() or "claude-3-5-haiku-latest",
-            api_key=api_key.strip(),
-        )
+    user_key = api_key.strip()
+    host_openai_key = os.environ.get("DEMO_OPENAI_API_KEY", "").strip()
+    host_anthropic_key = os.environ.get("DEMO_ANTHROPIC_API_KEY", "").strip()
+
+    if provider == "OpenAI":
+        key = user_key or host_openai_key
+        if key:
+            return OpenAIClient(model=model.strip() or "gpt-4o-mini", api_key=key)
+    if provider == "Anthropic":
+        key = user_key or host_anthropic_key
+        if key:
+            return AnthropicClient(
+                model=model.strip() or "claude-3-5-haiku-latest",
+                api_key=key,
+            )
     return LocalClient(
         _scripted_responder(agent_ids=agent_ids, fallback=config.local_response, language=language)
     )
+
+
+def host_key_active(provider: Provider, api_key: str) -> str | None:
+    """Return the source label if a host-side demo key would be used."""
+
+    if api_key.strip():
+        return None
+    if provider == "OpenAI" and os.environ.get("DEMO_OPENAI_API_KEY", "").strip():
+        return "OpenAI"
+    if provider == "Anthropic" and os.environ.get("DEMO_ANTHROPIC_API_KEY", "").strip():
+        return "Anthropic"
+    return None
 
 
 def _scripted_responder(*, agent_ids: list[str], fallback: str, language: str = "en"):
