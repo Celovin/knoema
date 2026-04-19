@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Godot Tavern Demo</title>
+    <style>
+      :root { color-scheme: dark; }
+      body { margin: 0; font-family: Arial, sans-serif; background: #14100d; color: #f5efe7; }
+      .shell { max-width: 980px; margin: 0 auto; padding: 24px; }
+      .board { position: relative; height: 420px; border: 1px solid #6d5238; border-radius: 8px; background: linear-gradient(180deg, #3a2516, #24150c); overflow: hidden; }
+      .bar { position: absolute; top: 144px; right: 96px; width: 260px; height: 120px; border-radius: 8px; background: #7d5533; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1); }
+      .token { position: absolute; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+      #player { background: #58b7f3; color: #08111a; left: 80px; top: 220px; }
+      #bjorn { background: #e7be63; color: #23170c; left: 668px; top: 188px; }
+      .hud { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; margin-top: 18px; }
+      .panel { border: 1px solid #6d5238; border-radius: 8px; background: rgba(12, 8, 6, 0.72); padding: 16px; }
+      .panel h1, .panel h2 { margin: 0 0 10px; font-size: 18px; }
+      .status { margin: 10px 0; color: #d8b78d; }
+      .transcript { min-height: 180px; white-space: pre-wrap; line-height: 1.5; }
+      input, button { width: 100%; border-radius: 8px; border: 1px solid #8e6846; padding: 12px; font: inherit; box-sizing: border-box; }
+      input { margin-bottom: 10px; background: #22150d; color: #f5efe7; }
+      button { background: #e7be63; color: #22150d; font-weight: 700; cursor: pointer; }
+      .note { font-size: 14px; color: #bfa890; }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="board" id="board">
+        <div class="bar"></div>
+        <div class="token" id="player">You</div>
+        <div class="token" id="bjorn">Bjorn</div>
+      </div>
+      <div class="hud">
+        <section class="panel">
+          <h1>Godot Tavern Demo</h1>
+          <p class="note">Use WASD. Walk within 64px of Bjorn to unlock the dialog box.</p>
+          <div class="status" id="status">Walk closer to Bjorn.</div>
+          <div class="transcript" id="transcript">Bjorn: Tavern is open. Come closer if you need a drink.</div>
+        </section>
+        <section class="panel">
+          <h2>Dialog</h2>
+          <input id="line" placeholder="Ask for a drink, a rumor, or a room." />
+          <button id="send">Send</button>
+          <p class="note">Replay-only fallback mirrors the sample loop when no API server is attached.</p>
+        </section>
+      </div>
+    </div>
+    <script>
+      const player = document.getElementById("player");
+      const bjorn = document.getElementById("bjorn");
+      const line = document.getElementById("line");
+      const send = document.getElementById("send");
+      const status = document.getElementById("status");
+      const transcript = document.getElementById("transcript");
+      const state = { x: 80, y: 220 };
+      const speed = 16;
+      const rangePx = 64;
+
+      function render() {
+        player.style.left = `${state.x}px`;
+        player.style.top = `${state.y}px`;
+        const near = distanceToBjorn() <= rangePx;
+        status.textContent = near ? "Bjorn is ready. Type a line and press Send." : "Walk within 64px of Bjorn.";
+        send.disabled = !near;
+      }
+
+      function distanceToBjorn() {
+        const dx = state.x - 668;
+        const dy = state.y - 188;
+        return Math.hypot(dx, dy);
+      }
+
+      function append(lineText) {
+        transcript.textContent += `\n${lineText}`;
+        transcript.scrollTop = transcript.scrollHeight;
+      }
+
+      function fallbackReply(message) {
+        return `Bjorn wipes down the bar and says: I noted "${message}" for the next round.`;
+      }
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key.toLowerCase() === "w") state.y = Math.max(24, state.y - speed);
+        if (event.key.toLowerCase() === "s") state.y = Math.min(360, state.y + speed);
+        if (event.key.toLowerCase() === "a") state.x = Math.max(24, state.x - speed);
+        if (event.key.toLowerCase() === "d") state.x = Math.min(860, state.x + speed);
+        render();
+      });
+
+      function sendLine() {
+        const message = line.value.trim();
+        if (!message || distanceToBjorn() > rangePx) return;
+        append(`Player: ${message}`);
+        append(`Bjorn: ${fallbackReply(message)}`);
+        line.value = "";
+      }
+
+      send.addEventListener("click", sendLine);
+      line.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") sendLine();
+      });
+      render();
+    </script>
+  </body>
+</html>

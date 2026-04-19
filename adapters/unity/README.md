@@ -48,12 +48,19 @@ Response:
 }
 ```
 
-## Sample
+## Samples
 
 Import `Samples~/BasicNPC` from Package Manager. The sample contains:
 
 - `Scenes/BasicNPC.unity`: placeholder scene for a one-NPC chat demo.
 - `Scripts/BasicNPCDemo.cs`: small UI controller using `NPCAgent.Interact(...)`.
+
+Import `Samples~/TavernDemo` for the tavern loop surface:
+
+- `Scenes/TavernDemo.unity`: top-down placeholder scene layout for the tavern keeper loop.
+- `Scripts/TavernDemo.cs`: proximity-gated Bjorn interaction using `NPCAgent`.
+- `Scripts/TavernPlayerController.cs`: WASD movement in the sample scene.
+- `web_build/index.html`: browser mirror of the sample for static hosting and quick review.
 
 ## Unity Test Runner
 

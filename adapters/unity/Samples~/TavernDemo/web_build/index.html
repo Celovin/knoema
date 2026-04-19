@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unity Tavern Demo</title>
+    <style>
+      body { margin: 0; font-family: Arial, sans-serif; background: #11161c; color: #edf3f8; }
+      .shell { max-width: 980px; margin: 0 auto; padding: 24px; }
+      .board { position: relative; height: 420px; border: 1px solid #38506d; border-radius: 8px; background: linear-gradient(180deg, #182330, #0f1721); overflow: hidden; }
+      .floor { position: absolute; inset: 24px; border-radius: 8px; background: linear-gradient(180deg, #334357, #223142); }
+      .bar { position: absolute; top: 128px; right: 84px; width: 280px; height: 132px; border-radius: 8px; background: #5f6f82; }
+      .token { position: absolute; width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+      #player { background: #76d0ff; color: #0c1824; left: 92px; top: 224px; }
+      #bjorn { background: #ffc371; color: #1f1507; left: 664px; top: 184px; }
+      .hud { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; margin-top: 18px; }
+      .panel { border: 1px solid #38506d; border-radius: 8px; background: rgba(15, 23, 33, 0.88); padding: 16px; }
+      .panel h1, .panel h2 { margin: 0 0 10px; font-size: 18px; }
+      .transcript { min-height: 180px; white-space: pre-wrap; line-height: 1.5; }
+      input, button { width: 100%; border-radius: 8px; border: 1px solid #55708f; padding: 12px; font: inherit; box-sizing: border-box; }
+      input { margin-bottom: 10px; background: #0f1721; color: #edf3f8; }
+      button { background: #76d0ff; color: #0c1824; font-weight: 700; cursor: pointer; }
+      .status { margin: 10px 0; color: #a9c9e6; }
+      .note { font-size: 14px; color: #9db5ca; }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="board">
+        <div class="floor"></div>
+        <div class="bar"></div>
+        <div class="token" id="player">You</div>
+        <div class="token" id="bjorn">Bjorn</div>
+      </div>
+      <div class="hud">
+        <section class="panel">
+          <h1>Unity Tavern Demo</h1>
+          <p class="note">Use WASD. The browser mirror matches the Unity sample loop with Bjorn on `NPCAgent` fallback.</p>
+          <div class="status" id="status">Walk closer to Bjorn.</div>
+          <div class="transcript" id="transcript">Bjorn: Step into range and ask for the next tavern beat.</div>
+        </section>
+        <section class="panel">
+          <h2>Dialog</h2>
+          <input id="line" placeholder="Ask for a room, rumor, or another round." />
+          <button id="send">Send</button>
+          <p class="note">Static hosting works because the demo uses deterministic replay-only fallback.</p>
+        </section>
+      </div>
+    </div>
+    <script>
+      const player = document.getElementById("player");
+      const line = document.getElementById("line");
+      const send = document.getElementById("send");
+      const status = document.getElementById("status");
+      const transcript = document.getElementById("transcript");
+      const state = { x: 92, y: 224 };
+      const speed = 16;
+      const rangePx = 64;
+
+      function distanceToBjorn() {
+        const dx = state.x - 664;
+        const dy = state.y - 184;
+        return Math.hypot(dx, dy);
+      }
+
+      function render() {
+        player.style.left = `${state.x}px`;
+        player.style.top = `${state.y}px`;
+        const near = distanceToBjorn() <= rangePx;
+        status.textContent = near ? "Bjorn is ready. Type a line and press Send." : "Walk within 64px of Bjorn.";
+        send.disabled = !near;
+      }
+
+      function append(lineText) {
+        transcript.textContent += `\n${lineText}`;
+        transcript.scrollTop = transcript.scrollHeight;
+      }
+
+      function fallbackReply(message) {
+        return `Bjorn keeps the quest board tidy and says: I'll carry "${message}" into the next tavern tick.`;
+      }
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key.toLowerCase() === "w") state.y = Math.max(24, state.y - speed);
+        if (event.key.toLowerCase() === "s") state.y = Math.min(360, state.y + speed);
+        if (event.key.toLowerCase() === "a") state.x = Math.max(24, state.x - speed);
+        if (event.key.toLowerCase() === "d") state.x = Math.min(860, state.x + speed);
+        render();
+      });
+
+      function sendLine() {
+        const message = line.value.trim();
+        if (!message || distanceToBjorn() > rangePx) return;
+        append(`Player: ${message}`);
+        append(`Bjorn: ${fallbackReply(message)}`);
+        line.value = "";
+      }
+
+      send.addEventListener("click", sendLine);
+      line.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") sendLine();
+      });
+      render();
+    </script>
+  </body>
+</html>

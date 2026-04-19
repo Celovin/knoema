@@ -30,19 +30,23 @@ layout_mode = 2
 text = "Knoema NPC Chat Demo"
 
 [node name="NpcLine" type="Label" parent="Panel/Layout"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "School Nurse: Tell me what happened today."
 autowrap_mode = 3
 
 [node name="Input" type="LineEdit" parent="Panel/Layout"]
+unique_name_in_owner = true
 layout_mode = 2
 placeholder_text = "Type a message..."
 
 [node name="SendButton" type="Button" parent="Panel/Layout"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Send"
 
 [node name="History" type="RichTextLabel" parent="Panel/Layout"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true

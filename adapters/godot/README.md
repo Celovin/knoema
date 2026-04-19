@@ -1,12 +1,12 @@
 # Knoema Godot Adapter
 
-Minimal Godot 4.2+ adapter stub for testing a single NPC chat loop against Knoema.
+Minimal Godot 4.2+ adapter scaffold for testing a single NPC chat loop against Knoema.
 
 ## Run
 
 1. Install Godot 4.2 or newer.
 2. Open this folder as a Godot project: `adapters/godot`.
-3. Open `scenes/chat_demo.tscn`.
+3. Open `scenes/chat_demo.tscn` for the original UI stub, or `samples/tavern_demo/tavern_demo.tscn` for the tavern scene.
 4. Press Run.
 5. Type a message and press `Send`.
 
@@ -16,6 +16,8 @@ By default the demo uses a local deterministic fallback response, so it runs wit
 
 - `project.godot`: demo project configuration.
 - `scenes/chat_demo.tscn`: one-scene chat demo.
+- `samples/tavern_demo/tavern_demo.tscn`: 2D tavern sample with proximity-triggered dialog.
+- `samples/tavern_demo/web_build/index.html`: browser mirror of the tavern loop.
 - `scripts/npc.gd`: UI controller for player input and NPC output.
 - `scripts/knoema_client.gd`: HTTP/fallback client wrapper.
 - `addons/knoema/plugin.cfg`: editor plugin registration.

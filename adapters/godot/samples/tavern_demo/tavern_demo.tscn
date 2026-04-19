@@ -1,0 +1,93 @@
+[gd_scene load_steps=4 format=3 uid="uid://knoema_tavern_demo"]
+
+[ext_resource type="Script" path="res://samples/tavern_demo/scripts/tavern_demo.gd" id="1_demo"]
+[ext_resource type="Script" path="res://samples/tavern_demo/scripts/tavern_player.gd" id="2_player"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(24, 24)
+
+[node name="TavernDemo" type="Node2D"]
+script = ExtResource("1_demo")
+
+[node name="Floor" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-220, -140, 220, -140, 220, 140, -220, 140)
+color = Color(0.239216, 0.168627, 0.121569, 1)
+
+[node name="Bar" type="Polygon2D" parent="."]
+position = Vector2(70, 0)
+polygon = PackedVector2Array(-70, -28, 70, -28, 70, 28, -70, 28)
+color = Color(0.521569, 0.32549, 0.180392, 1)
+
+[node name="Player" type="CharacterBody2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(-120, 40)
+script = ExtResource("2_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource("RectangleShape2D_player")
+
+[node name="PlayerSprite" type="Sprite2D" parent="Player"]
+position = Vector2(0, -4)
+self_modulate = Color(0.364706, 0.741176, 0.956863, 1)
+
+[node name="PlayerLabel" type="Label" parent="Player"]
+offset_left = -24.0
+offset_top = 14.0
+offset_right = 24.0
+offset_bottom = 34.0
+text = "Player"
+horizontal_alignment = 1
+
+[node name="Bjorn" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(88, 0)
+
+[node name="BjornSprite" type="Sprite2D" parent="Bjorn"]
+unique_name_in_owner = true
+self_modulate = Color(0.894118, 0.717647, 0.360784, 1)
+
+[node name="BjornLabel" type="Label" parent="Bjorn"]
+offset_left = -28.0
+offset_top = 14.0
+offset_right = 28.0
+offset_bottom = 34.0
+text = "Bjorn"
+horizontal_alignment = 1
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="StatusLabel" type="Label" parent="UI"]
+unique_name_in_owner = true
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 520.0
+offset_bottom = 42.0
+text = "Walk within 64px of Bjorn."
+
+[node name="DialogPanel" type="PanelContainer" parent="UI"]
+unique_name_in_owner = true
+offset_left = 20.0
+offset_top = 320.0
+offset_right = 560.0
+offset_bottom = 560.0
+visible = false
+
+[node name="DialogLayout" type="VBoxContainer" parent="UI/DialogPanel"]
+theme_override_constants/separation = 10
+
+[node name="DialogTitle" type="Label" parent="UI/DialogPanel/DialogLayout"]
+text = "Bjorn the Tavern Keeper"
+
+[node name="InputLine" type="LineEdit" parent="UI/DialogPanel/DialogLayout"]
+unique_name_in_owner = true
+placeholder_text = "Ask for a drink, room, or rumor."
+
+[node name="SendButton" type="Button" parent="UI/DialogPanel/DialogLayout"]
+unique_name_in_owner = true
+text = "Send"
+
+[node name="Transcript" type="RichTextLabel" parent="UI/DialogPanel/DialogLayout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 150)
+bbcode_enabled = true
+text = "[b]Conversation[/b]"

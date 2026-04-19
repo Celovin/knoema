@@ -31,9 +31,14 @@ export default function ShowcasePage() {
           </article>
         ))}
       </div>
-      <a className="primary-link" href="https://huggingface.co/spaces/celovin/knoema-playground">
-        Open Playground
-      </a>
+      <div className="cta-links">
+        <a className="primary-link" href="https://huggingface.co/spaces/celovin/knoema-playground">
+          Open Playground
+        </a>
+        <Link className="primary-link" href="/game-demos">
+          Open Game Demos
+        </Link>
+      </div>
     </main>
   );
 }

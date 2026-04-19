@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 
 const docs = [
   ["Architecture", "https://github.com/Celovin/knoema/blob/main/docs/architecture.md"],
+  ["Game demos", "https://github.com/Celovin/knoema/blob/main/docs/adapters/game_demos.md"],
   ["Scenario DSL", "https://github.com/Celovin/knoema/blob/main/docs/dsl/tutorial.md"],
   ["Python SDK", "https://github.com/Celovin/knoema/blob/main/docs/sdk/python-api.md"],
   ["TypeScript SDK", "https://github.com/Celovin/knoema/blob/main/docs/sdk/typescript-api.md"],
