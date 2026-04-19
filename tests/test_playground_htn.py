@@ -99,6 +99,7 @@ def test_playground_run_round_trips_htn_controls_through_run() -> None:
 
     (
         timeline,
+        thread_view,
         _,
         monologue_markdown,
         plan_markdown,
@@ -129,6 +130,7 @@ def test_playground_run_round_trips_htn_controls_through_run() -> None:
     )
 
     assert "Tick" in timeline
+    assert thread_view
     assert "t0" in monologue_markdown
     assert "Current plan" in plan_markdown
     assert jsonl

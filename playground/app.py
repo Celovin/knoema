@@ -551,6 +551,9 @@ BASE_LABELS = {
         "memory_monologue": "Inner monologue",
         "memory_monologue_empty": "No inner monologues yet.",
         "timeline": "Timeline",
+        "threads_tab": "Conversation threads",
+        "threads_empty": "No conversation threads yet. Run a scenario with directed speech to group replies together.",
+        "threads_batch": "Conversation threads are available in single-run mode only.",
         "graph": "Relationship graph",
         "export_panel": "Result exports",
         "jsonl": "JSONL log",
@@ -628,6 +631,9 @@ LABELS["ko"]["memory_long_term"] = "장기 기억 검색"
 LABELS["ko"]["memory_long_term_empty"] = "아직 장기 기억 검색 결과가 없습니다."
 LABELS["ko"]["memory_monologue"] = "내적 독백"
 LABELS["ko"]["memory_monologue_empty"] = "아직 내적 독백이 없습니다."
+LABELS["ko"]["threads_tab"] = "대화 스레드"
+LABELS["ko"]["threads_empty"] = "아직 대화 스레드가 없습니다. 직접 대상이 있는 발화가 나오는 시나리오를 실행하세요."
+LABELS["ko"]["threads_batch"] = "대화 스레드는 단일 실행에서만 확인할 수 있습니다."
 ENVIRONMENT_PRESETS = load_environment_presets()
 GRAPH_HEIGHT_PX = 620
 TIMELINE_MAX_HEIGHT_PX = 360
@@ -1174,6 +1180,7 @@ def _run(
     *trait_and_runtime: Any,
 ) -> tuple[
     str,
+    str,
     go.Figure,
     str,
     str,
@@ -1386,6 +1393,12 @@ def _run(
         _timeline_markdown_with_agent_colors(
             result.jsonl,
             result.timeline_markdown,
+            agent_colors,
+            language=language,
+        ),
+        _conversation_threads_markdown(
+            result.jsonl,
+            result.memory_snapshot,
             agent_colors,
             language=language,
         ),
@@ -1628,6 +1641,9 @@ def _language_updates(
         gr.update(label=labels["tick_scrubber"]),
         gr.update(label=labels["tick_focus"]),
         gr.update(label=labels["timeline"]),
+        gr.update(label=labels["timeline"]),
+        gr.update(label=labels["threads_tab"]),
+        labels["threads_empty"],
         gr.update(label=labels["memory_inspector"]),
         gr.update(
             label=labels["memory_agent"],
@@ -2042,6 +2058,153 @@ def _timeline_markdown_with_agent_colors(
     return "\n".join(lines)
 
 
+def _conversation_threads_markdown(
+    jsonl_text: str,
+    memory_snapshot: dict[str, dict[str, list[dict[str, Any]]]],
+    agent_colors: dict[str, str],
+    *,
+    language: str = "en",
+) -> str:
+    rows: list[dict[str, Any]] = []
+    for line in str(jsonl_text).splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            payload = json.loads(stripped)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            rows.append(payload)
+
+    if not rows:
+        return LABELS[language]["threads_empty"]
+    if any("record_type" in row for row in rows):
+        return LABELS[language]["threads_batch"]
+
+    speak_rows = [
+        row
+        for row in rows
+        if isinstance(row.get("action"), dict)
+        and str(row["action"].get("action_type", "")).strip() == "speak"
+        and str(row["action"].get("target") or "").strip()
+    ]
+    if not speak_rows:
+        return LABELS[language]["threads_empty"]
+
+    valence_by_tick: dict[tuple[str, int], float] = {}
+    for agent_id, memory in memory_snapshot.items():
+        for monologue in list(memory.get("monologue", [])):
+            valence_by_tick[(agent_id, int(monologue.get("tick", -1)))] = float(
+                monologue.get("valence", 0.0)
+            )
+
+    threads: list[dict[str, Any]] = []
+    for row in speak_rows:
+        tick = int(row["tick"])
+        agent_id = str(row.get("agent_id", "agent"))
+        action = row["action"]
+        target = str(action.get("target") or "").strip()
+        content = str(action.get("content", "")).strip()
+        timestamp = str(row.get("timestamp", ""))
+        message = {
+            "tick": tick,
+            "agent_id": agent_id,
+            "target": target,
+            "content": content,
+            "timestamp": timestamp,
+            "depth": 0,
+        }
+
+        thread: dict[str, Any] | None = None
+        for candidate in reversed(threads):
+            participants = set(candidate["participants"])
+            last_message = candidate["messages"][-1]
+            if tick - int(last_message["tick"]) > 5:
+                continue
+            if {agent_id, target}.issubset(participants):
+                thread = candidate
+                break
+
+        if thread is None:
+            threads.append(
+                {
+                    "participants": [agent_id, target],
+                    "topic": _thread_topic(content),
+                    "messages": [message],
+                }
+            )
+            continue
+
+        last_message = thread["messages"][-1]
+        if (
+            agent_id == str(last_message["target"])
+            and target == str(last_message["agent_id"])
+            and tick - int(last_message["tick"]) <= 3
+        ):
+            message["depth"] = int(last_message["depth"]) + 1
+        thread["participants"] = sorted(set(thread["participants"]) | {agent_id, target})
+        thread["messages"].append(message)
+
+    if not threads:
+        return LABELS[language]["threads_empty"]
+
+    cards: list[str] = []
+    for index, thread in enumerate(threads, start=1):
+        participants = list(thread["participants"])
+        header = " ↔ ".join(escape(participant) for participant in participants)
+        topic = escape(str(thread["topic"]))
+        body_lines: list[str] = []
+        ticks_in_thread = {int(message["tick"]) for message in thread["messages"]}
+        for message in thread["messages"]:
+            color = agent_colors.get(str(message["agent_id"]), "#0f172a")
+            indent_px = 16 * int(message["depth"])
+            body_lines.append(
+                "<div style="
+                f"margin-left:{indent_px}px;padding:8px 10px;border-left:2px solid {color};"
+                "margin-bottom:8px;background:#ffffff;border-radius:6px;"
+                '">'
+                f'<div><span style="color:{color};font-weight:600">{escape(str(message["agent_id"]))}</span> '
+                f'→ {escape(str(message["target"]))}</div>'
+                f'<div style="color:#475569;font-size:12px">{escape(str(message["timestamp"]))}</div>'
+                f"<div>{escape(str(message['content']))}</div>"
+                "</div>"
+            )
+
+        reactions: list[str] = []
+        for observer in sorted(agent_colors):
+            if observer in participants:
+                continue
+            observer_valence = max(
+                (valence_by_tick.get((observer, tick), 0.0) for tick in ticks_in_thread),
+                default=0.0,
+            )
+            emoji = "🙂" if observer_valence > 0.2 else "😐" if observer_valence >= -0.2 else "🙁"
+            reactions.append(f"{emoji} {escape(observer)}")
+        footer = " ".join(reactions[:4]) if reactions else "😐"
+
+        cards.append(
+            "<div style="
+            "border:1px solid rgba(148,163,184,0.55);border-radius:8px;padding:12px;"
+            "background:#f8fafc;margin-bottom:12px;"
+            '">'
+            f"<div style=\"font-weight:600\">Thread {index}: {header}</div>"
+            f"<div style=\"color:#475569;margin:4px 0 10px 0\">{topic}</div>"
+            + "".join(body_lines)
+            + f"<div style=\"color:#64748b;font-size:12px;margin-top:8px\">{footer}</div>"
+            + "</div>"
+        )
+    return "\n".join(cards)
+
+
+def _thread_topic(content: str) -> str:
+    words = content.split()
+    if not words:
+        return "Untitled thread"
+    snippet = " ".join(words[:6])
+    return snippet if len(words) <= 6 else f"{snippet}..."
+
+
 def _top_action_counts_text(action_counts: dict[str, int]) -> str:
     if not action_counts:
         return "none"
@@ -2384,13 +2547,20 @@ def build_app() -> gr.Blocks:
             label=labels["tick_focus"],
             elem_id="tick-focus-panel",
         )
-        timeline = gr.Markdown(
-            label=labels["timeline"],
-            elem_id="timeline-panel",
-            min_height=TIMELINE_MAX_HEIGHT_PX,
-            max_height=TIMELINE_MAX_HEIGHT_PX,
-            container=True,
-        )
+        with gr.Tabs(elem_id="narrative-tabs"):
+            with gr.Tab(labels["timeline"], elem_id="timeline-tab") as timeline_tab:
+                timeline = gr.Markdown(
+                    label=labels["timeline"],
+                    elem_id="timeline-panel",
+                    min_height=TIMELINE_MAX_HEIGHT_PX,
+                    max_height=TIMELINE_MAX_HEIGHT_PX,
+                    container=True,
+                )
+            with gr.Tab(labels["threads_tab"], elem_id="conversation-threads-tab") as threads_tab:
+                thread_view = gr.Markdown(
+                    labels["threads_empty"],
+                    elem_id="conversation-threads-panel",
+                )
         memory_snapshot_state = gr.State({})
         memory_panel = gr.Accordion(
             labels["memory_inspector"],
@@ -2495,7 +2665,10 @@ def build_app() -> gr.Blocks:
             graph,
             tick_scrubber,
             tick_focus,
+            timeline_tab,
             timeline,
+            threads_tab,
+            thread_view,
             memory_panel,
             inspector_agent,
             memory_view,
@@ -2633,6 +2806,7 @@ def build_app() -> gr.Blocks:
             ],
             outputs=[
                 timeline,
+                thread_view,
                 graph,
                 monologue_view,
                 current_plan_view,

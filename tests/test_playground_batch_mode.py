@@ -87,6 +87,7 @@ def test_subtask25_run_round_trips_batch_controls_into_summary() -> None:
 
     (
         timeline,
+        thread_view,
         _,
         monologue_markdown,
         plan_markdown,
@@ -123,6 +124,7 @@ def test_subtask25_run_round_trips_batch_controls_into_summary() -> None:
     assert "Batch runs: 10" in summary
     assert "multiple seeds" in monologue_markdown
     assert "multiple seeds" in plan_markdown
+    assert "single-run mode only" in thread_view
     assert jsonl
     assert download_path
     assert action_chart.data

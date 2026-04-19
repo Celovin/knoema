@@ -58,7 +58,7 @@ def test_subtask9_build_app_exposes_tick_scrubber_and_focus_below_graph() -> Non
     )
     timeline_index = next(
         index
-        for index, child in enumerate(app.children)
+        for index, child in enumerate(components)
         if type(child).__name__ == "Markdown"
         and getattr(child, "elem_id", None) == "timeline-panel"
     )

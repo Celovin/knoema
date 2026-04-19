@@ -10,8 +10,16 @@ sys.path.insert(0, str(Path.cwd()))
 playground_app = importlib.import_module("playground.app")
 
 
+def _walk_components(component: object) -> list[object]:
+    components = [component]
+    for child in getattr(component, "children", []) or []:
+        components.extend(_walk_components(child))
+    return components
+
+
 def test_subtask1_graph_is_stacked_above_timeline_with_scrollable_timeline() -> None:
     app = playground_app.build_app()
+    components = _walk_components(app)
 
     assert not any(
         type(child).__name__ == "Row"
@@ -21,12 +29,12 @@ def test_subtask1_graph_is_stacked_above_timeline_with_scrollable_timeline() -> 
 
     plot_index = next(
         index
-        for index, child in enumerate(app.children)
+        for index, child in enumerate(components)
         if type(child).__name__ == "Plot" and getattr(child, "elem_id", None) == "relationship-graph"
     )
     timeline_index = next(
         index
-        for index, child in enumerate(app.children)
+        for index, child in enumerate(components)
         if type(child).__name__ == "Markdown" and getattr(child, "elem_id", None) == "timeline-panel"
     )
 
