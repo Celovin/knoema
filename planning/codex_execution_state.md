@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 15:16 UTC by Codex
+**Last updated**: 2026-04-19 15:23 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -28,7 +28,7 @@
 ## Group 3 — 성격 모델 + ablation (4-6h)
 
 - [x] 5. 30 Personality traits across 7 tiers (schema + UI accordions) - 2026-04-19 15:09 UTC, commit ab5b672
-- [ ] 17. Inner monologue layer
+- [x] 17. Inner monologue layer - 2026-04-19 15:23 UTC, commit e72efca
 - [ ] 19. HTN hierarchical planning hookup
 - [ ] 41. Trait correlation matrix + ablation study
 
