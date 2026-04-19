@@ -40,10 +40,18 @@ def test_subtask10_build_app_exposes_memory_inspector_controls() -> None:
         if type(component).__name__ == "Markdown"
         and getattr(component, "elem_id", None) == "memory-inspector-markdown"
     )
+    emotion_plot = next(
+        component
+        for component in components
+        if type(component).__name__ == "Plot"
+        and getattr(component, "elem_id", None) == "emotion-trajectory-plot"
+    )
 
     assert memory_panel.label == playground_app.LABELS["ko"]["memory_inspector"]
     assert agent_dropdown.interactive is False
+    assert agent_dropdown.multiselect is True
     assert memory_markdown.value == playground_app.LABELS["ko"]["memory_empty"]
+    assert emotion_plot.label == playground_app.LABELS["ko"]["memory_emotion"]
 
 
 def test_subtask10_run_playground_scenario_returns_memory_snapshot() -> None:
@@ -71,6 +79,8 @@ def test_subtask10_run_playground_scenario_returns_memory_snapshot() -> None:
     assert len(snapshot["long_term"]) <= 5
     assert "score" in snapshot["long_term"][0]
     assert snapshot["monologue"]
+    assert snapshot["emotion"]
+    assert len(snapshot["emotion"]) == result.tick_count
 
 
 def test_subtask10_memory_inspector_markdown_renders_sections() -> None:

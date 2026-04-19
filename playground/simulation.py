@@ -54,6 +54,41 @@ PERSONALITY_FIELDS = (
     "neuroticism",
 )
 JITTER_STEPS = (-0.05, -0.025, 0.0, 0.025, 0.05)
+EMOTION_DECAY_RATE = 0.12
+EMOTION_ACTION_DELTAS: dict[str, tuple[float, float, float]] = {
+    "accept": (0.12, 0.03, 0.05),
+    "alone": (-0.03, -0.04, -0.02),
+    "attack": (-0.18, 0.22, 0.12),
+    "comfort": (0.18, -0.04, 0.03),
+    "craft_item": (0.05, 0.05, 0.08),
+    "deceive": (-0.08, 0.07, 0.03),
+    "defend": (-0.04, 0.14, 0.08),
+    "drop_item": (-0.02, -0.01, -0.02),
+    "enter": (0.02, 0.05, 0.03),
+    "exit": (-0.01, 0.04, -0.01),
+    "faction_betray": (-0.2, 0.16, 0.07),
+    "faction_join": (0.07, 0.05, 0.09),
+    "flee": (-0.12, 0.2, -0.1),
+    "give": (0.1, 0.01, 0.03),
+    "gossip": (-0.03, 0.05, 0.01),
+    "level_up": (0.18, 0.1, 0.18),
+    "move": (0.0, 0.05, 0.01),
+    "observe": (0.0, -0.03, 0.0),
+    "offer": (0.08, 0.02, 0.04),
+    "pickup_item": (0.03, 0.04, 0.04),
+    "propose_plan": (0.05, 0.03, 0.08),
+    "persuade": (0.04, 0.08, 0.07),
+    "query_memory": (0.0, 0.02, 0.02),
+    "quest_accept": (0.11, 0.07, 0.1),
+    "quest_complete": (0.2, 0.08, 0.14),
+    "quest_offer": (0.06, 0.06, 0.12),
+    "refuse": (-0.09, 0.04, 0.02),
+    "speak": (0.01, 0.03, 0.01),
+    "take": (0.01, 0.04, 0.03),
+    "threaten": (-0.15, 0.18, 0.09),
+    "use_item": (0.04, 0.06, 0.05),
+    "use_skill": (0.05, 0.05, 0.08),
+}
 
 SCENARIO_DIR = Path(__file__).resolve().parent / "scenarios"
 ENVIRONMENTS_PATH = Path(__file__).resolve().parent / "environments.yaml"
@@ -1108,6 +1143,7 @@ def _memory_snapshot(simulator: Simulator) -> dict[str, dict[str, list[dict[str,
     tick_timestamps: dict[int, str] = {}
     for entry in simulator.logs:
         tick_timestamps.setdefault(entry.tick, entry.timestamp.isoformat())
+    emotion_trajectories = _emotion_trajectories(simulator, tick_timestamps=tick_timestamps)
 
     monologues_by_agent: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for monologue in simulator.monologues:
@@ -1156,8 +1192,77 @@ def _memory_snapshot(simulator: Simulator) -> dict[str, dict[str, list[dict[str,
             "short_term": short_term,
             "long_term": long_term,
             "monologue": monologues_by_agent.get(agent_id, []),
+            "emotion": emotion_trajectories.get(agent_id, []),
         }
     return snapshot
+
+
+def _emotion_trajectories(
+    simulator: Simulator,
+    *,
+    tick_timestamps: dict[int, str],
+) -> dict[str, list[dict[str, Any]]]:
+    max_tick = max((entry.tick for entry in simulator.logs), default=-1)
+    if max_tick < 0:
+        return {agent.agent_id: [] for agent in simulator.agents}
+
+    logs_by_agent_tick = {
+        (entry.agent_id, entry.tick): entry for entry in simulator.logs
+    }
+    trajectories: dict[str, list[dict[str, Any]]] = {}
+    for agent in simulator.agents:
+        state = {"valence": 0.0, "arousal": 0.2, "dominance": 0.5}
+        series: list[dict[str, Any]] = []
+        for tick in range(max_tick + 1):
+            state = _decay_emotion_state(state, rate=EMOTION_DECAY_RATE)
+            entry = logs_by_agent_tick.get((agent.agent_id, tick))
+            if entry is not None:
+                state = _apply_emotion_delta(state, entry.action.action_type)
+            monologue_valence = simulator.monologue_valence.get((agent.agent_id, tick))
+            if monologue_valence is not None:
+                state["valence"] = _clamp(
+                    (state["valence"] * 0.6) + (float(monologue_valence) * 0.4),
+                    minimum=-1.0,
+                    maximum=1.0,
+                )
+                if abs(float(monologue_valence)) > 0.35:
+                    state["arousal"] = _clamp(
+                        state["arousal"] + 0.05,
+                        minimum=0.0,
+                        maximum=1.0,
+                    )
+            series.append(
+                {
+                    "tick": tick,
+                    "timestamp": tick_timestamps.get(tick, f"t{tick}"),
+                    "valence": round(state["valence"], 3),
+                    "arousal": round(state["arousal"], 3),
+                    "dominance": round(state["dominance"], 3),
+                }
+            )
+        trajectories[agent.agent_id] = series
+    return trajectories
+
+
+def _decay_emotion_state(state: dict[str, float], *, rate: float) -> dict[str, float]:
+    return {
+        "valence": state["valence"] * (1.0 - rate),
+        "arousal": state["arousal"] * (1.0 - rate),
+        "dominance": 0.5 + ((state["dominance"] - 0.5) * (1.0 - rate)),
+    }
+
+
+def _apply_emotion_delta(state: dict[str, float], action_type: str) -> dict[str, float]:
+    delta = EMOTION_ACTION_DELTAS.get(str(action_type), (0.0, 0.02, 0.0))
+    return {
+        "valence": _clamp(state["valence"] + float(delta[0]), minimum=-1.0, maximum=1.0),
+        "arousal": _clamp(state["arousal"] + float(delta[1]), minimum=0.0, maximum=1.0),
+        "dominance": _clamp(state["dominance"] + float(delta[2]), minimum=0.0, maximum=1.0),
+    }
+
+
+def _clamp(value: float, *, minimum: float, maximum: float) -> float:
+    return max(minimum, min(maximum, value))
 
 
 def _mean(values: list[int]) -> float:

@@ -9,6 +9,7 @@ from typing import Any
 import gradio as gr
 import plotly.graph_objects as go
 from plotly.colors import qualitative
+from plotly.subplots import make_subplots
 
 try:
     from .simulation import (
@@ -550,6 +551,9 @@ BASE_LABELS = {
         "memory_long_term_empty": "No long-term retrievals yet.",
         "memory_monologue": "Inner monologue",
         "memory_monologue_empty": "No inner monologues yet.",
+        "memory_emotion": "Emotion trajectory",
+        "memory_emotion_empty": "No emotion trajectory yet.",
+        "memory_multi_hint": "Showing memory details for the first selected agent. The chart includes every selected agent.",
         "timeline": "Timeline",
         "threads_tab": "Conversation threads",
         "threads_empty": "No conversation threads yet. Run a scenario with directed speech to group replies together.",
@@ -631,6 +635,9 @@ LABELS["ko"]["memory_long_term"] = "장기 기억 검색"
 LABELS["ko"]["memory_long_term_empty"] = "아직 장기 기억 검색 결과가 없습니다."
 LABELS["ko"]["memory_monologue"] = "내적 독백"
 LABELS["ko"]["memory_monologue_empty"] = "아직 내적 독백이 없습니다."
+LABELS["ko"]["memory_emotion"] = "감정 궤적"
+LABELS["ko"]["memory_emotion_empty"] = "아직 감정 궤적이 없습니다."
+LABELS["ko"]["memory_multi_hint"] = "메모리 상세는 첫 번째 선택 에이전트를 기준으로 보여주고, 차트는 선택한 모든 에이전트를 포함합니다."
 LABELS["ko"]["threads_tab"] = "대화 스레드"
 LABELS["ko"]["threads_empty"] = "아직 대화 스레드가 없습니다. 직접 대상이 있는 발화가 나오는 시나리오를 실행하세요."
 LABELS["ko"]["threads_batch"] = "대화 스레드는 단일 실행에서만 확인할 수 있습니다."
@@ -638,6 +645,7 @@ ENVIRONMENT_PRESETS = load_environment_presets()
 GRAPH_HEIGHT_PX = 620
 TIMELINE_MAX_HEIGHT_PX = 360
 ACTION_CHART_HEIGHT_PX = 380
+EMOTION_TRAJECTORY_MAX_AGENTS = 12
 AGENT_COLOR_SEQUENCE: tuple[str, ...] = tuple(qualitative.Bold)
 ACTION_PATTERN_SEQUENCE: tuple[str, ...] = ("", "/", "\\", "x", "-", "|", "+", ".", "o")
 
@@ -1193,6 +1201,7 @@ def _run(
     dict[str, dict[str, list[dict[str, Any]]]],
     dict[str, Any],
     str,
+    go.Figure,
 ]:
     legacy_with_language = len(PERSONA_TRAIT_FIELDS) + 5
     legacy_without_language = len(PERSONA_TRAIT_FIELDS) + 4
@@ -1384,7 +1393,7 @@ def _run(
         | {str(row["target"]) for row in result.relationship_rows}
     )
     agent_colors = _agent_color_map(agent_ids)
-    memory_snapshot, memory_agent, memory_markdown = _memory_inspector_outputs(
+    memory_snapshot, memory_agent, memory_markdown, emotion_trajectory = _memory_inspector_outputs(
         result.memory_snapshot,
         language=language,
         batch_mode=batch_result is not None,
@@ -1418,6 +1427,7 @@ def _run(
         memory_snapshot,
         memory_agent,
         memory_markdown,
+        emotion_trajectory,
     )
 
 
@@ -1648,10 +1658,14 @@ def _language_updates(
         gr.update(
             label=labels["memory_agent"],
             choices=[],
-            value=None,
+            value=[],
             interactive=False,
         ),
         labels["memory_empty"],
+        gr.update(
+            label=labels["memory_emotion"],
+            value=_emotion_trajectory_figure({}, [], language=key),
+        ),
         gr.update(label=labels["monologue_panel"]),
         labels["monologue_empty"],
         gr.update(label=labels["current_plan_panel"]),
@@ -1806,38 +1820,43 @@ def _memory_inspector_outputs(
     *,
     language: str = "en",
     batch_mode: bool = False,
-) -> tuple[dict[str, dict[str, list[dict[str, Any]]]], dict[str, Any], str]:
+) -> tuple[dict[str, dict[str, list[dict[str, Any]]]], dict[str, Any], str, go.Figure]:
     if batch_mode:
         return (
             {},
-            gr.update(choices=[], value=None, interactive=False),
+            gr.update(choices=[], value=[], interactive=False),
             LABELS[language]["memory_batch"],
+            _emotion_trajectory_figure({}, [], language=language),
         )
 
     agent_ids = sorted(snapshot)
     if not agent_ids:
         return (
             snapshot,
-            gr.update(choices=[], value=None, interactive=False),
+            gr.update(choices=[], value=[], interactive=False),
             LABELS[language]["memory_empty"],
+            _emotion_trajectory_figure(snapshot, [], language=language),
         )
 
-    selected_agent = agent_ids[0]
+    selected_agents = [agent_ids[0]]
     return (
         snapshot,
-        gr.update(choices=agent_ids, value=selected_agent, interactive=True),
-        _memory_inspector_markdown(snapshot, selected_agent, language=language),
+        gr.update(choices=agent_ids, value=selected_agents, interactive=True),
+        _memory_inspector_markdown(snapshot, selected_agents, language=language),
+        _emotion_trajectory_figure(snapshot, selected_agents, language=language),
     )
 
 
 def _memory_inspector_markdown(
     snapshot: dict[str, dict[str, list[dict[str, Any]]]],
-    agent_id: str | None,
+    agent_id: str | list[str] | None,
     language: str = "en",
 ) -> str:
-    if not snapshot or not agent_id or agent_id not in snapshot:
+    selected_agents = _selected_memory_agents(snapshot, agent_id)
+    if not snapshot or not selected_agents:
         return LABELS[language]["memory_empty"]
 
+    agent_id = selected_agents[0]
     memory = snapshot[agent_id]
     color_map = _agent_color_map(sorted(snapshot))
     agent_color = color_map.get(agent_id, "#0f172a")
@@ -1849,6 +1868,8 @@ def _memory_inspector_markdown(
             f'"><strong>{escape(agent_id)}</strong></div>'
         )
     ]
+    if len(selected_agents) > 1:
+        lines.append(f"> {LABELS[language]['memory_multi_hint']}")
     lines.extend(
         _memory_section_lines(
             LABELS[language]["memory_short_term"],
@@ -1874,6 +1895,157 @@ def _memory_inspector_markdown(
         )
     )
     return "\n".join(lines)
+
+
+def _selected_memory_agents(
+    snapshot: dict[str, dict[str, list[dict[str, Any]]]],
+    agent_id: str | list[str] | None,
+) -> list[str]:
+    if isinstance(agent_id, list):
+        requested = [str(value) for value in agent_id]
+    elif agent_id:
+        requested = [str(agent_id)]
+    else:
+        requested = []
+
+    selected = [
+        value
+        for value in requested
+        if value in snapshot
+    ]
+    if not selected and snapshot:
+        return [sorted(snapshot)[0]]
+    return selected
+
+
+def _memory_inspector_views(
+    snapshot: dict[str, dict[str, list[dict[str, Any]]]],
+    agent_id: str | list[str] | None,
+    language: str = "en",
+) -> tuple[str, go.Figure]:
+    selected_agents = _selected_memory_agents(snapshot, agent_id)
+    return (
+        _memory_inspector_markdown(snapshot, selected_agents, language=language),
+        _emotion_trajectory_figure(snapshot, selected_agents, language=language),
+    )
+
+
+def _emotion_trajectory_figure(
+    snapshot: dict[str, dict[str, list[dict[str, Any]]]],
+    agent_id: str | list[str] | None,
+    *,
+    language: str = "en",
+) -> go.Figure:
+    selected_agents = _selected_memory_agents(snapshot, agent_id)[:EMOTION_TRAJECTORY_MAX_AGENTS]
+    title = LABELS[language]["memory_emotion"]
+    tick_label = "Tick"
+    valence_label = "Valence"
+    arousal_label = "Arousal / Dominance"
+    empty_text = LABELS[language]["memory_emotion_empty"]
+    if language == "ko":
+        tick_label = "틱"
+        valence_label = "Valence"
+        arousal_label = "Arousal / Dominance"
+
+    if not selected_agents:
+        figure = go.Figure()
+        figure.update_layout(
+            title=title,
+            height=160,
+            margin={"l": 0, "r": 0, "t": 48, "b": 0},
+            annotations=[{"text": empty_text, "showarrow": False}],
+            paper_bgcolor="rgba(248,250,252,1)",
+            plot_bgcolor="rgba(248,250,252,1)",
+        )
+        return figure
+
+    figure = make_subplots(
+        rows=len(selected_agents),
+        cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.08,
+        subplot_titles=selected_agents,
+        specs=[[{"secondary_y": True}] for _ in selected_agents],
+    )
+    trace_colors = {
+        "valence": "#16a34a",
+        "arousal": "#f97316",
+        "dominance": "#2563eb",
+    }
+    for row_index, selected_agent in enumerate(selected_agents, start=1):
+        emotion_series = list(snapshot.get(selected_agent, {}).get("emotion", []))
+        ticks = [int(entry.get("tick", -1)) for entry in emotion_series]
+        figure.add_trace(
+            go.Scatter(
+                x=ticks,
+                y=[float(entry.get("valence", 0.0)) for entry in emotion_series],
+                mode="lines+markers",
+                name="Valence",
+                legendgroup="valence",
+                showlegend=row_index == 1,
+                line={"color": trace_colors["valence"], "width": 2},
+            ),
+            row=row_index,
+            col=1,
+            secondary_y=False,
+        )
+        figure.add_trace(
+            go.Scatter(
+                x=ticks,
+                y=[float(entry.get("arousal", 0.0)) for entry in emotion_series],
+                mode="lines+markers",
+                name="Arousal",
+                legendgroup="arousal",
+                showlegend=row_index == 1,
+                line={"color": trace_colors["arousal"], "width": 2},
+            ),
+            row=row_index,
+            col=1,
+            secondary_y=True,
+        )
+        figure.add_trace(
+            go.Scatter(
+                x=ticks,
+                y=[float(entry.get("dominance", 0.0)) for entry in emotion_series],
+                mode="lines+markers",
+                name="Dominance",
+                legendgroup="dominance",
+                showlegend=row_index == 1,
+                line={"color": trace_colors["dominance"], "width": 2, "dash": "dot"},
+            ),
+            row=row_index,
+            col=1,
+            secondary_y=True,
+        )
+        figure.update_yaxes(
+            range=[-1, 1],
+            title_text=valence_label,
+            row=row_index,
+            col=1,
+            secondary_y=False,
+        )
+        figure.update_yaxes(
+            range=[0, 1],
+            title_text=arousal_label,
+            row=row_index,
+            col=1,
+            secondary_y=True,
+        )
+        figure.update_xaxes(
+            title_text=tick_label if row_index == len(selected_agents) else None,
+            row=row_index,
+            col=1,
+        )
+
+    figure.update_layout(
+        title=title,
+        height=max(180, 120 * len(selected_agents)),
+        margin={"l": 0, "r": 0, "t": 64, "b": 0},
+        legend={"orientation": "h", "y": 1.08},
+        paper_bgcolor="rgba(248,250,252,1)",
+        plot_bgcolor="rgba(248,250,252,1)",
+    )
+    return figure
 
 
 def _memory_section_lines(
@@ -2571,13 +2743,19 @@ def build_app() -> gr.Blocks:
             inspector_agent = gr.Dropdown(
                 label=labels["memory_agent"],
                 choices=[],
-                value=None,
+                value=[],
+                multiselect=True,
                 interactive=False,
                 elem_id="memory-inspector-agent",
             )
             memory_view = gr.Markdown(
                 labels["memory_empty"],
                 elem_id="memory-inspector-markdown",
+            )
+            emotion_view = gr.Plot(
+                label=labels["memory_emotion"],
+                value=_emotion_trajectory_figure({}, [], language="ko"),
+                elem_id="emotion-trajectory-plot",
             )
         monologue_panel = gr.Accordion(
             labels["monologue_panel"],
@@ -2672,6 +2850,7 @@ def build_app() -> gr.Blocks:
             memory_panel,
             inspector_agent,
             memory_view,
+            emotion_view,
             monologue_panel,
             monologue_view,
             current_plan_panel,
@@ -2755,9 +2934,9 @@ def build_app() -> gr.Blocks:
             outputs=[tick_focus],
         )
         inspector_agent.change(
-            _memory_inspector_markdown,
+            _memory_inspector_views,
             inputs=[memory_snapshot_state, inspector_agent, language],
-            outputs=[memory_view],
+            outputs=[memory_view, emotion_view],
         )
         for controls in agent_tabs:
             controls["persona_preset"].change(
@@ -2819,6 +2998,7 @@ def build_app() -> gr.Blocks:
                 memory_snapshot_state,
                 inspector_agent,
                 memory_view,
+                emotion_view,
             ],
             api_name="run",
         )
