@@ -586,6 +586,18 @@ LABELS["ko"]["trait_matrix_summary"] = "Trait ablation summary"
 LABELS["en"]["trait_matrix_panel"] = "Trait correlation / ablation"
 LABELS["en"]["trait_matrix_plot"] = "Trait correlation matrix"
 LABELS["en"]["trait_matrix_summary"] = "Trait ablation summary"
+LABELS["ko"]["batch_mode"] = "배치 모드"
+LABELS["ko"]["batch_mode_info"] = "같은 시나리오를 여러 시드로 반복 실행해 집계합니다."
+LABELS["ko"]["batch_runs"] = "반복 횟수"
+LABELS["ko"]["batch_runs_info"] = "1~100회까지 반복 실행합니다. 단일 실행은 1회로 고정됩니다."
+LABELS["ko"]["master_seed"] = "마스터 시드"
+LABELS["ko"]["master_seed_info"] = "각 배치 시드는 master_seed + run_index로 파생됩니다."
+LABELS["en"]["batch_mode"] = "Batch mode"
+LABELS["en"]["batch_mode_info"] = "Repeat the same scenario across multiple derived seeds and aggregate the outputs."
+LABELS["en"]["batch_runs"] = "Batch runs"
+LABELS["en"]["batch_runs_info"] = "Repeat the simulation 1 to 100 times. Single-run mode always uses 1."
+LABELS["en"]["master_seed"] = "Master seed"
+LABELS["en"]["master_seed_info"] = "Batch seeds are derived as master_seed + run_index."
 ENVIRONMENT_PRESETS = load_environment_presets()
 GRAPH_HEIGHT_PX = 620
 TIMELINE_MAX_HEIGHT_PX = 360
@@ -1130,12 +1142,49 @@ def _run(
 ) -> tuple[str, go.Figure, str, str, str, str, str]:
     legacy_with_language = len(PERSONA_TRAIT_FIELDS) + 5
     legacy_without_language = len(PERSONA_TRAIT_FIELDS) + 4
+    legacy_batch_with_language = legacy_with_language + 3
+    legacy_batch_without_language = legacy_without_language + 3
     extra_agent_block = (AGENT_EDITOR_SLOT_COUNT - 1) * (2 + len(PERSONA_TRAIT_FIELDS))
     multi_with_language = legacy_with_language + extra_agent_block
     multi_without_language = legacy_without_language + extra_agent_block
+    multi_batch_with_language = multi_with_language + 3
+    multi_batch_without_language = multi_without_language + 3
 
     multi_agent_values: list[Any] = []
-    if len(trait_and_runtime) == multi_with_language:
+    batch_mode = False
+    batch_runs = 10
+    master_seed = 20260419
+    if len(trait_and_runtime) == multi_batch_with_language:
+        values = list(trait_and_runtime)
+        trait_values = values[: len(PERSONA_TRAIT_FIELDS)]
+        remainder = values[len(PERSONA_TRAIT_FIELDS) :]
+        multi_agent_values = remainder[:-8]
+        (
+            htn_enabled,
+            planning_depth,
+            ticks,
+            agent_count,
+            batch_mode,
+            batch_runs,
+            master_seed,
+            language_choice,
+        ) = remainder[-8:]
+    elif len(trait_and_runtime) == multi_batch_without_language:
+        values = list(trait_and_runtime)
+        trait_values = values[: len(PERSONA_TRAIT_FIELDS)]
+        remainder = values[len(PERSONA_TRAIT_FIELDS) :]
+        multi_agent_values = remainder[:-7]
+        (
+            htn_enabled,
+            planning_depth,
+            ticks,
+            agent_count,
+            batch_mode,
+            batch_runs,
+            master_seed,
+        ) = remainder[-7:]
+        language_choice = KOREAN_CHOICE
+    elif len(trait_and_runtime) == multi_with_language:
         values = list(trait_and_runtime)
         trait_values = values[: len(PERSONA_TRAIT_FIELDS)]
         remainder = values[len(PERSONA_TRAIT_FIELDS) :]
@@ -1148,8 +1197,34 @@ def _run(
         multi_agent_values = remainder[:-4]
         htn_enabled, planning_depth, ticks, agent_count = remainder[-4:]
         language_choice = KOREAN_CHOICE
+    elif len(trait_and_runtime) == legacy_batch_with_language:
+        (
+            *trait_values,
+            htn_enabled,
+            planning_depth,
+            ticks,
+            agent_count,
+            batch_mode,
+            batch_runs,
+            master_seed,
+            language_choice,
+        ) = trait_and_runtime
+    elif len(trait_and_runtime) == legacy_batch_without_language:
+        (
+            *trait_values,
+            htn_enabled,
+            planning_depth,
+            ticks,
+            agent_count,
+            batch_mode,
+            batch_runs,
+            master_seed,
+        ) = trait_and_runtime
+        language_choice = KOREAN_CHOICE
     elif len(trait_and_runtime) == legacy_with_language:
-        *trait_values, htn_enabled, planning_depth, ticks, agent_count, language_choice = trait_and_runtime
+        *trait_values, htn_enabled, planning_depth, ticks, agent_count, language_choice = (
+            trait_and_runtime
+        )
     elif len(trait_and_runtime) == legacy_without_language:
         *trait_values, htn_enabled, planning_depth, ticks, agent_count = trait_and_runtime
         language_choice = KOREAN_CHOICE
@@ -1194,6 +1269,7 @@ def _run(
                     },
                 }
             )
+
     result = run_playground_scenario(
         scenario_name=scenario_name,
         provider=_normalize_provider(provider),
@@ -1214,14 +1290,24 @@ def _run(
         agent_overrides=agent_overrides,
         primary_planning_enabled=bool(htn_enabled),
         planning_depth=int(planning_depth),
+        batch_mode=bool(batch_mode),
+        batch_runs=int(batch_runs),
+        master_seed=int(master_seed),
         language=language,
     )
     host_provider = host_key_active(_normalize_provider(provider), api_key)
+    batch_result = getattr(result, "batch_result", None)
     if language == "ko":
         summary = (
             f"모드: {result.mode} | 에이전트: {result.agent_count}명 | "
             f"틱: {result.tick_count} | 로그 항목: {result.log_count}"
         )
+        if batch_result is not None:
+            summary += (
+                f" | 배치: {batch_result.batch_size}회"
+                f" | 재현성 계수: {batch_result.reproducibility_coefficient:.3f}"
+                f" | 마스터 시드: {batch_result.master_seed}"
+            )
         if host_provider:
             summary += f" | (Celovin 호스트 {host_provider} 키 사용 중 - 데모 전용)"
     else:
@@ -1229,6 +1315,12 @@ def _run(
             f"Mode: {result.mode} | Agents: {result.agent_count} | "
             f"Ticks: {result.tick_count} | Log entries: {result.log_count}"
         )
+        if batch_result is not None:
+            summary += (
+                f" | Batch runs: {batch_result.batch_size}"
+                f" | Reproducibility: {batch_result.reproducibility_coefficient:.3f}"
+                f" | Master seed: {batch_result.master_seed}"
+            )
         if host_provider:
             summary += f" | (Celovin host {host_provider} key in use - demo only)"
     return (
@@ -1356,6 +1448,13 @@ def _hint_markdown_update(
     )
 
 
+def _batch_control_updates(enabled: bool) -> list[dict[str, Any]]:
+    return [
+        gr.update(interactive=bool(enabled)),
+        gr.update(interactive=bool(enabled)),
+    ]
+
+
 def _trait_update(field_name: str, labels: dict[str, str]) -> dict[str, Any]:
     return gr.update(label=labels[field_name], info=labels[f"{field_name}_info"])
 
@@ -1370,6 +1469,9 @@ def _language_updates(
     current_agent_count: int | None = None,
     current_htn_enabled: bool = False,
     current_planning_depth: int | None = None,
+    current_batch_mode: bool = False,
+    current_batch_runs: int | None = None,
+    current_master_seed: int | None = None,
 ) -> list[Any]:
     key = _language_key(lang_choice)
     labels = LABELS[key]
@@ -1378,6 +1480,8 @@ def _language_updates(
     environment_value = current_environment or _default_environment_id()
     agent_count_value = int(current_agent_count or scenario_default_agent_count(scenario_value))
     planning_depth_value = int(current_planning_depth or 3)
+    batch_runs_value = int(current_batch_runs or 10)
+    master_seed_value = int(current_master_seed or 20260419)
     agent_editor_updates = _agent_editor_updates(
         scenario_value,
         agent_count_value,
@@ -1421,6 +1525,23 @@ def _language_updates(
             value=planning_depth_value,
         ),
         gr.update(label=labels["ticks"]),
+        gr.update(
+            label=labels["batch_mode"],
+            info=labels["batch_mode_info"],
+            value=current_batch_mode,
+        ),
+        gr.update(
+            label=labels["batch_runs"],
+            info=labels["batch_runs_info"],
+            value=batch_runs_value,
+            interactive=bool(current_batch_mode),
+        ),
+        gr.update(
+            label=labels["master_seed"],
+            info=labels["master_seed_info"],
+            value=master_seed_value,
+            interactive=bool(current_batch_mode),
+        ),
         _hint_markdown_update(current_scenario, lang_choice, environment_value),
         gr.update(value=labels["run"]),
         gr.update(value=f"#### {labels['export_panel']}"),
@@ -1768,7 +1889,32 @@ def build_app() -> gr.Blocks:
             elem_classes=["knoema-hint"],
         )
 
-        run_button = gr.Button(labels["run"], variant="primary", elem_id="run-button")
+        with gr.Row():
+            batch_mode = gr.Checkbox(
+                label=labels["batch_mode"],
+                info=labels["batch_mode_info"],
+                value=False,
+                elem_id="batch-mode-checkbox",
+            )
+            batch_runs = gr.Slider(
+                label=labels["batch_runs"],
+                info=labels["batch_runs_info"],
+                minimum=1,
+                maximum=100,
+                step=1,
+                value=10,
+                interactive=False,
+                elem_id="batch-runs-slider",
+            )
+            master_seed = gr.Number(
+                label=labels["master_seed"],
+                info=labels["master_seed_info"],
+                value=20260419,
+                precision=0,
+                interactive=False,
+                elem_id="master-seed-number",
+            )
+            run_button = gr.Button(labels["run"], variant="primary", elem_id="run-button")
         summary = gr.Textbox(label=labels["summary"], interactive=False)
         graph = gr.Plot(label=labels["graph"], elem_id="relationship-graph")
         timeline = gr.Markdown(
@@ -1853,6 +1999,9 @@ def build_app() -> gr.Blocks:
             htn_enabled,
             planning_depth,
             ticks,
+            batch_mode,
+            batch_runs,
+            master_seed,
             scenario_hint,
             run_button,
             export_heading,
@@ -1882,6 +2031,9 @@ def build_app() -> gr.Blocks:
                 agent_count.value,
                 htn_enabled.value,
                 planning_depth.value,
+                batch_mode.value,
+                batch_runs.value,
+                master_seed.value,
             )
 
         tutorial_button.click(
@@ -1928,6 +2080,11 @@ def build_app() -> gr.Blocks:
             inputs=[scenario, agent_count, cultural_prior, language],
             outputs=agent_editor_outputs,
         )
+        batch_mode.change(
+            _batch_control_updates,
+            inputs=[batch_mode],
+            outputs=[batch_runs, master_seed],
+        )
         for controls in agent_tabs:
             controls["persona_preset"].change(
                 _apply_persona_preset,
@@ -1968,6 +2125,9 @@ def build_app() -> gr.Blocks:
                 planning_depth,
                 ticks,
                 agent_count,
+                batch_mode,
+                batch_runs,
+                master_seed,
                 language,
             ],
             outputs=[timeline, graph, monologue_view, current_plan_view, jsonl, download, summary],

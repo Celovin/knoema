@@ -48,7 +48,11 @@ def test_subtask13_hint_renders_above_run_button_and_updates_with_language() -> 
     run_button_index = next(
         index
         for index, child in enumerate(app.children)
-        if type(child).__name__ == "Button" and getattr(child, "elem_id", None) == "run-button"
+        if any(
+            type(grandchild).__name__ == "Button"
+            and getattr(grandchild, "elem_id", None) == "run-button"
+            for grandchild in (getattr(child, "children", None) or [])
+        )
     )
 
     assert hint_index < run_button_index

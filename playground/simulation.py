@@ -6,6 +6,8 @@ import json
 import os
 import re
 import tempfile
+from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
@@ -157,6 +159,39 @@ class PlaygroundResult:
     log_count: int
     agent_count: int
     tick_count: int
+    batch_result: BatchResult | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class BatchTickStat:
+    tick: int
+    mean_actions: float
+    action_type_counts: dict[str, int]
+    top_action_type: str
+
+
+@dataclass(frozen=True, slots=True)
+class BatchAgentStat:
+    agent_id: str
+    mean_actions: float
+    action_type_counts: dict[str, int]
+    top_action_type: str
+
+
+@dataclass(frozen=True, slots=True)
+class BatchResult:
+    batch_size: int
+    master_seed: int
+    seeds: tuple[int, ...]
+    reproducibility_coefficient: float
+    per_tick_stats: tuple[BatchTickStat, ...]
+    per_agent_stats: tuple[BatchAgentStat, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class PlaygroundRunArtifacts:
+    agents: list[Persona]
+    simulator: Simulator
 
 
 @dataclass(frozen=True, slots=True)
@@ -608,6 +643,9 @@ def run_playground_scenario(
     agent_overrides: list[dict[str, Any]] | None = None,
     primary_planning_enabled: bool = False,
     planning_depth: int = 3,
+    batch_mode: bool = False,
+    batch_runs: int = 10,
+    master_seed: int = 20260419,
     language: str = "en",
 ) -> PlaygroundResult:
     """Run a short scenario and return UI-ready artifacts.
@@ -616,6 +654,137 @@ def run_playground_scenario(
     written to disk or stored in module state.
     """
 
+    resolved_batch_runs = max(1, min(int(batch_runs), 100)) if batch_mode else 1
+    resolved_ticks = max(1, min(int(ticks), 24))
+
+    if resolved_batch_runs == 1:
+        artifacts = _execute_playground_run(
+            scenario_name=scenario_name,
+            provider=provider,
+            api_key=api_key,
+            model=model,
+            primary_name=primary_name,
+            primary_age=primary_age,
+            openness=openness,
+            conscientiousness=conscientiousness,
+            extraversion=extraversion,
+            agreeableness=agreeableness,
+            neuroticism=neuroticism,
+            personality_overrides=personality_overrides,
+            ticks=resolved_ticks,
+            agent_count=agent_count,
+            environment_preset_id=environment_preset_id,
+            cultural_prior_id=cultural_prior_id,
+            agent_overrides=agent_overrides,
+            primary_planning_enabled=primary_planning_enabled,
+            planning_depth=planning_depth,
+            language=language,
+            seed=master_seed if batch_mode else None,
+        )
+        jsonl = _logs_to_jsonl(artifacts.simulator.logs)
+        download_path = _write_download_file(jsonl)
+        return PlaygroundResult(
+            scenario_name=scenario_name,
+            mode=provider,
+            timeline_markdown=_timeline_markdown(artifacts.simulator.logs, language=language),
+            monologue_markdown=_monologue_markdown(
+                artifacts.simulator.monologues,
+                artifacts.simulator.monologue_valence,
+                language=language,
+            ),
+            plan_markdown=_plan_markdown(
+                artifacts.simulator.planner,
+                artifacts.agents,
+                language=language,
+            ),
+            relationship_rows=_relationship_rows(artifacts.simulator),
+            jsonl=jsonl,
+            download_path=download_path,
+            log_count=len(artifacts.simulator.logs),
+            agent_count=len(artifacts.agents),
+            tick_count=len({entry.tick for entry in artifacts.simulator.logs}),
+        )
+
+    seeds = tuple(int(master_seed) + index for index in range(resolved_batch_runs))
+    worker_count = min(len(seeds), 8)
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        artifacts_by_seed = list(
+            executor.map(
+                lambda seed: _execute_playground_run(
+                    scenario_name=scenario_name,
+                    provider=provider,
+                    api_key=api_key,
+                    model=model,
+                    primary_name=primary_name,
+                    primary_age=primary_age,
+                    openness=openness,
+                    conscientiousness=conscientiousness,
+                    extraversion=extraversion,
+                    agreeableness=agreeableness,
+                    neuroticism=neuroticism,
+                    personality_overrides=personality_overrides,
+                    ticks=resolved_ticks,
+                    agent_count=agent_count,
+                    environment_preset_id=environment_preset_id,
+                    cultural_prior_id=cultural_prior_id,
+                    agent_overrides=agent_overrides,
+                    primary_planning_enabled=primary_planning_enabled,
+                    planning_depth=planning_depth,
+                    language=language,
+                    seed=seed,
+                ),
+                seeds,
+            )
+        )
+
+    batch_result = _build_batch_result(
+        artifacts_by_seed,
+        seeds=seeds,
+        master_seed=int(master_seed),
+    )
+    jsonl = _batch_jsonl(batch_result)
+    download_path = _write_download_file(jsonl)
+    sample_artifacts = artifacts_by_seed[0]
+    return PlaygroundResult(
+        scenario_name=scenario_name,
+        mode=provider,
+        timeline_markdown=_batch_timeline_markdown(batch_result, language=language),
+        monologue_markdown=_batch_monologue_markdown(language=language),
+        plan_markdown=_batch_plan_markdown(language=language),
+        relationship_rows=_aggregate_relationship_rows(artifacts_by_seed),
+        jsonl=jsonl,
+        download_path=download_path,
+        log_count=sum(len(artifacts.simulator.logs) for artifacts in artifacts_by_seed),
+        agent_count=len(sample_artifacts.agents),
+        tick_count=len({entry.tick for entry in sample_artifacts.simulator.logs}),
+        batch_result=batch_result,
+    )
+
+
+def _execute_playground_run(
+    *,
+    scenario_name: str,
+    provider: Provider,
+    api_key: str,
+    model: str,
+    primary_name: str,
+    primary_age: int,
+    openness: float,
+    conscientiousness: float,
+    extraversion: float,
+    agreeableness: float,
+    neuroticism: float,
+    personality_overrides: dict[str, float] | None,
+    ticks: int,
+    agent_count: int | None,
+    environment_preset_id: str | None,
+    cultural_prior_id: str | None,
+    agent_overrides: list[dict[str, Any]] | None,
+    primary_planning_enabled: bool,
+    planning_depth: int,
+    language: str,
+    seed: int | None,
+) -> PlaygroundRunArtifacts:
     config = load_run_config(scenario_path(scenario_name))
     target_agent_count = len(config.agents) if agent_count is None else int(agent_count)
     agent_configs = _resize_agent_pool(config.agents, target_agent_count)
@@ -660,7 +829,11 @@ def run_playground_scenario(
                 else None
             ),
         )
+
     environment = config.environment.to_domain()
+    if seed is not None:
+        environment.conditions = dict(environment.conditions)
+        environment.conditions["seed"] = int(seed)
     preset = environment_preset(environment_preset_id)
     if preset is None:
         for agent_config in agent_configs:
@@ -687,26 +860,215 @@ def run_playground_scenario(
     for event in _filter_events_for_agent_pool(config.events, agent_configs):
         simulator.scheduler.schedule(event.to_domain())
 
-    _run_ticks(simulator, ticks=max(1, min(ticks, 24)))
-    jsonl = _logs_to_jsonl(simulator.logs)
-    download_path = _write_download_file(jsonl)
-    return PlaygroundResult(
-        scenario_name=scenario_name,
-        mode=provider,
-        timeline_markdown=_timeline_markdown(simulator.logs, language=language),
-        monologue_markdown=_monologue_markdown(
-            simulator.monologues,
-            simulator.monologue_valence,
-            language=language,
-        ),
-        plan_markdown=_plan_markdown(simulator.planner, agents, language=language),
-        relationship_rows=_relationship_rows(simulator),
-        jsonl=jsonl,
-        download_path=download_path,
-        log_count=len(simulator.logs),
-        agent_count=len(agents),
-        tick_count=len({entry.tick for entry in simulator.logs}),
+    _run_ticks(simulator, ticks=max(1, min(int(ticks), 24)))
+    return PlaygroundRunArtifacts(agents=agents, simulator=simulator)
+
+
+def _build_batch_result(
+    artifacts_by_seed: list[PlaygroundRunArtifacts],
+    *,
+    seeds: tuple[int, ...],
+    master_seed: int,
+) -> BatchResult:
+    tick_totals: dict[int, list[int]] = defaultdict(list)
+    tick_action_counts: dict[int, Counter[str]] = defaultdict(Counter)
+    agent_totals: dict[str, list[int]] = defaultdict(list)
+    agent_action_counts: dict[str, Counter[str]] = defaultdict(Counter)
+    total_actions_per_run: list[int] = []
+
+    for artifacts in artifacts_by_seed:
+        total_actions_per_run.append(len(artifacts.simulator.logs))
+        logs_by_tick: dict[int, list[SimulationLogEntry]] = defaultdict(list)
+        logs_by_agent: dict[str, list[SimulationLogEntry]] = defaultdict(list)
+        for entry in artifacts.simulator.logs:
+            logs_by_tick[entry.tick].append(entry)
+            logs_by_agent[entry.agent_id].append(entry)
+        for tick, tick_logs in logs_by_tick.items():
+            tick_totals[tick].append(len(tick_logs))
+            tick_action_counts[tick].update(entry.action.action_type for entry in tick_logs)
+        for agent_id, agent_logs in logs_by_agent.items():
+            agent_totals[agent_id].append(len(agent_logs))
+            agent_action_counts[agent_id].update(
+                entry.action.action_type for entry in agent_logs
+            )
+
+    per_tick_stats = tuple(
+        BatchTickStat(
+            tick=tick,
+            mean_actions=_mean(tick_totals[tick]),
+            action_type_counts=dict(sorted(tick_action_counts[tick].items())),
+            top_action_type=_top_action_type(tick_action_counts[tick]),
+        )
+        for tick in sorted(tick_totals)
     )
+    per_agent_stats = tuple(
+        BatchAgentStat(
+            agent_id=agent_id,
+            mean_actions=_mean(agent_totals[agent_id]),
+            action_type_counts=dict(sorted(agent_action_counts[agent_id].items())),
+            top_action_type=_top_action_type(agent_action_counts[agent_id]),
+        )
+        for agent_id in sorted(agent_totals)
+    )
+
+    return BatchResult(
+        batch_size=len(artifacts_by_seed),
+        master_seed=master_seed,
+        seeds=seeds,
+        reproducibility_coefficient=_reproducibility_coefficient(total_actions_per_run),
+        per_tick_stats=per_tick_stats,
+        per_agent_stats=per_agent_stats,
+    )
+
+
+def _batch_jsonl(batch_result: BatchResult) -> str:
+    rows: list[dict[str, object]] = [
+        {
+            "record_type": "batch_summary",
+            "batch_size": batch_result.batch_size,
+            "master_seed": batch_result.master_seed,
+            "seeds": list(batch_result.seeds),
+            "reproducibility_coefficient": batch_result.reproducibility_coefficient,
+        }
+    ]
+    rows.extend(
+        {
+            "record_type": "tick_stat",
+            "tick": stat.tick,
+            "mean_actions": stat.mean_actions,
+            "top_action_type": stat.top_action_type,
+            "action_type_counts": stat.action_type_counts,
+        }
+        for stat in batch_result.per_tick_stats
+    )
+    rows.extend(
+        {
+            "record_type": "agent_stat",
+            "agent_id": stat.agent_id,
+            "mean_actions": stat.mean_actions,
+            "top_action_type": stat.top_action_type,
+            "action_type_counts": stat.action_type_counts,
+        }
+        for stat in batch_result.per_agent_stats
+    )
+    return "\n".join(json.dumps(row, ensure_ascii=False, sort_keys=True) for row in rows)
+
+
+def _batch_timeline_markdown(batch_result: BatchResult, *, language: str = "en") -> str:
+    if language == "ko":
+        lines = [
+            "### 배치 타임라인",
+            (
+                f"- 반복 {batch_result.batch_size}회 | 마스터 시드 {batch_result.master_seed} "
+                f"| 재현성 계수 {batch_result.reproducibility_coefficient:.3f}"
+            ),
+        ]
+        for stat in batch_result.per_tick_stats:
+            top_counts = _top_count_text(stat.action_type_counts)
+            lines.append(
+                f"- **틱 {stat.tick:02d}** 평균 행동 {stat.mean_actions:.1f} | 상위 액션: {top_counts}"
+            )
+        return "\n".join(lines)
+
+    lines = [
+        "### Batch timeline",
+        (
+            f"- Batch runs: {batch_result.batch_size} | Master seed: {batch_result.master_seed} "
+            f"| Reproducibility coefficient: {batch_result.reproducibility_coefficient:.3f}"
+        ),
+    ]
+    for stat in batch_result.per_tick_stats:
+        top_counts = _top_count_text(stat.action_type_counts)
+        lines.append(
+            f"- **Tick {stat.tick:02d}** mean actions={stat.mean_actions:.1f} | top actions: {top_counts}"
+        )
+    return "\n".join(lines)
+
+
+def _batch_monologue_markdown(*, language: str = "en") -> str:
+    if language == "ko":
+        return "배치 모드는 여러 시드를 집계합니다. 개별 내적 독백은 단일 실행 모드에서 확인하세요."
+    return "Batch mode aggregates multiple seeds. Use single-run mode to inspect per-agent monologues."
+
+
+def _batch_plan_markdown(*, language: str = "en") -> str:
+    if language == "ko":
+        return "배치 모드는 여러 시드를 집계합니다. 개별 HTN 계획은 단일 실행 모드에서 확인하세요."
+    return "Batch mode aggregates multiple seeds. Use single-run mode to inspect per-run HTN plans."
+
+
+def _aggregate_relationship_rows(
+    artifacts_by_seed: list[PlaygroundRunArtifacts],
+) -> list[dict[str, object]]:
+    aggregated: dict[tuple[str, str], dict[str, object]] = {}
+    for artifacts in artifacts_by_seed:
+        for row in _relationship_rows(artifacts.simulator):
+            key = (str(row["source"]), str(row["target"]))
+            bucket = aggregated.setdefault(
+                key,
+                {
+                    "source": row["source"],
+                    "target": row["target"],
+                    "relationship_type": row["relationship_type"],
+                    "weight_total": 0.0,
+                    "trust_total": 0.0,
+                    "familiarity_total": 0.0,
+                    "count": 0,
+                },
+            )
+            bucket["weight_total"] = float(bucket["weight_total"]) + float(row["weight"])
+            bucket["trust_total"] = float(bucket["trust_total"]) + float(row["trust"])
+            bucket["familiarity_total"] = float(bucket["familiarity_total"]) + float(
+                row["familiarity"]
+            )
+            bucket["count"] = int(bucket["count"]) + 1
+
+    rows: list[dict[str, object]] = []
+    for key in sorted(aggregated):
+        bucket = aggregated[key]
+        count = max(1, int(bucket["count"]))
+        rows.append(
+            {
+                "source": bucket["source"],
+                "target": bucket["target"],
+                "relationship_type": bucket["relationship_type"],
+                "weight": round(float(bucket["weight_total"]) / count, 3),
+                "trust": round(float(bucket["trust_total"]) / count, 3),
+                "familiarity": round(float(bucket["familiarity_total"]) / count, 3),
+            }
+        )
+    return rows
+
+
+def _mean(values: list[int]) -> float:
+    if not values:
+        return 0.0
+    return round(sum(values) / len(values), 3)
+
+
+def _reproducibility_coefficient(action_counts: list[int]) -> float:
+    if not action_counts:
+        return 1.0
+    mean_count = sum(action_counts) / len(action_counts)
+    if mean_count <= 0:
+        return 1.0
+    variance = sum((count - mean_count) ** 2 for count in action_counts) / len(action_counts)
+    normalized_variance = variance / max(mean_count**2, 1.0)
+    return round(max(0.0, 1.0 - normalized_variance), 3)
+
+
+def _top_action_type(counts: Counter[str]) -> str:
+    if not counts:
+        return "observe"
+    return min(
+        counts.items(),
+        key=lambda item: (-item[1], item[0]),
+    )[0]
+
+
+def _top_count_text(action_type_counts: dict[str, int]) -> str:
+    ranked = sorted(action_type_counts.items(), key=lambda item: (-item[1], item[0]))
+    return ", ".join(f"{action_type}x{count}" for action_type, count in ranked[:3])
 
 
 def _resize_agent_pool(
