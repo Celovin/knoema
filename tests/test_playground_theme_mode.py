@@ -1,0 +1,49 @@
+from __future__ import annotations
+
+import importlib
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path.cwd() / "src"))
+sys.path.insert(0, str(Path.cwd()))
+
+playground_app = importlib.import_module("playground.app")
+
+
+def _walk_components(component: object) -> list[object]:
+    components = [component]
+    for child in getattr(component, "children", []) or []:
+        components.extend(_walk_components(child))
+    return components
+
+
+def test_subtask52_build_app_exposes_theme_mode_toggle() -> None:
+    app = playground_app.build_app()
+    components = _walk_components(app)
+
+    theme_mode = next(
+        component
+        for component in components
+        if type(component).__name__ == "Radio"
+        and getattr(component, "elem_id", None) == "theme-mode-radio"
+    )
+
+    assert theme_mode.label == playground_app.LABELS["ko"]["theme"]
+    assert [choice[1] if isinstance(choice, tuple) else choice for choice in theme_mode.choices] == (
+        playground_app._theme_choices("ko")
+    )
+
+
+def test_subtask52_theme_head_and_css_define_persistent_theme_system() -> None:
+    assert playground_app.THEME_STORAGE_KEY in playground_app.APP_HEAD
+    assert "prefers-color-scheme: dark" in playground_app.APP_HEAD
+    assert "setFromLabel" in playground_app.APP_HEAD
+    assert "--knoema-bg" in playground_app.FOOTER_CSS
+    assert 'data-knoema-theme="dark"' in playground_app.FOOTER_CSS
+
+
+def test_subtask52_theme_helpers_round_trip_localized_modes() -> None:
+    assert playground_app._normalize_theme_mode(playground_app.LABELS["ko"]["theme_dark"]) == "dark"
+    assert playground_app._normalize_theme_mode(playground_app.LABELS["en"]["theme_light"]) == "light"
+    assert playground_app._theme_label("auto", "ko") == playground_app.LABELS["ko"]["theme_auto"]
+    assert playground_app._theme_label("dark", "en") == playground_app.LABELS["en"]["theme_dark"]

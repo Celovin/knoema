@@ -93,6 +93,7 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
 KOREAN_CHOICE = "한국어"
 LANGUAGE_CHOICES = [KOREAN_CHOICE, "English"]
 TUTORIAL_STORAGE_KEY = "knoema_tutorial_completed"
+THEME_STORAGE_KEY = "knoema_theme_mode"
 TUTORIAL_STEPS = {
     "ko": [
         {
@@ -641,6 +642,11 @@ LABELS["ko"]["initial_relationships"] = "초기 관계 시드"
 LABELS["ko"]["initial_relationships_placeholder"] = "agent_1 | agent_2 | colleague | 0.55 | 0.70 | 0.30"
 LABELS["ko"]["live_streaming"] = "실시간 WebSocket 스트리밍"
 LABELS["ko"]["live_streaming_info"] = "Replay only 모드에서 tick 단위로 UI를 갱신합니다."
+LABELS["ko"]["theme"] = "테마"
+LABELS["ko"]["theme_info"] = "라이트, 다크, 자동 중 하나를 선택하고 브라우저에 저장합니다."
+LABELS["ko"]["theme_auto"] = "자동"
+LABELS["ko"]["theme_light"] = "라이트"
+LABELS["ko"]["theme_dark"] = "다크"
 LABELS["ko"]["report_agent_panel"] = "ReportAgent Q&A"
 LABELS["ko"]["report_agent_question"] = "런 질문"
 LABELS["ko"]["report_agent_run"] = "현재 런 요약 답변"
@@ -666,6 +672,11 @@ LABELS["en"]["initial_relationships"] = "Initial relationship seeds"
 LABELS["en"]["initial_relationships_placeholder"] = "agent_1 | agent_2 | colleague | 0.55 | 0.70 | 0.30"
 LABELS["en"]["live_streaming"] = "Live WebSocket streaming"
 LABELS["en"]["live_streaming_info"] = "In Replay only mode, update the UI once per tick through the Phase 44 stream route."
+LABELS["en"]["theme"] = "Theme"
+LABELS["en"]["theme_info"] = "Choose Light, Dark, or Auto and persist the preference in local storage."
+LABELS["en"]["theme_auto"] = "Auto"
+LABELS["en"]["theme_light"] = "Light"
+LABELS["en"]["theme_dark"] = "Dark"
 LABELS["en"]["report_agent_panel"] = "ReportAgent Q&A"
 LABELS["en"]["report_agent_question"] = "Run question"
 LABELS["en"]["report_agent_run"] = "Answer from current run"
@@ -1068,7 +1079,168 @@ def _tutorial_head() -> str:
 
 TUTORIAL_HEAD = _tutorial_head()
 
+
+def _theme_head() -> str:
+    return f"""
+<script>
+(() => {{
+  const storageKey = {json.dumps(THEME_STORAGE_KEY)};
+  const koreanChoice = {json.dumps(KOREAN_CHOICE, ensure_ascii=False)};
+  const labels = {{
+    ko: {{
+      auto: {json.dumps(LABELS["ko"]["theme_auto"], ensure_ascii=False)},
+      light: {json.dumps(LABELS["ko"]["theme_light"], ensure_ascii=False)},
+      dark: {json.dumps(LABELS["ko"]["theme_dark"], ensure_ascii=False)},
+    }},
+    en: {{
+      auto: {json.dumps(LABELS["en"]["theme_auto"], ensure_ascii=False)},
+      light: {json.dumps(LABELS["en"]["theme_light"], ensure_ascii=False)},
+      dark: {json.dumps(LABELS["en"]["theme_dark"], ensure_ascii=False)},
+    }},
+  }};
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+  function languageKey(languageChoice) {{
+    return languageChoice === koreanChoice ? "ko" : "en";
+  }}
+
+  function normalizeMode(value) {{
+    if (value === "light" || value === labels.ko.light || value === labels.en.light) return "light";
+    if (value === "dark" || value === labels.ko.dark || value === labels.en.dark) return "dark";
+    return "auto";
+  }}
+
+  function readStoredMode() {{
+    return normalizeMode(window.localStorage.getItem(storageKey));
+  }}
+
+  function resolvedMode(mode) {{
+    return mode === "auto" ? (media.matches ? "dark" : "light") : mode;
+  }}
+
+  function applyMode(mode, persist) {{
+    const normalized = normalizeMode(mode);
+    const active = resolvedMode(normalized);
+    document.documentElement.dataset.knoemaThemeMode = normalized;
+    document.documentElement.dataset.knoemaTheme = active;
+    document.documentElement.style.colorScheme = active;
+    if (persist !== false) {{
+      window.localStorage.setItem(storageKey, normalized);
+    }}
+    return normalized;
+  }}
+
+  function labelFor(mode, languageChoice) {{
+    return labels[languageKey(languageChoice)][normalizeMode(mode)];
+  }}
+
+  media.addEventListener("change", () => {{
+    if (readStoredMode() === "auto") {{
+      applyMode("auto", false);
+    }}
+  }});
+
+  window.KNOEMA_THEME = {{
+    sync(languageChoice) {{
+      const mode = applyMode(readStoredMode(), false);
+      return labelFor(mode, languageChoice);
+    }},
+    setFromLabel(label, languageChoice) {{
+      const mode = applyMode(label, true);
+      return labelFor(mode, languageChoice);
+    }},
+    currentLabel(languageChoice) {{
+      return labelFor(readStoredMode(), languageChoice);
+    }},
+  }};
+
+  applyMode(readStoredMode(), false);
+}})();
+</script>
+"""
+
+
+THEME_HEAD = _theme_head()
+APP_HEAD = TUTORIAL_HEAD + THEME_HEAD
+
 FOOTER_CSS = f"""
+:root {{
+    --knoema-bg: #f5f7fb;
+    --knoema-surface: #ffffff;
+    --knoema-surface-alt: #edf2f7;
+    --knoema-text: #102033;
+    --knoema-muted: #526273;
+    --knoema-border: rgba(100, 116, 139, 0.35);
+    --knoema-accent: #0f766e;
+    --knoema-accent-strong: #115e59;
+    --knoema-focus: #f97316;
+}}
+:root[data-knoema-theme="dark"] {{
+    --knoema-bg: #0f172a;
+    --knoema-surface: #162033;
+    --knoema-surface-alt: #1e293b;
+    --knoema-text: #e5eef7;
+    --knoema-muted: #c0cfdd;
+    --knoema-border: rgba(148, 163, 184, 0.35);
+    --knoema-accent: #34d399;
+    --knoema-accent-strong: #10b981;
+    --knoema-focus: #fbbf24;
+}}
+body,
+.gradio-container {{
+    background: var(--knoema-bg) !important;
+    color: var(--knoema-text) !important;
+}}
+.gradio-container {{
+    background: var(--knoema-bg) !important;
+}}
+.gradio-container h1,
+.gradio-container h2,
+.gradio-container h3,
+.gradio-container h4,
+.gradio-container p,
+.gradio-container label,
+.gradio-container .prose,
+.gradio-container .gr-markdown,
+.gradio-container .gr-textbox,
+.gradio-container .gr-number,
+.gradio-container .gr-dropdown,
+.gradio-container .gr-radio {{
+    color: var(--knoema-text) !important;
+}}
+.gradio-container .gr-box,
+.gradio-container .gr-panel,
+.gradio-container .gr-accordion,
+.gradio-container .gr-form,
+.gradio-container .block,
+.gradio-container .wrap {{
+    background: var(--knoema-surface) !important;
+    border-color: var(--knoema-border) !important;
+}}
+.gradio-container input,
+.gradio-container textarea,
+.gradio-container select,
+.gradio-container .cm-editor,
+.gradio-container .cm-gutters {{
+    background: var(--knoema-surface-alt) !important;
+    color: var(--knoema-text) !important;
+    border-color: var(--knoema-border) !important;
+}}
+.gradio-container button {{
+    border-color: var(--knoema-border) !important;
+}}
+.gradio-container button.primary,
+.gradio-container button[variant="primary"] {{
+    background: var(--knoema-accent) !important;
+}}
+.gradio-container button.secondary,
+.gradio-container button[variant="secondary"] {{
+    color: var(--knoema-text) !important;
+}}
+.gradio-container *:focus-visible {{
+    outline: 3px solid var(--knoema-focus) !important;
+    outline-offset: 2px;
+}}
 footer {{display: none !important;}}
 .footer {{display: none !important;}}
 .api-docs {{display: none !important;}}
@@ -1081,14 +1253,14 @@ footer {{display: none !important;}}
     overflow-y: auto;
 }}
 .knoema-hint {{
-    color: #475569;
+    color: var(--knoema-muted);
     font-size: 0.95rem;
 }}
 .knoema-hint p {{
     margin-bottom: 0;
 }}
 .knoema-muted {{
-    color: #64748b;
+    color: var(--knoema-muted);
     font-size: 0.92rem;
 }}
 """
@@ -1122,6 +1294,32 @@ def _cultural_prior_choices(language: str) -> list[tuple[str, str]]:
 def _provider_choices(language: str) -> list[str]:
     labels = LABELS[language]
     return [labels["replay"], "OpenAI", "Anthropic", labels["player_mode"]]
+
+
+def _theme_choices(language: str) -> list[str]:
+    labels = LABELS[language]
+    return [labels["theme_auto"], labels["theme_light"], labels["theme_dark"]]
+
+
+def _normalize_theme_mode(choice: str | None) -> str:
+    for language in ("ko", "en"):
+        labels = LABELS[language]
+        if choice == labels["theme_light"]:
+            return "light"
+        if choice == labels["theme_dark"]:
+            return "dark"
+        if choice == labels["theme_auto"]:
+            return "auto"
+    return "auto"
+
+
+def _theme_label(mode: str, language: str) -> str:
+    labels = LABELS[language]
+    if mode == "light":
+        return labels["theme_light"]
+    if mode == "dark":
+        return labels["theme_dark"]
+    return labels["theme_auto"]
 
 
 def _normalize_provider(provider: str) -> str:
@@ -2819,6 +3017,7 @@ def _language_updates(
     current_batch_runs: int | None = None,
     current_master_seed: int | None = None,
     current_live_streaming: bool = False,
+    current_theme_mode: str | None = None,
 ) -> list[Any]:
     key = _language_key(lang_choice)
     labels = LABELS[key]
@@ -2826,6 +3025,7 @@ def _language_updates(
         _normalize_provider(current_provider or labels["replay"]),
         key,
     )
+    theme_value = _theme_label(_normalize_theme_mode(current_theme_mode), key)
     scenario_value = current_scenario or scenario_choices()[0]
     environment_value = current_environment or _default_environment_id()
     agent_count_value = int(current_agent_count or scenario_default_agent_count(scenario_value))
@@ -2852,6 +3052,12 @@ def _language_updates(
             label=labels["mode"],
             choices=_provider_choices(key),
             value=provider_value,
+        ),
+        gr.update(
+            label=labels["theme"],
+            choices=_theme_choices(key),
+            value=theme_value,
+            info=labels["theme_info"],
         ),
         gr.update(label=labels["api_key"], placeholder=labels["api_key_ph"]),
         gr.update(label=labels["model"]),
@@ -4252,7 +4458,7 @@ def build_app() -> gr.Blocks:
     with gr.Blocks(
         title="Knoema Playground",
         css=FOOTER_CSS,
-        head=TUTORIAL_HEAD,
+        head=APP_HEAD,
         analytics_enabled=False,
     ) as demo:
         with gr.Row():
@@ -4261,6 +4467,14 @@ def build_app() -> gr.Blocks:
                 choices=LANGUAGE_CHOICES,
                 value=LANGUAGE_CHOICES[0],
                 scale=0,
+            )
+            theme_mode = gr.Radio(
+                label=labels["theme"],
+                choices=_theme_choices("ko"),
+                value=labels["theme_auto"],
+                info=labels["theme_info"],
+                scale=0,
+                elem_id="theme-mode-radio",
             )
             tutorial_button = gr.Button("?", elem_id="tutorial-button", scale=0, min_width=52)
 
@@ -4729,6 +4943,7 @@ def build_app() -> gr.Blocks:
             scenario,
             environment_preset,
             provider,
+            theme_mode,
             api_key,
             model,
             agent_panel,
@@ -4826,6 +5041,7 @@ def build_app() -> gr.Blocks:
                 batch_runs.value,
                 master_seed.value,
                 live_streaming.value,
+                theme_mode.value,
             )
 
         tutorial_button.click(
@@ -4833,6 +5049,24 @@ def build_app() -> gr.Blocks:
             inputs=[language],
             outputs=None,
             js="(language) => { window.KNOEMA_TUTORIAL?.start(language); }",
+            queue=False,
+            show_progress="hidden",
+        )
+
+        demo.load(
+            fn=None,
+            inputs=[language],
+            outputs=[theme_mode],
+            js="(language) => window.KNOEMA_THEME?.sync(language) ?? 'Auto'",
+            queue=False,
+            show_progress="hidden",
+        )
+
+        theme_mode.change(
+            fn=None,
+            inputs=[theme_mode, language],
+            outputs=[theme_mode],
+            js="(theme, language) => window.KNOEMA_THEME?.setFromLabel(theme, language) ?? theme",
             queue=False,
             show_progress="hidden",
         )
