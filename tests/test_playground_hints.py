@@ -46,13 +46,18 @@ def test_subtask13_hint_renders_above_run_button_and_updates_with_language() -> 
         and "knoema-hint" in (getattr(child, "elem_classes", None) or [])
     )
     run_button_index = next(
-        index for index, child in enumerate(app.children) if type(child).__name__ == "Button"
+        index
+        for index, child in enumerate(app.children)
+        if type(child).__name__ == "Button" and getattr(child, "elem_id", None) == "run-button"
     )
 
     assert hint_index < run_button_index
 
     english_hint = playground_app._hint_markdown_update("School corridor", "English")
-    korean_hint = playground_app._hint_markdown_update("School corridor", "한국어")
+    korean_hint = playground_app._hint_markdown_update(
+        "School corridor",
+        playground_app.LANGUAGE_CHOICES[0],
+    )
     neutral_hint = playground_simulation.build_playground_hint(
         scenario_name=None,
         language="en",

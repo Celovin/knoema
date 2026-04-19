@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 import gradio as gr
@@ -32,6 +33,330 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
 
 
 LANGUAGE_CHOICES = ["한국어", "English"]
+TUTORIAL_STORAGE_KEY = "knoema_tutorial_completed"
+TUTORIAL_STEPS = {
+    "ko": [
+        {
+            "selector": "#scenario-dropdown",
+            "title": "시나리오 선택",
+            "body": "여기서 시나리오를 선택하세요.",
+        },
+        {
+            "selector": "#environment-preset",
+            "title": "환경 프리셋",
+            "body": "이 자리에서 환경 프리셋으로 기본 맥락을 바꿀 수 있습니다.",
+        },
+        {
+            "selector": "#agent-count-slider",
+            "title": "에이전트 수",
+            "body": "에이전트 수를 조정할 수 있습니다.",
+        },
+        {
+            "selector": "#extended-personality-panel",
+            "title": "성격 차원",
+            "body": "Big Five와 확장 성격 차원은 이 영역에 정리됩니다.",
+        },
+        {
+            "selector": "#mode-radio",
+            "title": "실행 모드",
+            "body": "재생 전용 모드는 API 키 없이 동작합니다.",
+        },
+        {
+            "selector": "#run-button",
+            "title": "실행",
+            "body": "여기를 누르면 시뮬레이션이 시작됩니다.",
+        },
+        {
+            "selector": "#relationship-graph",
+            "title": "결과 보기",
+            "body": "3D 관계 그래프와 타임라인으로 결과를 확인합니다.",
+        },
+        {
+            "selector": "#export-panel",
+            "title": "내보내기",
+            "body": "이 영역에서 결과를 다운로드하고 내보내기 기능을 찾을 수 있습니다.",
+        },
+    ],
+    "en": [
+        {
+            "selector": "#scenario-dropdown",
+            "title": "Pick a scenario",
+            "body": "Choose your scenario here.",
+        },
+        {
+            "selector": "#environment-preset",
+            "title": "Environment preset",
+            "body": "This slot is where environment presets change the default context.",
+        },
+        {
+            "selector": "#agent-count-slider",
+            "title": "Agent count",
+            "body": "You can adjust how many agents join the run.",
+        },
+        {
+            "selector": "#extended-personality-panel",
+            "title": "Personality dimensions",
+            "body": "Big Five and extended personality controls live in this area.",
+        },
+        {
+            "selector": "#mode-radio",
+            "title": "Mode",
+            "body": "Replay only runs without an API key.",
+        },
+        {
+            "selector": "#run-button",
+            "title": "Run",
+            "body": "Press here to start the simulation.",
+        },
+        {
+            "selector": "#relationship-graph",
+            "title": "Read the output",
+            "body": "The 3D graph and timeline summarize the result.",
+        },
+        {
+            "selector": "#export-panel",
+            "title": "Export",
+            "body": "This panel is where downloads and export actions are collected.",
+        },
+    ],
+}
+TUTORIAL_HEAD = f"""
+<style>
+.knoema-tour-root {{
+  position: fixed;
+  inset: 0;
+  z-index: 2147483645;
+  pointer-events: none;
+}}
+.knoema-tour-root[data-open="true"] {{
+  pointer-events: auto;
+}}
+.knoema-tour-backdrop {{
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.22);
+}}
+.knoema-tour-card {{
+  position: absolute;
+  width: min(360px, calc(100vw - 32px));
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  border-radius: 8px;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.24);
+  padding: 16px;
+}}
+.knoema-tour-card::before {{
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 28px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #ffffff;
+}}
+.knoema-tour-counter {{
+  font-size: 12px;
+  color: #475569;
+  margin-bottom: 6px;
+}}
+.knoema-tour-title {{
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}}
+.knoema-tour-body {{
+  font-size: 14px;
+  line-height: 1.5;
+  color: #334155;
+  margin-bottom: 14px;
+}}
+.knoema-tour-controls {{
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}}
+.knoema-tour-controls button {{
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}}
+.knoema-tour-controls button[data-tour-action="next"] {{
+  background: #0f172a;
+  color: #ffffff;
+}}
+.knoema-tour-highlight {{
+  position: relative;
+  z-index: 2147483646 !important;
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 3px rgba(56, 189, 248, 0.7),
+    0 0 0 9999px rgba(15, 23, 42, 0.18);
+}}
+@media (max-width: 720px) {{
+  .knoema-tour-card {{
+    left: 16px !important;
+    right: 16px !important;
+    top: auto !important;
+    bottom: 16px !important;
+    width: auto;
+  }}
+  .knoema-tour-card::before {{
+    display: none;
+  }}
+  .knoema-tour-controls {{
+    flex-direction: column;
+    align-items: stretch;
+  }}
+}}
+</style>
+<script>
+(() => {{
+  const stepsByLang = {json.dumps(TUTORIAL_STEPS, ensure_ascii=False)};
+  const storageKey = {json.dumps(TUTORIAL_STORAGE_KEY)};
+  const labels = {{
+    ko: {{ prev: "이전", next: "다음", finish: "완료", skip: "건너뛰기" }},
+    en: {{ prev: "Previous", next: "Next", finish: "Finish", skip: "Skip" }},
+  }};
+
+  const state = {{
+    index: 0,
+    lang: "ko",
+    steps: stepsByLang.ko,
+    highlighted: null,
+  }};
+
+  function ensureRoot() {{
+    let root = document.querySelector(".knoema-tour-root");
+    if (root) return root;
+    root = document.createElement("div");
+    root.className = "knoema-tour-root";
+    root.setAttribute("data-open", "false");
+    root.innerHTML = `
+      <div class="knoema-tour-backdrop" data-tour-action="skip"></div>
+      <div class="knoema-tour-card" role="dialog" aria-modal="true" aria-live="polite">
+        <div class="knoema-tour-counter"></div>
+        <div class="knoema-tour-title"></div>
+        <div class="knoema-tour-body"></div>
+        <div class="knoema-tour-controls">
+          <button type="button" data-tour-action="skip"></button>
+          <button type="button" data-tour-action="prev"></button>
+          <button type="button" data-tour-action="next"></button>
+        </div>
+      </div>
+    `;
+    root.addEventListener("click", (event) => {{
+      const action = event.target instanceof HTMLElement ? event.target.dataset.tourAction : null;
+      if (!action) return;
+      if (action === "skip") {{
+        close(true);
+        return;
+      }}
+      if (action === "prev") {{
+        state.index = Math.max(0, state.index - 1);
+        render();
+        return;
+      }}
+      if (action === "next") {{
+        if (state.index >= state.steps.length - 1) {{
+          close(true);
+          return;
+        }}
+        state.index += 1;
+        render();
+      }}
+    }});
+    document.body.appendChild(root);
+    return root;
+  }}
+
+  function clearHighlight() {{
+    if (state.highlighted) {{
+      state.highlighted.classList.remove("knoema-tour-highlight");
+      state.highlighted = null;
+    }}
+  }}
+
+  function positionCard(card, target) {{
+    if (!target) {{
+      card.style.left = "16px";
+      card.style.top = "16px";
+      return;
+    }}
+    const rect = target.getBoundingClientRect();
+    const margin = 16;
+    const preferredLeft = Math.min(
+      window.innerWidth - card.offsetWidth - margin,
+      Math.max(margin, rect.left),
+    );
+    const preferredTop = rect.bottom + margin;
+    const aboveTop = rect.top - card.offsetHeight - margin;
+    card.style.left = preferredLeft + "px";
+    card.style.top = (aboveTop > margin ? aboveTop : preferredTop) + "px";
+  }}
+
+  function render() {{
+    const root = ensureRoot();
+    const card = root.querySelector(".knoema-tour-card");
+    const step = state.steps[state.index];
+    const target = document.querySelector(step.selector);
+    clearHighlight();
+    if (target) {{
+      target.classList.add("knoema-tour-highlight");
+      target.scrollIntoView({{ block: "center", behavior: "smooth", inline: "center" }});
+      state.highlighted = target;
+    }}
+    root.querySelector(".knoema-tour-counter").textContent =
+      String(state.index + 1) + " / " + String(state.steps.length);
+    root.querySelector(".knoema-tour-title").textContent = step.title;
+    root.querySelector(".knoema-tour-body").textContent = step.body;
+    const buttonLabels = labels[state.lang];
+    const prevButton = root.querySelector('[data-tour-action="prev"]');
+    const nextButton = root.querySelector('[data-tour-action="next"]');
+    const skipButton = root.querySelector('[data-tour-action="skip"]:not(.knoema-tour-backdrop)');
+    prevButton.textContent = buttonLabels.prev;
+    prevButton.disabled = state.index === 0;
+    nextButton.textContent = state.index === state.steps.length - 1 ? buttonLabels.finish : buttonLabels.next;
+    skipButton.textContent = buttonLabels.skip;
+    requestAnimationFrame(() => positionCard(card, target));
+  }}
+
+  function close(markCompleted) {{
+    clearHighlight();
+    const root = ensureRoot();
+    root.setAttribute("data-open", "false");
+    root.style.display = "none";
+    if (markCompleted) {{
+      window.localStorage.setItem(storageKey, "1");
+    }}
+  }}
+
+  function start(languageChoice) {{
+    const root = ensureRoot();
+    state.lang = languageChoice === "한국어" ? "ko" : "en";
+    state.steps = stepsByLang[state.lang];
+    state.index = 0;
+    root.style.display = "block";
+    root.setAttribute("data-open", "true");
+    render();
+  }}
+
+  window.KNOEMA_TUTORIAL = {{ start, close }};
+  window.addEventListener("load", () => {{
+    window.setTimeout(() => {{
+      if (!window.localStorage.getItem(storageKey)) {{
+        start("한국어");
+      }}
+    }}, 900);
+  }});
+}})();
+</script>
+"""
 
 
 def _normalize_provider(provider: str) -> Provider:
@@ -123,6 +448,12 @@ def _language_updates(
         labels["header"],
         gr.update(label=labels["scenario"]),
         gr.update(
+            label=labels["environment"],
+            choices=[labels["environment_default"]],
+            value=labels["environment_default"],
+            info=labels["environment_info"],
+        ),
+        gr.update(
             label=labels["mode"],
             choices=[labels["replay"], "OpenAI", "Anthropic"],
             value=provider_value,
@@ -130,6 +461,8 @@ def _language_updates(
         gr.update(label=labels["api_key"], placeholder=labels["api_key_ph"]),
         gr.update(label=labels["model"]),
         gr.update(label=labels["agent_panel"]),
+        gr.update(label=labels["extended_panel"]),
+        labels["extended_panel_note"],
         gr.update(label=labels["name"]),
         gr.update(label=labels["age"]),
         gr.update(label=labels["openness"], info=labels["openness_info"]),
@@ -144,6 +477,7 @@ def _language_updates(
         gr.update(label=labels["ticks"]),
         _hint_markdown_update(current_scenario, lang_choice),
         gr.update(value=labels["run"]),
+        gr.update(value=f"#### {labels['export_panel']}"),
         gr.update(label=labels["summary"]),
         gr.update(label=labels["timeline"]),
         gr.update(label=labels["graph"]),
@@ -296,12 +630,19 @@ LABELS = {
             "라이브 LLM 호출이 가능합니다. API 키는 현재 요청에만 사용되고 디스크에 저장되지 않습니다."
         ),
         "scenario": "시나리오",
+        "environment": "환경 프리셋",
+        "environment_default": "시나리오 기본값",
+        "environment_info": "Sub-task 4에서 환경 프리셋 목록이 확장됩니다.",
         "mode": "모드",
         "replay": "재생 전용",
         "api_key": "API 키",
         "api_key_ph": "OpenAI/Anthropic 사용 시 필수, 재생 전용은 비워두세요",
         "model": "모델",
         "agent_panel": "주 에이전트 설정",
+        "extended_panel": "확장 성격 차원 (준비 중)",
+        "extended_panel_note": (
+            "추가 성격 차원과 고급 슬라이더는 이후 단계에서 이 패널에 연결됩니다."
+        ),
         "name": "이름",
         "age": "나이",
         "openness": "개방성",
@@ -323,6 +664,7 @@ LABELS = {
         "summary": "실행 요약",
         "timeline": "타임라인",
         "graph": "관계 그래프",
+        "export_panel": "결과 내보내기",
         "jsonl": "JSONL 로그",
         "download": "JSONL 다운로드",
         "lang": "언어",
@@ -336,12 +678,19 @@ LABELS = {
             "written to disk."
         ),
         "scenario": "Scenario",
+        "environment": "Environment preset",
+        "environment_default": "Scenario default",
+        "environment_info": "Sub-task 4 expands this list with real environment presets.",
         "mode": "Mode",
         "replay": "Replay only",
         "api_key": "API key",
         "api_key_ph": "Required for OpenAI/Anthropic, leave blank for Replay only",
         "model": "Model",
         "agent_panel": "Primary agent controls",
+        "extended_panel": "Extended personality dimensions (coming soon)",
+        "extended_panel_note": (
+            "Additional personality dimensions and advanced sliders will attach to this panel in later stages."
+        ),
         "name": "Name",
         "age": "Age",
         "openness": "Openness",
@@ -369,6 +718,7 @@ LABELS = {
         "summary": "Run summary",
         "timeline": "Timeline",
         "graph": "Relationship graph",
+        "export_panel": "Result exports",
         "jsonl": "JSONL log",
         "download": "Download JSONL",
         "lang": "Language",
@@ -405,7 +755,12 @@ footer {{display: none !important;}}
 def build_app() -> gr.Blocks:
     labels = LABELS["ko"]
     default_scenario = scenario_choices()[0]
-    with gr.Blocks(title="Knoema Playground", css=FOOTER_CSS, analytics_enabled=False) as demo:
+    with gr.Blocks(
+        title="Knoema Playground",
+        css=FOOTER_CSS,
+        head=TUTORIAL_HEAD,
+        analytics_enabled=False,
+    ) as demo:
         with gr.Row():
             language = gr.Radio(
                 label=labels["lang"],
@@ -413,17 +768,27 @@ def build_app() -> gr.Blocks:
                 value=LANGUAGE_CHOICES[0],
                 scale=0,
             )
+            tutorial_button = gr.Button("?", elem_id="tutorial-button", scale=0, min_width=52)
         header = gr.Markdown(labels["header"])
         with gr.Row():
             scenario = gr.Dropdown(
                 label=labels["scenario"],
                 choices=scenario_choices(),
                 value=default_scenario,
+                elem_id="scenario-dropdown",
+            )
+            environment_preset = gr.Dropdown(
+                label=labels["environment"],
+                choices=[labels["environment_default"]],
+                value=labels["environment_default"],
+                info=labels["environment_info"],
+                elem_id="environment-preset",
             )
             provider = gr.Radio(
                 label=labels["mode"],
                 choices=[labels["replay"], "OpenAI", "Anthropic"],
                 value=labels["replay"],
+                elem_id="mode-radio",
             )
         with gr.Row():
             api_key = gr.Textbox(
@@ -449,7 +814,11 @@ def build_app() -> gr.Blocks:
                 value="gpt-5.4-mini",
                 allow_custom_value=True,
             )
-        agent_panel = gr.Accordion(labels["agent_panel"], open=True)
+        agent_panel = gr.Accordion(
+            labels["agent_panel"],
+            open=True,
+            elem_id="personality-panel",
+        )
         with agent_panel:
             with gr.Row():
                 primary_name = gr.Textbox(label=labels["name"], value="Mina")
@@ -500,16 +869,24 @@ def build_app() -> gr.Blocks:
                     maximum=AGENT_COUNT_MAX,
                     step=1,
                     value=scenario_default_agent_count(default_scenario),
+                    elem_id="agent-count-slider",
                 )
             with gr.Row():
                 ticks = gr.Slider(
                     label=labels["ticks"], minimum=1, maximum=24, step=1, value=4
                 )
+        extended_panel = gr.Accordion(
+            labels["extended_panel"],
+            open=False,
+            elem_id="extended-personality-panel",
+        )
+        with extended_panel:
+            extended_panel_note = gr.Markdown(labels["extended_panel_note"])
         scenario_hint = gr.Markdown(
             _hint_markdown_update(default_scenario, LANGUAGE_CHOICES[0]),
             elem_classes=["knoema-hint"],
         )
-        run_button = gr.Button(labels["run"], variant="primary")
+        run_button = gr.Button(labels["run"], variant="primary", elem_id="run-button")
         summary = gr.Textbox(label=labels["summary"], interactive=False)
         graph = gr.Plot(label=labels["graph"], elem_id="relationship-graph")
         timeline = gr.Markdown(
@@ -519,22 +896,35 @@ def build_app() -> gr.Blocks:
             max_height=TIMELINE_MAX_HEIGHT_PX,
             container=True,
         )
-        jsonl = gr.Code(label=labels["jsonl"], language="json")
-        download = gr.File(label=labels["download"])
+        with gr.Column(elem_id="export-panel"):
+            export_heading = gr.Markdown(f"#### {labels['export_panel']}")
+            jsonl = gr.Code(label=labels["jsonl"], language="json")
+            download = gr.File(label=labels["download"])
 
         def _switch(lang_choice: str) -> list[Any]:
             return _language_updates(lang_choice, provider.value, scenario.value)
 
+        tutorial_button.click(
+            fn=None,
+            inputs=[language],
+            outputs=None,
+            js="(language) => { window.KNOEMA_TUTORIAL?.start(language); }",
+            queue=False,
+            show_progress="hidden",
+        )
         language.change(
             _switch,
             inputs=[language],
             outputs=[
                 header,
                 scenario,
+                environment_preset,
                 provider,
                 api_key,
                 model,
                 agent_panel,
+                extended_panel,
+                extended_panel_note,
                 primary_name,
                 primary_age,
                 openness,
@@ -546,6 +936,7 @@ def build_app() -> gr.Blocks:
                 ticks,
                 scenario_hint,
                 run_button,
+                export_heading,
                 summary,
                 timeline,
                 graph,
