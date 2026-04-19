@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import tempfile
+import threading
+import uuid
 from collections import Counter
 from datetime import UTC, datetime
 from html import escape
@@ -22,6 +24,7 @@ try:
         PERSONA_TRAIT_DEFAULTS,
         PERSONA_TRAIT_FIELDS,
         Provider,
+        _prepare_playground_run,
         advance_player_session,
         agent_editor_defaults,
         build_playground_hint,
@@ -33,6 +36,7 @@ try:
         load_environment_presets,
         persona_choices,
         persona_trait_values,
+        playground_result_from_artifacts,
         routine_preset_choices,
         routine_preset_text,
         run_playground_scenario,
@@ -56,6 +60,7 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         PERSONA_TRAIT_DEFAULTS,
         PERSONA_TRAIT_FIELDS,
         Provider,
+        _prepare_playground_run,
         advance_player_session,
         agent_editor_defaults,
         build_playground_hint,
@@ -67,6 +72,7 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         load_environment_presets,
         persona_choices,
         persona_trait_values,
+        playground_result_from_artifacts,
         routine_preset_choices,
         routine_preset_text,
         run_playground_scenario,
@@ -633,6 +639,8 @@ LABELS["ko"]["event_injections"] = "이벤트 주입"
 LABELS["ko"]["event_injections_placeholder"] = "0 | Tavern Bar | A courier bursts in with a sealed letter | agent_1,agent_2 | urgent_news"
 LABELS["ko"]["initial_relationships"] = "초기 관계 시드"
 LABELS["ko"]["initial_relationships_placeholder"] = "agent_1 | agent_2 | colleague | 0.55 | 0.70 | 0.30"
+LABELS["ko"]["live_streaming"] = "실시간 WebSocket 스트리밍"
+LABELS["ko"]["live_streaming_info"] = "Replay only 모드에서 tick 단위로 UI를 갱신합니다."
 LABELS["ko"]["report_agent_panel"] = "ReportAgent Q&A"
 LABELS["ko"]["report_agent_question"] = "런 질문"
 LABELS["ko"]["report_agent_run"] = "현재 런 요약 답변"
@@ -656,6 +664,8 @@ LABELS["en"]["event_injections"] = "Event injections"
 LABELS["en"]["event_injections_placeholder"] = "0 | Tavern Bar | A courier bursts in with a sealed letter | agent_1,agent_2 | urgent_news"
 LABELS["en"]["initial_relationships"] = "Initial relationship seeds"
 LABELS["en"]["initial_relationships_placeholder"] = "agent_1 | agent_2 | colleague | 0.55 | 0.70 | 0.30"
+LABELS["en"]["live_streaming"] = "Live WebSocket streaming"
+LABELS["en"]["live_streaming_info"] = "In Replay only mode, update the UI once per tick through the Phase 44 stream route."
 LABELS["en"]["report_agent_panel"] = "ReportAgent Q&A"
 LABELS["en"]["report_agent_question"] = "Run question"
 LABELS["en"]["report_agent_run"] = "Answer from current run"
@@ -2382,6 +2392,128 @@ def _compare_runs(
     return _comparison_markdown(left, right, compare_seed_a, compare_seed_b, str(request["language"]))
 
 
+def _run_with_optional_streaming(
+    live_streaming: bool,
+    scenario_name: str,
+    environment_preset_id: str | None,
+    cultural_prior_id: str | None,
+    provider: str,
+    api_key: str,
+    model: str,
+    primary_name: str,
+    primary_age: int,
+    *trait_and_runtime: Any,
+):
+    request = _resolve_run_request(
+        scenario_name,
+        environment_preset_id,
+        cultural_prior_id,
+        provider,
+        api_key,
+        model,
+        primary_name,
+        primary_age,
+        *trait_and_runtime,
+    )
+    if (
+        not bool(live_streaming)
+        or bool(request["batch_mode"])
+        or str(request["provider"]) != "Replay only"
+    ):
+        yield _run_with_player_mode(
+            scenario_name,
+            environment_preset_id,
+            cultural_prior_id,
+            provider,
+            api_key,
+            model,
+            primary_name,
+            primary_age,
+            *trait_and_runtime,
+        )
+        return
+
+    from fastapi.testclient import TestClient
+
+    from knoema.api.server import create_app
+    from knoema.api.service import SimulationRecord, SimulationService
+
+    artifacts = _prepare_playground_run(
+        scenario_name=str(request["scenario_name"]),
+        provider="Replay only",
+        api_key="",
+        model="",
+        primary_name=str(request["primary_name"]),
+        primary_age=int(request["primary_age"]),
+        openness=float(dict(request["personality_overrides"])["openness"]),
+        conscientiousness=float(dict(request["personality_overrides"])["conscientiousness"]),
+        extraversion=float(dict(request["personality_overrides"])["extraversion"]),
+        agreeableness=float(dict(request["personality_overrides"])["agreeableness"]),
+        neuroticism=float(dict(request["personality_overrides"])["neuroticism"]),
+        personality_overrides=dict(request["personality_overrides"]),
+        agent_count=int(request["agent_count"]),
+        environment_preset_id=cast("str | None", request["environment_preset_id"]),
+        cultural_prior_id=cast("str | None", request["cultural_prior_id"]),
+        agent_overrides=cast("list[dict[str, Any]]", request["agent_overrides"]),
+        primary_planning_enabled=bool(request["primary_planning_enabled"]),
+        planning_depth=int(request["planning_depth"]),
+        language=str(request["language"]),
+        seed=int(request["master_seed"]),
+        event_injections_text=str(request["event_injections_text"]),
+        initial_relationships_text=str(request["initial_relationships_text"]),
+    )
+    service = SimulationService()
+    now = datetime.now(UTC)
+    simulation_id = uuid.uuid4().hex
+    record = SimulationRecord(
+        simulation_id=simulation_id,
+        simulator=artifacts.simulator,
+        duration_days=1,
+        total_ticks=int(request["ticks"]),
+        started_at=now,
+        updated_at=now,
+        stream_delay_seconds=0.0,
+    )
+    record.worker = threading.Thread(
+        target=service._run_record,
+        args=(record, None),
+        daemon=True,
+        name=f"knoema-stream-{simulation_id}",
+    )
+    service._records[simulation_id] = record
+    record.worker.start()
+
+    try:
+        with (
+            TestClient(create_app(simulation_service=service)) as client,
+            client.websocket_connect(f"/simulations/{simulation_id}/stream") as websocket,
+        ):
+            while True:
+                message = websocket.receive_json()
+                result = playground_result_from_artifacts(
+                    scenario_name=str(request["scenario_name"]),
+                    mode="Replay only",
+                    artifacts=artifacts,
+                    language=str(request["language"]),
+                )
+                yield (
+                    *_render_result_outputs(
+                        result,
+                        mode_label=_provider_label("Replay only", str(request["language"])),
+                        provider="Replay only",
+                        api_key="",
+                        language=str(request["language"]),
+                    ),
+                    gr.update(value=None),
+                    None,
+                    "",
+                )
+                if message["type"] == "simulation.status":
+                    break
+    finally:
+        service.shutdown()
+
+
 def _status_with_voice_notes(status: str, voice_notes: list[str]) -> str:
     filtered = [note.strip() for note in voice_notes if note and note.strip()]
     if not filtered:
@@ -2686,6 +2818,7 @@ def _language_updates(
     current_batch_mode: bool = False,
     current_batch_runs: int | None = None,
     current_master_seed: int | None = None,
+    current_live_streaming: bool = False,
 ) -> list[Any]:
     key = _language_key(lang_choice)
     labels = LABELS[key]
@@ -2758,6 +2891,11 @@ def _language_updates(
             info=labels["master_seed_info"],
             value=master_seed_value,
             interactive=bool(current_batch_mode),
+        ),
+        gr.update(
+            label=labels["live_streaming"],
+            info=labels["live_streaming_info"],
+            value=bool(current_live_streaming),
         ),
         gr.update(label=labels["mirofish_panel"]),
         gr.update(
@@ -4271,6 +4409,12 @@ def build_app() -> gr.Blocks:
                 interactive=False,
                 elem_id="master-seed-number",
             )
+            live_streaming = gr.Checkbox(
+                label=labels["live_streaming"],
+                info=labels["live_streaming_info"],
+                value=False,
+                elem_id="live-streaming-checkbox",
+            )
             run_button = gr.Button(labels["run"], variant="primary", elem_id="run-button")
         mirofish_panel = gr.Accordion(
             labels["mirofish_panel"],
@@ -4597,6 +4741,7 @@ def build_app() -> gr.Blocks:
             batch_mode,
             batch_runs,
             master_seed,
+            live_streaming,
             mirofish_panel,
             seed_prompt,
             seed_prompt_apply,
@@ -4680,6 +4825,7 @@ def build_app() -> gr.Blocks:
                 batch_mode.value,
                 batch_runs.value,
                 master_seed.value,
+                live_streaming.value,
             )
 
         tutorial_button.click(
@@ -4849,8 +4995,8 @@ def build_app() -> gr.Blocks:
             initial_relationships,
         ]
         run_button.click(
-            _run_with_player_mode,
-            inputs=common_run_inputs,
+            _run_with_optional_streaming,
+            inputs=[live_streaming, *common_run_inputs],
             outputs=[
                 timeline,
                 thread_view,
