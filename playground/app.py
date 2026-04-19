@@ -779,6 +779,20 @@ LABELS["en"]["deposit_button"] = "Create deposit packet"
 LABELS["en"]["deposit_download"] = "Download deposit bundle"
 LABELS["en"]["deposit_status"] = "No deposit packet yet."
 LABELS["en"]["reviewer_mode"] = "Reviewer mode"
+LABELS["ko"]["advanced_research_mode"] = "Advanced research mode"
+LABELS["ko"]["advanced_research_ack"] = "I acknowledge the IRB-style fictional-research notice."
+LABELS["ko"]["advanced_research_notice"] = (
+    "This unlocks Dark Tetrad controls and sensitive fictional scenarios. "
+    "Use only with synthetic or fully consented data, record IRB/review notes, and avoid operational claims."
+)
+LABELS["ko"]["advanced_research_locked"] = "Advanced research mode keeps Dark Tetrad sliders and sensitive scenarios hidden."
+LABELS["en"]["advanced_research_mode"] = "Advanced research mode"
+LABELS["en"]["advanced_research_ack"] = "I acknowledge the IRB-style fictional-research notice."
+LABELS["en"]["advanced_research_notice"] = (
+    "This unlocks Dark Tetrad controls and sensitive fictional scenarios. "
+    "Use only with synthetic or fully consented data, record IRB/review notes, and avoid operational claims."
+)
+LABELS["en"]["advanced_research_locked"] = "Advanced research mode keeps Dark Tetrad sliders and sensitive scenarios hidden."
 LABELS["en"]["compare_panel"] = "A/B compare"
 LABELS["en"]["compare_seed_a"] = "Compare seed A"
 LABELS["en"]["compare_seed_b"] = "Compare seed B"
@@ -1764,6 +1778,7 @@ def _build_agent_editor_tab(
                 tier_c_panel = gr.Accordion(
                     labels["tier_c_panel"],
                     open=False,
+                    visible=False,
                     elem_id=f"tier-c-panel{suffix}",
                 )
                 with tier_c_panel:
@@ -4440,6 +4455,8 @@ def _run_with_optional_streaming(
 def _run_with_optional_streaming_ui(
     live_streaming: bool,
     reviewer_mode: bool,
+    advanced_research_mode: bool,
+    advanced_research_ack: bool,
     scenario_name: str,
     environment_preset_id: str | None,
     cultural_prior_id: str | None,
@@ -4450,6 +4467,30 @@ def _run_with_optional_streaming_ui(
     primary_age: int,
     *trait_and_runtime: Any,
 ):
+    request = _resolve_run_request(
+        scenario_name,
+        environment_preset_id,
+        cultural_prior_id,
+        provider,
+        api_key,
+        model,
+        primary_name,
+        primary_age,
+        *trait_and_runtime,
+    )
+    violation = _research_gate_violation(
+        str(request["scenario_name"]),
+        str(request["language"]),
+        advanced_research_mode,
+        advanced_research_ack,
+    )
+    if violation:
+        return (
+            *_noop_run_outputs(),
+            gr.update(value=None),
+            None,
+            violation,
+        )
     return _run_with_optional_streaming(
         live_streaming,
         scenario_name,
@@ -4747,6 +4788,100 @@ def _hint_markdown_update(
     )
 
 
+SENSITIVE_SCENARIO_NAMES = frozenset(
+    {
+        "Hospital waiting room",
+        "ER triage",
+        "Refugee shelter arrival",
+        "Prison yard (fictional)",
+    }
+)
+DARK_TETRAD_FIELDS = ("machiavellianism", "narcissism", "psychopathy", "sadism")
+
+
+def _advanced_research_unlocked(enabled: bool, acknowledged: bool) -> bool:
+    return bool(enabled and acknowledged)
+
+
+def _scenario_choices_with_gate(unlocked: bool) -> list[str]:
+    return [
+        scenario_name
+        for scenario_name in scenario_choices()
+        if unlocked or scenario_name not in SENSITIVE_SCENARIO_NAMES
+    ]
+
+
+def _advanced_research_status_text(
+    language_choice: str,
+    enabled: bool,
+    acknowledged: bool,
+) -> str:
+    key = language_choice if language_choice in {"ko", "en"} else _language_key(language_choice)
+    labels = LABELS[key]
+    if _advanced_research_unlocked(enabled, acknowledged):
+        return (
+            "- Advanced research mode unlocked.\n"
+            "- Dark Tetrad controls and sensitive fictional scenarios are available."
+        )
+    if enabled and not acknowledged:
+        return (
+            f"- {labels['advanced_research_notice']}\n"
+            "- Acknowledge the notice to unlock the additional controls."
+        )
+    return f"- {labels['advanced_research_locked']}"
+
+
+def _advanced_research_ui_updates(
+    current_scenario: str | None,
+    language_choice: str,
+    enabled: bool,
+    acknowledged: bool,
+) -> list[Any]:
+    unlocked = _advanced_research_unlocked(enabled, acknowledged)
+    choices = _scenario_choices_with_gate(unlocked)
+    fallback_scenario = choices[0] if choices else scenario_choices()[0]
+    scenario_value = current_scenario if current_scenario in choices else fallback_scenario
+    panel_update = gr.update(visible=unlocked, open=False)
+    notice_value = (
+        LABELS["ko"]["dark_tetrad_notice"]
+        if (language_choice if language_choice in {"ko", "en"} else _language_key(language_choice)) == "ko"
+        else LABELS["en"]["dark_tetrad_notice"]
+    )
+    if not unlocked:
+        notice_value = _advanced_research_status_text(language_choice, enabled, acknowledged)
+    updates: list[Any] = [
+        gr.update(choices=choices, value=scenario_value),
+        _advanced_research_status_text(language_choice, enabled, acknowledged),
+    ]
+    for _ in range(AGENT_EDITOR_SLOT_COUNT):
+        updates.extend([panel_update, notice_value])
+        updates.extend(
+            [
+                gr.update()
+                if unlocked
+                else gr.update(value=PERSONA_TRAIT_DEFAULTS[field_name])
+                for field_name in DARK_TETRAD_FIELDS
+            ]
+        )
+    return updates
+
+
+def _research_gate_violation(
+    scenario_name: str,
+    language_choice: str,
+    enabled: bool,
+    acknowledged: bool,
+) -> str | None:
+    if _advanced_research_unlocked(enabled, acknowledged):
+        return None
+    if scenario_name not in SENSITIVE_SCENARIO_NAMES:
+        return None
+    key = language_choice if language_choice in {"ko", "en"} else _language_key(language_choice)
+    if key == "ko":
+        return "Advanced research mode와 IRB-style notice 확인 후에만 민감한 fictional scenario를 실행할 수 있습니다."
+    return "Sensitive fictional scenarios require Advanced research mode and IRB-style notice acknowledgement."
+
+
 def _batch_control_updates(enabled: bool) -> list[dict[str, Any]]:
     return [
         gr.update(interactive=bool(enabled)),
@@ -4806,6 +4941,8 @@ def _language_updates(
     current_master_seed: int | None = None,
     current_live_streaming: bool = False,
     current_theme_mode: str | None = None,
+    current_advanced_research_mode: bool = False,
+    current_advanced_research_ack: bool = False,
     current_power_test: str = "independent_t",
     current_power_effect: float = 0.5,
     current_power_alpha: float = 0.05,
@@ -4814,12 +4951,19 @@ def _language_updates(
 ) -> list[Any]:
     key = _language_key(lang_choice)
     labels = LABELS[key]
+    advanced_unlocked = _advanced_research_unlocked(
+        current_advanced_research_mode,
+        current_advanced_research_ack,
+    )
+    allowed_scenarios = _scenario_choices_with_gate(advanced_unlocked)
     provider_value = _provider_label(
         _normalize_provider(current_provider or labels["replay"]),
         key,
     )
     theme_value = _theme_label(_normalize_theme_mode(current_theme_mode), key)
     scenario_value = current_scenario or scenario_choices()[0]
+    if scenario_value not in allowed_scenarios:
+        scenario_value = allowed_scenarios[0]
     environment_value = current_environment or _default_environment_id()
     agent_count_value = int(current_agent_count or scenario_default_agent_count(scenario_value))
     planning_depth_value = int(current_planning_depth or 3)
@@ -4834,7 +4978,7 @@ def _language_updates(
     trait_matrix_figure, trait_matrix_summary = _trait_correlation_outputs(key)
     return [
         labels["header"],
-        gr.update(label=labels["scenario"]),
+        gr.update(label=labels["scenario"], choices=allowed_scenarios, value=scenario_value),
         gr.update(
             label=labels["environment"],
             choices=_preset_choices(key),
@@ -4861,6 +5005,20 @@ def _language_updates(
             choices=_cultural_prior_choices(key),
             value=current_cultural_prior or "",
             info=labels["cultural_prior_info"],
+        ),
+        gr.update(
+            label=labels["advanced_research_mode"],
+            value=current_advanced_research_mode,
+        ),
+        gr.update(
+            label=labels["advanced_research_ack"],
+            value=current_advanced_research_ack,
+        ),
+        labels["advanced_research_notice"],
+        _advanced_research_status_text(
+            key,
+            current_advanced_research_mode,
+            current_advanced_research_ack,
         ),
         *agent_editor_updates,
         gr.update(label=labels["agents"], info=labels["agents_info"], value=agent_count_value),
@@ -6336,7 +6494,7 @@ def build_app() -> gr.Blocks:
         with gr.Row():
             scenario = gr.Dropdown(
                 label=labels["scenario"],
-                choices=scenario_choices(),
+                choices=_scenario_choices_with_gate(False),
                 value=default_scenario,
                 elem_id="scenario-dropdown",
             )
@@ -6391,6 +6549,24 @@ def build_app() -> gr.Blocks:
                 value="",
                 info=labels["cultural_prior_info"],
                 elem_id="cultural-prior-dropdown",
+            )
+            advanced_research_mode = gr.Checkbox(
+                label=labels["advanced_research_mode"],
+                value=False,
+                elem_id="advanced-research-mode",
+            )
+            advanced_research_ack = gr.Checkbox(
+                label=labels["advanced_research_ack"],
+                value=False,
+                elem_id="advanced-research-ack",
+            )
+            advanced_research_notice = gr.Markdown(
+                labels["advanced_research_notice"],
+                elem_id="advanced-research-notice",
+            )
+            advanced_research_status = gr.Markdown(
+                labels["advanced_research_locked"],
+                elem_id="advanced-research-status",
             )
 
             agent_tabs: list[dict[str, Any]] = []
@@ -7045,6 +7221,18 @@ def build_app() -> gr.Blocks:
                     ],
                 ]
             )
+        advanced_research_outputs: list[Any] = [scenario, advanced_research_status]
+        for controls in agent_tabs:
+            advanced_research_outputs.extend(
+                [
+                    controls["tier_c_panel"],
+                    controls["dark_tetrad_notice"],
+                    *[
+                        controls["trait_sliders"][field_name]
+                        for field_name in DARK_TETRAD_FIELDS
+                    ],
+                ]
+            )
 
         language_outputs: list[gr.components.Component | gr.layouts.Accordion | gr.Markdown] = [
             header,
@@ -7057,6 +7245,10 @@ def build_app() -> gr.Blocks:
             model,
             agent_panel,
             cultural_prior,
+            advanced_research_mode,
+            advanced_research_ack,
+            advanced_research_notice,
+            advanced_research_status,
             *agent_editor_outputs,
             agent_count,
             htn_enabled,
@@ -7190,6 +7382,8 @@ def build_app() -> gr.Blocks:
                 master_seed.value,
                 live_streaming.value,
                 theme_mode.value,
+                advanced_research_mode.value,
+                advanced_research_ack.value,
                 prereg_power_test.value,
                 prereg_power_effect.value,
                 prereg_power_alpha.value,
@@ -7246,6 +7440,16 @@ def build_app() -> gr.Blocks:
             _statistical_analysis_markdown,
             inputs=[jsonl, language],
             outputs=[statistics_summary],
+        )
+        advanced_research_mode.change(
+            _advanced_research_ui_updates,
+            inputs=[scenario, language, advanced_research_mode, advanced_research_ack],
+            outputs=advanced_research_outputs,
+        )
+        advanced_research_ack.change(
+            _advanced_research_ui_updates,
+            inputs=[scenario, language, advanced_research_mode, advanced_research_ack],
+            outputs=advanced_research_outputs,
         )
         scenario.change(
             _scenario_agent_count_update,
@@ -7467,7 +7671,13 @@ def build_app() -> gr.Blocks:
         ]
         run_event = run_button.click(
             _run_with_optional_streaming_ui,
-            inputs=[live_streaming, reviewer_mode, *common_run_inputs],
+            inputs=[
+                live_streaming,
+                reviewer_mode,
+                advanced_research_mode,
+                advanced_research_ack,
+                *common_run_inputs,
+            ],
             outputs=[
                 timeline,
                 thread_view,
