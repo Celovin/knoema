@@ -1036,6 +1036,20 @@ TIER_G_ROWS = (
     ("benevolence", "universalism"),
 )
 TIER_G_FIELDS = tuple(field_name for row in TIER_G_ROWS for field_name in row)
+HONESTY_HUMILITY_CAVEAT_COPY = {
+    "ko": (
+        "> 주의: Ashton & Lee 리뷰에 따르면 Honesty-Humility는 일부 비서구 표본에서 "
+        "일관되게 재현되지 않았습니다. 이 슬라이더는 문화 중립적 사실이 아니라 탐색적 신호로 해석하세요."
+    ),
+    "ja": (
+        "> 注意: Ashton と Lee のレビューでは、Honesty-Humility は一部の非西洋サンプルで "
+        "一貫して再現されていません。このスライダーは文化中立の事実ではなく探索的な指標として扱ってください。"
+    ),
+    "zh": (
+        "> 注意: Ashton 与 Lee 的综述指出, Honesty-Humility 在部分非西方样本中并未稳定复现。"
+        "请将此滑块视为探索性信号, 而不是跨文化恒定真值。"
+    ),
+}
 
 
 def _tutorial_head() -> str:
@@ -1557,6 +1571,30 @@ def _language_key(language_choice: str) -> str:
     return "ko" if language_choice == KOREAN_CHOICE else "en"
 
 
+def _honesty_humility_caveat_locale(language_choice: str) -> str:
+    raw_choice = str(language_choice).strip()
+    lowered_choice = raw_choice.lower()
+    if raw_choice == KOREAN_CHOICE or lowered_choice in {"ko", "korean"}:
+        return "ko"
+    if raw_choice in {"日本語", "日本语"} or lowered_choice in {"ja", "japanese"}:
+        return "ja"
+    if raw_choice in {"中文", "简体中文", "繁體中文"} or lowered_choice in {"zh", "chinese"}:
+        return "zh"
+    return "en"
+
+
+def _honesty_humility_caveat_markdown(language_choice: str) -> str:
+    return HONESTY_HUMILITY_CAVEAT_COPY.get(
+        _honesty_humility_caveat_locale(language_choice),
+        "",
+    )
+
+
+def _honesty_humility_caveat_update(language_choice: str) -> dict[str, Any]:
+    markdown = _honesty_humility_caveat_markdown(language_choice)
+    return gr.update(value=markdown, visible=bool(markdown))
+
+
 def _default_environment_id() -> str:
     return str(ENVIRONMENT_PRESETS[0]["id"])
 
@@ -1766,14 +1804,21 @@ def _build_agent_editor_tab(
                     open=False,
                     elem_id=f"tier-bd-panel{suffix}",
                 )
-                with tier_bd_panel, gr.Row():
-                    for field_name in TIER_BD_FIELDS:
-                        controls["trait_sliders"][field_name] = _trait_slider(
-                            field_name,
-                            labels,
-                            value=float(defaults["personality"][field_name]),
-                            elem_id_prefix=trait_prefix,
-                        )
+                with tier_bd_panel:
+                    with gr.Row():
+                        for field_name in TIER_BD_FIELDS:
+                            controls["trait_sliders"][field_name] = _trait_slider(
+                                field_name,
+                                labels,
+                                value=float(defaults["personality"][field_name]),
+                                elem_id_prefix=trait_prefix,
+                            )
+                    honesty_humility_caveat = gr.Markdown(
+                        _honesty_humility_caveat_markdown(KOREAN_CHOICE),
+                        visible=True,
+                        elem_classes=["knoema-muted"],
+                        elem_id=f"honesty-humility-caveat{suffix}",
+                    )
 
                 tier_c_panel = gr.Accordion(
                     labels["tier_c_panel"],
@@ -1850,6 +1895,7 @@ def _build_agent_editor_tab(
             "extended_panel": extended_panel,
             "extended_panel_note": extended_panel_note,
             "tier_bd_panel": tier_bd_panel,
+            "honesty_humility_caveat": honesty_humility_caveat,
             "tier_c_panel": tier_c_panel,
             "dark_tetrad_notice": dark_tetrad_notice,
             "tier_e_panel": tier_e_panel,
@@ -4742,6 +4788,7 @@ def _agent_editor_updates(
                 gr.update(label=labels["extended_panel"]),
                 labels["extended_panel_note"],
                 gr.update(label=labels["tier_bd_panel"]),
+                _honesty_humility_caveat_update(language_choice),
                 gr.update(label=labels["tier_c_panel"]),
                 labels["dark_tetrad_notice"],
                 gr.update(label=labels["tier_e_panel"]),
@@ -7210,6 +7257,7 @@ def build_app() -> gr.Blocks:
                     controls["extended_panel"],
                     controls["extended_panel_note"],
                     controls["tier_bd_panel"],
+                    controls["honesty_humility_caveat"],
                     controls["tier_c_panel"],
                     controls["dark_tetrad_notice"],
                     controls["tier_e_panel"],
