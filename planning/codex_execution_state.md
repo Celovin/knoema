@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 18:16 UTC by Codex
+**Last updated**: 2026-04-19 18:39 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -54,7 +54,7 @@
 ## Group 6 — Application B (Game depth) (6-9h)
 
 - [x] 32. NPC daily routine + schedule system - 2026-04-19 18:16 UTC, commit 9d863fc
-- [ ] 33. Player-as-agent mode (hybrid loop)
+- [x] 33. Player-as-agent mode (hybrid loop) - 2026-04-19 18:39 UTC, commit 7227841
 - [ ] 34. Godot + Unity tavern_demo samples + WebGL exports
 - [ ] 46. Procedural quest generation
 - [ ] 47. NPC schedule conflicts + coordination
