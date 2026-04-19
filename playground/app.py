@@ -103,6 +103,44 @@ def _scenario_agent_count_update(scenario_name: str) -> dict[str, Any]:
     return gr.update(value=scenario_default_agent_count(scenario_name))
 
 
+def _language_updates(lang_choice: str, current_provider: str | None) -> list[Any]:
+    key = "ko" if lang_choice == LANGUAGE_CHOICES[0] else "en"
+    labels = LABELS[key]
+    replay_values = (LABELS["ko"]["replay"], LABELS["en"]["replay"])
+    provider_value = labels["replay"] if current_provider in replay_values else current_provider
+    return [
+        labels["header"],
+        gr.update(label=labels["scenario"]),
+        gr.update(
+            label=labels["mode"],
+            choices=[labels["replay"], "OpenAI", "Anthropic"],
+            value=provider_value,
+        ),
+        gr.update(label=labels["api_key"], placeholder=labels["api_key_ph"]),
+        gr.update(label=labels["model"]),
+        gr.update(label=labels["agent_panel"]),
+        gr.update(label=labels["name"]),
+        gr.update(label=labels["age"]),
+        gr.update(label=labels["openness"], info=labels["openness_info"]),
+        gr.update(
+            label=labels["conscientiousness"],
+            info=labels["conscientiousness_info"],
+        ),
+        gr.update(label=labels["extraversion"], info=labels["extraversion_info"]),
+        gr.update(label=labels["agreeableness"], info=labels["agreeableness_info"]),
+        gr.update(label=labels["neuroticism"], info=labels["neuroticism_info"]),
+        gr.update(label=labels["agents"], info=labels["agents_info"]),
+        gr.update(label=labels["ticks"]),
+        gr.update(value=labels["run"]),
+        gr.update(label=labels["summary"]),
+        gr.update(label=labels["timeline"]),
+        gr.update(label=labels["graph"]),
+        gr.update(label=labels["jsonl"]),
+        gr.update(label=labels["download"]),
+        gr.update(label=labels["lang"]),
+    ]
+
+
 def _relationship_figure(rows: list[dict[str, Any]], *, language: str = "en") -> go.Figure:
     title = "관계 그래프" if language == "ko" else "Relationship graph"
     empty_msg = (
@@ -255,10 +293,15 @@ LABELS = {
         "name": "이름",
         "age": "나이",
         "openness": "개방성",
+        "openness_info": "호기심과 새로운 경험에 대한 개방성. 높을수록 변화에 더 잘 적응합니다.",
         "conscientiousness": "성실성",
+        "conscientiousness_info": "자기통제와 목표 지향성. 높을수록 계획을 꾸준히 실행합니다.",
         "extraversion": "외향성",
+        "extraversion_info": "사교성과 자극 추구 성향. 높을수록 사람과 활동에서 에너지를 얻습니다.",
         "agreeableness": "친화성",
-        "neuroticism": "신경성",
+        "agreeableness_info": "협력과 공감 성향. 높을수록 갈등을 줄이고 타인을 배려합니다.",
+        "neuroticism": "정서 불안정성",
+        "neuroticism_info": "스트레스와 부정적 감정에 대한 민감성. 높을수록 걱정이나 짜증이 잦습니다.",
         "agents": "에이전트 수",
         "agents_info": (
             "시나리오 기본값보다 크게 설정하면 마지막 페르소나를 바탕으로 추가 에이전트를 자동 생성합니다."
@@ -290,10 +333,21 @@ LABELS = {
         "name": "Name",
         "age": "Age",
         "openness": "Openness",
+        "openness_info": "Curiosity and openness to new experience. Higher = more receptive to change.",
         "conscientiousness": "Conscientiousness",
+        "conscientiousness_info": (
+            "Self-discipline and goal-directedness. Higher = more consistent follow-through."
+        ),
         "extraversion": "Extraversion",
+        "extraversion_info": "Sociability and stimulation seeking. Higher = energized by people and events.",
         "agreeableness": "Agreeableness",
-        "neuroticism": "Neuroticism",
+        "agreeableness_info": (
+            "Cooperation and empathy. Higher = avoids conflict and prioritizes others."
+        ),
+        "neuroticism": "Emotional volatility (Neuroticism)",
+        "neuroticism_info": (
+            "Sensitivity to stress and negative emotion. Higher = more frequent worry or irritation."
+        ),
         "agents": "Agents",
         "agents_info": (
             "How many agents take part. Extras above the scenario default are auto-generated."
@@ -385,23 +439,40 @@ def build_app() -> gr.Blocks:
                 )
             with gr.Row():
                 openness = gr.Slider(
-                    label=labels["openness"], minimum=0, maximum=1, value=0.75
+                    label=labels["openness"],
+                    info=labels["openness_info"],
+                    minimum=0,
+                    maximum=1,
+                    value=0.75,
                 )
                 conscientiousness = gr.Slider(
                     label=labels["conscientiousness"],
+                    info=labels["conscientiousness_info"],
                     minimum=0,
                     maximum=1,
                     value=0.62,
                 )
                 extraversion = gr.Slider(
-                    label=labels["extraversion"], minimum=0, maximum=1, value=0.52
+                    label=labels["extraversion"],
+                    info=labels["extraversion_info"],
+                    minimum=0,
+                    maximum=1,
+                    value=0.52,
                 )
             with gr.Row():
                 agreeableness = gr.Slider(
-                    label=labels["agreeableness"], minimum=0, maximum=1, value=0.68
+                    label=labels["agreeableness"],
+                    info=labels["agreeableness_info"],
+                    minimum=0,
+                    maximum=1,
+                    value=0.68,
                 )
                 neuroticism = gr.Slider(
-                    label=labels["neuroticism"], minimum=0, maximum=1, value=0.36
+                    label=labels["neuroticism"],
+                    info=labels["neuroticism_info"],
+                    minimum=0,
+                    maximum=1,
+                    value=0.36,
                 )
                 agent_count = gr.Slider(
                     label=labels["agents"],
@@ -429,43 +500,7 @@ def build_app() -> gr.Blocks:
         download = gr.File(label=labels["download"])
 
         def _switch(lang_choice: str) -> list[Any]:
-            key = "ko" if lang_choice == LANGUAGE_CHOICES[0] else "en"
-            t = LABELS[key]
-            current_provider = provider.value
-            new_provider_choices = [t["replay"], "OpenAI", "Anthropic"]
-            new_provider_value = (
-                t["replay"]
-                if current_provider in (LABELS["ko"]["replay"], LABELS["en"]["replay"])
-                else current_provider
-            )
-            return [
-                t["header"],
-                gr.update(label=t["scenario"]),
-                gr.update(
-                    label=t["mode"],
-                    choices=new_provider_choices,
-                    value=new_provider_value,
-                ),
-                gr.update(label=t["api_key"], placeholder=t["api_key_ph"]),
-                gr.update(label=t["model"]),
-                gr.update(label=t["agent_panel"]),
-                gr.update(label=t["name"]),
-                gr.update(label=t["age"]),
-                gr.update(label=t["openness"]),
-                gr.update(label=t["conscientiousness"]),
-                gr.update(label=t["extraversion"]),
-                gr.update(label=t["agreeableness"]),
-                gr.update(label=t["neuroticism"]),
-                gr.update(label=t["agents"], info=t["agents_info"]),
-                gr.update(label=t["ticks"]),
-                gr.update(value=t["run"]),
-                gr.update(label=t["summary"]),
-                gr.update(label=t["timeline"]),
-                gr.update(label=t["graph"]),
-                gr.update(label=t["jsonl"]),
-                gr.update(label=t["download"]),
-                gr.update(label=t["lang"]),
-            ]
+            return _language_updates(lang_choice, provider.value)
 
         language.change(
             _switch,
