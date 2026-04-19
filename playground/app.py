@@ -13,6 +13,7 @@ import zipfile
 from collections import Counter
 from datetime import UTC, datetime
 from html import escape
+from importlib import metadata as importlib_metadata
 from pathlib import Path
 from typing import Any, cast
 
@@ -726,6 +727,10 @@ LABELS["en"]["prereg_deviations"] = "Deviation log"
 LABELS["en"]["prereg_button"] = "Export pre-registration"
 LABELS["en"]["prereg_download"] = "Download pre-registration"
 LABELS["en"]["prereg_preview_empty"] = "Preview the OSF-style registration draft here."
+LABELS["ko"]["replication_button"] = "Replication package ?대낫?닿린"
+LABELS["ko"]["replication_download"] = "Replication package ?ㅼ슫濡쒕뱶"
+LABELS["en"]["replication_button"] = "Export replication package"
+LABELS["en"]["replication_download"] = "Download replication package"
 LABELS["en"]["compare_panel"] = "A/B compare"
 LABELS["en"]["compare_seed_a"] = "Compare seed A"
 LABELS["en"]["compare_seed_b"] = "Compare seed B"
@@ -2654,6 +2659,135 @@ def _export_preregistration(
     return document, str(export_path)
 
 
+def _environment_freeze() -> str:
+    packages: list[tuple[str, str]] = []
+    for distribution in importlib_metadata.distributions():
+        name = str(distribution.metadata.get("Name", "")).strip()
+        version = str(getattr(distribution, "version", "")).strip()
+        if name and version:
+            packages.append((name, version))
+    return "\n".join(
+        f"{name}=={version}"
+        for name, version in sorted(packages, key=lambda item: item[0].lower())
+    )
+
+
+def _replication_notebook(summary: str, language: str) -> str:
+    title = "Knoema replication notebook" if _language_key(language) == "en" else "Knoema 재현 노트북"
+    notebook = {
+        "cells": [
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    f"# {title}\n\n",
+                    f"Summary: `{summary or 'n/a'}`\n\n",
+                    "This notebook reads the bundled JSONL log and computes basic replay diagnostics.\n",
+                ],
+            },
+            {
+                "cell_type": "code",
+                "metadata": {},
+                "execution_count": None,
+                "outputs": [],
+                "source": [
+                    "import json\n",
+                    "from collections import Counter\n",
+                    "from pathlib import Path\n\n",
+                    "rows = [\n",
+                    "    json.loads(line)\n",
+                    "    for line in Path('../data/run.jsonl').read_text(encoding='utf-8').splitlines()\n",
+                    "    if line.strip()\n",
+                    "]\n",
+                    "print('rows', len(rows))\n",
+                    "print('record types', Counter(row.get('record_type', 'action') for row in rows))\n",
+                ],
+            },
+            {
+                "cell_type": "code",
+                "metadata": {},
+                "execution_count": None,
+                "outputs": [],
+                "source": [
+                    "action_counts = Counter(\n",
+                    "    row.get('action_type') or row.get('action', {}).get('action_type')\n",
+                    "    for row in rows\n",
+                    ")\n",
+                    "action_counts.pop(None, None)\n",
+                    "action_counts.most_common(10)\n",
+                ],
+            },
+        ],
+        "metadata": {
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3",
+            },
+            "language_info": {
+                "name": "python",
+                "version": "3.11",
+            },
+        },
+        "nbformat": 4,
+        "nbformat_minor": 5,
+    }
+    return json.dumps(notebook, ensure_ascii=False, indent=2)
+
+
+def _replication_source_paths() -> tuple[Path, ...]:
+    root = Path(__file__).resolve().parents[1]
+    candidate_paths = (
+        root / "README.md",
+        root / "pyproject.toml",
+        root / "playground" / "app.py",
+        root / "playground" / "simulation.py",
+        root / "src" / "knoema" / "simulator.py",
+        root / "src" / "knoema" / "memory" / "long_term.py",
+        root / "src" / "knoema" / "research" / "statistics.py",
+    )
+    return tuple(path for path in candidate_paths if path.exists())
+
+
+def _export_replication_package(
+    jsonl_text: str,
+    memory_snapshot: dict[str, Any],
+    summary: str,
+    language: str,
+) -> str:
+    root = Path(__file__).resolve().parents[1]
+    rows = _jsonl_rows(jsonl_text)
+    manifest = {
+        "generated_at": datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC"),
+        "language": _language_key(language),
+        "summary": summary,
+        "jsonl_sha256": _digest_text(jsonl_text),
+        "row_count": len(rows),
+        "source_files": [
+            str(path.relative_to(root)).replace("\\", "/")
+            for path in _replication_source_paths()
+        ],
+    }
+    archive_path = Path(tempfile.gettempdir()) / f"knoema_replication_package_{uuid.uuid4().hex}.zip"
+    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("README.md", "# Knoema replication package\n\nUse the notebook in `notebooks/` to inspect the bundled run.\n")
+        archive.writestr("data/run.jsonl", jsonl_text)
+        archive.writestr("data/summary.txt", summary or "n/a")
+        archive.writestr(
+            "data/memory_snapshot.json",
+            json.dumps(memory_snapshot, ensure_ascii=False, indent=2, sort_keys=True),
+        )
+        archive.writestr(
+            "config/reproduction_manifest.json",
+            json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True),
+        )
+        archive.writestr("config/environment-freeze.txt", _environment_freeze())
+        archive.writestr("notebooks/reproduce_run.ipynb", _replication_notebook(summary, language))
+        for source_path in _replication_source_paths():
+            archive.write(source_path, arcname=f"source/{source_path.relative_to(root)}")
+    return str(archive_path)
+
+
 def _export_html_report(
     timeline_markdown: str,
     graph_figure: Any,
@@ -4392,6 +4526,8 @@ def _language_updates(
         gr.update(label=labels["csv_bundle_download"]),
         gr.update(value=labels["latex_table_button"]),
         gr.update(label=labels["latex_table_download"]),
+        gr.update(value=labels["replication_button"]),
+        gr.update(label=labels["replication_download"]),
         labels["report_agent_empty"],
         labels["compare_empty"],
         labels["interview_empty"],
@@ -6142,6 +6278,15 @@ def build_app() -> gr.Blocks:
                 label=labels["latex_table_download"],
                 elem_id="latex-table-download",
             )
+            replication_package_button = gr.Button(
+                labels["replication_button"],
+                variant="secondary",
+                elem_id="replication-package-button",
+            )
+            replication_package_download = gr.File(
+                label=labels["replication_download"],
+                elem_id="replication-package-download",
+            )
         report_agent_panel = gr.Accordion(
             labels["report_agent_panel"],
             open=False,
@@ -6340,6 +6485,8 @@ def build_app() -> gr.Blocks:
             csv_bundle_download,
             latex_table_button,
             latex_table_download,
+            replication_package_button,
+            replication_package_download,
             report_agent_output,
             compare_output,
             interview_output,
@@ -6522,6 +6669,12 @@ def build_app() -> gr.Blocks:
             ],
             outputs=[prereg_preview, prereg_download],
             api_name="export_preregistration",
+        )
+        replication_package_button.click(
+            _export_replication_package,
+            inputs=[jsonl, memory_snapshot_state, summary, language],
+            outputs=[replication_package_download],
+            api_name="export_replication_package",
         )
         seed_prompt_apply.click(
             _seed_prompt_updates,
