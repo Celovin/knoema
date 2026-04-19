@@ -558,6 +558,10 @@ BASE_LABELS = {
         "spatial_heatmap": "Spatial heatmap",
         "spatial_heatmap_empty": "No spatial occupancy data yet.",
         "spatial_heatmap_batch": "Spatial heatmap is available in single-run mode only.",
+        "action_flow_panel": "Action flow",
+        "action_flow": "Action flow",
+        "action_flow_empty": "No action flow data yet.",
+        "action_flow_batch": "Action flow is available in single-run mode only.",
         "timeline": "Timeline",
         "threads_tab": "Conversation threads",
         "threads_empty": "No conversation threads yet. Run a scenario with directed speech to group replies together.",
@@ -646,6 +650,10 @@ LABELS["ko"]["spatial_heatmap_panel"] = "공간 히트맵"
 LABELS["ko"]["spatial_heatmap"] = "공간 히트맵"
 LABELS["ko"]["spatial_heatmap_empty"] = "아직 공간 점유 데이터가 없습니다."
 LABELS["ko"]["spatial_heatmap_batch"] = "공간 히트맵은 단일 실행에서만 확인할 수 있습니다."
+LABELS["ko"]["action_flow_panel"] = "행동 흐름도"
+LABELS["ko"]["action_flow"] = "행동 흐름도"
+LABELS["ko"]["action_flow_empty"] = "아직 행동 흐름 데이터가 없습니다."
+LABELS["ko"]["action_flow_batch"] = "행동 흐름도는 단일 실행에서만 확인할 수 있습니다."
 LABELS["ko"]["threads_tab"] = "대화 스레드"
 LABELS["ko"]["threads_empty"] = "아직 대화 스레드가 없습니다. 직접 대상이 있는 발화가 나오는 시나리오를 실행하세요."
 LABELS["ko"]["threads_batch"] = "대화 스레드는 단일 실행에서만 확인할 수 있습니다."
@@ -656,6 +664,8 @@ ACTION_CHART_HEIGHT_PX = 380
 EMOTION_TRAJECTORY_MAX_AGENTS = 12
 AGENT_COLOR_SEQUENCE: tuple[str, ...] = tuple(qualitative.Bold)
 ACTION_PATTERN_SEQUENCE: tuple[str, ...] = ("", "/", "\\", "x", "-", "|", "+", ".", "o")
+ACTION_FLOW_SELF_TYPES = frozenset({"alone", "move", "query_memory"})
+ACTION_FLOW_COLOR_SEQUENCE: tuple[str, ...] = tuple(qualitative.Set3 + qualitative.Bold)
 
 BIG_FIVE_FIELDS = PERSONA_TRAIT_FIELDS[:5]
 TIER_BD_FIELDS = (
@@ -1211,6 +1221,7 @@ def _run(
     str,
     go.Figure,
     go.Figure,
+    go.Figure,
 ]:
     legacy_with_language = len(PERSONA_TRAIT_FIELDS) + 5
     legacy_without_language = len(PERSONA_TRAIT_FIELDS) + 4
@@ -1438,6 +1449,7 @@ def _run(
         memory_markdown,
         emotion_trajectory,
         _spatial_heatmap_figure(result.jsonl, result.memory_snapshot, language=language),
+        _action_flow_figure(result.jsonl, language=language),
     )
 
 
@@ -1680,6 +1692,11 @@ def _language_updates(
         gr.update(
             label=labels["spatial_heatmap"],
             value=_spatial_heatmap_figure("", {}, language=key),
+        ),
+        gr.update(label=labels["action_flow_panel"]),
+        gr.update(
+            label=labels["action_flow"],
+            value=_action_flow_figure("", language=key),
         ),
         gr.update(label=labels["monologue_panel"]),
         labels["monologue_empty"],
@@ -2189,6 +2206,137 @@ def _spatial_heatmap_figure(
 
 
 def _spatial_heatmap_empty_figure(title: str, message: str) -> go.Figure:
+    figure = go.Figure()
+    figure.update_layout(
+        title=title,
+        height=220,
+        margin={"l": 0, "r": 0, "t": 48, "b": 0},
+        annotations=[{"text": message, "showarrow": False}],
+        paper_bgcolor="rgba(248,250,252,1)",
+        plot_bgcolor="rgba(248,250,252,1)",
+    )
+    return figure
+
+
+def _action_flow_figure(jsonl_text: str, *, language: str = "en") -> go.Figure:
+    title = LABELS[language]["action_flow"]
+    rows: list[dict[str, Any]] = []
+    for line in str(jsonl_text).splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            payload = json.loads(stripped)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            rows.append(payload)
+
+    if not rows:
+        return _action_flow_empty_figure(title, LABELS[language]["action_flow_empty"])
+    if any("record_type" in row for row in rows):
+        return _action_flow_empty_figure(title, LABELS[language]["action_flow_batch"])
+
+    pair_counts: dict[tuple[str, str], dict[str, int]] = {}
+    source_agents: set[str] = set()
+    target_nodes: set[str] = set()
+    for row in rows:
+        action = row.get("action")
+        if not isinstance(action, dict):
+            continue
+        source = str(row.get("agent_id", "agent"))
+        action_type = str(action.get("action_type", "")).strip() or "observe"
+        raw_target = str(action.get("target") or "").strip()
+        if raw_target:
+            target = raw_target
+        elif action_type in ACTION_FLOW_SELF_TYPES:
+            suffix = "(self)" if language == "en" else "(자기)"
+            target = f"{source} {suffix}"
+        else:
+            suffix = "(context)" if language == "en" else "(맥락)"
+            target = f"{source} {suffix}"
+        source_agents.add(source)
+        target_nodes.add(target)
+        bucket = pair_counts.setdefault((source, target), {})
+        bucket[action_type] = bucket.get(action_type, 0) + 1
+
+    if not pair_counts:
+        return _action_flow_empty_figure(title, LABELS[language]["action_flow_empty"])
+
+    ordered_sources = sorted(source_agents)
+    ordered_targets = sorted(target_nodes)
+    agent_colors = _agent_color_map(ordered_sources)
+    action_palette = _action_type_palette(
+        action_type
+        for counts in pair_counts.values()
+        for action_type in counts
+    )
+    node_labels = ordered_sources + ordered_targets
+    node_colors = [agent_colors[source] for source in ordered_sources]
+    for target in ordered_targets:
+        base_agent = target.replace(" (self)", "").replace(" (context)", "").replace(" (자기)", "").replace(" (맥락)", "")
+        node_colors.append(agent_colors.get(base_agent, "#94a3b8"))
+
+    source_index = {agent_id: index for index, agent_id in enumerate(ordered_sources)}
+    target_index = {
+        target: len(ordered_sources) + index for index, target in enumerate(ordered_targets)
+    }
+    link_sources: list[int] = []
+    link_targets: list[int] = []
+    link_values: list[int] = []
+    link_colors: list[str] = []
+    link_customdata: list[str] = []
+    count_label = "Count" if language == "en" else "횟수"
+    for source, target in sorted(pair_counts):
+        counts = pair_counts[(source, target)]
+        dominant_action = max(counts.items(), key=lambda item: (int(item[1]), item[0]))[0]
+        link_sources.append(source_index[source])
+        link_targets.append(target_index[target])
+        link_values.append(sum(int(count) for count in counts.values()))
+        link_colors.append(action_palette[dominant_action])
+        breakdown = ", ".join(
+            f"{action_type} x{count}"
+            for action_type, count in sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+        )
+        link_customdata.append(f"{count_label}: {sum(int(count) for count in counts.values())}<br>{breakdown}")
+
+    figure = go.Figure(
+        go.Sankey(
+            arrangement="snap",
+            node={
+                "label": node_labels,
+                "color": node_colors,
+                "pad": 16,
+                "thickness": 16,
+            },
+            link={
+                "source": link_sources,
+                "target": link_targets,
+                "value": link_values,
+                "color": link_colors,
+                "customdata": link_customdata,
+                "hovertemplate": "%{source.label} → %{target.label}<br>%{customdata}<extra></extra>",
+            },
+        )
+    )
+    figure.update_layout(
+        title=title,
+        height=420,
+        margin={"l": 0, "r": 0, "t": 48, "b": 0},
+        paper_bgcolor="rgba(248,250,252,1)",
+    )
+    return figure
+
+
+def _action_type_palette(action_types: Any) -> dict[str, str]:
+    ordered_action_types = sorted({str(action_type) for action_type in action_types})
+    return {
+        action_type: ACTION_FLOW_COLOR_SEQUENCE[index % len(ACTION_FLOW_COLOR_SEQUENCE)]
+        for index, action_type in enumerate(ordered_action_types)
+    }
+
+
+def _action_flow_empty_figure(title: str, message: str) -> go.Figure:
     figure = go.Figure()
     figure.update_layout(
         title=title,
@@ -2921,6 +3069,17 @@ def build_app() -> gr.Blocks:
                 value=_spatial_heatmap_figure("", {}, language="ko"),
                 elem_id="spatial-heatmap-treemap",
             )
+        action_flow_panel = gr.Accordion(
+            labels["action_flow_panel"],
+            open=False,
+            elem_id="action-flow-panel",
+        )
+        with action_flow_panel:
+            action_flow_view = gr.Plot(
+                label=labels["action_flow"],
+                value=_action_flow_figure("", language="ko"),
+                elem_id="action-flow-sankey",
+            )
         monologue_panel = gr.Accordion(
             labels["monologue_panel"],
             open=False,
@@ -3017,6 +3176,8 @@ def build_app() -> gr.Blocks:
             emotion_view,
             spatial_heatmap_panel,
             spatial_heatmap_view,
+            action_flow_panel,
+            action_flow_view,
             monologue_panel,
             monologue_view,
             current_plan_panel,
@@ -3166,6 +3327,7 @@ def build_app() -> gr.Blocks:
                 memory_view,
                 emotion_view,
                 spatial_heatmap_view,
+                action_flow_view,
             ],
             api_name="run",
         )
