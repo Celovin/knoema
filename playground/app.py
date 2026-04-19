@@ -13,9 +13,19 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
     from simulation import Provider, run_playground_scenario, scenario_choices
 
 
+def _normalize_provider(provider: str) -> Provider:
+    if provider in {"재생 전용", "Replay only"}:
+        return "Replay only"
+    if provider == "OpenAI":
+        return "OpenAI"
+    if provider == "Anthropic":
+        return "Anthropic"
+    return "Replay only"
+
+
 def _run(
     scenario_name: str,
-    provider: Provider,
+    provider: str,
     api_key: str,
     model: str,
     primary_name: str,
@@ -29,7 +39,7 @@ def _run(
 ) -> tuple[str, go.Figure, str, str, str]:
     result = run_playground_scenario(
         scenario_name=scenario_name,
-        provider=provider,
+        provider=_normalize_provider(provider),
         api_key=api_key,
         model=model,
         primary_name=primary_name,
@@ -144,36 +154,108 @@ def _node_hover_text(agents: list[str], rows: list[dict[str, Any]]) -> list[str]
     return hover
 
 
-def build_app() -> gr.Blocks:
-    with gr.Blocks(title="Knoema Playground") as demo:
-        gr.Markdown(
-            """
-            # Knoema Playground
+LABELS = {
+    "ko": {
+        "header": (
+            "# Knoema Playground\n\n"
+            "브라우저에서 지속형 에이전트 시뮬레이션을 짧게 실행합니다. **재생 전용**은 "
+            "API 키 없이 결정론적으로 동작하며, OpenAI 또는 Anthropic 키를 입력하면 "
+            "라이브 LLM 호출이 가능합니다. API 키는 현재 요청에만 사용되고 디스크에 저장되지 않습니다."
+        ),
+        "scenario": "시나리오",
+        "mode": "모드",
+        "replay": "재생 전용",
+        "api_key": "API 키",
+        "api_key_ph": "OpenAI/Anthropic 사용 시 필수, 재생 전용은 비워두세요",
+        "model": "모델",
+        "agent_panel": "주 에이전트 설정",
+        "name": "이름",
+        "age": "나이",
+        "openness": "개방성",
+        "conscientiousness": "성실성",
+        "extraversion": "외향성",
+        "agreeableness": "친화성",
+        "neuroticism": "신경성",
+        "ticks": "틱 수",
+        "run": "시뮬레이션 실행",
+        "summary": "실행 요약",
+        "timeline": "타임라인",
+        "graph": "관계 그래프",
+        "jsonl": "JSONL 로그",
+        "download": "JSONL 다운로드",
+        "lang": "언어",
+    },
+    "en": {
+        "header": (
+            "# Knoema Playground\n\n"
+            "Run a short persistent-agent simulation in the browser. Use **Replay only** "
+            "for a no-key deterministic demo, or provide your own API key for a live "
+            "LLM-backed run. API keys are used only for the current request and are not "
+            "written to disk."
+        ),
+        "scenario": "Scenario",
+        "mode": "Mode",
+        "replay": "Replay only",
+        "api_key": "API key",
+        "api_key_ph": "Required for OpenAI/Anthropic, leave blank for Replay only",
+        "model": "Model",
+        "agent_panel": "Primary agent controls",
+        "name": "Name",
+        "age": "Age",
+        "openness": "Openness",
+        "conscientiousness": "Conscientiousness",
+        "extraversion": "Extraversion",
+        "agreeableness": "Agreeableness",
+        "neuroticism": "Neuroticism",
+        "ticks": "Ticks",
+        "run": "Run simulation",
+        "summary": "Run summary",
+        "timeline": "Timeline",
+        "graph": "Relationship graph",
+        "jsonl": "JSONL log",
+        "download": "Download JSONL",
+        "lang": "Language",
+    },
+}
 
-            Run a short persistent-agent simulation in the browser. Use **Replay only**
-            for a no-key deterministic demo, or provide your own API key for a live LLM-backed run.
-            API keys are used only for the current request and are not written to disk.
-            """
-        )
+
+FOOTER_CSS = """
+footer {display: none !important;}
+.footer {display: none !important;}
+.api-docs {display: none !important;}
+"""
+
+
+def build_app() -> gr.Blocks:
+    L = LABELS["ko"]
+    with gr.Blocks(title="Knoema Playground", css=FOOTER_CSS, analytics_enabled=False) as demo:
+        with gr.Row():
+            language = gr.Radio(
+                label=L["lang"],
+                choices=["한국어", "English"],
+                value="한국어",
+                scale=0,
+            )
+        header = gr.Markdown(L["header"])
         with gr.Row():
             scenario = gr.Dropdown(
-                label="Scenario",
+                label=L["scenario"],
                 choices=scenario_choices(),
                 value=scenario_choices()[0],
             )
             provider = gr.Radio(
-                label="Mode",
-                choices=["Replay only", "OpenAI", "Anthropic"],
-                value="Replay only",
+                label=L["mode"],
+                choices=[L["replay"], "OpenAI", "Anthropic"],
+                value=L["replay"],
             )
         with gr.Row():
             api_key = gr.Textbox(
-                label="API key",
+                label=L["api_key"],
                 type="password",
-                placeholder="Required for OpenAI/Anthropic, leave blank for Replay only",
+                placeholder=L["api_key_ph"],
             )
             model = gr.Dropdown(
-                label="Model",
+                label=L["model"],
                 choices=[
                     "gpt-5",
                     "gpt-5-mini",
@@ -188,30 +270,92 @@ def build_app() -> gr.Blocks:
                 value="gpt-5-mini",
                 allow_custom_value=True,
             )
-        with gr.Accordion("Primary agent controls", open=True):
+        agent_panel = gr.Accordion(L["agent_panel"], open=True)
+        with agent_panel:
             with gr.Row():
-                primary_name = gr.Textbox(label="Name", value="Mina")
-                primary_age = gr.Slider(label="Age", minimum=12, maximum=80, step=1, value=21)
+                primary_name = gr.Textbox(label=L["name"], value="Mina")
+                primary_age = gr.Slider(label=L["age"], minimum=12, maximum=80, step=1, value=21)
             with gr.Row():
-                openness = gr.Slider(label="Openness", minimum=0, maximum=1, value=0.75)
+                openness = gr.Slider(label=L["openness"], minimum=0, maximum=1, value=0.75)
                 conscientiousness = gr.Slider(
-                    label="Conscientiousness",
+                    label=L["conscientiousness"],
                     minimum=0,
                     maximum=1,
                     value=0.62,
                 )
-                extraversion = gr.Slider(label="Extraversion", minimum=0, maximum=1, value=0.52)
+                extraversion = gr.Slider(label=L["extraversion"], minimum=0, maximum=1, value=0.52)
             with gr.Row():
-                agreeableness = gr.Slider(label="Agreeableness", minimum=0, maximum=1, value=0.68)
-                neuroticism = gr.Slider(label="Neuroticism", minimum=0, maximum=1, value=0.36)
-                ticks = gr.Slider(label="Ticks", minimum=1, maximum=24, step=1, value=4)
-        run_button = gr.Button("Run simulation", variant="primary")
-        summary = gr.Textbox(label="Run summary", interactive=False)
+                agreeableness = gr.Slider(label=L["agreeableness"], minimum=0, maximum=1, value=0.68)
+                neuroticism = gr.Slider(label=L["neuroticism"], minimum=0, maximum=1, value=0.36)
+                ticks = gr.Slider(label=L["ticks"], minimum=1, maximum=24, step=1, value=4)
+        run_button = gr.Button(L["run"], variant="primary")
+        summary = gr.Textbox(label=L["summary"], interactive=False)
         with gr.Row():
-            timeline = gr.Markdown(label="Timeline")
-            graph = gr.Plot(label="Relationship graph")
-        jsonl = gr.Code(label="JSONL log", language="json")
-        download = gr.File(label="Download JSONL")
+            timeline = gr.Markdown(label=L["timeline"])
+            graph = gr.Plot(label=L["graph"])
+        jsonl = gr.Code(label=L["jsonl"], language="json")
+        download = gr.File(label=L["download"])
+
+        def _switch(lang_choice: str) -> list[Any]:
+            key = "ko" if lang_choice == "한국어" else "en"
+            t = LABELS[key]
+            current_provider = provider.value
+            new_provider_choices = [t["replay"], "OpenAI", "Anthropic"]
+            new_provider_value = (
+                t["replay"] if current_provider in (LABELS["ko"]["replay"], LABELS["en"]["replay"])
+                else current_provider
+            )
+            return [
+                t["header"],
+                gr.update(label=t["scenario"]),
+                gr.update(label=t["mode"], choices=new_provider_choices, value=new_provider_value),
+                gr.update(label=t["api_key"], placeholder=t["api_key_ph"]),
+                gr.update(label=t["model"]),
+                gr.update(label=t["agent_panel"]),
+                gr.update(label=t["name"]),
+                gr.update(label=t["age"]),
+                gr.update(label=t["openness"]),
+                gr.update(label=t["conscientiousness"]),
+                gr.update(label=t["extraversion"]),
+                gr.update(label=t["agreeableness"]),
+                gr.update(label=t["neuroticism"]),
+                gr.update(label=t["ticks"]),
+                gr.update(value=t["run"]),
+                gr.update(label=t["summary"]),
+                gr.update(label=t["timeline"]),
+                gr.update(label=t["graph"]),
+                gr.update(label=t["jsonl"]),
+                gr.update(label=t["download"]),
+                gr.update(label=t["lang"]),
+            ]
+
+        language.change(
+            _switch,
+            inputs=[language],
+            outputs=[
+                header,
+                scenario,
+                provider,
+                api_key,
+                model,
+                agent_panel,
+                primary_name,
+                primary_age,
+                openness,
+                conscientiousness,
+                extraversion,
+                agreeableness,
+                neuroticism,
+                ticks,
+                run_button,
+                summary,
+                timeline,
+                graph,
+                jsonl,
+                download,
+                language,
+            ],
+        )
 
         run_button.click(
             _run,
