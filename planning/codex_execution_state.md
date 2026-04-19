@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 19:15 UTC by Codex
+**Last updated**: 2026-04-19 19:27 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -58,7 +58,7 @@
 - [x] 34. Godot + Unity tavern_demo samples + WebGL exports - 2026-04-19 18:50 UTC, commit 25b9c26
 - [x] 46. Procedural quest generation - 2026-04-19 19:06 UTC, commit e850c47
 - [x] 47. NPC schedule conflicts + coordination - 2026-04-19 19:15 UTC, commit 6358f51
-- [ ] 48. Voice conversation mode (TTS/STT)
+- [x] 48. Voice conversation mode (TTS/STT) - 2026-04-19 19:27 UTC, commit 2cfbd15
 
 ## Group 7 — Application C (Academic depth) (8-10h)
 
