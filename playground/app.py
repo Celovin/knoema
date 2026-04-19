@@ -731,6 +731,8 @@ LABELS["ko"]["replication_button"] = "Replication package ?대낫?닿린"
 LABELS["ko"]["replication_download"] = "Replication package ?ㅼ슫濡쒕뱶"
 LABELS["en"]["replication_button"] = "Export replication package"
 LABELS["en"]["replication_download"] = "Download replication package"
+LABELS["ko"]["reviewer_mode"] = "由щ럭?댁뼱 紐⑤뱶"
+LABELS["en"]["reviewer_mode"] = "Reviewer mode"
 LABELS["en"]["compare_panel"] = "A/B compare"
 LABELS["en"]["compare_seed_a"] = "Compare seed A"
 LABELS["en"]["compare_seed_b"] = "Compare seed B"
@@ -1372,7 +1374,21 @@ def _accessibility_head() -> str:
 
 
 ACCESSIBILITY_HEAD = _accessibility_head()
-APP_HEAD = TUTORIAL_HEAD + THEME_HEAD + ACCESSIBILITY_HEAD
+
+
+def _reviewer_head() -> str:
+    return """
+<script>
+window.KNOEMA_REVIEWER = {
+  enabled: () => new URLSearchParams(window.location.search).get("reviewer") === "1",
+  targetId: "reviewer-mode-toggle"
+};
+</script>
+"""
+
+
+REVIEWER_HEAD = _reviewer_head()
+APP_HEAD = TUTORIAL_HEAD + THEME_HEAD + ACCESSIBILITY_HEAD + REVIEWER_HEAD
 
 FOOTER_CSS = f"""
 :root {{
@@ -2100,6 +2116,53 @@ def _resolve_run_request(
     }
 
 
+def _reviewer_alias_map(result: Any) -> dict[str, str]:
+    agent_ids = sorted(
+        set(getattr(result, "action_breakdown", {}))
+        | set(getattr(result, "memory_snapshot", {}))
+        | {str(row.get("source", "")) for row in getattr(result, "relationship_rows", []) if row.get("source")}
+        | {str(row.get("target", "")) for row in getattr(result, "relationship_rows", []) if row.get("target")}
+    )
+    aliases: dict[str, str] = {}
+    for index, agent_id in enumerate(agent_ids):
+        aliases[agent_id] = f"Agent {chr(65 + index)}"
+    return aliases
+
+
+def _sanitize_text(text: str, aliases: dict[str, str]) -> str:
+    sanitized = str(text)
+    for original, alias in sorted(aliases.items(), key=lambda item: len(item[0]), reverse=True):
+        sanitized = sanitized.replace(original, alias)
+    return sanitized
+
+
+def _sanitize_value(value: Any, aliases: dict[str, str]) -> Any:
+    if isinstance(value, str):
+        return _sanitize_text(value, aliases)
+    if isinstance(value, dict):
+        return {
+            (_sanitize_text(key, aliases) if isinstance(key, str) else key): _sanitize_value(item, aliases)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_sanitize_value(item, aliases) for item in value]
+    return value
+
+
+def _reviewer_jsonl_text(jsonl_text: str, aliases: dict[str, str]) -> str:
+    rows = _jsonl_rows(jsonl_text)
+    return "\n".join(
+        json.dumps(_sanitize_value(row, aliases), ensure_ascii=False, sort_keys=True)
+        for row in rows
+    )
+
+
+def _reviewer_download_path(jsonl_text: str) -> str:
+    export_path = Path(tempfile.gettempdir()) / f"knoema_reviewer_run_{uuid.uuid4().hex}.jsonl"
+    export_path.write_text(jsonl_text, encoding="utf-8")
+    return str(export_path)
+
+
 def _render_result_outputs(
     result: Any,
     *,
@@ -2107,9 +2170,39 @@ def _render_result_outputs(
     provider: str,
     api_key: str,
     language: str,
+    reviewer_mode: bool = False,
 ) -> RunOutputs:
     host_provider = host_key_active(provider, api_key)
     batch_result = getattr(result, "batch_result", None)
+    aliases: dict[str, str] = {}
+    if reviewer_mode:
+        aliases = _reviewer_alias_map(result)
+        rendered_jsonl = _reviewer_jsonl_text(result.jsonl, aliases)
+        rendered_memory_snapshot = cast(
+            "dict[str, dict[str, list[dict[str, Any]]]]",
+            _sanitize_value(result.memory_snapshot, aliases),
+        )
+        rendered_relationship_rows = cast(
+            "list[dict[str, object]]",
+            _sanitize_value(result.relationship_rows, aliases),
+        )
+        rendered_action_breakdown = cast(
+            "dict[str, dict[str, int]]",
+            _sanitize_value(result.action_breakdown, aliases),
+        )
+        rendered_timeline = _sanitize_text(result.timeline_markdown, aliases)
+        rendered_monologue = _sanitize_text(result.monologue_markdown, aliases)
+        rendered_plan = _sanitize_text(result.plan_markdown, aliases)
+        download_path = _reviewer_download_path(rendered_jsonl)
+    else:
+        rendered_jsonl = result.jsonl
+        rendered_memory_snapshot = result.memory_snapshot
+        rendered_relationship_rows = result.relationship_rows
+        rendered_action_breakdown = result.action_breakdown
+        rendered_timeline = result.timeline_markdown
+        rendered_monologue = result.monologue_markdown
+        rendered_plan = result.plan_markdown
+        download_path = result.download_path
     if language == "ko":
         summary = (
             f"모드: {mode_label} | 에이전트: {result.agent_count}명 | "
@@ -2136,52 +2229,52 @@ def _render_result_outputs(
             )
         if host_provider:
             summary += f" | (Celovin host {host_provider} key in use - demo only)"
-    summary += f" | {_relationship_accessibility_text(result.relationship_rows, language=language)}"
+    summary += f" | {_relationship_accessibility_text(rendered_relationship_rows, language=language)}"
     agent_ids = sorted(
-        set(result.action_breakdown)
-        | set(result.memory_snapshot)
-        | {str(row["source"]) for row in result.relationship_rows}
-        | {str(row["target"]) for row in result.relationship_rows}
+        set(rendered_action_breakdown)
+        | set(rendered_memory_snapshot)
+        | {str(row["source"]) for row in rendered_relationship_rows}
+        | {str(row["target"]) for row in rendered_relationship_rows}
     )
     agent_colors = _agent_color_map(agent_ids)
     memory_snapshot, memory_agent, memory_markdown, emotion_trajectory = _memory_inspector_outputs(
-        result.memory_snapshot,
+        rendered_memory_snapshot,
         language=language,
         batch_mode=batch_result is not None,
     )
     return (
         _timeline_markdown_with_agent_colors(
-            result.jsonl,
-            result.timeline_markdown,
+            rendered_jsonl,
+            rendered_timeline,
             agent_colors,
             language=language,
         ),
         _conversation_threads_markdown(
-            result.jsonl,
-            result.memory_snapshot,
+            rendered_jsonl,
+            rendered_memory_snapshot,
             agent_colors,
             language=language,
         ),
         _relationship_figure(
-            result.relationship_rows,
+            rendered_relationship_rows,
             language=language,
             agent_colors=agent_colors,
         ),
-        result.monologue_markdown,
-        result.plan_markdown,
-        result.jsonl,
-        result.download_path,
-        summary,
-        _action_chart_figure(result.action_breakdown, language=language),
+        rendered_monologue,
+        rendered_plan,
+        rendered_jsonl,
+        download_path,
+        _sanitize_text(summary, aliases) if reviewer_mode else summary,
+        _action_chart_figure(rendered_action_breakdown, language=language),
         gr.update(minimum=-1, maximum=max(-1, int(result.tick_count) - 1), value=-1),
-        _tick_focus_markdown(result.jsonl, -1, language=language),
+        _tick_focus_markdown(rendered_jsonl, -1, language=language),
         memory_snapshot,
         memory_agent,
         memory_markdown,
         emotion_trajectory,
-        _spatial_heatmap_figure(result.jsonl, result.memory_snapshot, language=language),
-        _action_flow_figure(result.jsonl, language=language),
-        _mini_map_figure(result.jsonl, -1, language=language),
+        _spatial_heatmap_figure(rendered_jsonl, rendered_memory_snapshot, language=language),
+        _action_flow_figure(rendered_jsonl, language=language),
+        _mini_map_figure(rendered_jsonl, -1, language=language),
     )
 
 
@@ -2229,6 +2322,7 @@ def _run(
     primary_name: str,
     primary_age: int,
     *trait_and_runtime: Any,
+    reviewer_mode: bool = False,
 ) -> RunOutputs:
     request = _resolve_run_request(
         scenario_name,
@@ -2292,6 +2386,7 @@ def _run(
         provider=str(request["provider"]),
         api_key=str(request["api_key"]),
         language=str(request["language"]),
+        reviewer_mode=reviewer_mode,
     )
 
 
@@ -2305,6 +2400,7 @@ def _run_with_player_mode(
     primary_name: str,
     primary_age: int,
     *trait_and_runtime: Any,
+    reviewer_mode: bool = False,
 ) -> tuple[Any, ...]:
     request = _resolve_run_request(
         scenario_name,
@@ -2341,6 +2437,7 @@ def _run_with_player_mode(
                 provider=str(request["provider"]),
                 api_key="",
                 language=str(request["language"]),
+                reviewer_mode=reviewer_mode,
             ),
             gr.update(value=None),
             session,
@@ -2381,6 +2478,7 @@ def _run_with_player_mode(
             provider=str(request["provider"]),
             api_key=str(request["api_key"]),
             language=str(request["language"]),
+            reviewer_mode=reviewer_mode,
         ),
         gr.update(value=None),
         None,
@@ -3892,6 +3990,7 @@ def _run_with_optional_streaming(
     primary_name: str,
     primary_age: int,
     *trait_and_runtime: Any,
+    reviewer_mode: bool = False,
 ):
     request = _resolve_run_request(
         scenario_name,
@@ -3909,17 +4008,31 @@ def _run_with_optional_streaming(
         or bool(request["batch_mode"])
         or str(request["provider"]) != "Replay only"
     ):
-        yield _run_with_player_mode(
-            scenario_name,
-            environment_preset_id,
-            cultural_prior_id,
-            provider,
-            api_key,
-            model,
-            primary_name,
-            primary_age,
-            *trait_and_runtime,
-        )
+        if reviewer_mode:
+            yield _run_with_player_mode(
+                scenario_name,
+                environment_preset_id,
+                cultural_prior_id,
+                provider,
+                api_key,
+                model,
+                primary_name,
+                primary_age,
+                *trait_and_runtime,
+                reviewer_mode=True,
+            )
+        else:
+            yield _run_with_player_mode(
+                scenario_name,
+                environment_preset_id,
+                cultural_prior_id,
+                provider,
+                api_key,
+                model,
+                primary_name,
+                primary_age,
+                *trait_and_runtime,
+            )
         return
 
     from fastapi.testclient import TestClient
@@ -3992,6 +4105,7 @@ def _run_with_optional_streaming(
                         provider="Replay only",
                         api_key="",
                         language=str(request["language"]),
+                        reviewer_mode=reviewer_mode,
                     ),
                     gr.update(value=None),
                     None,
@@ -4001,6 +4115,34 @@ def _run_with_optional_streaming(
                     break
     finally:
         service.shutdown()
+
+
+def _run_with_optional_streaming_ui(
+    live_streaming: bool,
+    reviewer_mode: bool,
+    scenario_name: str,
+    environment_preset_id: str | None,
+    cultural_prior_id: str | None,
+    provider: str,
+    api_key: str,
+    model: str,
+    primary_name: str,
+    primary_age: int,
+    *trait_and_runtime: Any,
+):
+    return _run_with_optional_streaming(
+        live_streaming,
+        scenario_name,
+        environment_preset_id,
+        cultural_prior_id,
+        provider,
+        api_key,
+        model,
+        primary_name,
+        primary_age,
+        *trait_and_runtime,
+        reviewer_mode=reviewer_mode,
+    )
 
 
 def _status_with_voice_notes(status: str, voice_notes: list[str]) -> str:
@@ -4040,6 +4182,7 @@ def _advance_player_mode(
     player_audio_path: str | None,
     stt_engine: str,
     tts_engine: str,
+    reviewer_mode: bool = False,
 ) -> tuple[Any, ...]:
     language = str((session or {}).get("language", "en"))
     voice_notes: list[str] = []
@@ -4091,6 +4234,7 @@ def _advance_player_mode(
             provider="Player mode",
             api_key="",
             language=language,
+            reviewer_mode=reviewer_mode,
         ),
         gr.update(value=response_audio),
         updated_session,
@@ -4383,6 +4527,7 @@ def _language_updates(
             value=theme_value,
             info=labels["theme_info"],
         ),
+        gr.update(label=labels["reviewer_mode"]),
         gr.update(label=labels["api_key"], placeholder=labels["api_key_ph"]),
         gr.update(label=labels["model"]),
         gr.update(label=labels["agent_panel"]),
@@ -5821,6 +5966,12 @@ def build_app() -> gr.Blocks:
                 elem_id="theme-mode-radio",
             )
             tutorial_button = gr.Button("?", elem_id="tutorial-button", scale=0, min_width=52)
+            reviewer_mode = gr.Checkbox(
+                label=labels["reviewer_mode"],
+                value=False,
+                visible=False,
+                elem_id="reviewer-mode-toggle",
+            )
 
         header = gr.Markdown(labels["header"])
 
@@ -6406,6 +6557,7 @@ def build_app() -> gr.Blocks:
             environment_preset,
             provider,
             theme_mode,
+            reviewer_mode,
             api_key,
             model,
             agent_panel,
@@ -6537,8 +6689,8 @@ def build_app() -> gr.Blocks:
         demo.load(
             fn=None,
             inputs=[language],
-            outputs=[theme_mode],
-            js="(language) => window.KNOEMA_THEME?.sync(language) ?? 'Auto'",
+            outputs=[theme_mode, reviewer_mode],
+            js="(language) => [window.KNOEMA_THEME?.sync(language) ?? 'Auto', new URLSearchParams(window.location.search).get('reviewer') === '1']",
             queue=False,
             show_progress="hidden",
         )
@@ -6750,8 +6902,8 @@ def build_app() -> gr.Blocks:
             initial_relationships,
         ]
         run_event = run_button.click(
-            _run_with_optional_streaming,
-            inputs=[live_streaming, *common_run_inputs],
+            _run_with_optional_streaming_ui,
+            inputs=[live_streaming, reviewer_mode, *common_run_inputs],
             outputs=[
                 timeline,
                 thread_view,
@@ -6795,6 +6947,7 @@ def build_app() -> gr.Blocks:
                 player_voice_input,
                 player_stt_engine,
                 player_tts_engine,
+                reviewer_mode,
             ],
             outputs=[
                 timeline,
@@ -6834,6 +6987,7 @@ def build_app() -> gr.Blocks:
                 player_voice_input,
                 player_stt_engine,
                 player_tts_engine,
+                reviewer_mode,
             ],
             outputs=[
                 timeline,
