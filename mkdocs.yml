@@ -86,6 +86,7 @@ nav:
       - Academic Indexing: research/academic-indexing.md
       - Papers with Code Packet: research/papers_with_code_submission.md
       - Proposal Mapping: research/proposal_mapping.md
+      - Effort Allocation: research/effort_allocation.md
       - Safety Scenarios: guides/safety-scenarios.md
   - SDK:
       - Python SDK: sdk/python-api.md
