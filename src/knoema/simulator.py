@@ -48,6 +48,39 @@ class SimulationLogEntry:
         return payload
 
 
+@dataclass(frozen=True, slots=True)
+class RoutineConflict:
+    resource_id: str
+    queue: tuple[str, ...]
+    position: int
+    queue_size: int
+
+    @property
+    def holder_agent_id(self) -> str:
+        return self.queue[0]
+
+    @property
+    def previous_agent_id(self) -> str | None:
+        if self.position <= 1:
+            return None
+        return self.queue[self.position - 2]
+
+    @property
+    def next_agent_id(self) -> str | None:
+        if self.position >= self.queue_size:
+            return None
+        return self.queue[self.position]
+
+
+def _shared_resource_id(location_path: tuple[str, ...]) -> str | None:
+    leaf = location_path[-1].strip().lower()
+    if not leaf:
+        return None
+    if any(token in leaf for token in ("kitchen", "bar", "register", "counter", "desk")):
+        return leaf.replace(" ", "_")
+    return None
+
+
 class Simulator:
     """Coordinate agents, environment, scheduled events, and decisions."""
 
@@ -162,11 +195,18 @@ class Simulator:
         for event in self.scheduler.due(self.environment.current_time):
             self.environment.record_event(event)
             self.dispatcher.dispatch(event)
+        routine_entries = {agent.agent_id: self._apply_routine(agent) for agent in self.agents}
+        routine_conflicts = self._routine_conflicts(routine_entries)
         for agent in self.agents:
-            routine_entry = self._apply_routine(agent)
+            routine_entry = routine_entries[agent.agent_id]
+            routine_conflict = routine_conflicts.get(agent.agent_id)
             context = self.environment.get_context(agent.agent_id)
             if routine_entry is not None:
-                context = self._routine_context(context, routine_entry)
+                context = self._routine_context_with_conflict(
+                    context,
+                    routine_entry,
+                    routine_conflict=routine_conflict,
+                )
             monologue = self.monologue_generator.generate(
                 agent,
                 context,
@@ -174,7 +214,12 @@ class Simulator:
                 language=self.language,
             )
             self._record_monologue(monologue)
-            action = self._decide_for_agent(agent, context=context, routine_entry=routine_entry)
+            action = self._decide_for_agent(
+                agent,
+                context=context,
+                routine_entry=routine_entry,
+                routine_conflict=routine_conflict,
+            )
             self._record_action(tick, agent, action)
 
     def _decide_for_agent(
@@ -183,6 +228,7 @@ class Simulator:
         *,
         context: EnvironmentContext | None = None,
         routine_entry: RoutineEntry | None = None,
+        routine_conflict: RoutineConflict | None = None,
     ) -> Action:
         resolved_context = context or self.environment.get_context(agent.agent_id)
         salient_trigger = self._salient_trigger(resolved_context, agent.agent_id)
@@ -199,6 +245,13 @@ class Simulator:
             )
             if imitation is not None:
                 return imitation
+        if routine_entry is not None and routine_conflict is not None:
+            return self._routine_conflict_action(
+                agent,
+                resolved_context,
+                routine_entry,
+                routine_conflict,
+            )
         if routine_entry is not None and salient_trigger is None:
             return self._routine_default_action(agent, resolved_context, routine_entry)
         return self.decision_engine.decide(
@@ -217,6 +270,44 @@ class Simulator:
         if routine_entry is not None:
             self.environment.set_agent_location(agent.agent_id, routine_entry.location_path)
         return routine_entry
+
+    def _routine_conflicts(
+        self,
+        routine_entries: dict[str, RoutineEntry | None],
+    ) -> dict[str, RoutineConflict]:
+        grouped: dict[tuple[tuple[str, ...], str], list[Persona]] = {}
+        for agent in self.agents:
+            routine_entry = routine_entries.get(agent.agent_id)
+            if routine_entry is None:
+                continue
+            resource_id = _shared_resource_id(routine_entry.location_path)
+            if resource_id is None:
+                continue
+            grouped.setdefault((routine_entry.location_path, resource_id), []).append(agent)
+
+        conflicts: dict[str, RoutineConflict] = {}
+        for (_, resource_id), contenders in grouped.items():
+            if len(contenders) < 2:
+                continue
+            ordered = tuple(
+                agent.agent_id
+                for agent in sorted(
+                    contenders,
+                    key=lambda contender: (
+                        -contender.personality.conscientiousness,
+                        -contender.age,
+                        contender.agent_id,
+                    ),
+                )
+            )
+            for position, agent_id in enumerate(ordered, start=1):
+                conflicts[agent_id] = RoutineConflict(
+                    resource_id=resource_id,
+                    queue=ordered,
+                    position=position,
+                    queue_size=len(ordered),
+                )
+        return conflicts
 
     def _routine_context(
         self,
@@ -239,6 +330,58 @@ class Simulator:
             location_path=context.location_path,
             conditions=dict(context.conditions),
             recent_events=list(context.recent_events),
+            routine_note=routine_note,
+        )
+
+    def _routine_context_with_conflict(
+        self,
+        context: EnvironmentContext,
+        routine_entry: RoutineEntry,
+        *,
+        routine_conflict: RoutineConflict | None = None,
+    ) -> EnvironmentContext:
+        base_context = self._routine_context(context, routine_entry)
+        if routine_conflict is None:
+            return base_context
+        conditions = dict(base_context.conditions)
+        conditions["resource_queue"] = {
+            "resource_id": routine_conflict.resource_id,
+            "queue": list(routine_conflict.queue),
+            "position": routine_conflict.position,
+            "queue_size": routine_conflict.queue_size,
+        }
+        if self.language == "ko":
+            if routine_conflict.position == 1:
+                next_agent = routine_conflict.next_agent_id or "다음 대기자"
+                routine_note = (
+                    f"{base_context.routine_note} 공유 자원 {routine_conflict.resource_id}의 선두로 "
+                    f"먼저 사용하고 {next_agent}에게 순서를 넘길 준비를 하세요."
+                )
+            else:
+                routine_note = (
+                    f"{base_context.routine_note} 공유 자원 {routine_conflict.resource_id}의 대기열 "
+                    f"{routine_conflict.position}/{routine_conflict.queue_size}번입니다. "
+                    f"앞사람과 사용 순서를 조율하세요."
+                )
+        else:
+            if routine_conflict.position == 1:
+                next_agent = routine_conflict.next_agent_id or "the next person in line"
+                routine_note = (
+                    f"{base_context.routine_note} You are first in the queue for the shared "
+                    f"{routine_conflict.resource_id}; use it and coordinate a handoff to {next_agent}."
+                )
+            else:
+                routine_note = (
+                    f"{base_context.routine_note} You are position {routine_conflict.position}/"
+                    f"{routine_conflict.queue_size} for the shared {routine_conflict.resource_id}; "
+                    "negotiate the order instead of colliding."
+                )
+        return EnvironmentContext(
+            agent_id=base_context.agent_id,
+            timestamp=base_context.timestamp,
+            location_path=base_context.location_path,
+            conditions=conditions,
+            recent_events=list(base_context.recent_events),
             routine_note=routine_note,
         )
 
@@ -274,6 +417,76 @@ class Simulator:
             location=context.location,
             metadata={
                 "routine": True,
+                "start_hour": routine_entry.start_hour,
+                "end_hour": routine_entry.end_hour,
+            },
+        )
+
+    def _routine_conflict_action(
+        self,
+        agent: Persona,
+        context: EnvironmentContext,
+        routine_entry: RoutineEntry,
+        routine_conflict: RoutineConflict,
+    ) -> Action:
+        shared_resource = routine_conflict.resource_id.replace("_", " ")
+        if routine_conflict.position == 1:
+            base_action = self._routine_default_action(agent, context, routine_entry)
+            metadata = dict(base_action.metadata)
+            metadata.update(
+                {
+                    "queue_position": routine_conflict.position,
+                    "queue_size": routine_conflict.queue_size,
+                    "shared_resource": routine_conflict.resource_id,
+                    "queue_role": "holder",
+                    "queue_order": list(routine_conflict.queue),
+                }
+            )
+            if self.language == "ko":
+                content = (
+                    f"{agent.name}이(가) 공유 {shared_resource}를 먼저 사용하고 "
+                    f"{routine_conflict.next_agent_id or '다음 대기자'}에게 순서를 넘길 준비를 한다."
+                )
+            else:
+                content = (
+                    f"{agent.name} takes the shared {shared_resource} first and prepares a handoff "
+                    f"to {routine_conflict.next_agent_id or 'the next person in line'}."
+                )
+            return Action(
+                agent_id=base_action.agent_id,
+                timestamp=base_action.timestamp,
+                action_type=base_action.action_type,
+                target=base_action.target,
+                content=content,
+                location=base_action.location,
+                metadata=metadata,
+            )
+
+        counterpart = routine_conflict.previous_agent_id or routine_conflict.holder_agent_id
+        if self.language == "ko":
+            content = (
+                f"{agent.name}이(가) {counterpart} 뒤에서 공유 {shared_resource} 대기열 "
+                f"{routine_conflict.position}/{routine_conflict.queue_size}번을 지키며 사용 순서를 조율한다."
+            )
+        else:
+            content = (
+                f"{agent.name} waits behind {counterpart} in the shared {shared_resource} queue "
+                f"({routine_conflict.position}/{routine_conflict.queue_size}) and negotiates the handoff."
+            )
+        return Action(
+            agent_id=agent.agent_id,
+            timestamp=context.timestamp,
+            action_type="speak",
+            target=counterpart,
+            content=content,
+            location=context.location,
+            metadata={
+                "routine": True,
+                "queue_position": routine_conflict.position,
+                "queue_size": routine_conflict.queue_size,
+                "shared_resource": routine_conflict.resource_id,
+                "queue_role": "waiting",
+                "queue_order": list(routine_conflict.queue),
                 "start_hour": routine_entry.start_hour,
                 "end_hour": routine_entry.end_hour,
             },
