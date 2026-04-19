@@ -85,6 +85,7 @@ nav:
       - Cloud Deployment Comparison: deployment/cloud-comparison.md
       - Academic Indexing: research/academic-indexing.md
       - Papers with Code Packet: research/papers_with_code_submission.md
+      - Proposal Mapping: research/proposal_mapping.md
       - Safety Scenarios: guides/safety-scenarios.md
   - SDK:
       - Python SDK: sdk/python-api.md
