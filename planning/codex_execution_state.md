@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-19 21:28 UTC by Codex
+**Last updated**: 2026-04-19 21:35 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -67,7 +67,7 @@
 - [x] 29. Competitive comparison cards - 2026-04-19 21:03 UTC, commit ea97f3f
 - [x] 35. OSF Preregistration generator (generic template) - 2026-04-19 21:15 UTC, commit 6a2305e
 - [x] 36. Mixed effects models + Bayesian posterior (statsmodels + PyMC) - 2026-04-19 21:28 UTC, commit e298683
-- [ ] 37. DUX-standard replication package bundler
+- [x] 37. DUX-standard replication package bundler - 2026-04-19 21:35 UTC, commit f656833
 - [ ] 38. Reviewer-mode UI (blind peer review path)
 - [ ] 50. Power analysis + sample size calculator
 - [ ] 51. arXiv / Zenodo auto-deposit
