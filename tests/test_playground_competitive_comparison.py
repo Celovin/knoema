@@ -38,11 +38,16 @@ def test_subtask29_competitive_comparison_markdown_covers_required_frameworks() 
         "Knoema",
         "Stanford Generative Agents",
         "Google DeepMind Concordia",
-        "MiroFish",
         "CAMEL-AI",
         "Microsoft AutoGen",
     ]:
         assert name in markdown
 
-    assert "https://github.com/666ghj/MiroFish" in markdown
     assert "https://github.com/camel-ai/camel" in markdown
+    assert "MiroFish" not in markdown
+    assert "synthetic local proxy" in markdown
+    assert "deterministic local measurement" in markdown
+    assert "published reference (not measured)" in markdown
+    assert "LoCoMo-inspired long-term conversational retention proxy" in markdown
+    assert "MLMF four-layer retention" in markdown
+    assert "ToM Sally-Anne" in markdown

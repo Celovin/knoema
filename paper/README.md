@@ -1,5 +1,7 @@
 # Knoema Technical Report
 
+[![arXiv: pending](https://img.shields.io/badge/arXiv-ARXIV_ID_PENDING-b31b1b.svg)](main.tex)
+
 This folder contains the arXiv v2 technical report draft. It keeps the earlier Phase 12 source files for continuity and adds the v2 preprint structure used by `main.tex`. Phase 50 consolidates the Phase 43-46 evidence layer: persona opt-in theory-of-mind notes, deterministic Sally-Anne results, classic ABM reproductions, 500-agent metropolis evidence, PCS/RCS metrics, a scenario-library appendix, and the Papers with Code result table.
 
 ## Files

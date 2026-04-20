@@ -1021,19 +1021,6 @@ COMPETITIVE_COMPARISON_ROWS: tuple[dict[str, object], ...] = (
         "reference": "https://github.com/google-deepmind/concordia",
     },
     {
-        "system": "MiroFish",
-        "focus_en": "Prediction-oriented multi-agent app",
-        "focus_ko": "예측 지향 멀티에이전트 앱",
-        "memory_en": "High-fidelity world, personalities, long-term memory",
-        "memory_ko": "고해상도 세계, 페르소나, 장기 기억",
-        "repro_en": "Seed-driven simulation reports (partial)",
-        "repro_ko": "seed 기반 시뮬레이션 보고서 (partial)",
-        "game_en": "No packaged game SDK",
-        "game_ko": "패키지형 게임 SDK 없음",
-        "license": "AGPL-3.0",
-        "reference": "https://github.com/666ghj/MiroFish",
-    },
-    {
         "system": "CAMEL-AI",
         "focus_en": "General multi-agent framework",
         "focus_ko": "범용 멀티에이전트 프레임워크",
@@ -1058,6 +1045,75 @@ COMPETITIVE_COMPARISON_ROWS: tuple[dict[str, object], ...] = (
         "game_ko": "패키지형 게임 SDK 없음",
         "license": "MIT",
         "reference": "https://github.com/microsoft/autogen",
+    },
+)
+BENCHMARK_CAVEAT_SYNTHETIC = "synthetic local proxy"
+BENCHMARK_CAVEAT_DETERMINISTIC = "deterministic local measurement"
+BENCHMARK_CAVEAT_PUBLISHED = "published reference (not measured)"
+BENCHMARK_EVIDENCE_ROWS: tuple[dict[str, str], ...] = (
+    {
+        "label_en": "LoCoMo-inspired long-term conversational retention proxy",
+        "label_ko": "LoCoMo 장기 대화 유지 프록시",
+        "metric_en": "score 1.000 / target 0.800",
+        "metric_ko": "점수 1.000 / 목표 0.800",
+        "caveat": BENCHMARK_CAVEAT_SYNTHETIC,
+        "source": "benchmarks/memory_benchmark_integration/results/summary.json",
+    },
+    {
+        "label_en": "MemoryAgentBench-inspired EventQA + FactConsolidation proxy",
+        "label_ko": "MemoryAgentBench EventQA + FactConsolidation 프록시",
+        "metric_en": "score 1.000 / target 0.800",
+        "metric_ko": "점수 1.000 / 목표 0.800",
+        "caveat": BENCHMARK_CAVEAT_SYNTHETIC,
+        "source": "benchmarks/memory_benchmark_integration/results/summary.json",
+    },
+    {
+        "label_en": "MemoryArena-inspired decision-relevant memory proxy",
+        "label_ko": "MemoryArena 의사결정 연관 기억 프록시",
+        "metric_en": "score 1.000 / target 0.600",
+        "metric_ko": "점수 1.000 / 목표 0.600",
+        "caveat": BENCHMARK_CAVEAT_SYNTHETIC,
+        "source": "benchmarks/memory_benchmark_integration/results/summary.json",
+    },
+    {
+        "label_en": "MLMF four-layer retention",
+        "label_ko": "MLMF 4계층 유지율",
+        "metric_en": "retention 0.875 vs published baseline 0.569",
+        "metric_ko": "유지율 0.875, 공개 기준선 0.569 대비",
+        "caveat": BENCHMARK_CAVEAT_DETERMINISTIC,
+        "source": "experiments/mlmf_retention_benchmark/results/summary.json",
+    },
+    {
+        "label_en": "ToM Sally-Anne",
+        "label_ko": "ToM Sally-Anne",
+        "metric_en": "baseline accuracy 1.000; material tiers tier_a, tier_bd, tier_e, tier_f, tier_g",
+        "metric_ko": "기준 정확도 1.000, material tier는 tier_a, tier_bd, tier_e, tier_f, tier_g",
+        "caveat": BENCHMARK_CAVEAT_DETERMINISTIC,
+        "source": "experiments/theory_of_mind_ablation/results/summary.json",
+    },
+    {
+        "label_en": "HTN scaling",
+        "label_ko": "HTN 확장성",
+        "metric_en": "depth-5 goal achievement 0.955 vs planning-off 0.565",
+        "metric_ko": "깊이 5 목표 달성률 0.955, planning-off 0.565 대비",
+        "caveat": BENCHMARK_CAVEAT_DETERMINISTIC,
+        "source": "experiments/planning_depth/results/summary.json",
+    },
+    {
+        "label_en": "ACE latency reference",
+        "label_ko": "ACE 지연 시간 참고치",
+        "metric_en": "198-200 ms target envelope",
+        "metric_ko": "198-200 ms 목표 구간",
+        "caveat": BENCHMARK_CAVEAT_PUBLISHED,
+        "source": "benchmarks/formal_report/results/latency_comparison.json",
+    },
+    {
+        "label_en": "Inworld latency reference",
+        "label_ko": "Inworld 지연 시간 참고치",
+        "metric_en": "130-250 ms first audio; 1000-3000 ms end-to-end guidance",
+        "metric_ko": "첫 오디오 130-250 ms, 전체 파이프라인 가이드는 1000-3000 ms",
+        "caveat": BENCHMARK_CAVEAT_PUBLISHED,
+        "source": "benchmarks/formal_report/results/latency_comparison.json",
     },
 )
 
@@ -5886,7 +5942,35 @@ def _competitive_comparison_markdown(language: str) -> str:
             )
             for row in COMPETITIVE_COMPARISON_ROWS
         ]
-    return "\n".join([f"### {labels['competitive_panel']}", labels["competitive_intro"], "", header, *rows])
+    return "\n".join(
+        [
+            f"### {labels['competitive_panel']}",
+            labels["competitive_intro"],
+            "",
+            header,
+            *rows,
+            "",
+            _benchmark_evidence_markdown(key),
+        ]
+    )
+
+
+def _benchmark_evidence_markdown(language: str) -> str:
+    key = _language_key(language)
+    title = "### 벤치마크 근거와 caveat" if key == "ko" else "### Benchmark Evidence and Caveats"
+    intro = (
+        "아래 수치는 발표나 평가에서 caveat와 함께 읽어야 합니다."
+        if key == "ko"
+        else "Read each benchmark row together with its caveat before making claims."
+    )
+    lines = [title, intro, ""]
+    for row in BENCHMARK_EVIDENCE_ROWS:
+        label = row["label_ko"] if key == "ko" else row["label_en"]
+        metric = row["metric_ko"] if key == "ko" else row["metric_en"]
+        lines.append(
+            f"- **{label}**: {metric} | caveat: `{row['caveat']}` | source: `{row['source']}`"
+        )
+    return "\n".join(lines)
 
 
 def _language_updates(
