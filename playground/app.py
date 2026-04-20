@@ -5910,9 +5910,10 @@ def _memory_inspector_markdown(
     agent_id: str | list[str] | None,
     language: str = "en",
 ) -> str:
+    language_key = language if language in {"ko", "en"} else _language_key(language)
     selected_agents = _selected_memory_agents(snapshot, agent_id)
     if not snapshot or not selected_agents:
-        return LABELS[language]["memory_empty"]
+        return LABELS[language_key]["memory_empty"]
 
     agent_id = selected_agents[0]
     memory = snapshot[agent_id]
@@ -5927,28 +5928,28 @@ def _memory_inspector_markdown(
         )
     ]
     if len(selected_agents) > 1:
-        lines.append(f"> {LABELS[language]['memory_multi_hint']}")
+        lines.append(f"> {LABELS[language_key]['memory_multi_hint']}")
     lines.extend(
         _memory_section_lines(
-            LABELS[language]["memory_short_term"],
+            LABELS[language_key]["memory_short_term"],
             list(memory.get("short_term", [])),
-            language=language,
+            language=language_key,
             section="short_term",
         )
     )
     lines.extend(
         _memory_section_lines(
-            LABELS[language]["memory_long_term"],
+            LABELS[language_key]["memory_long_term"],
             list(memory.get("long_term", [])),
-            language=language,
+            language=language_key,
             section="long_term",
         )
     )
     lines.extend(
         _memory_section_lines(
-            LABELS[language]["memory_monologue"],
+            LABELS[language_key]["memory_monologue"],
             list(memory.get("monologue", [])),
-            language=language,
+            language=language_key,
             section="monologue",
         )
     )
@@ -5981,10 +5982,11 @@ def _memory_inspector_views(
     agent_id: str | list[str] | None,
     language: str = "en",
 ) -> tuple[str, go.Figure]:
+    language_key = language if language in {"ko", "en"} else _language_key(language)
     selected_agents = _selected_memory_agents(snapshot, agent_id)
     return (
-        _memory_inspector_markdown(snapshot, selected_agents, language=language),
-        _emotion_trajectory_figure(snapshot, selected_agents, language=language),
+        _memory_inspector_markdown(snapshot, selected_agents, language=language_key),
+        _emotion_trajectory_figure(snapshot, selected_agents, language=language_key),
     )
 
 
@@ -5994,13 +5996,14 @@ def _emotion_trajectory_figure(
     *,
     language: str = "en",
 ) -> go.Figure:
+    language_key = language if language in {"ko", "en"} else _language_key(language)
     selected_agents = _selected_memory_agents(snapshot, agent_id)[:EMOTION_TRAJECTORY_MAX_AGENTS]
-    title = LABELS[language]["memory_emotion"]
+    title = LABELS[language_key]["memory_emotion"]
     tick_label = "Tick"
     valence_label = "Valence"
     arousal_label = "Arousal / Dominance"
-    empty_text = LABELS[language]["memory_emotion_empty"]
-    if language == "ko":
+    empty_text = LABELS[language_key]["memory_emotion_empty"]
+    if language_key == "ko":
         tick_label = "틱"
         valence_label = "Valence"
         arousal_label = "Arousal / Dominance"

@@ -114,3 +114,30 @@ def test_subtask10_memory_inspector_markdown_renders_sections() -> None:
         playground_app._memory_inspector_markdown({}, None, language="en")
         == playground_app.LABELS["en"]["memory_empty"]
     )
+
+
+def test_subtask64_memory_inspector_accepts_language_display_choice() -> None:
+    result = playground_simulation.run_playground_scenario(
+        scenario_name="Dorm: two agents",
+        provider="Replay only",
+        api_key="",
+        model="",
+        primary_name="Memory Mina",
+        primary_age=24,
+        openness=0.8,
+        conscientiousness=0.7,
+        extraversion=0.6,
+        agreeableness=0.5,
+        neuroticism=0.4,
+        ticks=1,
+    )
+
+    agent_ids = sorted(result.memory_snapshot)
+    markdown, figure = playground_app._memory_inspector_views(
+        result.memory_snapshot,
+        agent_ids,
+        language=playground_app.KOREAN_CHOICE,
+    )
+
+    assert playground_app.LABELS["ko"]["memory_short_term"] in markdown
+    assert figure.layout.title.text == playground_app.LABELS["ko"]["memory_emotion"]
