@@ -79,6 +79,8 @@ def test_live_space_smoke_flow(page: Page) -> None:
     graph = app_frame.locator("#relationship-graph")
     expect(graph).to_be_visible(timeout=15_000)
     graph_iframe = app_frame.locator("#relationship-graph iframe")
+    if EXPECT_FORCE_GRAPH:
+        expect(graph_iframe).to_have_count(1, timeout=45_000)
     if graph_iframe.count():
         force_graph_frame = app_frame.frame_locator("#relationship-graph iframe")
         canvas = force_graph_frame.locator("canvas")

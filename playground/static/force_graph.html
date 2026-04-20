@@ -97,6 +97,10 @@
         status.textContent = text;
       }
 
+      function threeNamespace() {
+        return window.THREE || window.__THREE__;
+      }
+
       function loadScript(src) {
         return new Promise((resolve, reject) => {
           if (!src) {
@@ -124,12 +128,13 @@
           }
           await loadScript(boot.vendorUrl);
         }
-        if (!window.ForceGraph3D || !window.THREE) {
+        if (!window.ForceGraph3D || !threeNamespace()) {
           throw new Error("3d-force-graph failed to initialize");
         }
       }
 
       function makeGlowSprite(color, diameter) {
+        const THREE = threeNamespace();
         const canvas = document.createElement("canvas");
         canvas.width = 128;
         canvas.height = 128;
@@ -140,20 +145,21 @@
         gradient.addColorStop(1, "rgba(255,255,255,0)");
         context.fillStyle = gradient;
         context.fillRect(0, 0, 128, 128);
-        const texture = new window.THREE.CanvasTexture(canvas);
-        const material = new window.THREE.SpriteMaterial({
+        const texture = new THREE.CanvasTexture(canvas);
+        const material = new THREE.SpriteMaterial({
           map: texture,
           transparent: true,
           opacity: 0.74,
           depthWrite: false,
-          blending: window.THREE.AdditiveBlending,
+          blending: THREE.AdditiveBlending,
         });
-        const sprite = new window.THREE.Sprite(material);
+        const sprite = new THREE.Sprite(material);
         sprite.scale.set(diameter, diameter, 1);
         return sprite;
       }
 
       function makeTextSprite(text, color) {
+        const THREE = threeNamespace();
         const safeText = String(text || "").trim() || "node";
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
@@ -168,25 +174,26 @@
         finalContext.fillStyle = color;
         finalContext.textBaseline = "middle";
         finalContext.fillText(safeText, 14, height / 2);
-        const texture = new window.THREE.CanvasTexture(canvas);
-        const material = new window.THREE.SpriteMaterial({
+        const texture = new THREE.CanvasTexture(canvas);
+        const material = new THREE.SpriteMaterial({
           map: texture,
           transparent: true,
           depthWrite: false,
         });
-        const sprite = new window.THREE.Sprite(material);
+        const sprite = new THREE.Sprite(material);
         sprite.scale.set(width / 12, height / 12, 1);
         return sprite;
       }
 
       function nodeObject(node, colors) {
+        const THREE = threeNamespace();
         const size = Number(node.size || 12);
         const color = node.color || colors.node;
         const radius = Math.max(3.8, size * 0.23);
-        const group = new window.THREE.Group();
-        const sphere = new window.THREE.Mesh(
-          new window.THREE.SphereGeometry(radius, 24, 24),
-          new window.THREE.MeshPhongMaterial({
+        const group = new THREE.Group();
+        const sphere = new THREE.Mesh(
+          new THREE.SphereGeometry(radius, 24, 24),
+          new THREE.MeshPhongMaterial({
             color,
             emissive: color,
             emissiveIntensity: 0.32,
@@ -206,22 +213,23 @@
       }
 
       function configureLights(colors) {
+        const THREE = threeNamespace();
         const scene = graph.scene();
         let ambient = scene.getObjectByName("knoema-ambient-light");
         if (!ambient) {
-          ambient = new window.THREE.AmbientLight(0xffffff, 0.95);
+          ambient = new THREE.AmbientLight(0xffffff, 0.95);
           ambient.name = "knoema-ambient-light";
           scene.add(ambient);
         }
         let key = scene.getObjectByName("knoema-key-light");
         if (!key) {
-          key = new window.THREE.DirectionalLight(0xffffff, 0.9);
+          key = new THREE.DirectionalLight(0xffffff, 0.9);
           key.name = "knoema-key-light";
           key.position.set(120, 120, 120);
           scene.add(key);
         }
-        const fogColor = new window.THREE.Color(colors.background);
-        scene.fog = new window.THREE.Fog(fogColor, 360, 760);
+        const fogColor = new THREE.Color(colors.background);
+        scene.fog = new THREE.Fog(fogColor, 360, 760);
       }
 
       function resizeGraph() {
