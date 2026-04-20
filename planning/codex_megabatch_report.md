@@ -109,7 +109,7 @@
 
 ## HF Space 최종 상태
 
-- GitHub main 최종 커밋: `893d392eac38b281c07e86333c0464c9fa0ee7b9`
+- HF 배포 소스 커밋: `893d392eac38b281c07e86333c0464c9fa0ee7b9`
 - HF Space repo sha: `307c5f1ddfd5d1001e486c26355287b45292f2a7`
 - 최종 확인 시각: 2026-04-21T00:12:28.1407803+09:00
 - runtime.stage: `RUNNING`
