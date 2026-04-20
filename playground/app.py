@@ -38,6 +38,7 @@ from knoema.research import (
 )
 
 try:
+    from .analysis.fairness_audit import FairnessAuditReport, audit_trait_action_fairness
     from .hexaco_questionnaire import (
         HEXACO_DOMAINS,
         HEXACO_QUESTIONNAIRE_ITEMS,
@@ -98,6 +99,7 @@ try:
         tts_engine_choices,
     )
 except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
+    from analysis.fairness_audit import FairnessAuditReport, audit_trait_action_fairness
     from hexaco_questionnaire import (
         HEXACO_DOMAINS,
         HEXACO_QUESTIONNAIRE_ITEMS,
@@ -764,6 +766,9 @@ LABELS["ko"]["cross_model_models"] = "비교할 모델"
 LABELS["ko"]["cross_model_button"] = "모델 A/B/C 비교 실행"
 LABELS["ko"]["cross_model_empty"] = "같은 시나리오를 GPT, Claude, Replay로 나란히 실행합니다."
 LABELS["ko"]["cross_model_diff"] = "모델 간 차이"
+LABELS["ko"]["fairness_panel"] = "공정성 / 편향 감사"
+LABELS["ko"]["fairness_plot"] = "trait-action 효과 크기 히트맵"
+LABELS["ko"]["fairness_empty"] = "실행 후 trait-action 편향 신호를 여기서 점검합니다."
 LABELS["ko"]["repro_certificate_button"] = "재현성 인증서 내보내기"
 LABELS["ko"]["repro_certificate_download"] = "재현성 인증서 다운로드"
 LABELS["ko"]["interview_panel"] = "에이전트 인터뷰"
@@ -886,6 +891,9 @@ LABELS["en"]["cross_model_models"] = "Models"
 LABELS["en"]["cross_model_button"] = "Run model A/B/C compare"
 LABELS["en"]["cross_model_empty"] = "Run the same scenario through GPT, Claude, and Replay side by side."
 LABELS["en"]["cross_model_diff"] = "Cross-model differences"
+LABELS["en"]["fairness_panel"] = "Bias audit"
+LABELS["en"]["fairness_plot"] = "Trait-action effect size heatmap"
+LABELS["en"]["fairness_empty"] = "Run a scenario to inspect trait-action fairness and bias signals."
 LABELS["en"]["repro_certificate_button"] = "Export reproducibility certificate"
 LABELS["en"]["repro_certificate_download"] = "Download reproducibility certificate"
 LABELS["en"]["interview_panel"] = "Agent interview"
@@ -6736,6 +6744,12 @@ def _language_updates(
         trait_matrix_figure,
         trait_matrix_summary,
         gr.update(label=labels["statistics_panel"]),
+        gr.update(label=labels["fairness_panel"]),
+        gr.update(
+            label=labels["fairness_plot"],
+            value=_fairness_empty_figure(labels["fairness_plot"], labels["fairness_empty"]),
+        ),
+        labels["fairness_empty"],
         gr.update(label=labels["jsonl"]),
         gr.update(label=labels["download"]),
         gr.update(value=labels["html_report_button"]),
@@ -6772,6 +6786,10 @@ def _language_updates(
 def _trait_axis_label(field_name: str, language: str) -> str:
     label = LABELS[language].get(field_name, field_name.replace("_", " ").title())
     return label.replace(" / ", "<br>")
+
+
+def _trait_text_label(field_name: str, language: str) -> str:
+    return LABELS[language].get(field_name, field_name.replace("_", " ").title())
 
 
 def _trait_correlation_outputs(language: str) -> tuple[go.Figure, str]:
@@ -7277,6 +7295,232 @@ def _spatial_heatmap_empty_figure(title: str, message: str) -> go.Figure:
         plot_bgcolor="rgba(248,250,252,1)",
     )
     return figure
+
+
+def _fairness_empty_figure(title: str, message: str) -> go.Figure:
+    figure = go.Figure()
+    figure.update_layout(
+        title=title,
+        height=360,
+        margin={"l": 0, "r": 0, "t": 52, "b": 0},
+        annotations=[{"text": message, "showarrow": False}],
+        paper_bgcolor="rgba(248,250,252,1)",
+        plot_bgcolor="rgba(248,250,252,1)",
+    )
+    return figure
+
+
+def _fairness_heatmap_figure(report: FairnessAuditReport, *, language: str = "en") -> go.Figure:
+    title = LABELS[language]["fairness_plot"]
+    if not report.cells:
+        return _fairness_empty_figure(title, LABELS[language]["fairness_empty"])
+
+    cell_map = {
+        (cell.trait, cell.action_type): cell
+        for cell in report.cells
+    }
+    x_labels = [action_type.replace("_", "<br>") for action_type in report.action_types]
+    y_labels = [_trait_axis_label(trait_name, language) for trait_name in report.trait_names]
+    z_values: list[list[float]] = []
+    hover_text: list[list[str]] = []
+    annotations: list[dict[str, Any]] = []
+    max_abs = max((abs(cell.signed_effect_size) for cell in report.cells), default=0.0)
+    z_limit = max(0.25, round(max_abs + 0.05, 3))
+
+    for row_index, trait_name in enumerate(report.trait_names):
+        z_row: list[float] = []
+        hover_row: list[str] = []
+        for column_index, action_type in enumerate(report.action_types):
+            cell = cell_map[(trait_name, action_type)]
+            z_row.append(cell.signed_effect_size)
+            q_value = _format_p_value(cell.p_adjusted)
+            hover_row.append(
+                "<br>".join(
+                    [
+                        f"Trait: {_trait_text_label(trait_name, language)}",
+                        f"Action: {action_type}",
+                        f"Signed Cohen's w: {_format_stat(cell.signed_effect_size)}",
+                        f"High P(action): {_format_stat(cell.high_probability)}",
+                        f"Low P(action): {_format_stat(cell.low_probability)}",
+                        f"BH q-value: {q_value}",
+                    ]
+                )
+            )
+            if not math.isnan(cell.p_adjusted) and cell.p_adjusted < 0.001:
+                annotations.append(
+                    {
+                        "x": x_labels[column_index],
+                        "y": y_labels[row_index],
+                        "text": "*",
+                        "showarrow": False,
+                        "font": {"size": 15, "color": "#111827"},
+                    }
+                )
+        z_values.append(z_row)
+        hover_text.append(hover_row)
+
+    figure = go.Figure(
+        data=[
+            go.Heatmap(
+                z=z_values,
+                x=x_labels,
+                y=y_labels,
+                colorscale="RdBu",
+                zmid=0.0,
+                zmin=-z_limit,
+                zmax=z_limit,
+                hovertext=hover_text,
+                hovertemplate="%{hovertext}<extra></extra>",
+                colorbar={"title": "signed w"},
+            )
+        ]
+    )
+    figure.update_layout(
+        title=title,
+        height=420,
+        margin={"l": 0, "r": 0, "t": 52, "b": 0},
+        annotations=annotations,
+        paper_bgcolor="rgba(255,255,255,1)",
+        plot_bgcolor="rgba(255,255,255,1)",
+    )
+    figure.update_xaxes(title_text="Action type")
+    figure.update_yaxes(title_text="Trait")
+    return figure
+
+
+def _fairness_summary_markdown(report: FairnessAuditReport, *, language: str = "en") -> str:
+    if not report.cells or report.included_events <= 0:
+        return LABELS[language]["fairness_empty"]
+
+    source_label = "action log" if report.event_source == "action_log" else "batch agent summary"
+    top_cells = report.top_cells(limit=10)
+    if language == "ko":
+        lines = [
+            "### 공정성 / 편향 감사",
+            (
+                f"- 분석 액션 이벤트: {report.included_events}/{report.total_events}"
+                f" | source: {source_label}"
+            ),
+            "- trait split: 각 trait에서 에이전트를 상/하위 절반으로 나눠 조건부 행동 확률을 비교했습니다.",
+            "- 다중비교 보정: Benjamini-Hochberg FDR",
+            "- 히트맵 별표: q < 0.001",
+            "- 상위 편향 신호 10개:",
+        ]
+        if not top_cells:
+            lines.append("- 검토할 trait-action 신호가 아직 없습니다.")
+            return "\n".join(lines)
+        for cell in top_cells:
+            lines.append(
+                f"- {_trait_text_label(cell.trait, language)} -> {cell.action_type}: "
+                f"high {cell.high_probability:.3f} vs low {cell.low_probability:.3f} | "
+                f"Δ={cell.high_probability - cell.low_probability:+.3f} | "
+                f"w={cell.effect_size:.3f} | q={_format_p_value(cell.p_adjusted)}"
+            )
+        return "\n".join(lines)
+
+    lines = [
+        "### Bias audit",
+        (
+            f"- Audited action events: {report.included_events}/{report.total_events}"
+            f" | source: {source_label}"
+        ),
+        "- Trait split: agents are divided into lower and upper halves per trait before comparing conditional action probabilities.",
+        "- Multiple-testing correction: Benjamini-Hochberg FDR",
+        "- Heatmap star threshold: q < 0.001",
+        "- Top 10 bias signals:",
+    ]
+    if not top_cells:
+        lines.append("- No trait-action signals are available yet.")
+        return "\n".join(lines)
+    for cell in top_cells:
+        lines.append(
+            f"- {_trait_text_label(cell.trait, language)} -> {cell.action_type}: "
+            f"high {cell.high_probability:.3f} vs low {cell.low_probability:.3f} | "
+            f"delta={cell.high_probability - cell.low_probability:+.3f} | "
+            f"w={cell.effect_size:.3f} | q={_format_p_value(cell.p_adjusted)}"
+        )
+    return "\n".join(lines)
+
+
+def _fairness_agent_trait_map(request: dict[str, Any]) -> dict[str, dict[str, float]]:
+    artifacts = _prepare_playground_run(
+        scenario_name=str(request["scenario_name"]),
+        provider="Replay only",
+        api_key="",
+        model="",
+        primary_name=str(request["primary_name"]),
+        primary_age=int(request["primary_age"]),
+        openness=float(dict(request["personality_overrides"])["openness"]),
+        conscientiousness=float(dict(request["personality_overrides"])["conscientiousness"]),
+        extraversion=float(dict(request["personality_overrides"])["extraversion"]),
+        agreeableness=float(dict(request["personality_overrides"])["agreeableness"]),
+        neuroticism=float(dict(request["personality_overrides"])["neuroticism"]),
+        personality_overrides=dict(request["personality_overrides"]),
+        agent_count=int(request["agent_count"]),
+        environment_preset_id=cast("str | None", request["environment_preset_id"]),
+        cultural_prior_id=cast("str | None", request["cultural_prior_id"]),
+        agent_overrides=cast("list[dict[str, Any]]", request["agent_overrides"]),
+        primary_planning_enabled=bool(request["primary_planning_enabled"]),
+        planning_depth=int(request["planning_depth"]),
+        language=str(request["language"]),
+        seed=int(request["master_seed"]) if bool(request["batch_mode"]) else None,
+        event_injections_text=str(request["event_injections_text"]),
+        initial_relationships_text=str(request["initial_relationships_text"]),
+    )
+    try:
+        return {
+            agent.agent_id: {
+                field_name: float(agent.personality.to_dict().get(field_name, 0.0))
+                for field_name in PERSONA_TRAIT_FIELDS
+            }
+            for agent in artifacts.agents
+        }
+    finally:
+        artifacts.simulator.close()
+
+
+def _fairness_audit_outputs(
+    jsonl_text: str,
+    scenario_name: str,
+    environment_preset_id: str | None,
+    cultural_prior_id: str | None,
+    provider: str,
+    api_key: str,
+    model: str,
+    primary_name: str,
+    primary_age: int,
+    *trait_and_runtime: Any,
+) -> tuple[go.Figure, str]:
+    request = _resolve_run_request(
+        scenario_name,
+        environment_preset_id,
+        cultural_prior_id,
+        provider,
+        api_key,
+        model,
+        primary_name,
+        primary_age,
+        *trait_and_runtime,
+    )
+    language = _language_key(str(request["language"]))
+    if not _jsonl_rows(jsonl_text):
+        return (
+            _fairness_empty_figure(LABELS[language]["fairness_plot"], LABELS[language]["fairness_empty"]),
+            LABELS[language]["fairness_empty"],
+        )
+    try:
+        report = audit_trait_action_fairness(jsonl_text, _fairness_agent_trait_map(request))
+    except Exception as exc:
+        message = (
+            f"공정성 감사 생성 실패: {exc}"
+            if language == "ko"
+            else f"Bias audit failed: {exc}"
+        )
+        return _fairness_empty_figure(LABELS[language]["fairness_plot"], message), message
+    return (
+        _fairness_heatmap_figure(report, language=language),
+        _fairness_summary_markdown(report, language=language),
+    )
 
 
 def _action_flow_figure(jsonl_text: str, *, language: str = "en") -> go.Figure:
@@ -8553,6 +8797,21 @@ def build_app() -> gr.Blocks:
                 _statistical_analysis_markdown("", "ko"),
                 elem_id="statistics-summary",
             )
+        fairness_panel = gr.Accordion(
+            labels["fairness_panel"],
+            open=False,
+            elem_id="fairness-panel",
+        )
+        with fairness_panel:
+            fairness_plot = gr.Plot(
+                label=labels["fairness_plot"],
+                value=_fairness_empty_figure(labels["fairness_plot"], labels["fairness_empty"]),
+                elem_id="fairness-heatmap",
+            )
+            fairness_summary = gr.Markdown(
+                labels["fairness_empty"],
+                elem_id="fairness-summary",
+            )
         prereg_panel = gr.Accordion(
             labels["prereg_panel"],
             open=False,
@@ -9078,6 +9337,9 @@ def build_app() -> gr.Blocks:
             trait_matrix_plot,
             trait_matrix_summary,
             statistics_panel,
+            fairness_panel,
+            fairness_plot,
+            fairness_summary,
             jsonl,
             download,
             html_report_button,
@@ -9601,6 +9863,11 @@ def build_app() -> gr.Blocks:
             event_injections,
             initial_relationships,
         ]
+        language.change(
+            _fairness_audit_outputs,
+            inputs=[jsonl, *common_run_inputs],
+            outputs=[fairness_plot, fairness_summary],
+        )
         run_event = run_button.click(
             _run_with_optional_streaming_ui_theme,
             inputs=[
@@ -9640,6 +9907,11 @@ def build_app() -> gr.Blocks:
             _statistical_analysis_markdown,
             inputs=[jsonl, language],
             outputs=[statistics_summary],
+        )
+        run_event.then(
+            _fairness_audit_outputs,
+            inputs=[jsonl, *common_run_inputs],
+            outputs=[fairness_plot, fairness_summary],
         )
         compare_button.click(
             _compare_runs,

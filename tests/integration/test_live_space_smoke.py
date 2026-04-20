@@ -14,6 +14,7 @@ SPACE_IFRAME_SELECTOR: Final[str] = "iframe[aria-label='Space app']"
 SCREENSHOT_DIR = Path("artifacts")
 EXPECT_FORCE_GRAPH = os.environ.get("KNOEMA_EXPECT_FORCE_GRAPH") == "1"
 EXPECT_CROSS_MODEL = os.environ.get("KNOEMA_EXPECT_CROSS_MODEL") == "1"
+EXPECT_FAIRNESS_AUDIT = os.environ.get("KNOEMA_EXPECT_FAIRNESS_AUDIT") == "1"
 
 
 def _set_slider_value(page: Page, *, elem_id: str, value: int) -> None:
@@ -74,6 +75,13 @@ def test_live_space_smoke_flow(page: Page) -> None:
         expect(app_frame.locator("#cross-model-button")).to_be_visible(timeout=15_000)
     elif EXPECT_CROSS_MODEL:
         raise AssertionError("cross-model comparison panel missing from live Space")
+    fairness_panel = app_frame.locator("#fairness-panel")
+    if fairness_panel.count():
+        expect(fairness_panel).to_be_visible(timeout=15_000)
+        fairness_panel.click()
+        expect(app_frame.locator("#fairness-heatmap")).to_be_visible(timeout=15_000)
+    elif EXPECT_FAIRNESS_AUDIT:
+        raise AssertionError("fairness audit panel missing from live Space")
     scenario_input = app_frame.locator("#scenario-dropdown input[role='listbox']")
     expect(scenario_input).to_be_visible(timeout=15_000)
     scenario_input.click()
