@@ -7006,6 +7006,8 @@ def build_app() -> gr.Blocks:
 
     with gr.Blocks(
         title="Knoema Playground",
+        css=FOOTER_CSS,
+        head=APP_HEAD,
         analytics_enabled=False,
     ) as demo:
         with gr.Row(elem_id="topbar-row"):
@@ -8486,6 +8488,4 @@ if __name__ == "__main__":
         share=False,
         ssr_mode=False,
         show_error=True,
-        css=FOOTER_CSS,
-        head=APP_HEAD,
     )
