@@ -33,6 +33,24 @@ from knoema.research import (
 )
 
 try:
+    from .hexaco_questionnaire import (
+        HEXACO_DOMAINS,
+        HEXACO_QUESTIONNAIRE_ITEMS,
+        QUESTIONNAIRE_MODE_HEXACO,
+        QUESTIONNAIRE_MODE_SLIDERS,
+        derive_personality_from_questionnaire,
+        questionnaire_apply_label,
+        questionnaire_default_responses,
+        questionnaire_domain_items,
+        questionnaire_domain_label,
+        questionnaire_empty_summary,
+        questionnaire_intro_markdown,
+        questionnaire_mode_choices,
+        questionnaire_mode_label,
+        questionnaire_panel_label,
+        questionnaire_summary_markdown,
+        score_hexaco_questionnaire,
+    )
     from .simulation import (
         AGENT_COUNT_MAX,
         AGENT_COUNT_MIN,
@@ -69,6 +87,24 @@ try:
         tts_engine_choices,
     )
 except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
+    from hexaco_questionnaire import (
+        HEXACO_DOMAINS,
+        HEXACO_QUESTIONNAIRE_ITEMS,
+        QUESTIONNAIRE_MODE_HEXACO,
+        QUESTIONNAIRE_MODE_SLIDERS,
+        derive_personality_from_questionnaire,
+        questionnaire_apply_label,
+        questionnaire_default_responses,
+        questionnaire_domain_items,
+        questionnaire_domain_label,
+        questionnaire_empty_summary,
+        questionnaire_intro_markdown,
+        questionnaire_mode_choices,
+        questionnaire_mode_label,
+        questionnaire_panel_label,
+        questionnaire_summary_markdown,
+        score_hexaco_questionnaire,
+    )
     from simulation import (
         AGENT_COUNT_MAX,
         AGENT_COUNT_MIN,
@@ -1595,6 +1631,28 @@ def _honesty_humility_caveat_update(language_choice: str) -> dict[str, Any]:
     return gr.update(value=markdown, visible=bool(markdown))
 
 
+def _questionnaire_panel_update(mode: str) -> dict[str, Any]:
+    visible = str(mode) == QUESTIONNAIRE_MODE_HEXACO
+    return gr.update(visible=visible, open=visible)
+
+
+def _apply_questionnaire_to_trait_sliders(
+    language_choice: str,
+    *responses: float,
+) -> list[Any]:
+    response_map = {
+        item.item_id: int(value)
+        for item, value in zip(HEXACO_QUESTIONNAIRE_ITEMS, responses, strict=True)
+    }
+    scores = score_hexaco_questionnaire(response_map)
+    overrides = derive_personality_from_questionnaire(response_map)
+    language = _language_key(language_choice)
+    return [
+        float(overrides[field_name])
+        for field_name in PERSONA_TRAIT_FIELDS
+    ] + [questionnaire_summary_markdown(scores, language)]
+
+
 def _default_environment_id() -> str:
     return str(ENVIRONMENT_PRESETS[0]["id"])
 
@@ -1716,7 +1774,12 @@ def _build_agent_editor_tab(
 ) -> dict[str, Any]:
     suffix = "" if slot_index == 0 else f"-{slot_index + 1}"
     trait_prefix = "trait" if slot_index == 0 else f"agent-{slot_index + 1}-trait"
-    controls: dict[str, Any] = {"trait_sliders": {}}
+    questionnaire_defaults = questionnaire_default_responses()
+    controls: dict[str, Any] = {
+        "questionnaire_domain_panels": {},
+        "questionnaire_inputs": {},
+        "trait_sliders": {},
+    }
 
     with gr.Tab(
         _agent_tab_label(slot_index, "ko"),
@@ -1767,6 +1830,50 @@ def _build_agent_editor_tab(
                 placeholder=labels["routine_text_placeholder"],
                 elem_id=f"agent-routine-text{suffix}",
             )
+            personality_input_mode = gr.Radio(
+                label=questionnaire_mode_label("ko"),
+                choices=questionnaire_mode_choices("ko"),
+                value=QUESTIONNAIRE_MODE_SLIDERS,
+                elem_id=f"personality-input-mode{suffix}",
+            )
+            questionnaire_panel = gr.Accordion(
+                questionnaire_panel_label("ko"),
+                open=False,
+                visible=False,
+                elem_id=f"hexaco-questionnaire-panel{suffix}",
+            )
+            with questionnaire_panel:
+                questionnaire_intro = gr.Markdown(
+                    questionnaire_intro_markdown("ko"),
+                    elem_classes=["knoema-muted"],
+                    elem_id=f"hexaco-questionnaire-intro{suffix}",
+                )
+                for domain in HEXACO_DOMAINS:
+                    domain_panel = gr.Accordion(
+                        questionnaire_domain_label(domain, "ko"),
+                        open=False,
+                        elem_id=f"hexaco-domain-{domain}{suffix}",
+                    )
+                    controls["questionnaire_domain_panels"][domain] = domain_panel
+                    with domain_panel:
+                        for item in questionnaire_domain_items(domain):
+                            controls["questionnaire_inputs"][item.item_id] = gr.Slider(
+                                label=item.label,
+                                info=item.prompt("ko"),
+                                minimum=1,
+                                maximum=5,
+                                step=1,
+                                value=questionnaire_defaults[item.item_id],
+                                elem_id=f"hexaco-item-{item.item_id}{suffix}",
+                            )
+                questionnaire_apply = gr.Button(
+                    questionnaire_apply_label("ko"),
+                    elem_id=f"hexaco-apply{suffix}",
+                )
+                questionnaire_summary = gr.Markdown(
+                    questionnaire_empty_summary("ko"),
+                    elem_id=f"hexaco-summary{suffix}",
+                )
 
             tier_a_panel = gr.Accordion(
                 labels["tier_a_panel"],
@@ -1891,6 +1998,11 @@ def _build_agent_editor_tab(
             "persona_preset": persona_preset,
             "routine_preset": routine_preset,
             "routine_text": routine_text,
+            "personality_input_mode": personality_input_mode,
+            "questionnaire_apply": questionnaire_apply,
+            "questionnaire_intro": questionnaire_intro,
+            "questionnaire_panel": questionnaire_panel,
+            "questionnaire_summary": questionnaire_summary,
             "tier_a_panel": tier_a_panel,
             "extended_panel": extended_panel,
             "extended_panel_note": extended_panel_note,
@@ -4744,6 +4856,7 @@ def _agent_editor_updates(
 ) -> list[Any]:
     language = _language_key(language_choice)
     labels = LABELS[language]
+    questionnaire_defaults = questionnaire_default_responses()
     defaults = agent_editor_defaults(
         scenario_name,
         agent_count=agent_count,
@@ -4784,6 +4897,23 @@ def _agent_editor_updates(
                     info=labels["routine_text_info"],
                     placeholder=labels["routine_text_placeholder"],
                 ),
+                gr.update(
+                    label=questionnaire_mode_label(language),
+                    choices=questionnaire_mode_choices(language),
+                    value=QUESTIONNAIRE_MODE_SLIDERS,
+                ),
+                gr.update(
+                    label=questionnaire_panel_label(language),
+                    visible=False,
+                    open=False,
+                ),
+                questionnaire_intro_markdown(language),
+                *[
+                    gr.update(label=questionnaire_domain_label(domain, language))
+                    for domain in HEXACO_DOMAINS
+                ],
+                gr.update(value=questionnaire_apply_label(language)),
+                questionnaire_empty_summary(language),
                 gr.update(label=labels["tier_a_panel"]),
                 gr.update(label=labels["extended_panel"]),
                 labels["extended_panel_note"],
@@ -4804,6 +4934,16 @@ def _agent_editor_updates(
                     value=float(default["personality"][field_name]),
                 )
                 for field_name in PERSONA_TRAIT_FIELDS
+            ]
+        )
+        updates.extend(
+            [
+                gr.update(
+                    label=item.label,
+                    info=item.prompt(language),
+                    value=questionnaire_defaults[item.item_id],
+                )
+                for item in HEXACO_QUESTIONNAIRE_ITEMS
             ]
         )
     return updates
@@ -7253,6 +7393,15 @@ def build_app() -> gr.Blocks:
                     controls["persona_preset"],
                     controls["routine_preset"],
                     controls["routine_text"],
+                    controls["personality_input_mode"],
+                    controls["questionnaire_panel"],
+                    controls["questionnaire_intro"],
+                    *[
+                        controls["questionnaire_domain_panels"][domain]
+                        for domain in HEXACO_DOMAINS
+                    ],
+                    controls["questionnaire_apply"],
+                    controls["questionnaire_summary"],
                     controls["tier_a_panel"],
                     controls["extended_panel"],
                     controls["extended_panel_note"],
@@ -7266,6 +7415,10 @@ def build_app() -> gr.Blocks:
                     *[
                         controls["trait_sliders"][field_name]
                         for field_name in PERSONA_TRAIT_FIELDS
+                    ],
+                    *[
+                        controls["questionnaire_inputs"][item.item_id]
+                        for item in HEXACO_QUESTIONNAIRE_ITEMS
                     ],
                 ]
             )
@@ -7677,6 +7830,28 @@ def build_app() -> gr.Blocks:
                 _apply_routine_preset,
                 inputs=[controls["routine_preset"]],
                 outputs=[controls["routine_text"]],
+            )
+            controls["personality_input_mode"].change(
+                _questionnaire_panel_update,
+                inputs=[controls["personality_input_mode"]],
+                outputs=[controls["questionnaire_panel"]],
+            )
+            controls["questionnaire_apply"].click(
+                _apply_questionnaire_to_trait_sliders,
+                inputs=[
+                    language,
+                    *[
+                        controls["questionnaire_inputs"][item.item_id]
+                        for item in HEXACO_QUESTIONNAIRE_ITEMS
+                    ],
+                ],
+                outputs=[
+                    *[
+                        controls["trait_sliders"][field_name]
+                        for field_name in PERSONA_TRAIT_FIELDS
+                    ],
+                    controls["questionnaire_summary"],
+                ],
             )
         common_run_inputs = [
             scenario,
