@@ -1615,6 +1615,25 @@ body,
 footer {{display: none !important;}}
 .footer {{display: none !important;}}
 .api-docs {{display: none !important;}}
+#topbar-row {{
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    align-items: flex-start;
+}}
+#topbar-row > * {{
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}}
+#topbar-row > div:has(#tutorial-button),
+#topbar-row > div:has(.gr-radio) {{
+    background: var(--knoema-surface) !important;
+    border: 1px solid var(--knoema-border) !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+}}
 #relationship-graph .js-plotly-plot,
 #relationship-graph .plot-container {{
     min-height: {GRAPH_HEIGHT_PX}px;
@@ -6828,7 +6847,7 @@ def build_app() -> gr.Blocks:
         head=APP_HEAD,
         analytics_enabled=False,
     ) as demo:
-        with gr.Row():
+        with gr.Row(elem_id="topbar-row"):
             language = gr.Radio(
                 label=labels["lang"],
                 choices=LANGUAGE_CHOICES,
@@ -6843,6 +6862,8 @@ def build_app() -> gr.Blocks:
                 scale=0,
                 elem_id="theme-mode-radio",
             )
+            with gr.Column(scale=1, min_width=0):
+                gr.HTML("<div></div>")
             tutorial_button = gr.Button("?", elem_id="tutorial-button", scale=0, min_width=52)
             reviewer_mode = gr.Checkbox(
                 label=labels["reviewer_mode"],
