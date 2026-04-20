@@ -91,7 +91,11 @@ def test_subtask39_unlock_reveals_sensitive_scenarios_and_dark_tetrad_panel() ->
     first_panel_update = updates[2]
     first_notice = updates[3]
 
-    assert "ER triage" in scenario_update["choices"]
+    canonical_choices = [
+        choice[1] if isinstance(choice, tuple) else choice
+        for choice in scenario_update["choices"]
+    ]
+    assert "ER triage" in canonical_choices
     assert scenario_update["value"] == "ER triage"
     assert "Advanced research mode unlocked." in status_text
     assert first_panel_update["visible"] is True

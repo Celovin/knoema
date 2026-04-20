@@ -498,8 +498,52 @@ class TraitCorrelationStudy:
     merge_candidates: tuple[TraitMergeCandidate, ...]
 
 
+SCENARIO_KO_LABELS: dict[str, str] = {
+    "Dorm: two agents": "기숙사 · 두 에이전트",
+    "Village: ten agents": "마을 · 열 명의 에이전트",
+    "School corridor": "학교 복도",
+    "Office team conflict": "사무실 팀 갈등",
+    "Family dinner table": "가족 저녁 식탁",
+    "Cafe first meeting": "카페 첫 만남",
+    "Subway rush crowd": "지하철 출퇴근 혼잡",
+    "School group project": "학교 조별 과제",
+    "Apartment neighbor dispute": "아파트 이웃 분쟁",
+    "Volunteer cleanup team": "자원봉사 청소 팀",
+    "Startup pivot meeting": "스타트업 피벗 회의",
+    "Late-night convenience store": "심야 편의점",
+    "Book club debate": "독서 모임 토론",
+    "Hospital waiting room": "병원 대기실",
+    "Neighborhood festival": "동네 축제",
+    "Classroom pop quiz": "교실 깜짝 시험",
+    "Religious service": "종교 예배",
+    "Military barracks morning": "군대 막사 아침",
+    "ER triage": "응급실 분류",
+    "Courtroom jury deliberation": "법정 배심원 토의",
+    "Election rally": "선거 유세",
+    "Refugee shelter arrival": "난민 보호소 도착",
+    "Tech demo day": "테크 데모 데이",
+    "Wedding after-party": "결혼식 애프터파티",
+    "Funeral wake": "장례식장 조문",
+    "Prison yard (fictional)": "교도소 운동장 (가상)",
+    "Zoom team standup": "줌 팀 스탠드업",
+    "Kindergarten storytime": "유치원 이야기 시간",
+    "Senior center chess": "노인복지관 체스",
+    "Concert lobby intermission": "콘서트 로비 인터미션",
+}
+
+
 def scenario_choices() -> list[str]:
     return [scenario["name"] for scenario in DEFAULT_SCENARIOS]
+
+
+def scenario_label(name: str, language: str = "en") -> str:
+    if language == "ko":
+        return SCENARIO_KO_LABELS.get(name, name)
+    return name
+
+
+def scenario_choices_localized(language: str = "en") -> list[tuple[str, str]]:
+    return [(scenario_label(name, language), name) for name in scenario_choices()]
 
 
 def scenario_path(name: str) -> Path:

@@ -77,6 +77,7 @@ try:
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
+        scenario_label,
         seed_persona_suggestions,
         start_player_session,
         trait_correlation_summary,
@@ -132,6 +133,7 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
+        scenario_label,
         seed_persona_suggestions,
         start_player_session,
         trait_correlation_summary,
@@ -1567,6 +1569,24 @@ body,
 }}
 .gradio-container button {{
     border-color: var(--knoema-border) !important;
+}}
+.gradio-container .gr-radio label,
+.gradio-container .wrap label.gr-radio,
+.gradio-container [data-testid="radio"] label,
+.gradio-container fieldset label {{
+    color: var(--knoema-text) !important;
+}}
+.gradio-container .gr-radio label span,
+.gradio-container [data-testid="radio"] label span,
+.gradio-container fieldset label span {{
+    color: var(--knoema-text) !important;
+}}
+:root:not([data-knoema-theme="dark"]) .gradio-container .gr-radio label,
+:root:not([data-knoema-theme="dark"]) .gradio-container [data-testid="radio"] label,
+:root:not([data-knoema-theme="dark"]) .gradio-container fieldset label {{
+    background: var(--knoema-surface) !important;
+    color: var(--knoema-text) !important;
+    border: 1px solid var(--knoema-border) !important;
 }}
 .gradio-container button.primary,
 .gradio-container button[variant="primary"] {{
@@ -5130,9 +5150,9 @@ def _advanced_research_unlocked(enabled: bool, acknowledged: bool) -> bool:
     return bool(enabled and acknowledged)
 
 
-def _scenario_choices_with_gate(unlocked: bool) -> list[str]:
+def _scenario_choices_with_gate(unlocked: bool, language: str = "en") -> list[tuple[str, str]]:
     return [
-        scenario_name
+        (scenario_label(scenario_name, language), scenario_name)
         for scenario_name in scenario_choices()
         if unlocked or scenario_name not in SENSITIVE_SCENARIO_NAMES
     ]
@@ -5165,9 +5185,11 @@ def _advanced_research_ui_updates(
     acknowledged: bool,
 ) -> list[Any]:
     unlocked = _advanced_research_unlocked(enabled, acknowledged)
-    choices = _scenario_choices_with_gate(unlocked)
-    fallback_scenario = choices[0] if choices else scenario_choices()[0]
-    scenario_value = current_scenario if current_scenario in choices else fallback_scenario
+    language_key = language_choice if language_choice in {"ko", "en"} else _language_key(language_choice)
+    choices = _scenario_choices_with_gate(unlocked, language_key)
+    canonical_choices = [pair[1] for pair in choices]
+    fallback_scenario = canonical_choices[0] if canonical_choices else scenario_choices()[0]
+    scenario_value = current_scenario if current_scenario in canonical_choices else fallback_scenario
     panel_update = gr.update(visible=unlocked, open=False)
     notice_value = (
         LABELS["ko"]["dark_tetrad_notice"]
@@ -5284,12 +5306,13 @@ def _language_updates(
         current_advanced_research_mode,
         current_advanced_research_ack,
     )
-    allowed_scenarios = _scenario_choices_with_gate(advanced_unlocked)
+    allowed_scenarios = _scenario_choices_with_gate(advanced_unlocked, key)
+    canonical_scenarios = [pair[1] for pair in allowed_scenarios]
     provider_value = _normalize_provider(current_provider or "Replay only")
     theme_value = _normalize_theme_mode(current_theme_mode)
     scenario_value = current_scenario or scenario_choices()[0]
-    if scenario_value not in allowed_scenarios:
-        scenario_value = allowed_scenarios[0]
+    if scenario_value not in canonical_scenarios:
+        scenario_value = canonical_scenarios[0]
     environment_value = current_environment or _default_environment_id()
     agent_count_value = int(current_agent_count or scenario_default_agent_count(scenario_value))
     planning_depth_value = int(current_planning_depth or 3)

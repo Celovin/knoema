@@ -1,4 +1,4 @@
-gradio>=5.49,<6.0
+gradio==5.31.0
 knoema-engine @ git+https://github.com/Celovin/knoema.git@main
 huggingface_hub>=0.24,<1.0
 plotly>=5.24

@@ -39,7 +39,7 @@ All 60 sub-tasks in `planning/codex_task_playground_layout.md` are complete, wit
 | 31 | 15 game-domain action verbs (combat/inventory/quest/faction) | done | `dbf768c` | `tests/test_playground_game_actions.py` | Game verbs mutate state correctly. |
 | 32 | NPC daily routine + schedule system | done | `9d863fc` | `tests/test_playground_routines.py` | Routine presets drive movement. |
 | 33 | Player-as-agent mode (hybrid loop) | done | `7227841` | `tests/test_playground_player_mode.py` | Hybrid player loop is operational. |
-| 34 | Godot + Unity tavern_demo samples + WebGL exports | done | `25b9c26` | `tests/test_phase34_game_demos.py` | Both engine demo exports exist. |
+| 34 | Godot + Unity tavern_demo samples + WebGL exports | partial | `25b9c26` | `tests/test_phase34_game_demos.py` | Sample manifests + standalone HTML/JS interaction stubs ship at the expected `web_build/index.html` paths (4-5 KB each). Real engine WebGL artifacts (.wasm, .pck, .data) are NOT generated; the existing files are vanilla DOM scripts that mimic the tavern interaction loop without invoking Godot or Unity export pipelines. Recommended public framing: "engine adapter API call pattern demos" rather than "WebGL exports". |
 | 35 | OSF Preregistration generator (generic template) | done | `6a2305e` | `tests/test_playground_preregistration.py` | Run-backed prereg draft is generated. |
 | 36 | Mixed effects models + Bayesian posterior (statsmodels + PyMC) | done | `e298683` | `tests/test_playground_mixed_effects.py` | Mixed-effects summaries are surfaced. |
 | 37 | DUX-standard replication package bundler | done | `f656833` | `tests/test_playground_replication_package.py` | ZIP bundle includes notebook and source. |
@@ -97,6 +97,7 @@ All 60 sub-tasks in `planning/codex_task_playground_layout.md` are complete, wit
 - Game-depth work is present end to end: routines, player mode, Godot/Unity tavern demos, quests, schedule conflict handling, and voice hooks (`9d863fc`, `7227841`, `25b9c26`, `e850c47`, `6358f51`, `2cfbd15`).
 - Test coverage is split between playground tests and adapter-specific tests such as `tests/test_phase34_game_demos.py`.
 - Rough edge: I did not rerun Godot or Unity in their native editors during this closing pass; evidence is repository and test based.
+- Correction (2026-04-20): the `web_build/index.html` files at `adapters/godot/samples/tavern_demo/` and `adapters/unity/Samples~/TavernDemo/` are vanilla HTML/JS interaction stubs (~5 KB) that simulate the tavern adapter loop in pure DOM. They are not actual Godot/Unity WebGL exports (no `.wasm`/`.pck`/`.data` bundles). Public framing should say "engine adapter API call pattern demos" instead of "WebGL exports".
 
 ### Group 7
 - Academic depth now includes stats, CSV/LaTeX export, competitor matrix, preregistration, mixed effects, replication bundles, reviewer mode, power analysis, deposit packeting, and the simulation-studies template (`cca3ca6` through `5c1c86c`).
@@ -146,8 +147,8 @@ All 60 sub-tasks in `planning/codex_task_playground_layout.md` are complete, wit
 
 ## 6. Visual artifacts
 - HF Space: `https://huggingface.co/spaces/celovin/knoema-playground`
-- Godot WebGL demo: `C:\Users\admin\Projects\knoema\adapters\godot\samples\tavern_demo\web_build\index.html`
-- Unity WebGL demo: `C:\Users\admin\Projects\knoema\adapters\unity\Samples~\TavernDemo\web_build\index.html`
+- Godot tavern adapter demo (DOM interaction stub, NOT a real Godot WebGL export): `C:\Users\admin\Projects\knoema\adapters\godot\samples\tavern_demo\web_build\index.html`
+- Unity tavern adapter demo (DOM interaction stub, NOT a real Unity WebGL export): `C:\Users\admin\Projects\knoema\adapters\unity\Samples~\TavernDemo\web_build\index.html`
 - Formal benchmark PDF: `C:\Users\admin\Projects\knoema\benchmarks\formal_report\report.pdf`
 - Technical report PDF: `C:\Users\admin\Projects\knoema\paper\knoema_technical_report.pdf`
 - Replication package example generated during this pass: `C:\Users\admin\AppData\Local\Temp\knoema_replication_package_example_20260420.zip`
