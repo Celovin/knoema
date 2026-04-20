@@ -11,11 +11,12 @@ import threading
 import uuid
 import zipfile
 from collections import Counter
+from collections.abc import Generator
 from datetime import UTC, datetime
 from html import escape
 from importlib import metadata as importlib_metadata
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, TypeAlias, cast
 
 import gradio as gr
 import plotly.graph_objects as go
@@ -1930,6 +1931,73 @@ RunOutputs = tuple[
     go.Figure,
     go.Figure,
 ]
+NoopRunOutputs: TypeAlias = tuple[
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+]
+RunWithPlayerModeOutputs: TypeAlias = tuple[
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+]
+PlayerAdvanceOutputs: TypeAlias = tuple[
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+]
 
 
 AGENT_EDITOR_LANGUAGE_STATE_BLOCK = (
@@ -2868,7 +2936,7 @@ def _run_with_player_mode(
     primary_age: int,
     *trait_and_runtime: Any,
     reviewer_mode: bool = False,
-) -> tuple[Any, ...]:
+) -> RunWithPlayerModeOutputs:
     request = _resolve_run_request(
         scenario_name,
         environment_preset_id,
@@ -2953,8 +3021,8 @@ def _run_with_player_mode(
     )
 
 
-def _noop_run_outputs() -> tuple[Any, ...]:
-    return tuple(gr.update() for _ in range(18))
+def _noop_run_outputs() -> NoopRunOutputs:
+    return cast(NoopRunOutputs, tuple(gr.update() for _ in range(18)))
 
 
 def _coerce_plotly_figure(figure: Any) -> go.Figure:
@@ -4732,7 +4800,7 @@ def _run_with_optional_streaming(
     primary_age: int,
     *trait_and_runtime: Any,
     reviewer_mode: bool = False,
-):
+) -> Generator[RunWithPlayerModeOutputs, None, None]:
     request = _resolve_run_request(
         scenario_name,
         environment_preset_id,
@@ -4872,7 +4940,7 @@ def _run_with_optional_streaming_ui(
     primary_name: str,
     primary_age: int,
     *trait_and_runtime: Any,
-):
+) -> Generator[RunWithPlayerModeOutputs, None, None]:
     request = _resolve_run_request(
         scenario_name,
         environment_preset_id,
@@ -4951,7 +5019,7 @@ def _advance_player_mode(
     stt_engine: str,
     tts_engine: str,
     reviewer_mode: bool = False,
-) -> tuple[Any, ...]:
+) -> PlayerAdvanceOutputs:
     language = str((session or {}).get("language", "en"))
     voice_notes: list[str] = []
     resolved_text = str(player_text or "").strip()
@@ -8429,11 +8497,11 @@ def build_app() -> gr.Blocks:
         )
 
     demo.queue()
-    return demo
+    return cast(gr.Blocks, demo)
 
 
 if __name__ == "__main__":
-    build_app().launch(
+    cast(Any, build_app()).launch(
         server_name="0.0.0.0",
         server_port=7860,
         share=False,
