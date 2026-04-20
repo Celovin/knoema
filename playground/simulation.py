@@ -49,6 +49,12 @@ except ImportError:  # pragma: no cover - Hugging Face runs simulation.py flat.
     from quest_generation import generate_procedural_quest
 
 Provider = Literal["Replay only", "OpenAI", "Anthropic"]
+CrossModelChoice = Literal["GPT", "Claude", "Replay"]
+CROSS_MODEL_PROVIDER_MAP: dict[CrossModelChoice, Provider] = {
+    "GPT": "OpenAI",
+    "Claude": "Anthropic",
+    "Replay": "Replay only",
+}
 AGENT_COUNT_MIN = 1
 AGENT_COUNT_MAX = 30
 AGENT_RESIZE_JITTER = 0.05
@@ -392,6 +398,13 @@ class PlaygroundResult:
     batch_result: BatchResult | None = None
     llm_cache_stats: LLMCacheStats | None = None
     parallel_llm_enabled: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class CrossModelPairStat:
+    left: str
+    right: str
+    pearson_r: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -1248,6 +1261,128 @@ def run_playground_scenario(
             artifacts.simulator.close()
 
 
+def run_cross_model_comparison(
+    *,
+    scenario_name: str,
+    models: list[str] | tuple[str, ...],
+    seeds: dict[str, int] | None = None,
+    api_key: str = "",
+    model: str = "",
+    primary_name: str = "Mina",
+    primary_age: int = 28,
+    openness: float = 0.5,
+    conscientiousness: float = 0.5,
+    extraversion: float = 0.5,
+    agreeableness: float = 0.5,
+    neuroticism: float = 0.5,
+    personality_overrides: dict[str, float] | None = None,
+    ticks: int = 4,
+    agent_count: int | None = None,
+    environment_preset_id: str | None = None,
+    cultural_prior_id: str | None = None,
+    agent_overrides: list[dict[str, Any]] | None = None,
+    primary_planning_enabled: bool = False,
+    planning_depth: int = 3,
+    master_seed: int = 20260419,
+    language: str = "en",
+    event_injections_text: str = "",
+    initial_relationships_text: str = "",
+) -> dict[str, PlaygroundResult]:
+    """Run the same scenario through the selected model channels.
+
+    GPT and Claude use host/user API keys when available and otherwise fall
+    back to the deterministic local responder. Replay always uses the local
+    deterministic path. The returned mapping keeps the user-facing model order.
+    """
+
+    selected_models = _normalized_cross_model_choices(models)
+    if not selected_models:
+        raise ValueError("Select at least one model for comparison.")
+
+    resolved_seeds = seeds or {}
+
+    def run_one(model_choice: CrossModelChoice) -> tuple[str, PlaygroundResult]:
+        provider = CROSS_MODEL_PROVIDER_MAP[model_choice]
+        seed = int(resolved_seeds.get(model_choice, master_seed))
+        result = run_playground_scenario(
+            scenario_name=scenario_name,
+            provider=provider,
+            api_key=api_key if provider != "Replay only" else "",
+            model=model if provider != "Replay only" else "",
+            primary_name=primary_name,
+            primary_age=primary_age,
+            openness=openness,
+            conscientiousness=conscientiousness,
+            extraversion=extraversion,
+            agreeableness=agreeableness,
+            neuroticism=neuroticism,
+            personality_overrides=personality_overrides,
+            ticks=ticks,
+            agent_count=agent_count,
+            environment_preset_id=environment_preset_id,
+            cultural_prior_id=cultural_prior_id,
+            agent_overrides=agent_overrides,
+            primary_planning_enabled=primary_planning_enabled,
+            planning_depth=planning_depth,
+            batch_mode=True,
+            batch_runs=1,
+            master_seed=seed,
+            language=language,
+            event_injections_text=event_injections_text,
+            initial_relationships_text=initial_relationships_text,
+        )
+        return model_choice, result
+
+    worker_count = min(len(selected_models), 3)
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        pairs = list(executor.map(run_one, selected_models))
+    return dict(pairs)
+
+
+def cross_model_overlap_ratio(results: dict[str, PlaygroundResult]) -> float:
+    """Return the share of common tick-agent decisions with matching actions."""
+
+    signatures = [_action_signature_by_tick(result.jsonl) for result in results.values()]
+    if len(signatures) < 2:
+        return 1.0
+    common_keys = set(signatures[0])
+    for signature in signatures[1:]:
+        common_keys &= set(signature)
+    if not common_keys:
+        return 0.0
+    matches = 0
+    for key in common_keys:
+        if len({signature[key] for signature in signatures}) == 1:
+            matches += 1
+    return matches / len(common_keys)
+
+
+def cross_model_action_correlations(
+    results: dict[str, PlaygroundResult],
+) -> tuple[CrossModelPairStat, ...]:
+    """Compute pairwise Pearson r over action-type count vectors."""
+
+    names = list(results)
+    action_counts = {
+        name: _flatten_result_action_counts(result)
+        for name, result in results.items()
+    }
+    stats: list[CrossModelPairStat] = []
+    for left_index, left in enumerate(names):
+        for right in names[left_index + 1 :]:
+            action_types = sorted(set(action_counts[left]) | set(action_counts[right]))
+            left_values = [float(action_counts[left].get(action_type, 0)) for action_type in action_types]
+            right_values = [float(action_counts[right].get(action_type, 0)) for action_type in action_types]
+            stats.append(
+                CrossModelPairStat(
+                    left=left,
+                    right=right,
+                    pearson_r=round(_pearson_correlation(left_values, right_values), 4),
+                )
+            )
+    return tuple(stats)
+
+
 def playground_result_from_artifacts(
     *,
     scenario_name: str,
@@ -1975,6 +2110,61 @@ def _aggregate_action_breakdown(
         agent_id: dict(sorted(action_counts.items()))
         for agent_id, action_counts in sorted(aggregated.items())
     }
+
+
+def _normalized_cross_model_choices(
+    models: list[str] | tuple[str, ...],
+) -> tuple[CrossModelChoice, ...]:
+    aliases: dict[str, CrossModelChoice] = {
+        "gpt": "GPT",
+        "openai": "GPT",
+        "claude": "Claude",
+        "anthropic": "Claude",
+        "replay": "Replay",
+        "replay only": "Replay",
+    }
+    selected: list[CrossModelChoice] = []
+    seen: set[CrossModelChoice] = set()
+    for raw_model in models:
+        normalized = aliases.get(str(raw_model).strip().lower())
+        if normalized is None or normalized in seen:
+            continue
+        selected.append(normalized)
+        seen.add(normalized)
+    return tuple(selected)
+
+
+def _flatten_result_action_counts(result: PlaygroundResult) -> Counter[str]:
+    counts: Counter[str] = Counter()
+    for per_agent_counts in result.action_breakdown.values():
+        counts.update(
+            {
+                action_type: int(count)
+                for action_type, count in per_agent_counts.items()
+            }
+        )
+    return counts
+
+
+def _action_signature_by_tick(jsonl_text: str) -> dict[tuple[int, str], str]:
+    signatures: dict[tuple[int, str], str] = {}
+    for line in jsonl_text.splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(row, dict) or "tick" not in row:
+            continue
+        action = row.get("action")
+        if not isinstance(action, dict):
+            continue
+        agent_id = str(row.get("agent_id", "agent"))
+        tick = int(row.get("tick", 0))
+        action_type = str(action.get("action_type", "observe"))
+        signatures[(tick, agent_id)] = action_type
+    return signatures
 
 
 def _memory_snapshot(simulator: Simulator) -> dict[str, dict[str, list[dict[str, Any]]]]:

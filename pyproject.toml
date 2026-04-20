@@ -119,6 +119,7 @@ Issues = "https://github.com/Celovin/knoema/issues"
 
 [project.scripts]
 knoema = "knoema.cli:main"
+knoema-verify = "knoema.reproducibility:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/knoema"]

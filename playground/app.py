@@ -28,6 +28,7 @@ from plotly.subplots import make_subplots
 from scipy.stats import chi2_contingency, mannwhitneyu  # type: ignore[import-untyped]
 from scipy.stats import t as student_t
 
+from knoema.reproducibility import generate_run_fingerprint, verification_guide_markdown
 from knoema.research import (
     PowerAnalysisPlan,
     ZenodoDepositResult,
@@ -62,12 +63,15 @@ try:
         AGENT_EDITOR_SLOT_COUNT,
         PERSONA_TRAIT_DEFAULTS,
         PERSONA_TRAIT_FIELDS,
+        PlaygroundResult,
         Provider,
         _prepare_playground_run,
         advance_player_session,
         agent_editor_defaults,
         build_playground_hint,
         compute_trait_correlation_study,
+        cross_model_action_correlations,
+        cross_model_overlap_ratio,
         cultural_prior_choices,
         cultural_prior_trait_values,
         environment_note,
@@ -78,6 +82,7 @@ try:
         playground_result_from_artifacts,
         routine_preset_choices,
         routine_preset_text,
+        run_cross_model_comparison,
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
@@ -118,12 +123,15 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         AGENT_EDITOR_SLOT_COUNT,
         PERSONA_TRAIT_DEFAULTS,
         PERSONA_TRAIT_FIELDS,
+        PlaygroundResult,
         Provider,
         _prepare_playground_run,
         advance_player_session,
         agent_editor_defaults,
         build_playground_hint,
         compute_trait_correlation_study,
+        cross_model_action_correlations,
+        cross_model_overlap_ratio,
         cultural_prior_choices,
         cultural_prior_trait_values,
         environment_note,
@@ -134,6 +142,7 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         playground_result_from_artifacts,
         routine_preset_choices,
         routine_preset_text,
+        run_cross_model_comparison,
         run_playground_scenario,
         scenario_choices,
         scenario_default_agent_count,
@@ -167,6 +176,11 @@ PLAYGROUND_QUICK_START_SCENARIOS = (
     "Dorm: two agents",
     "Village: ten agents",
     PLAYGROUND_DEFAULT_SCENARIO,
+)
+CROSS_MODEL_CHOICES: tuple[tuple[str, str], ...] = (
+    ("GPT", "GPT"),
+    ("Claude", "Claude"),
+    ("Replay", "Replay"),
 )
 TUTORIAL_STORAGE_KEY = "knoema_tutorial_completed"
 THEME_STORAGE_KEY = "knoema_theme_mode"
@@ -745,6 +759,13 @@ LABELS["ko"]["compare_seed_a"] = "비교 시드 A"
 LABELS["ko"]["compare_seed_b"] = "비교 시드 B"
 LABELS["ko"]["compare_button"] = "두 시드 비교"
 LABELS["ko"]["compare_empty"] = "같은 설정으로 두 시드를 돌려 차이를 비교합니다."
+LABELS["ko"]["cross_model_panel"] = "모델 비교"
+LABELS["ko"]["cross_model_models"] = "비교할 모델"
+LABELS["ko"]["cross_model_button"] = "모델 A/B/C 비교 실행"
+LABELS["ko"]["cross_model_empty"] = "같은 시나리오를 GPT, Claude, Replay로 나란히 실행합니다."
+LABELS["ko"]["cross_model_diff"] = "모델 간 차이"
+LABELS["ko"]["repro_certificate_button"] = "재현성 인증서 내보내기"
+LABELS["ko"]["repro_certificate_download"] = "재현성 인증서 다운로드"
 LABELS["ko"]["interview_panel"] = "에이전트 인터뷰"
 LABELS["ko"]["interview_agent"] = "에이전트 ID"
 LABELS["ko"]["interview_question"] = "인터뷰 질문"
@@ -860,6 +881,13 @@ LABELS["en"]["compare_seed_a"] = "Compare seed A"
 LABELS["en"]["compare_seed_b"] = "Compare seed B"
 LABELS["en"]["compare_button"] = "Compare two seeds"
 LABELS["en"]["compare_empty"] = "Run the current setup twice with two seeds and inspect the delta."
+LABELS["en"]["cross_model_panel"] = "Compare models"
+LABELS["en"]["cross_model_models"] = "Models"
+LABELS["en"]["cross_model_button"] = "Run model A/B/C compare"
+LABELS["en"]["cross_model_empty"] = "Run the same scenario through GPT, Claude, and Replay side by side."
+LABELS["en"]["cross_model_diff"] = "Cross-model differences"
+LABELS["en"]["repro_certificate_button"] = "Export reproducibility certificate"
+LABELS["en"]["repro_certificate_download"] = "Download reproducibility certificate"
 LABELS["en"]["interview_panel"] = "Agent interview"
 LABELS["en"]["interview_agent"] = "Agent ID"
 LABELS["en"]["interview_question"] = "Interview question"
@@ -1578,7 +1606,164 @@ window.KNOEMA_REVIEWER = {
 
 
 REVIEWER_HEAD = _reviewer_head()
-APP_HEAD = TUTORIAL_HEAD + THEME_HEAD + ACCESSIBILITY_HEAD + REVIEWER_HEAD
+
+
+def _presentation_head() -> str:
+    return """
+<style>
+:root.present-mode body,
+:root.present-mode .gradio-container {
+  width: 100vw !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+:root.present-mode .sidebar,
+:root.present-mode [data-testid="sidebar"],
+:root.present-mode header,
+:root.present-mode footer,
+:root.present-mode .footer,
+:root.present-mode .api-docs {
+  display: none !important;
+}
+:root.present-mode #topbar-row,
+:root.present-mode #personality-panel,
+:root.present-mode #mirofish-lab-panel {
+  display: none !important;
+}
+:root.present-mode #run-button {
+  position: fixed !important;
+  right: 20px !important;
+  bottom: 20px !important;
+  z-index: 2147483000 !important;
+}
+.knoema-present-hint {
+  position: fixed;
+  left: 50%;
+  top: 20px;
+  transform: translateX(-50%);
+  z-index: 2147483001;
+  max-width: min(720px, calc(100vw - 32px));
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #ffffff;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.25);
+  font: 14px/1.5 Inter, Segoe UI, Arial, sans-serif;
+}
+.knoema-present-hint[data-hidden="true"] {
+  display: none;
+}
+</style>
+<script>
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  const presentRequested = params.get("mode") === "present";
+  const editableSelector = [
+    "input:not([type='button']):not([type='submit'])",
+    "textarea",
+    "select"
+  ].join(",");
+
+  function ensureHint() {
+    let hint = document.querySelector(".knoema-present-hint");
+    if (hint) return hint;
+    hint = document.createElement("div");
+    hint.className = "knoema-present-hint";
+    hint.textContent = "Presentation mode: Right/Left moves tabs, Space runs the scenario, Esc exits.";
+    hint.setAttribute("data-hidden", "false");
+    document.body.appendChild(hint);
+    window.setTimeout(() => hint.setAttribute("data-hidden", "true"), 3000);
+    return hint;
+  }
+
+  function setEditableDisabled(disabled) {
+    document.querySelectorAll(editableSelector).forEach((element) => {
+      const insideOutput = element.closest("#run-summary, #export-panel, #relationship-graph");
+      if (insideOutput) return;
+      if (disabled) {
+        element.dataset.knoemaPresentDisabled = "1";
+        element.setAttribute("disabled", "disabled");
+      } else if (element.dataset.knoemaPresentDisabled === "1") {
+        element.removeAttribute("disabled");
+        delete element.dataset.knoemaPresentDisabled;
+      }
+    });
+  }
+
+  function applyPresentationMode(enabled) {
+    document.documentElement.classList.toggle("present-mode", enabled);
+    document.body?.classList.toggle("present-mode", enabled);
+    if (enabled) {
+      ensureHint();
+    }
+    setEditableDisabled(enabled);
+  }
+
+  function selectedTabIndex(tabs) {
+    const index = tabs.findIndex((tab) => tab.getAttribute("aria-selected") === "true");
+    return index >= 0 ? index : 0;
+  }
+
+  function moveTab(delta) {
+    const tabs = Array.from(document.querySelectorAll('[role="tab"]'))
+      .filter((tab) => tab.offsetParent !== null);
+    if (!tabs.length) return;
+    const next = (selectedTabIndex(tabs) + delta + tabs.length) % tabs.length;
+    tabs[next].click();
+    tabs[next].focus();
+  }
+
+  function exitPresentationMode() {
+    params.delete("mode");
+    const query = params.toString();
+    const nextUrl = window.location.pathname + (query ? `?${query}` : "") + window.location.hash;
+    window.history.replaceState({}, "", nextUrl);
+    applyPresentationMode(false);
+  }
+
+  window.KNOEMA_PRESENTATION = { apply: applyPresentationMode, exit: exitPresentationMode };
+
+  window.addEventListener("keydown", (event) => {
+    if (!document.documentElement.classList.contains("present-mode")) return;
+    const target = event.target;
+    const editing = target instanceof HTMLElement && target.matches("input, textarea, select, [contenteditable='true']");
+    if (event.key === "Escape") {
+      event.preventDefault();
+      exitPresentationMode();
+      return;
+    }
+    if (editing) return;
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveTab(1);
+      return;
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveTab(-1);
+      return;
+    }
+    if (event.key === " ") {
+      event.preventDefault();
+      document.querySelector("#run-button")?.click();
+    }
+  });
+
+  window.addEventListener("load", () => {
+    applyPresentationMode(presentRequested);
+    new MutationObserver(() => {
+      if (document.documentElement.classList.contains("present-mode")) {
+        setEditableDisabled(true);
+      }
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  });
+})();
+</script>
+"""
+
+
+PRESENTATION_HEAD = _presentation_head()
+APP_HEAD = TUTORIAL_HEAD + THEME_HEAD + ACCESSIBILITY_HEAD + REVIEWER_HEAD + PRESENTATION_HEAD
 
 FOOTER_CSS = f"""
 :root {{
@@ -4060,6 +4245,127 @@ def _export_replication_package(
     return str(archive_path)
 
 
+def _export_reproducibility_certificate(
+    jsonl_text: str,
+    summary: str,
+    language: str,
+    scenario_name: str,
+    environment_preset_id: str | None,
+    cultural_prior_id: str | None,
+    provider: str,
+    api_key: str,
+    model: str,
+    primary_name: str,
+    primary_age: int,
+    *trait_and_runtime: Any,
+) -> str:
+    request = _resolve_run_request(
+        scenario_name,
+        environment_preset_id,
+        cultural_prior_id,
+        provider,
+        api_key,
+        model,
+        primary_name,
+        primary_age,
+        *trait_and_runtime,
+    )
+    run_config = {
+        "source": "knoema-playground",
+        "scenario_name": request["scenario_name"],
+        "environment_preset_id": request["environment_preset_id"],
+        "cultural_prior_id": request["cultural_prior_id"],
+        "provider": request["provider"],
+        "provider_config": {
+            "model": request["model"],
+            "api_key_present": bool(str(api_key).strip()),
+        },
+        "seed": request["master_seed"],
+        "ticks": request["ticks"],
+        "agent_count": request["agent_count"],
+        "batch_mode": request["batch_mode"],
+        "batch_runs": request["batch_runs"],
+        "language": request["language"],
+        "primary_agent": {
+            "name": request["primary_name"],
+            "age": request["primary_age"],
+        },
+        "trait_vector": request["personality_overrides"],
+        "agent_overrides": request["agent_overrides"],
+        "primary_planning_enabled": request["primary_planning_enabled"],
+        "planning_depth": request["planning_depth"],
+        "event_injections_sha256": _digest_text(str(request["event_injections_text"])),
+        "initial_relationships_sha256": _digest_text(str(request["initial_relationships_text"])),
+    }
+    certificate = generate_run_fingerprint(
+        run_config=run_config,
+        result=jsonl_text,
+        metadata={
+            "summary_sha256": _digest_text(summary),
+            "language": _language_key(language),
+        },
+    )
+    guide = verification_guide_markdown(certificate)
+    archive_path = Path(tempfile.gettempdir()) / f"knoema_reproducibility_certificate_{uuid.uuid4().hex}.zip"
+    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr(
+            "run_fingerprint.json",
+            json.dumps(certificate, ensure_ascii=False, indent=2, sort_keys=True),
+        )
+        archive.writestr("VERIFY.md", guide)
+        archive.writestr(
+            "verification_guide.pdf",
+            _simple_pdf_bytes(
+                [
+                    "Knoema reproducibility certificate",
+                    f"Fingerprint: {certificate['fingerprint']}",
+                    f"Input hash: {certificate['input_hash']}",
+                    f"Output Merkle root: {certificate['output_merkle_root']}",
+                    "Verify with: python scripts/knoema_verify.py run_fingerprint.json --result-jsonl run.jsonl",
+                ]
+            ),
+        )
+    return str(archive_path)
+
+
+def _simple_pdf_bytes(lines: list[str]) -> bytes:
+    escaped_lines = [
+        line.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+        for line in lines
+    ]
+    text_commands = ["BT", "/F1 12 Tf", "72 760 Td"]
+    for index, line in enumerate(escaped_lines):
+        if index:
+            text_commands.append("0 -18 Td")
+        text_commands.append(f"({line}) Tj")
+    text_commands.append("ET")
+    stream = "\n".join(text_commands).encode("latin-1", errors="replace")
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        b"<< /Length " + str(len(stream)).encode("ascii") + b" >>\nstream\n" + stream + b"\nendstream",
+    ]
+    chunks = [b"%PDF-1.4\n"]
+    offsets: list[int] = []
+    for index, pdf_object in enumerate(objects, start=1):
+        offsets.append(sum(len(chunk) for chunk in chunks))
+        chunks.append(f"{index} 0 obj\n".encode("ascii") + pdf_object + b"\nendobj\n")
+    xref_offset = sum(len(chunk) for chunk in chunks)
+    xref = [b"xref\n0 6\n", b"0000000000 65535 f \n"]
+    xref.extend(f"{offset:010d} 00000 n \n".encode("ascii") for offset in offsets)
+    chunks.extend(
+        [
+            *xref,
+            b"trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n",
+            str(xref_offset).encode("ascii"),
+            b"\n%%EOF\n",
+        ]
+    )
+    return b"".join(chunks)
+
+
 def _export_html_report(
     timeline_markdown: str,
     graph_figure: Any,
@@ -5156,6 +5462,194 @@ def _compare_runs(
     return _comparison_markdown(left, right, compare_seed_a, compare_seed_b, str(request["language"]))
 
 
+def _cross_model_card(model_name: str, result: Any, language: str) -> str:
+    key = _language_key(language)
+    action_counts = _flatten_action_counts(dict(getattr(result, "action_breakdown", {})))
+    top_actions = ", ".join(
+        f"{action_type}={count}"
+        for action_type, count in action_counts.most_common(5)
+    ) or "none"
+    tick_sequence = _cross_model_tick_sequence(str(getattr(result, "jsonl", "")))
+    if key == "ko":
+        return "\n".join(
+            [
+                f"### {model_name}",
+                f"- 로그 수: {getattr(result, 'log_count', 0)}",
+                f"- 틱 수: {getattr(result, 'tick_count', 0)}",
+                f"- 액션 분포: {top_actions}",
+                f"- 관계 엣지: {len(getattr(result, 'relationship_rows', []))}",
+                "",
+                tick_sequence,
+            ]
+        )
+    return "\n".join(
+        [
+            f"### {model_name}",
+            f"- Log entries: {getattr(result, 'log_count', 0)}",
+            f"- Ticks: {getattr(result, 'tick_count', 0)}",
+            f"- Action mix: {top_actions}",
+            f"- Relationship edges: {len(getattr(result, 'relationship_rows', []))}",
+            "",
+            tick_sequence,
+        ]
+    )
+
+
+def _cross_model_tick_sequence(jsonl_text: str) -> str:
+    tick_actions: dict[int, list[str]] = {}
+    for row in _jsonl_rows(jsonl_text):
+        action = row.get("action")
+        if not isinstance(action, dict) or "tick" not in row:
+            continue
+        tick = int(row.get("tick", 0))
+        tick_actions.setdefault(tick, []).append(str(action.get("action_type", "observe")))
+    lines = ["| Tick | Actions |", "| --- | --- |"]
+    for tick in sorted(tick_actions)[:8]:
+        counts = Counter(tick_actions[tick])
+        action_text = ", ".join(
+            f"{action_type} x{count}"
+            for action_type, count in counts.most_common(4)
+        )
+        lines.append(f"| {tick} | {action_text} |")
+    return "\n".join(lines)
+
+
+def _cross_model_diff_markdown(results: dict[str, Any], language: str) -> str:
+    key = _language_key(language)
+    labels = LABELS[key]
+    typed_results = cast("dict[str, PlaygroundResult]", results)
+    overlap = cross_model_overlap_ratio(typed_results)
+    correlations = cross_model_action_correlations(typed_results)
+    if key == "ko":
+        lines = [
+            f"### {labels['cross_model_diff']}",
+            f"- 같은 tick/agent 액션 overlap ratio: {overlap:.3f}",
+        ]
+        if correlations:
+            lines.append("- 모델 간 action-distribution Pearson r:")
+            lines.extend(
+                f"  - {stat.left} vs {stat.right}: {stat.pearson_r:.3f}"
+                for stat in correlations
+            )
+        lines.extend(_cross_model_divergence_lines(results, language=key))
+        return "\n".join(lines)
+    lines = [
+        f"### {labels['cross_model_diff']}",
+        f"- Same tick/agent action overlap ratio: {overlap:.3f}",
+    ]
+    if correlations:
+        lines.append("- Cross-model action-distribution Pearson r:")
+        lines.extend(
+            f"  - {stat.left} vs {stat.right}: {stat.pearson_r:.3f}"
+            for stat in correlations
+        )
+    lines.extend(_cross_model_divergence_lines(results, language=key))
+    return "\n".join(lines)
+
+
+def _cross_model_divergence_lines(results: dict[str, Any], *, language: str) -> list[str]:
+    signatures: dict[str, dict[tuple[int, str], str]] = {}
+    for model_name, result in results.items():
+        signatures[model_name] = {}
+        for row in _jsonl_rows(str(getattr(result, "jsonl", ""))):
+            action = row.get("action")
+            if not isinstance(action, dict) or "tick" not in row:
+                continue
+            signatures[model_name][(int(row.get("tick", 0)), str(row.get("agent_id", "agent")))] = str(
+                action.get("action_type", "observe")
+            )
+    if not signatures:
+        return []
+    common_keys = set(next(iter(signatures.values())))
+    for signature in list(signatures.values())[1:]:
+        common_keys &= set(signature)
+    divergent: list[str] = []
+    for key in sorted(common_keys)[:48]:
+        actions = {model_name: signature[key] for model_name, signature in signatures.items()}
+        if len(set(actions.values())) <= 1:
+            continue
+        tick, agent_id = key
+        detail = ", ".join(f"{model_name}: {action}" for model_name, action in actions.items())
+        if language == "ko":
+            divergent.append(f"- [DIFF] tick {tick}, {agent_id}: {detail}")
+        else:
+            divergent.append(f"- [DIFF] tick {tick}, {agent_id}: {detail}")
+        if len(divergent) >= 10:
+            break
+    if not divergent:
+        return ["- No divergent tick/agent decisions in the common action window."]
+    return divergent
+
+
+def _compare_models(
+    scenario_name: str,
+    environment_preset_id: str | None,
+    cultural_prior_id: str | None,
+    provider: str,
+    api_key: str,
+    model: str,
+    primary_name: str,
+    primary_age: int,
+    *trait_runtime_and_models: Any,
+) -> tuple[str, str, str, str]:
+    selected_models = trait_runtime_and_models[-1]
+    selected = [str(value) for value in selected_models] if isinstance(selected_models, list) else []
+    if not selected:
+        selected = ["GPT", "Claude", "Replay"]
+    request = _resolve_run_request(
+        scenario_name,
+        environment_preset_id,
+        cultural_prior_id,
+        provider,
+        api_key,
+        model,
+        primary_name,
+        primary_age,
+        *trait_runtime_and_models[:-1],
+    )
+    try:
+        results = run_cross_model_comparison(
+            scenario_name=str(request["scenario_name"]),
+            models=selected,
+            api_key=str(request["api_key"]),
+            model=str(request["model"]),
+            primary_name=str(request["primary_name"]),
+            primary_age=int(request["primary_age"]),
+            openness=float(dict(request["personality_overrides"])["openness"]),
+            conscientiousness=float(dict(request["personality_overrides"])["conscientiousness"]),
+            extraversion=float(dict(request["personality_overrides"])["extraversion"]),
+            agreeableness=float(dict(request["personality_overrides"])["agreeableness"]),
+            neuroticism=float(dict(request["personality_overrides"])["neuroticism"]),
+            personality_overrides=dict(request["personality_overrides"]),
+            ticks=int(request["ticks"]),
+            agent_count=int(request["agent_count"]),
+            environment_preset_id=cast("str | None", request["environment_preset_id"]),
+            cultural_prior_id=cast("str | None", request["cultural_prior_id"]),
+            agent_overrides=cast("list[dict[str, Any]]", request["agent_overrides"]),
+            primary_planning_enabled=bool(request["primary_planning_enabled"]),
+            planning_depth=int(request["planning_depth"]),
+            master_seed=int(request["master_seed"]),
+            language=str(request["language"]),
+            event_injections_text=str(request["event_injections_text"]),
+            initial_relationships_text=str(request["initial_relationships_text"]),
+        )
+    except Exception as exc:
+        message = f"Cross-model comparison failed: {exc}"
+        return message, message, message, message
+
+    cards = {
+        model_name: _cross_model_card(model_name, result, str(request["language"]))
+        for model_name, result in results.items()
+    }
+    placeholder = LABELS[_language_key(str(request["language"]))]["cross_model_empty"]
+    return (
+        cards.get("GPT", placeholder),
+        cards.get("Claude", placeholder),
+        cards.get("Replay", placeholder),
+        _cross_model_diff_markdown(results, str(request["language"])),
+    )
+
+
 def _run_with_optional_streaming(
     live_streaming: bool,
     scenario_name: str,
@@ -6143,6 +6637,13 @@ def _language_updates(
         gr.update(value=labels["report_agent_run"]),
         gr.update(label=labels["competitive_panel"]),
         _competitive_comparison_markdown(key),
+        gr.update(label=labels["cross_model_panel"]),
+        gr.update(
+            label=labels["cross_model_models"],
+            choices=list(CROSS_MODEL_CHOICES),
+            value=["GPT", "Claude", "Replay"],
+        ),
+        gr.update(value=labels["cross_model_button"]),
         gr.update(label=labels["prereg_panel"]),
         gr.update(label=labels["prereg_title"]),
         gr.update(label=labels["prereg_hypotheses"]),
@@ -6245,6 +6746,8 @@ def _language_updates(
         gr.update(label=labels["latex_table_download"]),
         gr.update(value=labels["replication_button"]),
         gr.update(label=labels["replication_download"]),
+        gr.update(value=labels["repro_certificate_button"]),
+        gr.update(label=labels["repro_certificate_download"]),
         gr.update(label=labels["deposit_panel"]),
         gr.update(label=labels["deposit_creators"]),
         gr.update(label=labels["deposit_description"]),
@@ -6256,6 +6759,10 @@ def _language_updates(
         labels["deposit_status"],
         gr.update(label=labels["deposit_download"]),
         labels["report_agent_empty"],
+        labels["cross_model_empty"],
+        labels["cross_model_empty"],
+        labels["cross_model_empty"],
+        labels["cross_model_empty"],
         labels["compare_empty"],
         labels["interview_empty"],
         gr.update(label=labels["lang"]),
@@ -8240,6 +8747,15 @@ def build_app() -> gr.Blocks:
                 label=labels["replication_download"],
                 elem_id="replication-package-download",
             )
+            repro_certificate_button = gr.Button(
+                labels["repro_certificate_button"],
+                variant="secondary",
+                elem_id="repro-certificate-button",
+            )
+            repro_certificate_download = gr.File(
+                label=labels["repro_certificate_download"],
+                elem_id="repro-certificate-download",
+            )
             deposit_panel = gr.Accordion(
                 labels["deposit_panel"],
                 open=False,
@@ -8324,6 +8840,39 @@ def build_app() -> gr.Blocks:
             competitive_table = gr.Markdown(
                 _competitive_comparison_markdown("ko"),
                 elem_id="competitive-comparison-table",
+            )
+        cross_model_panel = gr.Accordion(
+            labels["cross_model_panel"],
+            open=False,
+            elem_id="cross-model-panel",
+        )
+        with cross_model_panel:
+            cross_model_models = gr.CheckboxGroup(
+                label=labels["cross_model_models"],
+                choices=list(CROSS_MODEL_CHOICES),
+                value=["GPT", "Claude", "Replay"],
+                elem_id="cross-model-choices",
+            )
+            cross_model_button = gr.Button(
+                labels["cross_model_button"],
+                elem_id="cross-model-button",
+            )
+            with gr.Row(elem_id="cross-model-results"):
+                cross_model_gpt = gr.Markdown(
+                    labels["cross_model_empty"],
+                    elem_id="cross-model-gpt",
+                )
+                cross_model_claude = gr.Markdown(
+                    labels["cross_model_empty"],
+                    elem_id="cross-model-claude",
+                )
+                cross_model_replay = gr.Markdown(
+                    labels["cross_model_empty"],
+                    elem_id="cross-model-replay",
+                )
+            cross_model_diff = gr.Markdown(
+                labels["cross_model_empty"],
+                elem_id="cross-model-diff",
             )
         compare_panel = gr.Accordion(
             labels["compare_panel"],
@@ -8468,6 +9017,9 @@ def build_app() -> gr.Blocks:
             report_agent_button,
             competitive_panel,
             competitive_table,
+            cross_model_panel,
+            cross_model_models,
+            cross_model_button,
             prereg_panel,
             prereg_title,
             prereg_hypotheses,
@@ -8536,6 +9088,8 @@ def build_app() -> gr.Blocks:
             latex_table_download,
             replication_package_button,
             replication_package_download,
+            repro_certificate_button,
+            repro_certificate_download,
             deposit_panel,
             deposit_creators,
             deposit_description,
@@ -8547,6 +9101,10 @@ def build_app() -> gr.Blocks:
             deposit_status,
             deposit_download,
             report_agent_output,
+            cross_model_gpt,
+            cross_model_claude,
+            cross_model_replay,
+            cross_model_diff,
             compare_output,
             interview_output,
             language,
@@ -8847,6 +9405,53 @@ def build_app() -> gr.Blocks:
             outputs=[replication_package_download],
             api_name="export_replication_package",
         )
+        repro_certificate_button.click(
+            _export_reproducibility_certificate,
+            inputs=[
+                jsonl,
+                summary,
+                language,
+                scenario,
+                environment_preset,
+                cultural_prior,
+                provider,
+                api_key,
+                model,
+                primary_name,
+                primary_age,
+                agent_tabs[0]["routine_text"],
+                *[
+                    agent_tabs[0]["trait_sliders"][field_name]
+                    for field_name in PERSONA_TRAIT_FIELDS
+                ],
+                agent_tabs[1]["name"],
+                agent_tabs[1]["age"],
+                agent_tabs[1]["routine_text"],
+                *[
+                    agent_tabs[1]["trait_sliders"][field_name]
+                    for field_name in PERSONA_TRAIT_FIELDS
+                ],
+                agent_tabs[2]["name"],
+                agent_tabs[2]["age"],
+                agent_tabs[2]["routine_text"],
+                *[
+                    agent_tabs[2]["trait_sliders"][field_name]
+                    for field_name in PERSONA_TRAIT_FIELDS
+                ],
+                htn_enabled,
+                planning_depth,
+                ticks,
+                agent_count,
+                batch_mode,
+                batch_runs,
+                master_seed,
+                language,
+                event_injections,
+                initial_relationships,
+            ],
+            outputs=[repro_certificate_download],
+            api_name="export_reproducibility_certificate",
+        )
         deposit_button.click(
             _export_deposit_bundle,
             inputs=[
@@ -9040,6 +9645,12 @@ def build_app() -> gr.Blocks:
             _compare_runs,
             inputs=[*common_run_inputs, compare_seed_a, compare_seed_b],
             outputs=[compare_output],
+        )
+        cross_model_button.click(
+            _compare_models,
+            inputs=[*common_run_inputs, cross_model_models],
+            outputs=[cross_model_gpt, cross_model_claude, cross_model_replay, cross_model_diff],
+            api_name="compare_models",
         )
         player_event = player_submit.click(
             _advance_player_mode_theme,

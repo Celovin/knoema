@@ -77,6 +77,12 @@ from knoema.prompts import (
 )
 from knoema.protocols import LLMClient, MemoryRetriever, MemoryWriter, PromptRenderable
 from knoema.relationship import InteractionOutcome, Relationship, RelationshipGraph
+from knoema.reproducibility import (
+    VerificationReport,
+    generate_run_fingerprint,
+    result_merkle_root,
+    verify_run_fingerprint,
+)
 from knoema.safety import (
     AuditEvent,
     AuditLogWriter,
@@ -201,6 +207,7 @@ __all__ = [
     "TheoryOfMindEngine",
     "TheoryOfMindProfile",
     "VLLMClient",
+    "VerificationReport",
     "WorldEvent",
     "WorldState",
     "__version__",
@@ -217,6 +224,7 @@ __all__ = [
     "detect_hot_shards",
     "fleiss_kappa",
     "format_markdown_report",
+    "generate_run_fingerprint",
     "load_config",
     "load_or_create_anonymous_id",
     "load_scenario",
@@ -224,10 +232,12 @@ __all__ = [
     "rebalance_hot_shards",
     "render_decision_user_prompt",
     "render_persona_system_prompt",
+    "result_merkle_root",
     "run_knoema_benchmark",
     "run_sally_anne_benchmark",
     "score_log",
     "shard_agents_by_location",
     "telemetry_opt_in_from_env",
     "validate_audit_record",
+    "verify_run_fingerprint",
 ]
