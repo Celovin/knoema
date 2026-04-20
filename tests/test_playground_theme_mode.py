@@ -53,3 +53,17 @@ def test_subtask52_theme_helpers_round_trip_localized_modes() -> None:
     assert playground_app._normalize_theme_mode(playground_app.LABELS["en"]["theme_light"]) == "light"
     assert playground_app._theme_label("auto", "ko") == playground_app.LABELS["ko"]["theme_auto"]
     assert playground_app._theme_label("dark", "en") == playground_app.LABELS["en"]["theme_dark"]
+
+
+def test_subtask65_light_mode_css_covers_high_risk_gradio_components() -> None:
+    for selector in (
+        ".gr-accordion",
+        "[role=\"tabpanel\"]",
+        ".gr-file",
+        ".gr-code",
+        ".gr-dropdown",
+        ".gr-slider",
+        "input[type=\"range\"]",
+        ".cm-editor",
+    ):
+        assert selector in playground_app.FOOTER_CSS

@@ -715,21 +715,23 @@ LABELS["ko"]["seed_prompt_placeholder"] = "예: 분주한 항구 술집, 세 명
 LABELS["ko"]["seed_prompt_apply"] = "시드로 3명 페르소나 생성"
 LABELS["ko"]["seed_prompt_empty"] = "시드 프롬프트를 입력하면 첫 3명 에이전트와 초기 관계 초안을 채웁니다."
 LABELS["ko"]["event_injections"] = "이벤트 주입"
-LABELS["ko"]["event_injections_placeholder"] = "0 | Tavern Bar | A courier bursts in with a sealed letter | agent_1,agent_2 | urgent_news"
+LABELS["ko"]["event_injections_placeholder"] = (
+    "0 | Tavern Bar | 전령이 봉인된 편지를 들고 뛰어든다 | agent_1,agent_2 | urgent_news"
+)
 LABELS["ko"]["initial_relationships"] = "초기 관계 시드"
-LABELS["ko"]["initial_relationships_placeholder"] = "agent_1 | agent_2 | colleague | 0.55 | 0.70 | 0.30"
+LABELS["ko"]["initial_relationships_placeholder"] = "agent_1 | agent_2 | 동료 | 0.55 | 0.70 | 0.30"
 LABELS["ko"]["live_streaming"] = "실시간 WebSocket 스트리밍"
-LABELS["ko"]["live_streaming_info"] = "Replay only 모드에서 tick 단위로 UI를 갱신합니다."
+LABELS["ko"]["live_streaming_info"] = "재생 전용 모드에서 틱 단위로 UI를 갱신합니다."
 LABELS["ko"]["theme"] = "테마"
 LABELS["ko"]["theme_info"] = "라이트, 다크, 자동 중 하나를 선택하고 브라우저에 저장합니다."
 LABELS["ko"]["theme_auto"] = "자동"
 LABELS["ko"]["theme_light"] = "라이트"
 LABELS["ko"]["theme_dark"] = "다크"
 LABELS["ko"]["graph_a11y"] = "관계 그래프 요약"
-LABELS["ko"]["report_agent_panel"] = "ReportAgent Q&A"
-LABELS["ko"]["report_agent_question"] = "런 질문"
-LABELS["ko"]["report_agent_run"] = "현재 런 요약 답변"
-LABELS["ko"]["report_agent_empty"] = "런을 실행한 뒤 질문하면 JSONL 기반 요약을 돌려줍니다."
+LABELS["ko"]["report_agent_panel"] = "ReportAgent 질의응답"
+LABELS["ko"]["report_agent_question"] = "실행 질문"
+LABELS["ko"]["report_agent_run"] = "현재 실행 요약 답변"
+LABELS["ko"]["report_agent_empty"] = "시뮬레이션을 실행한 뒤 질문하면 JSONL 기반 요약을 돌려줍니다."
 LABELS["ko"]["competitive_panel"] = "경쟁 비교"
 LABELS["ko"]["competitive_intro"] = "연구용 사회 시뮬레이션, 예측 샌드박스, 오케스트레이션 프레임워크를 같은 표면에서 비교합니다."
 LABELS["ko"]["compare_panel"] = "A/B 비교"
@@ -788,40 +790,40 @@ LABELS["en"]["prereg_button"] = "Export pre-registration"
 LABELS["en"]["prereg_download"] = "Download pre-registration"
 LABELS["en"]["prereg_preview_empty"] = "Preview the OSF-style registration draft here."
 LABELS["ko"]["prereg_planned_n"] = "계획 표본수"
-LABELS["ko"]["prereg_power_test"] = "Power analysis 검정"
+LABELS["ko"]["prereg_power_test"] = "검정력 분석 검정"
 LABELS["ko"]["prereg_power_effect"] = "효과 크기"
-LABELS["ko"]["prereg_power_alpha"] = "유의수준 alpha"
-LABELS["ko"]["prereg_power_target"] = "목표 power"
-LABELS["ko"]["prereg_power_summary"] = "Power analysis 요약"
+LABELS["ko"]["prereg_power_alpha"] = "유의수준"
+LABELS["ko"]["prereg_power_target"] = "목표 검정력"
+LABELS["ko"]["prereg_power_summary"] = "검정력 분석 요약"
 LABELS["en"]["prereg_planned_n"] = "Planned sample size"
 LABELS["en"]["prereg_power_test"] = "Power analysis test"
 LABELS["en"]["prereg_power_effect"] = "Effect size"
 LABELS["en"]["prereg_power_alpha"] = "Alpha"
 LABELS["en"]["prereg_power_target"] = "Target power"
 LABELS["en"]["prereg_power_summary"] = "Power analysis summary"
-LABELS["ko"]["replication_button"] = "Replication package 내보내기"
-LABELS["ko"]["replication_download"] = "Replication package 다운로드"
+LABELS["ko"]["replication_button"] = "재현 패키지 내보내기"
+LABELS["ko"]["replication_download"] = "재현 패키지 다운로드"
 LABELS["en"]["replication_button"] = "Export replication package"
 LABELS["en"]["replication_download"] = "Download replication package"
 LABELS["ko"]["reviewer_mode"] = "리뷰어 모드"
-LABELS["ko"]["prereg_data_generation"] = "Data generation process"
-LABELS["ko"]["prereg_factor_design"] = "Factor design matrix"
-LABELS["ko"]["prereg_performance_metrics"] = "Performance metrics"
-LABELS["ko"]["prereg_aggregation"] = "Aggregation plan"
+LABELS["ko"]["prereg_data_generation"] = "데이터 생성 절차"
+LABELS["ko"]["prereg_factor_design"] = "요인 설계 행렬"
+LABELS["ko"]["prereg_performance_metrics"] = "성능 지표"
+LABELS["ko"]["prereg_aggregation"] = "집계 계획"
 LABELS["en"]["prereg_data_generation"] = "Data generation process"
 LABELS["en"]["prereg_factor_design"] = "Factor design matrix"
 LABELS["en"]["prereg_performance_metrics"] = "Performance metrics"
 LABELS["en"]["prereg_aggregation"] = "Aggregation plan"
-LABELS["ko"]["deposit_panel"] = "Zenodo / arXiv deposit"
-LABELS["ko"]["deposit_creators"] = "Creators (one per line, optional | affiliation)"
-LABELS["ko"]["deposit_description"] = "Dataset description"
-LABELS["ko"]["deposit_keywords"] = "Keywords"
-LABELS["ko"]["deposit_token"] = "Zenodo access token"
-LABELS["ko"]["deposit_sandbox"] = "Use Zenodo sandbox"
-LABELS["ko"]["deposit_publish"] = "Publish immediately after upload"
-LABELS["ko"]["deposit_button"] = "Create deposit packet"
-LABELS["ko"]["deposit_download"] = "Download deposit bundle"
-LABELS["ko"]["deposit_status"] = "No deposit packet yet."
+LABELS["ko"]["deposit_panel"] = "Zenodo / arXiv 등록"
+LABELS["ko"]["deposit_creators"] = "저자 정보 (줄바꿈 구분, 선택 | 소속)"
+LABELS["ko"]["deposit_description"] = "데이터셋 설명"
+LABELS["ko"]["deposit_keywords"] = "키워드"
+LABELS["ko"]["deposit_token"] = "Zenodo 접근 토큰"
+LABELS["ko"]["deposit_sandbox"] = "Zenodo 샌드박스 사용"
+LABELS["ko"]["deposit_publish"] = "업로드 직후 즉시 공개"
+LABELS["ko"]["deposit_button"] = "등록 패킷 만들기"
+LABELS["ko"]["deposit_download"] = "등록 번들 다운로드"
+LABELS["ko"]["deposit_status"] = "아직 등록 패킷이 없습니다."
 LABELS["en"]["deposit_panel"] = "Zenodo / arXiv deposit"
 LABELS["en"]["deposit_creators"] = "Creators (one per line, optional | affiliation)"
 LABELS["en"]["deposit_description"] = "Dataset description"
@@ -857,7 +859,7 @@ LABELS["en"]["interview_agent"] = "Agent ID"
 LABELS["en"]["interview_question"] = "Interview question"
 LABELS["en"]["interview_button"] = "Generate interview"
 LABELS["en"]["interview_empty"] = "After a run, provide an agent id and question to synthesize an answer from recent memories and actions."
-LABELS["ko"]["cultural_prior"] = "문화 prior"
+LABELS["ko"]["cultural_prior"] = "문화 사전 분포"
 LABELS["ko"]["cultural_prior_info"] = "선택한 문화 모듈이 Schwartz 가치와 도덕 기반의 기본값을 먼저 이동시킵니다."
 LABELS["ko"]["monologue_panel"] = "내적 독백"
 LABELS["ko"]["monologue_empty"] = "아직 기록된 내적 독백이 없습니다."
@@ -875,7 +877,7 @@ LABELS["ko"]["current_plan_panel"] = "현재 계획"
 LABELS["ko"]["current_plan_empty"] = "아직 생성된 HTN 계획이 없습니다."
 LABELS["ko"]["agent_panel"] = "에이전트 성격"
 LABELS["ko"]["agent_tab_prefix"] = "에이전트"
-LABELS["ko"]["agent_tab_disabled"] = "이 슬롯을 사용하려면 agent count를 늘리세요."
+LABELS["ko"]["agent_tab_disabled"] = "이 슬롯을 사용하려면 에이전트 수를 늘리세요."
 LABELS["en"]["htn_enabled"] = "Enable hierarchical planning (HTN)"
 LABELS["en"]["htn_info"] = "Applies to the primary agent in the current playground layout."
 LABELS["en"]["planning_depth"] = "Planning depth"
@@ -913,12 +915,12 @@ LABELS["en"]["routine_preset_info"] = "Choose a student, office worker, night-sh
 LABELS["en"]["routine_text"] = "Daily routine (optional)"
 LABELS["en"]["routine_text_info"] = "Paste a YAML list with start_hour, end_hour, location_path, and default_action."
 LABELS["en"]["routine_text_placeholder"] = "- start_hour: 7\n  end_hour: 9\n  location_path: [Town, Tavern, Kitchen]\n  default_action: craft_item"
-LABELS["ko"]["trait_matrix_panel"] = "Trait 상관/ablation"
-LABELS["ko"]["trait_matrix_plot"] = "Trait correlation matrix"
-LABELS["ko"]["trait_matrix_summary"] = "Trait ablation summary"
+LABELS["ko"]["trait_matrix_panel"] = "특성 상관 / 제거 실험"
+LABELS["ko"]["trait_matrix_plot"] = "특성 상관 행렬"
+LABELS["ko"]["trait_matrix_summary"] = "특성 제거 실험 요약"
 LABELS["ko"]["statistics_panel"] = "통계 분석"
 LABELS["ko"]["statistics_batch_only"] = "통계 분석은 배치 모드에서만 계산됩니다."
-LABELS["ko"]["statistics_insufficient"] = "통계 분석에는 최소 4개 tick 배치 요약이 필요합니다."
+LABELS["ko"]["statistics_insufficient"] = "통계 분석에는 최소 4개 틱 배치 요약이 필요합니다."
 LABELS["en"]["trait_matrix_panel"] = "Trait correlation / ablation"
 LABELS["en"]["trait_matrix_plot"] = "Trait correlation matrix"
 LABELS["en"]["trait_matrix_summary"] = "Trait ablation summary"
@@ -930,7 +932,7 @@ LABELS["ko"]["batch_mode_info"] = "같은 시나리오를 여러 시드로 반�
 LABELS["ko"]["batch_runs"] = "반복 횟수"
 LABELS["ko"]["batch_runs_info"] = "1~100회까지 반복 실행합니다. 단일 실행은 1회로 고정됩니다."
 LABELS["ko"]["master_seed"] = "마스터 시드"
-LABELS["ko"]["master_seed_info"] = "각 배치 시드는 master_seed + run_index로 파생됩니다."
+LABELS["ko"]["master_seed_info"] = "각 배치 시드는 마스터 시드와 실행 인덱스 조합으로 파생됩니다."
 LABELS["en"]["batch_mode"] = "Batch mode"
 LABELS["en"]["batch_mode_info"] = "Repeat the same scenario across multiple derived seeds and aggregate the outputs."
 LABELS["en"]["batch_runs"] = "Batch runs"
@@ -1680,6 +1682,75 @@ body,
     color: var(--knoema-text) !important;
     border-color: var(--knoema-border) !important;
 }}
+:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+    .gr-accordion,
+    [data-testid="accordion"],
+    .tabitem,
+    [role="tabpanel"],
+    .tabs,
+    .tab-nav,
+    .gr-form,
+    .gr-box,
+    .gr-panel,
+    .block,
+    .wrap,
+    .gr-dropdown,
+    [data-testid="dropdown"],
+    .gr-slider,
+    [data-testid="slider"],
+    .gr-dataframe,
+    table,
+    thead,
+    tbody,
+    tr,
+    td,
+    th,
+    pre
+) {{
+    background: var(--knoema-surface) !important;
+    color: var(--knoema-text) !important;
+    border-color: var(--knoema-border) !important;
+}}
+:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+    .cm-editor,
+    .cm-scroller,
+    .cm-content,
+    .cm-line,
+    .cm-gutters,
+    .cm-activeLine,
+    .cm-activeLineGutter
+) {{
+    background: var(--knoema-surface-alt) !important;
+    color: var(--knoema-text) !important;
+}}
+:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+    .tab-nav button,
+    .tabs button,
+    [role="tab"]
+) {{
+    background: var(--knoema-surface) !important;
+    color: var(--knoema-text) !important;
+    border-color: var(--knoema-border) !important;
+}}
+:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+    .gr-accordion *,
+    [role="tabpanel"] *,
+    .gr-file *,
+    [data-testid="file"] *,
+    .gr-code *,
+    [data-testid="code"] *,
+    .gr-dropdown *,
+    [data-testid="dropdown"] *,
+    .gr-slider *,
+    [data-testid="slider"] *,
+    .gr-dataframe *
+) {{
+    color: var(--knoema-text) !important;
+    border-color: var(--knoema-border) !important;
+}}
+:root:not([data-knoema-theme="dark"]) .gradio-container input[type="range"] {{
+    accent-color: var(--knoema-accent) !important;
+}}
 :root:not([data-knoema-theme="dark"]) .gradio-container button {{
     color: var(--knoema-text) !important;
 }}
@@ -1768,7 +1839,11 @@ footer {{display: none !important;}}
 
 
 def _language_key(language_choice: str) -> str:
-    return "ko" if language_choice == KOREAN_CHOICE else "en"
+    raw_choice = str(language_choice).strip()
+    lowered_choice = raw_choice.lower()
+    if raw_choice == KOREAN_CHOICE or lowered_choice in {"ko", "korean"}:
+        return "ko"
+    return "en"
 
 
 def _honesty_humility_caveat_locale(language_choice: str) -> str:
@@ -3239,11 +3314,12 @@ def _relationship_graph_theme_update(graph_html: str, theme_mode: str) -> str:
     return _force_graph_iframe_html(payload, language=language_key, theme_mode=theme_mode)
 
 
-def _report_section(title: str, body: str) -> str:
+def _report_section(title: str, body: str, *, language: str = "en") -> str:
     if not str(body).strip():
+        empty_text = "데이터가 아직 없습니다." if _language_key(language) == "ko" else "No data available."
         return (
             f"<section><h2>{escape(title)}</h2>"
-            "<p class='empty'>No data available.</p></section>"
+            f"<p class='empty'>{escape(empty_text)}</p></section>"
         )
     return (
         f"<section><h2>{escape(title)}</h2>"
@@ -3417,6 +3493,7 @@ def _digest_text(text: str) -> str:
 
 def _attached_run_summary(summary: str, jsonl_text: str, language: str) -> str:
     rows = _jsonl_rows(jsonl_text)
+    language_key = _language_key(language)
     batch_summary = next(
         (
             row
@@ -3455,11 +3532,29 @@ def _attached_run_summary(summary: str, jsonl_text: str, language: str) -> str:
     top_actions = ", ".join(
         f"{action_type} x{count}"
         for action_type, count in action_counts.most_common(3)
-    ) or ("없음" if _language_key(language) == "ko" else "none")
+    ) or ("없음" if language_key == "ko" else "none")
     if not rows:
-        if _language_key(language) == "ko":
-            return "- 아직 첨부된 run 결과가 없습니다."
+        if language_key == "ko":
+            return "- 아직 첨부된 실행 결과가 없습니다."
         return "- No run artifact is attached yet."
+
+    if language_key == "ko":
+        lines = [
+            f"- 실행 요약: {summary or '해당 없음'}",
+            f"- JSONL 해시: `{_digest_text(jsonl_text)[:16]}`",
+            f"- 행 수: {len(rows)}",
+            f"- 틱 범위: {min(tick_values) if tick_values else 0} ~ {max(tick_values) if tick_values else 0}",
+            f"- 관측 에이전트: {', '.join(agent_ids) if agent_ids else '해당 없음'}",
+            f"- 주요 행동: {top_actions}",
+        ]
+        if batch_summary is not None:
+            lines.append(
+                "- 배치 요약: "
+                f"runs={int(batch_summary.get('batch_size', 0))}, "
+                f"master_seed={int(batch_summary.get('master_seed', 0))}, "
+                f"reproducibility={float(batch_summary.get('reproducibility_coefficient', 0.0)):.3f}"
+            )
+        return "\n".join(lines)
 
     lines = [
         f"- Summary: {summary or 'n/a'}",
@@ -3538,57 +3633,57 @@ def _preregistration_markdown(
         freeze_lines = [
             "1. 실행 후 시드, 결과 지표, 분석 계획을 논문화 전에 미리 정리합니다.",
             f"2. 고정 지문 `{freeze_fingerprint}`",
-            "3. 결과 정리는 JSONL digest와 요약 문장을 함께 보조 자료로 첨부합니다.",
+            "3. 결과 정리는 JSONL 해시와 요약 문장을 함께 보조 자료로 첨부합니다.",
         ]
-        status = "적용" if freeze_after_run else "선택 미고정"
-        heading = "## OSF-format pre-registration"
+        status = "적용" if freeze_after_run else "선택 사항"
+        heading = "## OSF 형식 사전등록"
         sections = [
             heading,
-            f"- Freeze-after-run: {status}",
-            f"- Freeze fingerprint: `{freeze_fingerprint}`",
+            f"- 실행 후 고정: {status}",
+            f"- 고정 지문: `{freeze_fingerprint}`",
             "",
-            "### Study title",
+            "### 연구 제목",
             title.strip(),
             "",
-            "### Hypotheses / research questions",
+            "### 가설 / 연구 질문",
             hypotheses.strip(),
             "",
-            "### Study design",
+            "### 연구 설계",
             design.strip(),
             "",
-            "### Data generation process",
+            "### 데이터 생성 절차",
             data_generation_process.strip(),
             "",
-            "### Factor design matrix",
+            "### 요인 설계 행렬",
             factor_design_matrix.strip(),
             "",
-            "### Performance metrics",
+            "### 성능 지표",
             performance_metrics.strip(),
             "",
-            "### Aggregation plan",
+            "### 집계 계획",
             aggregation_plan.strip(),
             "",
-            "### Primary / secondary outcomes",
+            "### 주요 / 보조 지표",
             outcomes.strip(),
             "",
-            "### Planned sample size",
-            f"- Planned N: {planned_n_value}",
-            f"- Recommended N from power analysis: {power_plan.total_sample_size}",
-            f"- Balanced per-group / condition N: {power_plan.sample_size_per_group}",
+            "### 계획 표본수",
+            f"- 계획 표본수 N: {planned_n_value}",
+            f"- 검정력 분석 권장 표본수: {power_plan.total_sample_size}",
+            f"- 집단 / 조건별 균형 표본수: {power_plan.sample_size_per_group}",
             "",
-            "### Power analysis",
+            "### 검정력 분석",
             _power_analysis_markdown(language, power_test_family, power_effect_size, power_alpha, power_target),
             "",
-            "### Analysis plan",
+            "### 분석 계획",
             analysis_plan.strip(),
             "",
-            "### Freeze-after-run protocol",
+            "### 실행 후 고정 절차",
             *freeze_lines,
             "",
-            "### Attached run evidence",
+            "### 첨부 실행 근거",
             attached_run,
             "",
-            "### Deviation log",
+            "### 일탈 로그",
             deviation_text,
         ]
         return "\n".join(sections)
@@ -3700,17 +3795,17 @@ def _deposit_status_markdown(result: ZenodoDepositResult, language: str) -> str:
     key = language if language in {"ko", "en"} else _language_key(language)
     if key == "ko":
         lines = [
-            f"- Mode: `{result.mode}`",
-            f"- Bundle: `{result.bundle_path.name}`",
-            f"- API base: `{result.api_base}`",
+            f"- 모드: `{result.mode}`",
+            f"- 번들: `{result.bundle_path.name}`",
+            f"- API 기본 주소: `{result.api_base}`",
         ]
         if result.deposition_id is not None:
-            lines.append(f"- Deposition id: `{result.deposition_id}`")
+            lines.append(f"- 등록 ID: `{result.deposition_id}`")
         if result.doi:
             lines.append(f"- DOI: `{result.doi}`")
         if result.html_url:
-            lines.append(f"- Link: {result.html_url}")
-        lines.append(f"- Note: {result.message}")
+            lines.append(f"- 링크: {result.html_url}")
+        lines.append(f"- 메모: {result.message}")
         return "\n".join(lines)
     lines = [
         f"- Mode: `{result.mode}`",
@@ -3769,6 +3864,8 @@ def _export_deposit_bundle(
             publish=False,
         )
         status = _deposit_status_markdown(fallback, language)
+        if _language_key(language) == "ko":
+            return f"{status}\n- 오류: `{escape(str(exc))}`", str(fallback.bundle_path)
         return f"{status}\n- Error: `{escape(str(exc))}`", str(fallback.bundle_path)
 
 
@@ -3986,8 +4083,8 @@ def _export_html_report(
       <h2>{escape(labels["graph"])}</h2>
       {graph_html}
     </section>
-    {_report_section(labels["timeline"], timeline_markdown)}
-    {_report_section(labels["jsonl"], jsonl_text)}
+    {_report_section(labels["timeline"], timeline_markdown, language=language_key)}
+    {_report_section(labels["jsonl"], jsonl_text, language=language_key)}
   </main>
 </body>
 </html>
@@ -5442,8 +5539,12 @@ def _apply_persona_preset(preset_id: str | None) -> list[dict[str, Any]]:
     return [gr.update(value=value) for value in values]
 
 
-def _apply_routine_preset(preset_id: str | None) -> dict[str, Any]:
-    return gr.update(value=routine_preset_text(preset_id), placeholder=LABELS["en"]["routine_text_placeholder"])
+def _apply_routine_preset(preset_id: str | None, language: str) -> dict[str, Any]:
+    language_key = _language_key(language)
+    return gr.update(
+        value=routine_preset_text(preset_id),
+        placeholder=LABELS[language_key]["routine_text_placeholder"],
+    )
 
 
 def _apply_cultural_prior(prior_id: str | None) -> list[dict[str, Any]]:
@@ -8690,7 +8791,7 @@ def build_app() -> gr.Blocks:
             )
             controls["routine_preset"].change(
                 _apply_routine_preset,
-                inputs=[controls["routine_preset"]],
+                inputs=[controls["routine_preset"], language],
                 outputs=[controls["routine_text"]],
             )
             controls["personality_input_mode"].change(
