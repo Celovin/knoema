@@ -57,8 +57,14 @@ jobs:
       - name: Ruff
         run: ruff check .
 
+      - name: Gradio compatibility
+        run: python scripts/check_gradio_compat.py
+
       - name: Mypy
         run: mypy src
+
+      - name: Install Playwright browser
+        run: python -m playwright install --with-deps chromium
 
       - name: Pytest
         run: pytest --cov-fail-under=90

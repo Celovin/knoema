@@ -1,0 +1,52 @@
+name: Live Space Smoke
+
+on:
+  workflow_run:
+    workflows: ["Deploy HF Space"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-space-smoke-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install project and Playwright browser
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,release]"
+          python -m playwright install --with-deps chromium
+
+      - name: Wait for Hugging Face Space runtime
+        run: sleep 90
+
+      - name: Confirm public Space responds
+        run: curl -fsS https://huggingface.co/spaces/celovin/knoema-playground > /dev/null
+
+      - name: Run live smoke test
+        run: python -m pytest tests/integration/test_live_space_smoke.py --no-cov -q
+
+      - name: Upload smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-space-smoke-artifacts
+          path: artifacts/
+          if-no-files-found: ignore
