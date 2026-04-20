@@ -960,7 +960,7 @@ EMOTION_TRAJECTORY_MAX_AGENTS = 12
 AGENT_COLOR_SEQUENCE: tuple[str, ...] = tuple(
     qualitative.Safe + qualitative.Set2 + qualitative.Pastel1 + qualitative.Dark2
 )
-ACTION_PATTERN_SEQUENCE: tuple[str, ...] = ("", "/", "\\", "x", "-", "|", "+", ".", "o")
+ACTION_PATTERN_SEQUENCE: tuple[str, ...] = ("", "/", "\\", "x", "-", "|", "+", ".")
 ACTION_FLOW_SELF_TYPES = frozenset({"alone", "move", "query_memory"})
 ACTION_FLOW_COLOR_SEQUENCE: tuple[str, ...] = tuple(
     qualitative.Safe + qualitative.Set2 + qualitative.Pastel1 + qualitative.Dark2
