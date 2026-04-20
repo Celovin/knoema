@@ -1,6 +1,6 @@
 # Knoema Codex Execution State
 
-**Last updated**: 2026-04-20 00:14 UTC by Codex
+**Last updated**: 2026-04-20 00:24 UTC by Codex
 
 **Source document**: `planning/codex_task_playground_layout.md` (60 sub-tasks)
 
@@ -111,8 +111,8 @@ If any sub-task becomes blocked, log it in `planning/codex_blockers.md` (human-r
 
 ## Completion summary (filled by Codex at end)
 
-- Completed: __ / 60
-- Blocked: __
-- Final commit: ____
-- HF Space last deployed: ____
-- Release readiness: ____
+- Completed: 60 / 60
+- Blocked: 0
+- Final commit: 4e7eff4 (latest execution push before handoff docs)
+- HF Space last deployed: https://huggingface.co/spaces/celovin/knoema-playground (sub-task 57 deploy, status ok)
+- Release readiness: Not ready (`ready_for_release_tag=false`; Vercel CLI login verification still failing)
