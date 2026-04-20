@@ -147,8 +147,11 @@ def test_subtask39_run_wrapper_blocks_sensitive_scenario_without_acknowledgement
         "",
     )
 
-    assert len(outputs) == 21
-    assert outputs[-1] == (
+    materialized = list(outputs) if hasattr(outputs, "__iter__") and not isinstance(outputs, tuple) else outputs
+    if isinstance(materialized, list) and len(materialized) == 1:
+        materialized = materialized[0]
+    assert len(materialized) == 21
+    assert materialized[-1] == (
         "Sensitive fictional scenarios require Advanced research mode and IRB-style "
         "notice acknowledgement."
     )

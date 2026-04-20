@@ -4891,13 +4891,14 @@ def _run_with_optional_streaming_ui(
         advanced_research_ack,
     )
     if violation:
-        return (
+        yield (
             *_noop_run_outputs(),
             gr.update(value=None),
             None,
             violation,
         )
-    return _run_with_optional_streaming(
+        return
+    yield from _run_with_optional_streaming(
         live_streaming,
         scenario_name,
         environment_preset_id,
