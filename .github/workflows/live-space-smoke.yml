@@ -41,6 +41,8 @@ jobs:
         run: curl -fsS https://huggingface.co/spaces/celovin/knoema-playground > /dev/null
 
       - name: Run live smoke test
+        env:
+          KNOEMA_EXPECT_FORCE_GRAPH: "1"
         run: python -m pytest tests/integration/test_live_space_smoke.py --no-cov -q
 
       - name: Upload smoke artifacts

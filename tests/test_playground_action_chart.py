@@ -33,7 +33,7 @@ def test_subtask8_build_app_places_action_chart_between_summary_and_graph() -> N
     graph_index = next(
         index
         for index, child in enumerate(app.children)
-        if type(child).__name__ == "Plot"
+        if type(child).__name__ == "HTML"
         and getattr(child, "elem_id", None) == "relationship-graph"
     )
 

@@ -31,7 +31,7 @@ def test_subtask1_graph_is_stacked_above_timeline_with_scrollable_timeline() -> 
     plot_index = next(
         index
         for index, child in enumerate(components)
-        if type(child).__name__ == "Plot" and getattr(child, "elem_id", None) == "relationship-graph"
+        if type(child).__name__ == "HTML" and getattr(child, "elem_id", None) == "relationship-graph"
     )
     timeline_index = next(
         index

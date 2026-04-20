@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import csv
 import hashlib
 import json
@@ -13,10 +14,12 @@ import zipfile
 from collections import Counter
 from collections.abc import Generator
 from datetime import UTC, datetime
+from functools import lru_cache
 from html import escape
 from importlib import metadata as importlib_metadata
 from pathlib import Path
 from typing import Any, TypeAlias, cast
+from urllib.parse import quote
 
 import gradio as gr
 import plotly.graph_objects as go
@@ -145,6 +148,16 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         transcribe_player_audio,
         tts_engine_choices,
     )
+
+
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+FORCE_GRAPH_HTML_PATH = STATIC_DIR / "force_graph.html"
+FORCE_GRAPH_VENDOR_PATH = STATIC_DIR / "vendor" / "3d-force-graph.min.js"
+FORCE_GRAPH_CDN_URL = (
+    "https://cdn.jsdelivr.net/npm/3d-force-graph@1.79.0/dist/3d-force-graph.min.js"
+)
+if STATIC_DIR.exists():
+    gr.set_static_paths(paths=[STATIC_DIR])
 
 
 KOREAN_CHOICE = "한국어"
@@ -1719,9 +1732,22 @@ footer {{display: none !important;}}
     border-radius: 8px !important;
     padding: 8px 12px !important;
 }}
+#relationship-graph,
 #relationship-graph .js-plotly-plot,
-#relationship-graph .plot-container {{
+#relationship-graph .plot-container,
+#relationship-graph .knoema-force-graph-shell,
+#relationship-graph .knoema-force-graph-frame {{
     min-height: {GRAPH_HEIGHT_PX}px;
+}}
+#relationship-graph .knoema-force-graph-shell {{
+    width: 100%;
+}}
+#relationship-graph .knoema-force-graph-frame {{
+    width: 100%;
+    height: {GRAPH_HEIGHT_PX}px;
+    border: 0;
+    display: block;
+    background: transparent;
 }}
 #timeline-panel {{
     max-height: {TIMELINE_MAX_HEIGHT_PX}px;
@@ -1893,7 +1919,7 @@ def _provider_label(provider: str, language: str) -> str:
 RunOutputs = tuple[
     str,
     str,
-    go.Figure,
+    str,
     str,
     str,
     str,
@@ -2685,6 +2711,7 @@ def _render_result_outputs(
     api_key: str,
     language: str,
     reviewer_mode: bool = False,
+    theme_mode: str | None = None,
 ) -> RunOutputs:
     host_provider = host_key_active(provider, api_key)
     batch_result = getattr(result, "batch_result", None)
@@ -2769,10 +2796,11 @@ def _render_result_outputs(
             agent_colors,
             language=language,
         ),
-        _relationship_figure(
+        _relationship_graph_html(
             rendered_relationship_rows,
             language=language,
             agent_colors=agent_colors,
+            theme_mode=theme_mode,
         ),
         rendered_monologue,
         rendered_plan,
@@ -2837,6 +2865,7 @@ def _run(
     primary_age: int,
     *trait_and_runtime: Any,
     reviewer_mode: bool = False,
+    theme_mode: str | None = None,
 ) -> RunOutputs:
     request = _resolve_run_request(
         scenario_name,
@@ -2901,6 +2930,7 @@ def _run(
         api_key=str(request["api_key"]),
         language=str(request["language"]),
         reviewer_mode=reviewer_mode,
+        theme_mode=theme_mode,
     )
 
 
@@ -2915,6 +2945,7 @@ def _run_with_player_mode(
     primary_age: int,
     *trait_and_runtime: Any,
     reviewer_mode: bool = False,
+    theme_mode: str | None = None,
 ) -> RunWithPlayerModeOutputs:
     request = _resolve_run_request(
         scenario_name,
@@ -2952,6 +2983,7 @@ def _run_with_player_mode(
                 api_key="",
                 language=str(request["language"]),
                 reviewer_mode=reviewer_mode,
+                theme_mode=theme_mode,
             ),
             gr.update(value=None),
             session,
@@ -2993,6 +3025,7 @@ def _run_with_player_mode(
             api_key=str(request["api_key"]),
             language=str(request["language"]),
             reviewer_mode=reviewer_mode,
+            theme_mode=theme_mode,
         ),
         gr.update(value=None),
         None,
@@ -3010,6 +3043,200 @@ def _coerce_plotly_figure(figure: Any) -> go.Figure:
     if isinstance(figure, dict):
         return go.Figure(figure)
     return go.Figure()
+
+
+def _resolved_language_key(language: str) -> str:
+    if language in {"ko", "en"}:
+        return language
+    return _language_key(language)
+
+
+def _gradio_file_url(path: Path) -> str:
+    return f"/gradio_api/file={quote(path.resolve().as_posix(), safe='/')}"
+
+
+def _resolved_force_graph_theme(theme_mode: str | None) -> str:
+    return "dark" if _normalize_theme_mode(theme_mode) == "dark" else "light"
+
+
+def _force_graph_payload_token(payload: dict[str, Any]) -> str:
+    serialized = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    return base64.urlsafe_b64encode(serialized).decode("ascii").rstrip("=")
+
+
+def _decode_force_graph_payload(token: str) -> dict[str, Any]:
+    padding = "=" * (-len(token) % 4)
+    decoded = base64.urlsafe_b64decode((token + padding).encode("ascii"))
+    return cast("dict[str, Any]", json.loads(decoded.decode("utf-8")))
+
+
+def _html_attr_value(markup: str, attribute: str) -> str | None:
+    prefix = f'{attribute}="'
+    if prefix not in markup:
+        return None
+    _, remainder = markup.split(prefix, 1)
+    value, _sep, _tail = remainder.partition('"')
+    return value or None
+
+
+@lru_cache(maxsize=1)
+def _force_graph_template() -> str:
+    if FORCE_GRAPH_HTML_PATH.exists():
+        return FORCE_GRAPH_HTML_PATH.read_text(encoding="utf-8")
+    return """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Relationship graph</title>
+</head>
+<body>
+<!-- KNOEMA_FORCE_GRAPH_BOOTSTRAP -->
+<p>Force graph asset missing.</p>
+</body>
+</html>
+"""
+
+
+def _relationship_graph_payload(
+    rows: list[dict[str, Any]],
+    *,
+    language: str = "en",
+    agent_colors: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    if not rows:
+        return {"language": _resolved_language_key(language), "nodes": [], "links": []}
+
+    agents = sorted({str(row["source"]) for row in rows} | {str(row["target"]) for row in rows})
+    color_map = agent_colors or _agent_color_map(agents)
+    graph = _relationship_layout_graph(agents, rows)
+    node_degrees = dict(graph.degree())
+    edge_weights = [_relationship_metric(row, "weight") for row in rows]
+    edge_trusts = [_relationship_metric(row, "trust") for row in rows]
+
+    nodes = [
+        {
+            "id": agent,
+            "label": agent,
+            "color": color_map.get(agent, "#0f172a"),
+            "degree": int(node_degrees.get(agent, 0)),
+            "size": min(30, 12 + int(node_degrees.get(agent, 0)) * 4),
+            "showLabel": True,
+        }
+        for agent in agents
+    ]
+    links: list[dict[str, Any]] = []
+    for index, row in enumerate(rows):
+        source = str(row["source"])
+        target = str(row["target"])
+        normalized_weight = _normalized_metric(edge_weights[index], edge_weights)
+        normalized_trust = _normalized_metric(edge_trusts[index], edge_trusts)
+        links.append(
+            {
+                "source": source,
+                "target": target,
+                "weight": _relationship_metric(row, "weight"),
+                "trust": _relationship_metric(row, "trust"),
+                "width": round(1.0 + 5.0 * normalized_weight, 3),
+                "distance": round(78.0 + 28.0 * (1.0 - normalized_weight), 3),
+                "color": f"rgba(100,116,139,{0.18 + 0.62 * normalized_trust:.3f})",
+                "label": (
+                    f"{source} -> {target} ({row.get('relationship_type', 'unknown')})"
+                    f"\ntrust={_relationship_metric(row, 'trust'):.2f}"
+                    f"\nweight={_relationship_metric(row, 'weight'):.2f}"
+                ),
+            }
+        )
+    return {"language": _resolved_language_key(language), "nodes": nodes, "links": links}
+
+
+def _force_graph_srcdoc(payload: dict[str, Any], *, theme_mode: str | None = None) -> str:
+    bootstrap = {
+        "theme": _resolved_force_graph_theme(theme_mode),
+        "graphData": payload,
+        "vendorUrl": _gradio_file_url(FORCE_GRAPH_VENDOR_PATH) if FORCE_GRAPH_VENDOR_PATH.exists() else "",
+        "cdnUrl": FORCE_GRAPH_CDN_URL,
+    }
+    script = (
+        "<script>window.KNOEMA_FORCE_GRAPH_BOOT = "
+        + json.dumps(bootstrap, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+        + ";</script>"
+    )
+    return _force_graph_template().replace("<!-- KNOEMA_FORCE_GRAPH_BOOTSTRAP -->", script, 1)
+
+
+def _force_graph_iframe_html(
+    payload: dict[str, Any],
+    *,
+    language: str = "en",
+    theme_mode: str | None = None,
+) -> str:
+    language_key = _resolved_language_key(language)
+    title = LABELS[language_key]["graph"]
+    payload_token = _force_graph_payload_token(payload)
+    srcdoc = _force_graph_srcdoc(payload, theme_mode=theme_mode)
+    return (
+        '<div class="knoema-force-graph-shell"'
+        ' data-knoema-force-graph="1"'
+        f' data-knoema-language="{escape(language_key, quote=True)}"'
+        f' data-knoema-payload="{escape(payload_token, quote=True)}">'
+        f'<iframe class="knoema-force-graph-frame" title="{escape(title, quote=True)}"'
+        ' loading="lazy" referrerpolicy="no-referrer"'
+        f' srcdoc="{escape(srcdoc, quote=True)}"></iframe>'
+        "</div>"
+    )
+
+
+def _relationship_graph_placeholder_html(language: str = "en") -> str:
+    language_key = _resolved_language_key(language)
+    title = "관계 그래프" if language_key == "ko" else "Relationship graph"
+    empty_msg = (
+        "관계 연결이 아직 없습니다. 틱을 더 실행하거나 대화형 시나리오를 사용해 보세요."
+        if language_key == "ko"
+        else "No relationship edges yet. Run more ticks or use a conversational scenario."
+    )
+    return (
+        '<div class="knoema-force-graph-shell" data-knoema-force-graph="0">'
+        '<div style="min-height: 620px; display: flex; align-items: center; justify-content: center;'
+        ' border: 1px solid rgba(100, 116, 139, 0.25); border-radius: 8px;'
+        ' background: rgba(248,250,252,1); color: #0f172a; padding: 24px; text-align: center;">'
+        f'<div><strong>{escape(title)}</strong><div style="margin-top: 12px;">{escape(empty_msg)}</div></div>'
+        "</div></div>"
+    )
+
+
+def _relationship_graph_html(
+    rows: list[dict[str, Any]],
+    *,
+    language: str = "en",
+    agent_colors: dict[str, str] | None = None,
+    theme_mode: str | None = None,
+) -> str:
+    if not rows:
+        return _relationship_graph_placeholder_html(language)
+    payload = _relationship_graph_payload(
+        rows,
+        language=language,
+        agent_colors=agent_colors,
+    )
+    return _force_graph_iframe_html(
+        payload,
+        language=language,
+        theme_mode=theme_mode,
+    )
+
+
+def _relationship_graph_theme_update(graph_html: str, theme_mode: str) -> str:
+    if 'data-knoema-force-graph="1"' not in graph_html:
+        return graph_html
+    payload_token = _html_attr_value(graph_html, "data-knoema-payload")
+    language_key = _html_attr_value(graph_html, "data-knoema-language") or "en"
+    if not payload_token:
+        return graph_html
+    try:
+        payload = _decode_force_graph_payload(payload_token)
+    except (ValueError, json.JSONDecodeError):
+        return graph_html
+    return _force_graph_iframe_html(payload, language=language_key, theme_mode=theme_mode)
 
 
 def _report_section(title: str, body: str) -> str:
@@ -3683,12 +3910,15 @@ def _export_html_report(
 ) -> str:
     language_key = _language_key(language)
     labels = LABELS[language_key]
-    figure = _coerce_plotly_figure(graph_figure)
-    graph_html = figure.to_html(
-        full_html=False,
-        include_plotlyjs=True,
-        config={"displayModeBar": False, "responsive": True},
-    )
+    if isinstance(graph_figure, str) and graph_figure.strip().startswith("<"):
+        graph_html = graph_figure
+    else:
+        figure = _coerce_plotly_figure(graph_figure)
+        graph_html = figure.to_html(
+            full_html=False,
+            include_plotlyjs=True,
+            config={"displayModeBar": False, "responsive": True},
+        )
     generated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
     document = f"""<!DOCTYPE html>
 <html lang="{language_key}">
@@ -4779,6 +5009,7 @@ def _run_with_optional_streaming(
     primary_age: int,
     *trait_and_runtime: Any,
     reviewer_mode: bool = False,
+    theme_mode: str | None = None,
 ) -> Generator[RunWithPlayerModeOutputs, None, None]:
     request = _resolve_run_request(
         scenario_name,
@@ -4797,30 +5028,59 @@ def _run_with_optional_streaming(
         or str(request["provider"]) != "Replay only"
     ):
         if reviewer_mode:
-            yield _run_with_player_mode(
-                scenario_name,
-                environment_preset_id,
-                cultural_prior_id,
-                provider,
-                api_key,
-                model,
-                primary_name,
-                primary_age,
-                *trait_and_runtime,
-                reviewer_mode=True,
-            )
+            if theme_mode is None:
+                yield _run_with_player_mode(
+                    scenario_name,
+                    environment_preset_id,
+                    cultural_prior_id,
+                    provider,
+                    api_key,
+                    model,
+                    primary_name,
+                    primary_age,
+                    *trait_and_runtime,
+                    reviewer_mode=True,
+                )
+            else:
+                yield _run_with_player_mode(
+                    scenario_name,
+                    environment_preset_id,
+                    cultural_prior_id,
+                    provider,
+                    api_key,
+                    model,
+                    primary_name,
+                    primary_age,
+                    *trait_and_runtime,
+                    reviewer_mode=True,
+                    theme_mode=theme_mode,
+                )
         else:
-            yield _run_with_player_mode(
-                scenario_name,
-                environment_preset_id,
-                cultural_prior_id,
-                provider,
-                api_key,
-                model,
-                primary_name,
-                primary_age,
-                *trait_and_runtime,
-            )
+            if theme_mode is None:
+                yield _run_with_player_mode(
+                    scenario_name,
+                    environment_preset_id,
+                    cultural_prior_id,
+                    provider,
+                    api_key,
+                    model,
+                    primary_name,
+                    primary_age,
+                    *trait_and_runtime,
+                )
+            else:
+                yield _run_with_player_mode(
+                    scenario_name,
+                    environment_preset_id,
+                    cultural_prior_id,
+                    provider,
+                    api_key,
+                    model,
+                    primary_name,
+                    primary_age,
+                    *trait_and_runtime,
+                    theme_mode=theme_mode,
+                )
         return
 
     from fastapi.testclient import TestClient
@@ -4894,6 +5154,7 @@ def _run_with_optional_streaming(
                         api_key="",
                         language=str(request["language"]),
                         reviewer_mode=reviewer_mode,
+                        theme_mode=theme_mode,
                     ),
                     gr.update(value=None),
                     None,
@@ -4919,6 +5180,7 @@ def _run_with_optional_streaming_ui(
     primary_name: str,
     primary_age: int,
     *trait_and_runtime: Any,
+    theme_mode: str | None = None,
 ) -> Generator[RunWithPlayerModeOutputs, None, None]:
     request = _resolve_run_request(
         scenario_name,
@@ -4957,6 +5219,41 @@ def _run_with_optional_streaming_ui(
         primary_age,
         *trait_and_runtime,
         reviewer_mode=reviewer_mode,
+        theme_mode=theme_mode,
+    )
+
+
+def _run_with_optional_streaming_ui_theme(
+    live_streaming: bool,
+    reviewer_mode: bool,
+    theme_mode: str,
+    advanced_research_mode: bool,
+    advanced_research_ack: bool,
+    scenario_name: str,
+    environment_preset_id: str | None,
+    cultural_prior_id: str | None,
+    provider: str,
+    api_key: str,
+    model: str,
+    primary_name: str,
+    primary_age: int,
+    *trait_and_runtime: Any,
+) -> Generator[RunWithPlayerModeOutputs, None, None]:
+    yield from _run_with_optional_streaming_ui(
+        live_streaming,
+        reviewer_mode,
+        advanced_research_mode,
+        advanced_research_ack,
+        scenario_name,
+        environment_preset_id,
+        cultural_prior_id,
+        provider,
+        api_key,
+        model,
+        primary_name,
+        primary_age,
+        *trait_and_runtime,
+        theme_mode=theme_mode,
     )
 
 
@@ -4998,6 +5295,7 @@ def _advance_player_mode(
     stt_engine: str,
     tts_engine: str,
     reviewer_mode: bool = False,
+    theme_mode: str | None = None,
 ) -> PlayerAdvanceOutputs:
     language = str((session or {}).get("language", "en"))
     voice_notes: list[str] = []
@@ -5050,11 +5348,32 @@ def _advance_player_mode(
             api_key="",
             language=language,
             reviewer_mode=reviewer_mode,
+            theme_mode=theme_mode,
         ),
         gr.update(value=response_audio),
         updated_session,
         _status_with_voice_notes(status, voice_notes),
         gr.update(value=""),
+    )
+
+
+def _advance_player_mode_theme(
+    session: dict[str, Any] | None,
+    player_text: str,
+    player_audio_path: str | None,
+    stt_engine: str,
+    tts_engine: str,
+    theme_mode: str,
+    reviewer_mode: bool = False,
+) -> PlayerAdvanceOutputs:
+    return _advance_player_mode(
+        session,
+        player_text,
+        player_audio_path,
+        stt_engine,
+        tts_engine,
+        reviewer_mode=reviewer_mode,
+        theme_mode=theme_mode,
     )
 
 
@@ -7105,6 +7424,7 @@ def build_app() -> gr.Blocks:
         language="ko",
     )
     initial_action_chart_figure = _action_chart_figure({}, language="ko")
+    initial_relationship_graph_html = _relationship_graph_html([], language="ko")
     initial_trait_matrix_figure, initial_trait_matrix_summary = _trait_correlation_outputs("ko")
     prereg_defaults = _prereg_defaults("ko")
     power_defaults = _power_defaults()
@@ -7388,7 +7708,14 @@ def build_app() -> gr.Blocks:
             value=initial_action_chart_figure,
             elem_id="action-breakdown-chart",
         )
-        graph = gr.Plot(label=labels["graph"], elem_id="relationship-graph")
+        graph = gr.HTML(
+            initial_relationship_graph_html,
+            label=labels["graph"],
+            show_label=True,
+            container=True,
+            padding=False,
+            elem_id="relationship-graph",
+        )
         tick_scrubber = gr.Slider(
             label=labels["tick_scrubber"],
             minimum=-1,
@@ -8126,6 +8453,10 @@ def build_app() -> gr.Blocks:
             js="(theme, language) => window.KNOEMA_THEME?.setFromLabel(theme, language) ?? theme",
             queue=False,
             show_progress="hidden",
+        ).then(
+            _relationship_graph_theme_update,
+            inputs=[graph, theme_mode],
+            outputs=[graph],
         )
 
         language.change(
@@ -8460,10 +8791,11 @@ def build_app() -> gr.Blocks:
             initial_relationships,
         ]
         run_event = run_button.click(
-            _run_with_optional_streaming_ui,
+            _run_with_optional_streaming_ui_theme,
             inputs=[
                 live_streaming,
                 reviewer_mode,
+                theme_mode,
                 advanced_research_mode,
                 advanced_research_ack,
                 *common_run_inputs,
@@ -8504,13 +8836,14 @@ def build_app() -> gr.Blocks:
             outputs=[compare_output],
         )
         player_event = player_submit.click(
-            _advance_player_mode,
+            _advance_player_mode_theme,
             inputs=[
                 player_session_state,
                 player_input,
                 player_voice_input,
                 player_stt_engine,
                 player_tts_engine,
+                theme_mode,
                 reviewer_mode,
             ],
             outputs=[
@@ -8544,13 +8877,14 @@ def build_app() -> gr.Blocks:
             outputs=[statistics_summary],
         )
         player_submit_event = player_input.submit(
-            _advance_player_mode,
+            _advance_player_mode_theme,
             inputs=[
                 player_session_state,
                 player_input,
                 player_voice_input,
                 player_stt_engine,
                 player_tts_engine,
+                theme_mode,
                 reviewer_mode,
             ],
             outputs=[

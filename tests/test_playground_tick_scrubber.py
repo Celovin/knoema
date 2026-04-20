@@ -37,7 +37,7 @@ def test_subtask9_build_app_exposes_tick_scrubber_and_focus_below_graph() -> Non
     graph_index = next(
         index
         for index, child in enumerate(app.children)
-        if type(child).__name__ == "Plot"
+        if type(child).__name__ == "HTML"
         and getattr(child, "elem_id", None) == "relationship-graph"
     )
     scrubber_index = next(

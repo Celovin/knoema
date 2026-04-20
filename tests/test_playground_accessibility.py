@@ -33,7 +33,7 @@ def test_subtask53_build_app_exposes_accessibility_ids() -> None:
     graph = next(
         component
         for component in components
-        if type(component).__name__ == "Plot"
+        if type(component).__name__ == "HTML"
         and getattr(component, "elem_id", None) == "relationship-graph"
     )
 
