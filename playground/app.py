@@ -6908,7 +6908,7 @@ def build_app() -> gr.Blocks:
         with gr.Row():
             scenario = gr.Dropdown(
                 label=labels["scenario"],
-                choices=_scenario_choices_with_gate(False),
+                choices=_scenario_choices_with_gate(False, "ko"),
                 value=default_scenario,
                 elem_id="scenario-dropdown",
             )
