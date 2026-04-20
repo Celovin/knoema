@@ -39,6 +39,8 @@ def test_phase34_godot_tavern_demo_assets_exist_and_reference_knoema_client() ->
     assert "context_json" in client
     assert "WASD" in web_build
     assert "Bjorn" in web_build
+    assert "DOM 시뮬레이션" in web_build
+    assert "not a real engine export" in web_build
 
 
 def test_phase34_unity_tavern_demo_assets_exist_and_extend_npc_agent_loop() -> None:
@@ -74,10 +76,14 @@ def test_phase34_unity_tavern_demo_assets_exist_and_extend_npc_agent_loop() -> N
     assert "Input.GetAxisRaw" in player
     assert "WASD" in web_build
     assert "Bjorn" in web_build
+    assert "DOM 시뮬레이션" in web_build
+    assert "not a real engine export" in web_build
 
 
 def test_phase34_docs_and_website_embed_both_browser_demos() -> None:
     docs = Path("docs/adapters/game_demos.md").read_text(encoding="utf-8")
+    godot_readme = Path("adapters/godot/README.md").read_text(encoding="utf-8")
+    unity_readme = Path("adapters/unity/README.md").read_text(encoding="utf-8")
     docs_page = Path("website/app/docs/page.tsx").read_text(encoding="utf-8")
     showcase = Path("website/app/showcase/page.tsx").read_text(encoding="utf-8")
     demos_page = Path("website/app/game-demos/page.tsx").read_text(encoding="utf-8")
@@ -87,8 +93,15 @@ def test_phase34_docs_and_website_embed_both_browser_demos() -> None:
     ]
 
     assert "uvicorn knoema.api.server:app" in docs
+    assert "not real Godot or Unity engine exports" in docs
+    assert "godot4 --path adapters/godot" in docs
+    assert "TavernDemoBuild.BuildWebGL" in docs
     assert "screenshots/godot-tavern-demo.png" in docs
     assert "screenshots/unity-tavern-demo.png" in docs
+    assert "not a real Godot web export" in godot_readme
+    assert "--export-release Web build/godot-tavern/index.html" in godot_readme
+    assert "not a real Unity WebGL export" in unity_readme
+    assert "TavernDemoBuild.BuildWebGL" in unity_readme
     assert all(path.exists() for path in screenshots)
     assert "docs/adapters/game_demos.md" in docs_page
     assert "/game-demos" in showcase

@@ -162,6 +162,12 @@ if STATIC_DIR.exists():
 
 KOREAN_CHOICE = "한국어"
 LANGUAGE_CHOICES = [KOREAN_CHOICE, "English"]
+PLAYGROUND_DEFAULT_SCENARIO = "Office team conflict"
+PLAYGROUND_QUICK_START_SCENARIOS = (
+    "Dorm: two agents",
+    "Village: ten agents",
+    PLAYGROUND_DEFAULT_SCENARIO,
+)
 TUTORIAL_STORAGE_KEY = "knoema_tutorial_completed"
 THEME_STORAGE_KEY = "knoema_theme_mode"
 TUTORIAL_STEPS = {
@@ -5818,6 +5824,13 @@ def _scenario_choices_with_gate(unlocked: bool, language: str = "en") -> list[tu
     ]
 
 
+def _default_scenario_name() -> str:
+    choices = scenario_choices()
+    if PLAYGROUND_DEFAULT_SCENARIO in choices:
+        return PLAYGROUND_DEFAULT_SCENARIO
+    return choices[0]
+
+
 def _advanced_research_status_text(
     language_choice: str,
     enabled: bool,
@@ -5858,7 +5871,12 @@ def _advanced_research_ui_updates(
     language_key = language_choice if language_choice in {"ko", "en"} else _language_key(language_choice)
     choices = _scenario_choices_with_gate(unlocked, language_key)
     canonical_choices = [pair[1] for pair in choices]
-    fallback_scenario = canonical_choices[0] if canonical_choices else scenario_choices()[0]
+    default_scenario = _default_scenario_name()
+    fallback_scenario = (
+        default_scenario
+        if default_scenario in canonical_choices
+        else (canonical_choices[0] if canonical_choices else default_scenario)
+    )
     scenario_value = current_scenario if current_scenario in canonical_choices else fallback_scenario
     panel_update = gr.update(visible=unlocked, open=False)
     notice_value = (
@@ -6008,9 +6026,12 @@ def _language_updates(
     canonical_scenarios = [pair[1] for pair in allowed_scenarios]
     provider_value = _normalize_provider(current_provider or "Replay only")
     theme_value = _normalize_theme_mode(current_theme_mode)
-    scenario_value = current_scenario or scenario_choices()[0]
+    default_scenario = _default_scenario_name()
+    scenario_value = current_scenario or default_scenario
     if scenario_value not in canonical_scenarios:
-        scenario_value = canonical_scenarios[0]
+        scenario_value = (
+            default_scenario if default_scenario in canonical_scenarios else canonical_scenarios[0]
+        )
     environment_value = current_environment or _default_environment_id()
     agent_count_value = int(current_agent_count or scenario_default_agent_count(scenario_value))
     planning_depth_value = int(current_planning_depth or 3)
@@ -7601,7 +7622,7 @@ def _node_hover_text(
 
 def build_app() -> gr.Blocks:
     labels = LABELS["ko"]
-    default_scenario = scenario_choices()[0]
+    default_scenario = _default_scenario_name()
     initial_agent_defaults = agent_editor_defaults(
         default_scenario,
         agent_count=scenario_default_agent_count(default_scenario),

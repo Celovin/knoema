@@ -12,6 +12,8 @@ Both samples keep the same loop:
 - type a line
 - receive a replay-only fallback response when no API server is attached
 
+The two `web_build/index.html` mirrors are DOM simulations for adapter review. They are not real Godot or Unity engine exports.
+
 ## Run the API server
 
 ```bash
@@ -31,6 +33,18 @@ The demos still work without the server because the adapters keep deterministic 
 
 The sample script uses `res://scripts/knoema_client.gd`, injects tavern context JSON, and mirrors the same loop in `adapters/godot/samples/tavern_demo/web_build/index.html`.
 
+Open the real Godot project with:
+
+```bash
+godot4 --path adapters/godot
+```
+
+After adding a `Web` export preset in the editor, build a real export with:
+
+```bash
+godot4 --headless --path adapters/godot --export-release Web build/godot-tavern/index.html
+```
+
 ![Godot tavern demo screenshot](screenshots/godot-tavern-demo.png)
 
 ## Unity tavern demo
@@ -43,6 +57,18 @@ The sample script uses `res://scripts/knoema_client.gd`, injects tavern context 
 6. Walk within 64px of Bjorn and send a line through the dialog box.
 
 The sample uses `NPCAgent`, `TavernDemo.cs`, and `TavernPlayerController.cs`. The browser mirror lives at `adapters/unity/Samples~/TavernDemo/web_build/index.html`.
+
+Open the host Unity project with:
+
+```text
+"C:\Program Files\Unity\Hub\Editor\2022.3.xx\Editor\Unity.exe" -projectPath <your-project>
+```
+
+For a real WebGL build, add an Editor build method in the host project and invoke:
+
+```text
+"C:\Program Files\Unity\Hub\Editor\2022.3.xx\Editor\Unity.exe" -batchmode -projectPath <your-project> -executeMethod TavernDemoBuild.BuildWebGL -quit -logFile Logs\unity-webgl-build.log
+```
 
 ![Unity tavern demo screenshot](screenshots/unity-tavern-demo.png)
 

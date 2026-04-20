@@ -1,3 +1,4 @@
+<!-- 이 파일은 Godot 엔진 어댑터 API 호출 패턴을 보여주는 DOM 시뮬레이션입니다. 실제 Godot Web export가 아닙니다. / This file demonstrates the Godot adapter API call pattern with a DOM simulation. It is not a real Godot Web export. -->
 <!doctype html>
 <html lang="en">
   <head>
@@ -8,6 +9,7 @@
       :root { color-scheme: dark; }
       body { margin: 0; font-family: Arial, sans-serif; background: #14100d; color: #f5efe7; }
       .shell { max-width: 980px; margin: 0 auto; padding: 24px; }
+      .demo-badge { display: inline-block; margin-bottom: 14px; padding: 8px 12px; border: 1px solid #8e6846; border-radius: 8px; background: rgba(12, 8, 6, 0.72); color: #f5efe7; font-size: 13px; font-weight: 700; }
       .board { position: relative; height: 420px; border: 1px solid #6d5238; border-radius: 8px; background: linear-gradient(180deg, #3a2516, #24150c); overflow: hidden; }
       .bar { position: absolute; top: 144px; right: 96px; width: 260px; height: 120px; border-radius: 8px; background: #7d5533; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1); }
       .token { position: absolute; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 12px; font-weight: 700; }
@@ -26,6 +28,7 @@
   </head>
   <body>
     <div class="shell">
+      <p class="demo-badge">Engine adapter pattern demo (not a real engine export)</p>
       <div class="board" id="board">
         <div class="bar"></div>
         <div class="token" id="player">You</div>

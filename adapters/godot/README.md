@@ -12,6 +12,22 @@ Minimal Godot 4.2+ adapter scaffold for testing a single NPC chat loop against K
 
 By default the demo uses a local deterministic fallback response, so it runs without a Python server. To call a Knoema HTTP server later, set `endpoint_url` in `scripts/knoema_client.gd`.
 
+## Real engine run and export
+
+`samples/tavern_demo/web_build/index.html` is a DOM simulation for the adapter call pattern. It is not a real Godot web export.
+
+Open the actual Godot project from the command line with:
+
+```bash
+godot4 --path adapters/godot
+```
+
+After adding a `Web` export preset in the Godot editor, build a real export with:
+
+```bash
+godot4 --headless --path adapters/godot --export-release Web build/godot-tavern/index.html
+```
+
 ## Files
 
 - `project.godot`: demo project configuration.

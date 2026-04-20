@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import json
 from pathlib import Path
 
@@ -76,3 +77,24 @@ def test_phase15_playground_clamps_tick_count() -> None:
 
     assert result.tick_count == 24
     assert result.log_count == 72
+
+
+def test_phase15_playground_readme_curates_quick_start_demos() -> None:
+    readme = Path("README.md").read_text(encoding="utf-8")
+
+    assert "Quick start demos" in readme
+    assert "`Office team conflict`" in readme
+    assert "`Dorm: two agents`" in readme
+    assert "`Village: ten agents`" in readme
+
+
+def test_phase15_playground_prefers_high_signal_default_scenario() -> None:
+    playground_app = importlib.import_module("playground.app")
+
+    assert playground_app.PLAYGROUND_DEFAULT_SCENARIO == "Office team conflict"
+    assert playground_app.PLAYGROUND_QUICK_START_SCENARIOS == (
+        "Dorm: two agents",
+        "Village: ten agents",
+        "Office team conflict",
+    )
+    assert playground_app._default_scenario_name() == "Office team conflict"

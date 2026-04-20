@@ -151,6 +151,12 @@ Try the browser demo at [Knoema Playground](https://huggingface.co/spaces/celovi
 
 The Playground includes three prebuilt scenarios, a deterministic replay-only mode that needs no API key, optional OpenAI or Anthropic runs with a user-supplied per-session API key, a timeline view, an interactive relationship graph, and JSONL log download.
 
+Quick start demos:
+
+- `Office team conflict`: the default first-run demo with visible tension, negotiation, and relationship updates after one click.
+- `Dorm: two agents`: the fastest compact demo for a two-person interaction loop.
+- `Village: ten agents`: the best stress case for dense relationship graph movement.
+
 Local run:
 
 ```bash
@@ -349,6 +355,18 @@ SDK references:
 
 See [adapters/godot/README.md](adapters/godot/README.md) for the Godot 4 scaffold, HTTP/local fallback client, and demo scene structure.
 
+Open the actual Godot project with:
+
+```bash
+godot4 --path adapters/godot
+```
+
+After adding a `Web` export preset in the Godot editor, create a real web export with:
+
+```bash
+godot4 --headless --path adapters/godot --export-release Web build/godot-tavern/index.html
+```
+
 ## Unity Integration
 
 Install the Unity adapter with Package Manager:
@@ -358,6 +376,18 @@ https://github.com/Celovin/knoema.git?path=adapters/unity
 ```
 
 See [adapters/unity/README.md](adapters/unity/README.md) for the Unity 2022.3 LTS package scaffold, HTTP/local fallback client, `NPCAgent` component, and Basic NPC sample.
+
+Open the host Unity project with:
+
+```text
+"C:\Program Files\Unity\Hub\Editor\2022.3.xx\Editor\Unity.exe" -projectPath <your-project>
+```
+
+For a real WebGL build, add a small Editor build method in the host project and call it with:
+
+```text
+"C:\Program Files\Unity\Hub\Editor\2022.3.xx\Editor\Unity.exe" -batchmode -projectPath <your-project> -executeMethod TavernDemoBuild.BuildWebGL -quit -logFile Logs\unity-webgl-build.log
+```
 
 ## Unreal Integration
 

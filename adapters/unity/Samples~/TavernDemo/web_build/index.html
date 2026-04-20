@@ -1,3 +1,4 @@
+<!-- 이 파일은 Unity 엔진 어댑터 API 호출 패턴을 보여주는 DOM 시뮬레이션입니다. 실제 Unity WebGL export가 아닙니다. / This file demonstrates the Unity adapter API call pattern with a DOM simulation. It is not a real Unity WebGL export. -->
 <!doctype html>
 <html lang="en">
   <head>
@@ -7,6 +8,7 @@
     <style>
       body { margin: 0; font-family: Arial, sans-serif; background: #11161c; color: #edf3f8; }
       .shell { max-width: 980px; margin: 0 auto; padding: 24px; }
+      .demo-badge { display: inline-block; margin-bottom: 14px; padding: 8px 12px; border: 1px solid #55708f; border-radius: 8px; background: rgba(15, 23, 33, 0.88); color: #edf3f8; font-size: 13px; font-weight: 700; }
       .board { position: relative; height: 420px; border: 1px solid #38506d; border-radius: 8px; background: linear-gradient(180deg, #182330, #0f1721); overflow: hidden; }
       .floor { position: absolute; inset: 24px; border-radius: 8px; background: linear-gradient(180deg, #334357, #223142); }
       .bar { position: absolute; top: 128px; right: 84px; width: 280px; height: 132px; border-radius: 8px; background: #5f6f82; }
@@ -26,6 +28,7 @@
   </head>
   <body>
     <div class="shell">
+      <p class="demo-badge">Engine adapter pattern demo (not a real engine export)</p>
       <div class="board">
         <div class="floor"></div>
         <div class="bar"></div>
