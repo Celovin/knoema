@@ -23,6 +23,10 @@ The `Compatibility` workflow is manual and weekly. It runs a smoke matrix across
 
 The matrix installs the package and runs import plus focused type/config smoke tests without coverage instrumentation.
 
+## Hugging Face Space Auto Deploy
+
+The `Deploy HF Space` workflow runs on pushes to `main` when files under `playground/` change. It installs `huggingface_hub`, uploads the curated Playground app bundle from `playground/` into `celovin/knoema-playground`, and writes the Hugging Face commit message as `Auto-deploy from {github.sha}`. Configure the repository Actions secret `HF_TOKEN` before relying on this automation, and verify the resulting Space build in the Hugging Face UI after each production push.
+
 ## Release Please
 
 The `Release Please` workflow opens version bump and changelog pull requests from conventional commits on `main`.
