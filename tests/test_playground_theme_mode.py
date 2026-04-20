@@ -29,9 +29,15 @@ def test_subtask52_build_app_exposes_theme_mode_toggle() -> None:
     )
 
     assert theme_mode.label == playground_app.LABELS["ko"]["theme"]
-    assert [choice[1] if isinstance(choice, tuple) else choice for choice in theme_mode.choices] == (
-        playground_app._theme_choices("ko")
-    )
+    expected_values = [
+        choice[1] if isinstance(choice, tuple) else choice
+        for choice in playground_app._theme_choices("ko")
+    ]
+    actual_values = [
+        choice[1] if isinstance(choice, tuple) else choice
+        for choice in theme_mode.choices
+    ]
+    assert actual_values == expected_values
 
 
 def test_subtask52_theme_head_and_css_define_persistent_theme_system() -> None:

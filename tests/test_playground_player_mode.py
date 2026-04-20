@@ -43,8 +43,10 @@ def test_subtask33_build_app_exposes_player_mode_controls() -> None:
         and getattr(component, "elem_id", None) == "player-input"
     )
 
-    provider_labels = [choice[1] if isinstance(choice, tuple) else choice for choice in provider.choices]
-    assert playground_app.LABELS["ko"]["player_mode"] in provider_labels
+    provider_values = [choice[1] if isinstance(choice, tuple) else choice for choice in provider.choices]
+    provider_display_labels = [choice[0] if isinstance(choice, tuple) else choice for choice in provider.choices]
+    assert "Player mode" in provider_values
+    assert playground_app.LABELS["ko"]["player_mode"] in provider_display_labels
     assert player_panel.visible is False
     assert player_input.label == playground_app.LABELS["ko"]["player_input"]
 
