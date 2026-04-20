@@ -42,7 +42,11 @@ from knoema.types import (
     Personality,
     WorldEvent,
 )
-from playground.quest_generation import generate_procedural_quest
+
+try:
+    from playground.quest_generation import generate_procedural_quest
+except ImportError:  # pragma: no cover - Hugging Face runs simulation.py flat.
+    from quest_generation import generate_procedural_quest
 
 Provider = Literal["Replay only", "OpenAI", "Anthropic"]
 AGENT_COUNT_MIN = 1
