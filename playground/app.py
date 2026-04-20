@@ -819,13 +819,13 @@ LABELS["en"]["deposit_button"] = "Create deposit packet"
 LABELS["en"]["deposit_download"] = "Download deposit bundle"
 LABELS["en"]["deposit_status"] = "No deposit packet yet."
 LABELS["en"]["reviewer_mode"] = "Reviewer mode"
-LABELS["ko"]["advanced_research_mode"] = "Advanced research mode"
-LABELS["ko"]["advanced_research_ack"] = "I acknowledge the IRB-style fictional-research notice."
+LABELS["ko"]["advanced_research_mode"] = "고급 연구 모드"
+LABELS["ko"]["advanced_research_ack"] = "IRB 형식의 가상 연구 고지에 동의합니다."
 LABELS["ko"]["advanced_research_notice"] = (
-    "This unlocks Dark Tetrad controls and sensitive fictional scenarios. "
-    "Use only with synthetic or fully consented data, record IRB/review notes, and avoid operational claims."
+    "Dark Tetrad 컨트롤과 민감한 가상 시나리오가 활성화됩니다. "
+    "합성 데이터 또는 완전 동의를 받은 데이터에서만 사용하고, IRB/심사 기록을 남기며, 운영 주장(operational claims)은 피하세요."
 )
-LABELS["ko"]["advanced_research_locked"] = "Advanced research mode keeps Dark Tetrad sliders and sensitive scenarios hidden."
+LABELS["ko"]["advanced_research_locked"] = "고급 연구 모드는 Dark Tetrad 슬라이더와 민감한 시나리오를 숨겨 둡니다."
 LABELS["en"]["advanced_research_mode"] = "Advanced research mode"
 LABELS["en"]["advanced_research_ack"] = "I acknowledge the IRB-style fictional-research notice."
 LABELS["en"]["advanced_research_notice"] = (
@@ -8319,4 +8319,10 @@ def build_app() -> gr.Blocks:
 
 
 if __name__ == "__main__":
-    build_app().launch(server_name="0.0.0.0", server_port=7860)
+    build_app().launch(
+        server_name="0.0.0.0",
+        server_port=7860,
+        share=False,
+        ssr_mode=False,
+        show_error=True,
+    )
