@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -42,9 +43,14 @@ def _run_command(command: list[str], *, cwd: Path | None = None) -> CommandResul
         env.pop("GIT_ASKPASS", None)
     if command[:3] == ["hf", "auth", "whoami"]:
         env["PYTHONUTF8"] = "1"
+    resolved_command = list(command)
+    if resolved_command:
+        resolved_executable = shutil.which(resolved_command[0])
+        if resolved_executable is not None:
+            resolved_command[0] = resolved_executable
     try:
         completed = subprocess.run(
-            command,
+            resolved_command,
             cwd=cwd,
             text=True,
             capture_output=True,
