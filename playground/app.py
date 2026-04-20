@@ -695,7 +695,7 @@ LABELS["en"]["csv_bundle_button"] = "Export CSV bundle"
 LABELS["en"]["csv_bundle_download"] = "Download CSV bundle"
 LABELS["en"]["latex_table_button"] = "Export LaTeX table"
 LABELS["en"]["latex_table_download"] = "Download LaTeX table"
-LABELS["ko"]["mirofish_panel"] = "MiroFish 스타일 실험실"
+LABELS["ko"]["mirofish_panel"] = "고급 페르소나 랩"
 LABELS["ko"]["seed_prompt"] = "시드 프롬프트"
 LABELS["ko"]["seed_prompt_placeholder"] = "예: 분주한 항구 술집, 세 명의 NPC, 경쟁과 협력"
 LABELS["ko"]["seed_prompt_apply"] = "시드로 3명 페르소나 생성"
@@ -728,7 +728,7 @@ LABELS["ko"]["interview_agent"] = "에이전트 ID"
 LABELS["ko"]["interview_question"] = "인터뷰 질문"
 LABELS["ko"]["interview_button"] = "인터뷰 생성"
 LABELS["ko"]["interview_empty"] = "런 이후 에이전트 ID와 질문을 넣으면 최근 기억과 행동을 바탕으로 답변합니다."
-LABELS["en"]["mirofish_panel"] = "MiroFish-style lab"
+LABELS["en"]["mirofish_panel"] = "Advanced persona lab"
 LABELS["en"]["seed_prompt"] = "Seed prompt"
 LABELS["en"]["seed_prompt_placeholder"] = "Example: a crowded harbor tavern with three NPCs balancing rivalry and cooperation"
 LABELS["en"]["seed_prompt_apply"] = "Generate three personas from seed"
@@ -751,17 +751,17 @@ LABELS["en"]["report_agent_run"] = "Answer from current run"
 LABELS["en"]["report_agent_empty"] = "Run a scenario first, then ask a question to get a JSONL-grounded summary."
 LABELS["en"]["competitive_panel"] = "Competitive comparison"
 LABELS["en"]["competitive_intro"] = "Compare research simulators, prediction sandboxes, and orchestration frameworks side by side."
-LABELS["ko"]["prereg_panel"] = "OSF ?ъ쟾?깅줉"
-LABELS["ko"]["prereg_title"] = "?곌뎄 ?쒕ぉ"
-LABELS["ko"]["prereg_hypotheses"] = "媛??/?곌뎄吏덈Ц"
-LABELS["ko"]["prereg_design"] = "?곌뎄 ?ㅺ퀎"
-LABELS["ko"]["prereg_outcomes"] = "二쇱슂 / 蹂댁“ 吏??"
-LABELS["ko"]["prereg_analysis"] = "遺꾩꽍 怨꾪쉷"
-LABELS["ko"]["prereg_freeze"] = "?ㅽ뻾 ???고씪誘명꽣 怨좎젙"
-LABELS["ko"]["prereg_deviations"] = "?앸컖 濡쒓렇"
-LABELS["ko"]["prereg_button"] = "?ъ쟾?깅줉 ?대낫?닿린"
-LABELS["ko"]["prereg_download"] = "?ъ쟾?깅줉 ?ㅼ슫濡쒕뱶"
-LABELS["ko"]["prereg_preview_empty"] = "?곌뎄 ?뚯쑝濡?OSF ?ъ쟾?깅줉 ?쒖븞??誘몃━蹂닿린?⑸땲??"
+LABELS["ko"]["prereg_panel"] = "OSF 사전등록"
+LABELS["ko"]["prereg_title"] = "연구 제목"
+LABELS["ko"]["prereg_hypotheses"] = "가설 / 연구 질문"
+LABELS["ko"]["prereg_design"] = "연구 설계"
+LABELS["ko"]["prereg_outcomes"] = "주요 / 보조 지표"
+LABELS["ko"]["prereg_analysis"] = "분석 계획"
+LABELS["ko"]["prereg_freeze"] = "실행 후 파라미터 고정"
+LABELS["ko"]["prereg_deviations"] = "일탈 로그"
+LABELS["ko"]["prereg_button"] = "사전등록 내보내기"
+LABELS["ko"]["prereg_download"] = "사전등록 다운로드"
+LABELS["ko"]["prereg_preview_empty"] = "연구 정보로 OSF 사전등록 초안을 미리 봅니다."
 LABELS["en"]["prereg_panel"] = "OSF pre-registration"
 LABELS["en"]["prereg_title"] = "Study title"
 LABELS["en"]["prereg_hypotheses"] = "Hypotheses / research questions"
@@ -785,11 +785,11 @@ LABELS["en"]["prereg_power_effect"] = "Effect size"
 LABELS["en"]["prereg_power_alpha"] = "Alpha"
 LABELS["en"]["prereg_power_target"] = "Target power"
 LABELS["en"]["prereg_power_summary"] = "Power analysis summary"
-LABELS["ko"]["replication_button"] = "Replication package ?대낫?닿린"
-LABELS["ko"]["replication_download"] = "Replication package ?ㅼ슫濡쒕뱶"
+LABELS["ko"]["replication_button"] = "Replication package 내보내기"
+LABELS["ko"]["replication_download"] = "Replication package 다운로드"
 LABELS["en"]["replication_button"] = "Export replication package"
 LABELS["en"]["replication_download"] = "Download replication package"
-LABELS["ko"]["reviewer_mode"] = "由щ럭?댁뼱 紐⑤뱶"
+LABELS["ko"]["reviewer_mode"] = "리뷰어 모드"
 LABELS["ko"]["prereg_data_generation"] = "Data generation process"
 LABELS["ko"]["prereg_factor_design"] = "Factor design matrix"
 LABELS["ko"]["prereg_performance_metrics"] = "Performance metrics"
@@ -1619,6 +1619,80 @@ body,
 }}
 .gradio-container .gr-radio label:has(input[type="radio"]:checked) span,
 .gradio-container [data-testid="radio"] label:has(input[type="radio"]:checked) span {{
+    color: #ffffff !important;
+}}
+/* Force native checkbox visibility + checked state */
+.gradio-container input[type="checkbox"] {{
+    appearance: auto !important;
+    -webkit-appearance: auto !important;
+    accent-color: var(--knoema-accent) !important;
+    width: 18px !important;
+    height: 18px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    margin-right: 8px !important;
+}}
+.gradio-container .gr-checkbox label,
+.gradio-container [data-testid="checkbox"] label {{
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    color: var(--knoema-text) !important;
+}}
+/* Number input spinners visible */
+.gradio-container input[type="number"] {{
+    color: var(--knoema-text) !important;
+    background: var(--knoema-surface-alt) !important;
+}}
+.gradio-container input[type="number"]::-webkit-inner-spin-button,
+.gradio-container input[type="number"]::-webkit-outer-spin-button {{
+    opacity: 1 !important;
+    filter: invert(0%);
+}}
+:root[data-knoema-theme="dark"] .gradio-container input[type="number"]::-webkit-inner-spin-button,
+:root[data-knoema-theme="dark"] .gradio-container input[type="number"]::-webkit-outer-spin-button {{
+    filter: invert(100%);
+}}
+/* Selected text contrast */
+.gradio-container ::selection {{
+    background: var(--knoema-accent) !important;
+    color: #ffffff !important;
+}}
+/* Tabs: active tab text visible in both themes */
+.gradio-container .tab-nav button.selected,
+.gradio-container .tabs button.selected,
+.gradio-container [role="tab"][aria-selected="true"] {{
+    color: var(--knoema-text) !important;
+    background: var(--knoema-accent) !important;
+    border-color: var(--knoema-accent-strong) !important;
+}}
+.gradio-container .tab-nav button.selected,
+.gradio-container .tabs button.selected,
+.gradio-container [role="tab"][aria-selected="true"] {{
+    color: #ffffff !important;
+}}
+.gradio-container .tab-nav button,
+.gradio-container .tabs button,
+.gradio-container [role="tab"] {{
+    color: var(--knoema-text) !important;
+}}
+/* Force light-mode dark-bg sections (Code/Files components) to readable colors */
+:root:not([data-knoema-theme="dark"]) .gradio-container .gr-file,
+:root:not([data-knoema-theme="dark"]) .gradio-container [data-testid="file"],
+:root:not([data-knoema-theme="dark"]) .gradio-container .gr-code,
+:root:not([data-knoema-theme="dark"]) .gradio-container [data-testid="code"],
+:root:not([data-knoema-theme="dark"]) .gradio-container .gr-code *,
+:root:not([data-knoema-theme="dark"]) .gradio-container [data-testid="code"] * {{
+    background: var(--knoema-surface) !important;
+    color: var(--knoema-text) !important;
+    border-color: var(--knoema-border) !important;
+}}
+:root:not([data-knoema-theme="dark"]) .gradio-container button {{
+    color: var(--knoema-text) !important;
+}}
+:root:not([data-knoema-theme="dark"]) .gradio-container button.primary,
+:root:not([data-knoema-theme="dark"]) .gradio-container button[variant="primary"] {{
     color: #ffffff !important;
 }}
 :root:not([data-knoema-theme="dark"]) .gradio-container .block-label,
@@ -2907,24 +2981,24 @@ def _prereg_defaults(language: str) -> dict[str, str]:
     key = language if language in {"ko", "en"} else _language_key(language)
     if key == "ko":
         return {
-            "title": "Knoema ?ъ쉶 ?곌퀎 ?ъ깮 ?ㅼ뿕援ъ꽌",
+            "title": "Knoema 사회 관계 재생 실험서",
             "hypotheses": (
-                "H1. 移쒗솕?깃낵 諛곕젮 / ?꾪빐 ?뚰뵾媛 ?믪쓣?섎줈 ?묒“?곸씤 ?됰룞 鍮꾩쑉???뒛?쒕떎.\n"
-                "H2. ?뺤꽌 遺덉븞?뺤꽦怨?沅뚮젰 ?깊뼢???믪쓣?섎줈 ?ㅽ듃?덉뒪 ?곹솴?먯꽌 怨곗젅 / ?꾪삎 ?됰룞??利앷??쒕떎."
+                "H1. 친화성과 배려/위해 점수가 높을수록 협조적인 행동 비율이 늘어난다.\n"
+                "H2. 정서 불안정성과 권력 성향이 높을수록 스트레스 상황에서 거절 / 위협 행동이 증가한다."
             ),
             "design": (
-                "寃곗젙濡좎쟻 ?쒕뱶瑜?湲곕컲?쇰줈 JSONL 濡쒓렇瑜?援ъ텞?섎뒗 synthetic replay ?곌뎄. "
-                "媛숈? ?쒕굹由ъ삤瑜??щ윭 ?쒕뱶濡?諛섎났 ?ㅽ뻾?섍퀬 tick ?덉궛? 遺꾩꽍 ?꾨줈?좎퐫??怨좎젙?⑸땲??"
+                "결정론적 시드를 기반으로 JSONL 로그를 구축하는 synthetic replay 연구. "
+                "같은 시나리오를 여러 시드로 반복 실행하고 tick 예산은 분석 프로토콜에 고정합니다."
             ),
             "outcomes": (
-                "?쇱감 吏??: ?묒“?곸씤 action 鍮꾩쑉\n"
-                "蹂댁“ 吏??: ?좊ː 媛以묒튂 蹂??, ?먯씠?꾪듃蹂? ?됰룞 ?ㅻ뵾, 媛먯젙 ?④퀎 ?ㅼ씠??"
+                "1차 지표: 협조적인 action 비율\n"
+                "보조 지표: 신뢰 가중치 변화, 에이전트별 행동 다양도, 감정 단계 데이터"
             ),
             "analysis": (
-                "諛곗튂 ?곌낵瑜?鍮꾧탳?섏뿬 ?됱쐞湲곕컲 檎뺤젙? ?믨낵?ш린瑜??뚯궛?섍퀬, "
-                "?먯씠?꾪듃蹂? ?됰룞移댁슫?몄? 愿怨?蹂?붾줈 2李⑥쟻 ?댄꽍???꾪빀?⑸땲??"
+                "배치 결과를 비교하여 순위기반 검정과 효과크기를 산출하고, "
+                "에이전트별 행동카운트와 관계 변화로 2차적 해석을 결합합니다."
             ),
-            "deviations": "?앸컖 ?놁쓬.",
+            "deviations": "일탈 없음.",
         }
     return {
         "title": "Knoema social replay study",
@@ -3107,10 +3181,10 @@ def _attached_run_summary(summary: str, jsonl_text: str, language: str) -> str:
     top_actions = ", ".join(
         f"{action_type} x{count}"
         for action_type, count in action_counts.most_common(3)
-    ) or ("?놁쓬" if _language_key(language) == "ko" else "none")
+    ) or ("없음" if _language_key(language) == "ko" else "none")
     if not rows:
         if _language_key(language) == "ko":
-            return "- ?꾩쭅 遺?李⑸맂 run ?곌낵媛 ?놁뒿?덈떎."
+            return "- 아직 첨부된 run 결과가 없습니다."
         return "- No run artifact is attached yet."
 
     lines = [
@@ -3188,11 +3262,11 @@ def _preregistration_markdown(
     deviation_text = deviation_log.strip() or _prereg_defaults(key)["deviations"]
     if key == "ko":
         freeze_lines = [
-            "1. ?ㅽ뻾 ???쒕뱶, ?곌낵 吏??, 遺꾩꽍 怨꾪쉷???ㅻЦ?섍린 ?꾩뿉 ???뺣┛?⑸땲??",
-            f"2. 怨좎젙 吏臾?`: {freeze_fingerprint}`",
-            "3. 寃곌낵 ?뺣━??JSONL digest? ?붿빟 臾몄옣?쒕? 媛숈씠 蹂댁“ ?좎쭨濡?泥⑤? ?⑸땲??",
+            "1. 실행 후 시드, 결과 지표, 분석 계획을 논문화 전에 미리 정리합니다.",
+            f"2. 고정 지문 `{freeze_fingerprint}`",
+            "3. 결과 정리는 JSONL digest와 요약 문장을 함께 보조 자료로 첨부합니다.",
         ]
-        status = "?꾩슜" if freeze_after_run else "?좏깮 ?덇컻"
+        status = "적용" if freeze_after_run else "선택 미고정"
         heading = "## OSF-format pre-registration"
         sections = [
             heading,
@@ -5228,11 +5302,21 @@ def _advanced_research_status_text(
     key = language_choice if language_choice in {"ko", "en"} else _language_key(language_choice)
     labels = LABELS[key]
     if _advanced_research_unlocked(enabled, acknowledged):
+        if key == "ko":
+            return (
+                "- 고급 연구 모드가 잠금 해제되었습니다.\n"
+                "- Dark Tetrad 컨트롤과 민감한 가상 시나리오가 활성화됩니다."
+            )
         return (
             "- Advanced research mode unlocked.\n"
             "- Dark Tetrad controls and sensitive fictional scenarios are available."
         )
     if enabled and not acknowledged:
+        if key == "ko":
+            return (
+                f"- {labels['advanced_research_notice']}\n"
+                "- 추가 컨트롤을 해제하려면 안내 사항에 동의 체크해 주세요."
+            )
         return (
             f"- {labels['advanced_research_notice']}\n"
             "- Acknowledge the notice to unlock the additional controls."
