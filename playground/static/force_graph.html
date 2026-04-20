@@ -97,10 +97,6 @@
         status.textContent = text;
       }
 
-      function threeNamespace() {
-        return window.THREE || window.__THREE__;
-      }
-
       function loadScript(src) {
         return new Promise((resolve, reject) => {
           if (!src) {
@@ -128,108 +124,9 @@
           }
           await loadScript(boot.vendorUrl);
         }
-        if (!window.ForceGraph3D || !threeNamespace()) {
+        if (!window.ForceGraph3D) {
           throw new Error("3d-force-graph failed to initialize");
         }
-      }
-
-      function makeGlowSprite(color, diameter) {
-        const THREE = threeNamespace();
-        const canvas = document.createElement("canvas");
-        canvas.width = 128;
-        canvas.height = 128;
-        const context = canvas.getContext("2d");
-        const gradient = context.createRadialGradient(64, 64, 8, 64, 64, 56);
-        gradient.addColorStop(0, "rgba(255,255,255,0.95)");
-        gradient.addColorStop(0.28, color);
-        gradient.addColorStop(1, "rgba(255,255,255,0)");
-        context.fillStyle = gradient;
-        context.fillRect(0, 0, 128, 128);
-        const texture = new THREE.CanvasTexture(canvas);
-        const material = new THREE.SpriteMaterial({
-          map: texture,
-          transparent: true,
-          opacity: 0.74,
-          depthWrite: false,
-          blending: THREE.AdditiveBlending,
-        });
-        const sprite = new THREE.Sprite(material);
-        sprite.scale.set(diameter, diameter, 1);
-        return sprite;
-      }
-
-      function makeTextSprite(text, color) {
-        const THREE = threeNamespace();
-        const safeText = String(text || "").trim() || "node";
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
-        context.font = "600 30px Inter, Segoe UI, Arial, sans-serif";
-        const metrics = context.measureText(safeText);
-        const width = Math.ceil(metrics.width + 28);
-        const height = 52;
-        canvas.width = width;
-        canvas.height = height;
-        const finalContext = canvas.getContext("2d");
-        finalContext.font = "600 30px Inter, Segoe UI, Arial, sans-serif";
-        finalContext.fillStyle = color;
-        finalContext.textBaseline = "middle";
-        finalContext.fillText(safeText, 14, height / 2);
-        const texture = new THREE.CanvasTexture(canvas);
-        const material = new THREE.SpriteMaterial({
-          map: texture,
-          transparent: true,
-          depthWrite: false,
-        });
-        const sprite = new THREE.Sprite(material);
-        sprite.scale.set(width / 12, height / 12, 1);
-        return sprite;
-      }
-
-      function nodeObject(node, colors) {
-        const THREE = threeNamespace();
-        const size = Number(node.size || 12);
-        const color = node.color || colors.node;
-        const radius = Math.max(3.8, size * 0.23);
-        const group = new THREE.Group();
-        const sphere = new THREE.Mesh(
-          new THREE.SphereGeometry(radius, 24, 24),
-          new THREE.MeshPhongMaterial({
-            color,
-            emissive: color,
-            emissiveIntensity: 0.32,
-            shininess: 90,
-            transparent: true,
-            opacity: 0.95,
-          }),
-        );
-        group.add(sphere);
-        group.add(makeGlowSprite(color, radius * 6.6));
-        if (node.showLabel) {
-          const label = makeTextSprite(node.label || node.id, colors.text);
-          label.position.set(0, radius * 4.1, 0);
-          group.add(label);
-        }
-        return group;
-      }
-
-      function configureLights(colors) {
-        const THREE = threeNamespace();
-        const scene = graph.scene();
-        let ambient = scene.getObjectByName("knoema-ambient-light");
-        if (!ambient) {
-          ambient = new THREE.AmbientLight(0xffffff, 0.95);
-          ambient.name = "knoema-ambient-light";
-          scene.add(ambient);
-        }
-        let key = scene.getObjectByName("knoema-key-light");
-        if (!key) {
-          key = new THREE.DirectionalLight(0xffffff, 0.9);
-          key.name = "knoema-key-light";
-          key.position.set(120, 120, 120);
-          scene.add(key);
-        }
-        const fogColor = new THREE.Color(colors.background);
-        scene.fog = new THREE.Fog(fogColor, 360, 760);
       }
 
       function resizeGraph() {
@@ -259,7 +156,6 @@
             controlType: "orbit",
             rendererConfig: { antialias: true, alpha: true },
           })(root);
-          graph.nodeThreeObjectExtend(true);
           graph.onLinkHover((link) => {
             hoverLink = link || null;
             graph.refresh();
@@ -275,16 +171,20 @@
         graph.width(window.innerWidth);
         graph.height(window.innerHeight);
         graph.graphData(graphData);
+        graph.nodeRelSize(6);
         graph.nodeVal((node) => Math.max(4, Number(node.size || 12)));
-        graph.nodeLabel((node) => node.label || node.id || "");
+        graph.nodeResolution(18);
+        graph.nodeOpacity(0.95);
+        graph.nodeLabel((node) => (node.showLabel ? node.label || node.id || "" : ""));
         graph.nodeColor((node) => node.color || colors.node);
-        graph.nodeThreeObject((node) => nodeObject(node, colors));
         graph.linkLabel((link) => link.label || "");
         graph.linkColor((link) => (hoverLink === link ? colors.linkHover : link.color || colors.link));
+        graph.linkOpacity(0.55);
         graph.linkWidth((link) => {
           const baseWidth = Number(link.width || 1);
           return hoverLink === link ? Math.max(baseWidth * 1.85, 2.6) : baseWidth;
         });
+        graph.linkResolution(8);
         graph.linkDirectionalParticles((link) => (hoverLink === link ? 4 : 0));
         graph.linkDirectionalParticleWidth((link) => (hoverLink === link ? 2.8 : 0));
         graph.cooldownTicks(120);
@@ -311,8 +211,6 @@
         if (renderer) {
           renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         }
-
-        configureLights(colors);
         graph.onEngineStop(() => {
           if (!graph.__knoemaHasZoomed) {
             graph.zoomToFit(600, 64);

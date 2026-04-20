@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Final
@@ -36,6 +37,16 @@ def _screenshot_path(prefix: str = "live-graph") -> Path:
     SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
     return SCREENSHOT_DIR / f"{prefix}-{timestamp}.png"
+
+
+def _wait_for_locator_count(locator, expected: int, *, timeout_ms: int = 15_000) -> None:
+    deadline = time.monotonic() + (timeout_ms / 1000)
+    while time.monotonic() < deadline:
+        if locator.count() == expected:
+            return
+        time.sleep(0.5)
+    actual = locator.count()
+    raise AssertionError(f"Locator expected count {expected}, got {actual}")
 
 
 @pytest.fixture(scope="module")
@@ -80,7 +91,7 @@ def test_live_space_smoke_flow(page: Page) -> None:
     expect(graph).to_be_visible(timeout=15_000)
     graph_iframe = app_frame.locator("#relationship-graph iframe")
     if EXPECT_FORCE_GRAPH:
-        expect(graph_iframe).to_have_count(1, timeout=45_000)
+        _wait_for_locator_count(graph_iframe, 1, timeout_ms=45_000)
     if graph_iframe.count():
         force_graph_frame = app_frame.frame_locator("#relationship-graph iframe")
         canvas = force_graph_frame.locator("canvas")
@@ -88,7 +99,7 @@ def test_live_space_smoke_flow(page: Page) -> None:
 
         before_path = _screenshot_path("live-graph-before")
         after_path = _screenshot_path("live-graph")
-        canvas.screenshot(path=str(before_path))
+        graph.screenshot(path=str(before_path))
 
         box = canvas.bounding_box()
         assert box is not None
@@ -100,7 +111,7 @@ def test_live_space_smoke_flow(page: Page) -> None:
         page.mouse.up()
         page.wait_for_timeout(1_200)
 
-        canvas.screenshot(path=str(after_path))
+        graph.screenshot(path=str(after_path))
         assert before_path.read_bytes() != after_path.read_bytes()
         screenshot_path = after_path
     else:
