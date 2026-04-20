@@ -6864,7 +6864,11 @@ def _relationship_figure(
         "yaxis": {"visible": False, "showbackground": False},
         "zaxis": {"visible": False, "showbackground": False},
         "bgcolor": "rgba(248,250,252,1)",
-        "camera": {"eye": {"x": 1.6, "y": 1.6, "z": 1.0}},
+        "camera": {
+            "eye": {"x": 1.25, "y": 1.25, "z": 0.85},
+            "projection": {"type": "perspective"},
+        },
+        "aspectmode": "cube",
     }
     if not rows:
         figure = go.Figure()
@@ -6879,35 +6883,52 @@ def _relationship_figure(
 
     agents = sorted({str(row["source"]) for row in rows} | {str(row["target"]) for row in rows})
     color_map = agent_colors or _agent_color_map(agents)
-    positions = _sphere_positions(agents)
-    edge_x: list[float | None] = []
-    edge_y: list[float | None] = []
-    edge_z: list[float | None] = []
-    for row in rows:
+    graph = _relationship_layout_graph(agents, rows)
+    positions = _force_directed_positions(agents, rows)
+    edge_weights = [_relationship_metric(row, "weight") for row in rows]
+    edge_trusts = [_relationship_metric(row, "trust") for row in rows]
+    node_degrees = dict(graph.degree())
+    edge_traces: list[go.Scatter3d] = []
+    for index, row in enumerate(rows):
         source = str(row["source"])
         target = str(row["target"])
         sx, sy, sz = positions[source]
         tx, ty, tz = positions[target]
-        edge_x.extend([sx, tx, None])
-        edge_y.extend([sy, ty, None])
-        edge_z.extend([sz, tz, None])
+        normalized_weight = _normalized_metric(edge_weights[index], edge_weights)
+        normalized_trust = _normalized_metric(edge_trusts[index], edge_trusts)
+        edge_alpha = 0.18 + 0.62 * normalized_trust
+        edge_traces.append(
+            go.Scatter3d(
+                x=[sx, tx],
+                y=[sy, ty],
+                z=[sz, tz],
+                mode="lines",
+                line={
+                    "width": 1.0 + 5.0 * normalized_weight,
+                    "color": f"rgba(100,116,139,{edge_alpha:.3f})",
+                },
+                text=f"{source} -> {target} ({row.get('relationship_type', 'unknown')})",
+                hovertemplate=(
+                    "%{text}<br>trust="
+                    + f"{_relationship_metric(row, 'trust'):.2f}"
+                    + "<br>weight="
+                    + f"{_relationship_metric(row, 'weight'):.2f}"
+                    + "<extra></extra>"
+                ),
+                showlegend=False,
+            )
+        )
 
     node_x = [positions[agent][0] for agent in agents]
     node_y = [positions[agent][1] for agent in agents]
     node_z = [positions[agent][2] for agent in agents]
     node_text = list(agents)
     node_color = [color_map.get(agent, "#0f172a") for agent in agents]
+    node_size = [min(30, 12 + int(node_degrees.get(agent, 0)) * 4) for agent in agents]
 
     figure = go.Figure(
         data=[
-            go.Scatter3d(
-                x=edge_x,
-                y=edge_y,
-                z=edge_z,
-                mode="lines",
-                line={"width": 4, "color": "#94a3b8"},
-                hoverinfo="none",
-            ),
+            *edge_traces,
             go.Scatter3d(
                 x=node_x,
                 y=node_y,
@@ -6915,22 +6936,17 @@ def _relationship_figure(
                 mode="markers+text",
                 text=node_text,
                 textposition="top center",
+                textfont={"color": "#0f172a", "size": 12},
                 marker={
-                    "size": 14,
+                    "size": node_size,
+                    "symbol": "circle",
                     "color": node_color,
-                    "colorscale": "Viridis",
-                    "cmin": 0.0,
-                    "cmax": 1.0,
                     "opacity": 0.95,
-                    "line": {"width": 1, "color": "#1e293b"},
-                    "colorbar": {
-                        "title": "신뢰" if language == "ko" else "Trust",
-                        "thickness": 12,
-                        "len": 0.6,
-                    },
+                    "line": {"width": 1.6, "color": "#0f172a"},
                 },
                 hovertext=_node_hover_text(agents, rows, language=language),
                 hoverinfo="text",
+                showlegend=False,
             ),
         ]
     )
@@ -6938,14 +6954,102 @@ def _relationship_figure(
         title=title,
         showlegend=False,
         scene=scene_layout,
+        dragmode="orbit",
         height=GRAPH_HEIGHT_PX,
         margin={"l": 0, "r": 0, "t": 40, "b": 0},
     )
     return figure
 
 
+def _relationship_metric(row: dict[str, Any], key: str) -> float:
+    try:
+        return float(row.get(key, 0.0))
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _normalized_metric(value: float, all_values: list[float]) -> float:
+    if not all_values:
+        return 0.5
+    minimum = min(all_values)
+    maximum = max(all_values)
+    if math.isclose(minimum, maximum):
+        return 0.5
+    return max(0.0, min(1.0, (value - minimum) / (maximum - minimum)))
+
+
+def _relationship_layout_graph(agents: list[str], rows: list[dict[str, Any]]) -> Any:
+    import networkx as nx
+
+    graph = nx.Graph()
+    graph.add_nodes_from(agents)
+    for row in rows:
+        source = str(row["source"])
+        target = str(row["target"])
+        weight = max(abs(_relationship_metric(row, "weight")), 0.05)
+        if graph.has_edge(source, target):
+            graph[source][target]["weight"] += weight
+        else:
+            graph.add_edge(source, target, weight=weight)
+    return graph
+
+
+def _force_directed_positions(
+    agents: list[str],
+    rows: list[dict[str, Any]],
+) -> dict[str, tuple[float, float, float]]:
+    import networkx as nx
+
+    n = len(agents)
+    if n == 0:
+        return {}
+    if n == 1:
+        return {agents[0]: (0.0, 0.0, 0.0)}
+    if n == 2:
+        return {agents[0]: (0.0, 1.0, 0.0), agents[1]: (0.0, -1.0, 0.0)}
+
+    graph = _relationship_layout_graph(agents, rows)
+    optimal_distance = 1.35 / math.sqrt(n)
+    raw_positions = nx.spring_layout(
+        graph,
+        dim=3,
+        seed=42,
+        k=optimal_distance,
+        iterations=100,
+        weight="weight",
+    )
+    centered_positions: dict[str, tuple[float, float, float]] = {
+        agent: tuple(float(coord) for coord in raw_positions[agent])
+        for agent in agents
+    }
+    center_x = sum(position[0] for position in centered_positions.values()) / n
+    center_y = sum(position[1] for position in centered_positions.values()) / n
+    center_z = sum(position[2] for position in centered_positions.values()) / n
+    normalized_positions = {
+        agent: (
+            position[0] - center_x,
+            position[1] - center_y,
+            position[2] - center_z,
+        )
+        for agent, position in centered_positions.items()
+    }
+    scale = max(
+        max(abs(axis_value) for axis_value in position)
+        for position in normalized_positions.values()
+    )
+    if scale <= 1e-9:
+        return _sphere_positions(agents)
+    return {
+        agent: (
+            position[0] / scale,
+            position[1] / scale,
+            position[2] / scale,
+        )
+        for agent, position in normalized_positions.items()
+    }
+
+
 def _sphere_positions(agents: list[str]) -> dict[str, tuple[float, float, float]]:
-    import math
 
     n = len(agents)
     if n == 0:
