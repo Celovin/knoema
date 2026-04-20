@@ -1590,6 +1590,37 @@ body,
     color: var(--knoema-text) !important;
     border: 1px solid var(--knoema-border) !important;
 }}
+/* Make radio inputs and their checked state visible across themes */
+.gradio-container .gr-radio input[type="radio"],
+.gradio-container [data-testid="radio"] input[type="radio"],
+.gradio-container fieldset input[type="radio"] {{
+    accent-color: var(--knoema-accent) !important;
+    width: 18px !important;
+    height: 18px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    appearance: auto !important;
+    -webkit-appearance: auto !important;
+    margin-right: 8px !important;
+}}
+.gradio-container .gr-radio label,
+.gradio-container [data-testid="radio"] label,
+.gradio-container fieldset label {{
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}}
+.gradio-container .gr-radio label:has(input[type="radio"]:checked),
+.gradio-container [data-testid="radio"] label:has(input[type="radio"]:checked) {{
+    background: var(--knoema-accent) !important;
+    color: #ffffff !important;
+    border-color: var(--knoema-accent-strong) !important;
+}}
+.gradio-container .gr-radio label:has(input[type="radio"]:checked) span,
+.gradio-container [data-testid="radio"] label:has(input[type="radio"]:checked) span {{
+    color: #ffffff !important;
+}}
 :root:not([data-knoema-theme="dark"]) .gradio-container .block-label,
 :root:not([data-knoema-theme="dark"]) .gradio-container .block-info,
 :root:not([data-knoema-theme="dark"]) .gradio-container .gr-form > label,
