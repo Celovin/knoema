@@ -6959,8 +6959,6 @@ def build_app() -> gr.Blocks:
 
     with gr.Blocks(
         title="Knoema Playground",
-        css=FOOTER_CSS,
-        head=APP_HEAD,
         analytics_enabled=False,
     ) as demo:
         with gr.Row(elem_id="topbar-row"):
@@ -6979,7 +6977,7 @@ def build_app() -> gr.Blocks:
                 elem_id="theme-mode-radio",
             )
             with gr.Column(scale=1, min_width=0):
-                gr.HTML("<div></div>")
+                gr.HTML("<div></div>", padding=False)
             tutorial_button = gr.Button("?", elem_id="tutorial-button", scale=0, min_width=52)
             reviewer_mode = gr.Checkbox(
                 label=labels["reviewer_mode"],
@@ -8441,4 +8439,6 @@ if __name__ == "__main__":
         share=False,
         ssr_mode=False,
         show_error=True,
+        css=FOOTER_CSS,
+        head=APP_HEAD,
     )
