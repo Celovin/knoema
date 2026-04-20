@@ -10,8 +10,8 @@ with finer mojibake heuristics later.
 
 from __future__ import annotations
 
-from pathlib import Path
 import re
+from pathlib import Path
 
 PLAYGROUND_DIR = Path(__file__).resolve().parent.parent / "playground"
 SCANNED_FILES = ("app.py", "simulation.py", "voice.py", "hexaco_questionnaire.py", "quest_generation.py")

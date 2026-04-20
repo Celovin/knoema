@@ -1531,9 +1531,6 @@ body,
     background: var(--knoema-bg) !important;
     color: var(--knoema-text) !important;
 }}
-.gradio-container {{
-    background: var(--knoema-bg) !important;
-}}
 .gradio-container h1,
 .gradio-container h2,
 .gradio-container h3,
@@ -1569,32 +1566,28 @@ body,
 .gradio-container button {{
     border-color: var(--knoema-border) !important;
 }}
-.gradio-container .gr-radio label,
-.gradio-container .wrap label.gr-radio,
-.gradio-container [data-testid="radio"] label,
-.gradio-container fieldset label,
-.gradio-container .block-label,
-.gradio-container .block-info,
-.gradio-container span,
-.gradio-container legend {{
+.gradio-container :is(.gr-radio label, .wrap label.gr-radio, [data-testid="radio"] label, fieldset label) {{
+    color: var(--knoema-text) !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}}
+.gradio-container :is(.block-label, .block-info, span, legend) {{
     color: var(--knoema-text) !important;
 }}
-.gradio-container .gr-radio label span,
-.gradio-container [data-testid="radio"] label span,
-.gradio-container fieldset label span {{
+.gradio-container :is(.gr-radio label span, [data-testid="radio"] label span, fieldset label span) {{
     color: var(--knoema-text) !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container .gr-radio label,
-:root:not([data-knoema-theme="dark"]) .gradio-container [data-testid="radio"] label,
-:root:not([data-knoema-theme="dark"]) .gradio-container fieldset label {{
+:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+    .gr-radio label,
+    [data-testid="radio"] label,
+    fieldset label
+) {{
     background: var(--knoema-surface) !important;
     color: var(--knoema-text) !important;
     border: 1px solid var(--knoema-border) !important;
 }}
 /* Make radio inputs and their checked state visible across themes */
-.gradio-container .gr-radio input[type="radio"],
-.gradio-container [data-testid="radio"] input[type="radio"],
-.gradio-container fieldset input[type="radio"] {{
+.gradio-container :is(.gr-radio input[type="radio"], [data-testid="radio"] input[type="radio"], fieldset input[type="radio"]) {{
     accent-color: var(--knoema-accent) !important;
     width: 18px !important;
     height: 18px !important;
@@ -1606,20 +1599,12 @@ body,
     -webkit-appearance: auto !important;
     margin-right: 8px !important;
 }}
-.gradio-container .gr-radio label,
-.gradio-container [data-testid="radio"] label,
-.gradio-container fieldset label {{
-    cursor: pointer !important;
-    pointer-events: auto !important;
-}}
-.gradio-container .gr-radio label:has(input[type="radio"]:checked),
-.gradio-container [data-testid="radio"] label:has(input[type="radio"]:checked) {{
+.gradio-container :is(.gr-radio label:has(input[type="radio"]:checked), [data-testid="radio"] label:has(input[type="radio"]:checked)) {{
     background: var(--knoema-accent) !important;
     color: #ffffff !important;
     border-color: var(--knoema-accent-strong) !important;
 }}
-.gradio-container .gr-radio label:has(input[type="radio"]:checked) span,
-.gradio-container [data-testid="radio"] label:has(input[type="radio"]:checked) span {{
+.gradio-container :is(.gr-radio label:has(input[type="radio"]:checked) span, [data-testid="radio"] label:has(input[type="radio"]:checked) span) {{
     color: #ffffff !important;
 }}
 /* Force native checkbox visibility + checked state */
@@ -1661,30 +1646,23 @@ body,
     color: #ffffff !important;
 }}
 /* Tabs: active tab text visible in both themes */
-.gradio-container .tab-nav button.selected,
-.gradio-container .tabs button.selected,
-.gradio-container [role="tab"][aria-selected="true"] {{
-    color: var(--knoema-text) !important;
+.gradio-container :is(.tab-nav button.selected, .tabs button.selected, [role="tab"][aria-selected="true"]) {{
     background: var(--knoema-accent) !important;
     border-color: var(--knoema-accent-strong) !important;
-}}
-.gradio-container .tab-nav button.selected,
-.gradio-container .tabs button.selected,
-.gradio-container [role="tab"][aria-selected="true"] {{
     color: #ffffff !important;
 }}
-.gradio-container .tab-nav button,
-.gradio-container .tabs button,
-.gradio-container [role="tab"] {{
+.gradio-container :is(.tab-nav button, .tabs button, [role="tab"]) {{
     color: var(--knoema-text) !important;
 }}
 /* Force light-mode dark-bg sections (Code/Files components) to readable colors */
-:root:not([data-knoema-theme="dark"]) .gradio-container .gr-file,
-:root:not([data-knoema-theme="dark"]) .gradio-container [data-testid="file"],
-:root:not([data-knoema-theme="dark"]) .gradio-container .gr-code,
-:root:not([data-knoema-theme="dark"]) .gradio-container [data-testid="code"],
-:root:not([data-knoema-theme="dark"]) .gradio-container .gr-code *,
-:root:not([data-knoema-theme="dark"]) .gradio-container [data-testid="code"] * {{
+:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+    .gr-file,
+    [data-testid="file"],
+    .gr-code,
+    [data-testid="code"],
+    .gr-code *,
+    [data-testid="code"] *
+) {{
     background: var(--knoema-surface) !important;
     color: var(--knoema-text) !important;
     border-color: var(--knoema-border) !important;
@@ -1692,17 +1670,18 @@ body,
 :root:not([data-knoema-theme="dark"]) .gradio-container button {{
     color: var(--knoema-text) !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container button.primary,
-:root:not([data-knoema-theme="dark"]) .gradio-container button[variant="primary"] {{
+:root:not([data-knoema-theme="dark"]) .gradio-container :is(button.primary, button[variant="primary"]) {{
     color: #ffffff !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container .block-label,
-:root:not([data-knoema-theme="dark"]) .gradio-container .block-info,
-:root:not([data-knoema-theme="dark"]) .gradio-container .gr-form > label,
-:root:not([data-knoema-theme="dark"]) .gradio-container .form > label,
-:root:not([data-knoema-theme="dark"]) .gradio-container legend,
-:root:not([data-knoema-theme="dark"]) .gradio-container .gr-text-input,
-:root:not([data-knoema-theme="dark"]) .gradio-container span {{
+:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+    .block-label,
+    .block-info,
+    .gr-form > label,
+    .form > label,
+    legend,
+    .gr-text-input,
+    span
+) {{
     color: #102033 !important;
     opacity: 1 !important;
 }}
