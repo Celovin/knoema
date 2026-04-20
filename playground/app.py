@@ -1398,12 +1398,10 @@ def _theme_head() -> str:
 
   window.KNOEMA_THEME = {{
     sync(languageChoice) {{
-      const mode = applyMode(readStoredMode(), false);
-      return labelFor(mode, languageChoice);
+      return applyMode(readStoredMode(), false);
     }},
     setFromLabel(label, languageChoice) {{
-      const mode = applyMode(label, true);
-      return labelFor(mode, languageChoice);
+      return applyMode(label, true);
     }},
     currentLabel(languageChoice) {{
       return labelFor(readStoredMode(), languageChoice);
@@ -1573,7 +1571,11 @@ body,
 .gradio-container .gr-radio label,
 .gradio-container .wrap label.gr-radio,
 .gradio-container [data-testid="radio"] label,
-.gradio-container fieldset label {{
+.gradio-container fieldset label,
+.gradio-container .block-label,
+.gradio-container .block-info,
+.gradio-container span,
+.gradio-container legend {{
     color: var(--knoema-text) !important;
 }}
 .gradio-container .gr-radio label span,
@@ -1587,6 +1589,16 @@ body,
     background: var(--knoema-surface) !important;
     color: var(--knoema-text) !important;
     border: 1px solid var(--knoema-border) !important;
+}}
+:root:not([data-knoema-theme="dark"]) .gradio-container .block-label,
+:root:not([data-knoema-theme="dark"]) .gradio-container .block-info,
+:root:not([data-knoema-theme="dark"]) .gradio-container .gr-form > label,
+:root:not([data-knoema-theme="dark"]) .gradio-container .form > label,
+:root:not([data-knoema-theme="dark"]) .gradio-container legend,
+:root:not([data-knoema-theme="dark"]) .gradio-container .gr-text-input,
+:root:not([data-knoema-theme="dark"]) .gradio-container span {{
+    color: #102033 !important;
+    opacity: 1 !important;
 }}
 .gradio-container button.primary,
 .gradio-container button[variant="primary"] {{
@@ -7811,7 +7823,7 @@ def build_app() -> gr.Blocks:
             fn=None,
             inputs=[language],
             outputs=[theme_mode, reviewer_mode],
-            js="(language) => [window.KNOEMA_THEME?.sync(language) ?? 'Auto', new URLSearchParams(window.location.search).get('reviewer') === '1']",
+            js="(language) => [window.KNOEMA_THEME?.sync(language) ?? 'auto', new URLSearchParams(window.location.search).get('reviewer') === '1']",
             queue=False,
             show_progress="hidden",
         )
