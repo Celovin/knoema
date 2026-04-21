@@ -116,6 +116,24 @@ nav:
   - Reproductions:
       - Schelling Segregation: reproductions/schelling.md
       - Axelrod Cooperation: reproductions/axelrod.md
+  - Education:
+      - Syllabus: education/syllabus.md
+      - Lab Exercises: education/lab_exercises.md
+      - Rubric: education/rubric.md
+      - Assignments:
+          - Week 01 Scenario Authoring: education/assignments/week_01_scenario_authoring.md
+          - Week 02 Persona Trait Design: education/assignments/week_02_persona_trait_design.md
+          - Week 03 Trait Slider Experiment: education/assignments/week_03_trait_slider_experiment.md
+          - Week 04 Events and Routines: education/assignments/week_04_events_and_routines.md
+          - Week 05 HTN Planning Analysis: education/assignments/week_05_htn_planning_analysis.md
+          - Week 06 Relationship Analysis: education/assignments/week_06_relationship_analysis.md
+          - Week 07 Memory Retrieval Benchmark: education/assignments/week_07_memory_retrieval_benchmark.md
+          - Week 08 Batch Statistics: education/assignments/week_08_batch_statistics.md
+          - Week 09 Theory of Mind Replication: education/assignments/week_09_theory_of_mind_replication.md
+          - Week 10 Fairness Safety Audit: education/assignments/week_10_fairness_safety_audit.md
+          - Week 11 Final Project Proposal: education/assignments/week_11_final_project_proposal.md
+          - Week 12 Final Project Presentation: education/assignments/week_12_final_project_presentation.md
+      - Slide Template: education/slides/reveal_template.html
   - Case Studies:
       - KNOT Episode 1 Integration: case_studies/01_knot_episode_1_integration.md
       - Korean University Pilot: case_studies/02_korean_university_pilot.md
