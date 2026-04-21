@@ -74,6 +74,7 @@ nav:
       - Browser WASM Runtime: adapters/wasm.md
       - VS Code Extension: extensions/vscode.md
       - MCP Setup: mcp/setup.md
+      - Discord and Slack Bots: bots/setup.md
       - Unreal Adapter: adapters/unreal.md
       - Web Scenario Editor: website/scenario-editor.md
       - Interactive Tutorial Website: website/tutorial.md

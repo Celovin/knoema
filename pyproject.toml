@@ -112,6 +112,10 @@ distributed = [
     "ray[default]>=2.40",
 ]
 mcp = []
+bots = [
+    "discord.py>=2.4",
+    "slack-bolt>=1.20",
+]
 
 [project.urls]
 Homepage = "https://github.com/Celovin/knoema"
@@ -122,9 +126,11 @@ Issues = "https://github.com/Celovin/knoema/issues"
 knoema = "knoema.cli:main"
 knoema-verify = "knoema.reproducibility:main"
 knoema-mcp = "knoema_mcp.server:main"
+knoema-discord-bot = "knoema_bots.discord:main"
+knoema-slack-bot = "knoema_bots.slack:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/knoema", "src/knoema_mcp"]
+packages = ["src/knoema", "src/knoema_mcp", "src/knoema_bots"]
 
 [tool.ruff]
 line-length = 100
