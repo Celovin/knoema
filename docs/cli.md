@@ -10,6 +10,7 @@ When running from a source checkout, this equivalent command also works:
 
 ```powershell
 python -m knoema.cli run examples\cli_dorm.yaml --json
+python -m knoema run examples\cli_dorm.yaml --json
 ```
 
 ## Config Shape
@@ -76,3 +77,31 @@ knoema validate scenarios\library --json
 ```
 
 The command prints the number of validated files, failed files, and per-file issues. It returns exit code `0` only when all scenarios load and pass the ethics validator.
+
+## Playground Scenarios
+
+Use `list-scenarios` to inspect the packaged Playground scenarios:
+
+```powershell
+knoema list-scenarios --json
+```
+
+## Certificate Verification
+
+Use `verify` to check a reproducibility certificate and optional artifacts:
+
+```powershell
+knoema verify run_fingerprint.json --run-config run_config.json --result-jsonl run.jsonl --json
+```
+
+The command returns exit code `0` only when the certificate fingerprint and supplied artifact hashes match.
+
+## Local Playground
+
+Start the Gradio Playground from the same CLI:
+
+```powershell
+knoema playground --host 127.0.0.1 --port 7860
+```
+
+Use `knoema playground --dry-run --json` to print the app file and URL without starting a server.

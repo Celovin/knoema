@@ -84,6 +84,7 @@ nav:
       - Human Study Protocol: evaluation/human_study_protocol.md
       - Human Evaluation Pilot Results: evaluation/pilot_results.md
       - Cloud Deployment Comparison: deployment/cloud-comparison.md
+      - Self-hosted CLI and Docker: deploy/self-hosted.md
       - Academic Indexing: research/academic-indexing.md
       - Papers with Code Packet: research/papers_with_code_submission.md
       - Proposal Mapping: research/proposal_mapping.md

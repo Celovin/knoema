@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
+import sys
 from collections.abc import Sequence
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from types import ModuleType
+from typing import Any, cast
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
@@ -20,6 +23,7 @@ from knoema.llm import LocalClient
 from knoema.metrics import score_log
 from knoema.persona import Persona
 from knoema.prompts import PromptLanguage, normalize_prompt_language
+from knoema.reproducibility import VerificationReport, verify_run_fingerprint
 from knoema.simulator import Simulator
 from knoema.telemetry import (
     NullTelemetryClient,
@@ -29,6 +33,39 @@ from knoema.telemetry import (
     telemetry_opt_in_from_env,
 )
 from knoema.types import Personality, WorldEvent
+
+PLAYGROUND_SCENARIOS: tuple[dict[str, str], ...] = (
+    {"name": "Dorm: two agents", "filename": "dorm_two_agents.yaml"},
+    {"name": "Village: ten agents", "filename": "village_ten.yaml"},
+    {"name": "School corridor", "filename": "school_corridor.yaml"},
+    {"name": "Office team conflict", "filename": "office_team_conflict.yaml"},
+    {"name": "Family dinner table", "filename": "family_dinner_table.yaml"},
+    {"name": "Cafe first meeting", "filename": "cafe_first_meeting.yaml"},
+    {"name": "Subway rush crowd", "filename": "subway_rush_crowd.yaml"},
+    {"name": "School group project", "filename": "school_group_project.yaml"},
+    {"name": "Apartment neighbor dispute", "filename": "apartment_neighbor_dispute.yaml"},
+    {"name": "Volunteer cleanup team", "filename": "volunteer_cleanup_team.yaml"},
+    {"name": "Startup pivot meeting", "filename": "startup_pivot_meeting.yaml"},
+    {"name": "Late-night convenience store", "filename": "late_night_convenience_store.yaml"},
+    {"name": "Book club debate", "filename": "book_club_debate.yaml"},
+    {"name": "Hospital waiting room", "filename": "hospital_waiting_room.yaml"},
+    {"name": "Neighborhood festival", "filename": "neighborhood_festival.yaml"},
+    {"name": "Classroom pop quiz", "filename": "classroom_pop_quiz.yaml"},
+    {"name": "Religious service", "filename": "religious_service.yaml"},
+    {"name": "Military barracks morning", "filename": "military_barracks_morning.yaml"},
+    {"name": "ER triage", "filename": "er_triage.yaml"},
+    {"name": "Courtroom jury deliberation", "filename": "courtroom_jury_deliberation.yaml"},
+    {"name": "Election rally", "filename": "election_rally.yaml"},
+    {"name": "Refugee shelter arrival", "filename": "refugee_shelter_arrival.yaml"},
+    {"name": "Tech demo day", "filename": "tech_demo_day.yaml"},
+    {"name": "Wedding after-party", "filename": "wedding_after_party.yaml"},
+    {"name": "Funeral wake", "filename": "funeral_wake.yaml"},
+    {"name": "Prison yard (fictional)", "filename": "prison_yard_fictional.yaml"},
+    {"name": "Zoom team standup", "filename": "zoom_team_standup.yaml"},
+    {"name": "Kindergarten storytime", "filename": "kindergarten_storytime.yaml"},
+    {"name": "Senior center chess", "filename": "senior_center_chess.yaml"},
+    {"name": "Concert lobby intermission", "filename": "concert_lobby_intermission.yaml"},
+)
 
 
 class CliPersonalityConfig(BaseModel):
@@ -280,6 +317,21 @@ def build_parser() -> argparse.ArgumentParser:
     validate_parser = subparsers.add_parser("validate", help="Validate Scenario DSL YAML files.")
     validate_parser.add_argument("path", type=Path, help="Scenario YAML file or directory.")
     validate_parser.add_argument("--json", action="store_true", help="Print validation results as JSON.")
+
+    list_parser = subparsers.add_parser("list-scenarios", help="List packaged Playground scenarios.")
+    list_parser.add_argument("--json", action="store_true", help="Print scenarios as JSON.")
+
+    verify_parser = subparsers.add_parser("verify", help="Verify a reproducibility certificate.")
+    verify_parser.add_argument("certificate", type=Path, help="Path to run_fingerprint.json.")
+    verify_parser.add_argument("--run-config", type=Path, default=None, help="Optional JSON config to hash.")
+    verify_parser.add_argument("--result-jsonl", type=Path, default=None, help="Optional result JSONL to verify.")
+    verify_parser.add_argument("--json", action="store_true", help="Print verification JSON.")
+
+    playground_parser = subparsers.add_parser("playground", help="Start the local Gradio Playground.")
+    playground_parser.add_argument("--host", default="127.0.0.1", help="Host interface.")
+    playground_parser.add_argument("--port", type=int, default=7860, help="Port to bind.")
+    playground_parser.add_argument("--dry-run", action="store_true", help="Print launch plan without starting Gradio.")
+    playground_parser.add_argument("--json", action="store_true", help="Print launch plan as JSON.")
     return parser
 
 
@@ -339,6 +391,39 @@ def main(
                 f"{payload['failed']} failed."
             )
         return 0 if payload["failed"] == 0 else 1
+    if args.command == "list-scenarios":
+        payload = list_scenarios_payload()
+        if args.json:
+            print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+        else:
+            for scenario in payload["scenarios"]:
+                print(f"{scenario['name']} ({scenario['filename']})")
+        return 0
+    if args.command == "verify":
+        report = verify_certificate_path(
+            args.certificate,
+            run_config_path=args.run_config,
+            result_jsonl_path=args.result_jsonl,
+        )
+        if args.json:
+            print(json.dumps(report.to_json_dict(), ensure_ascii=False, sort_keys=True))
+        elif report.verified:
+            print("Knoema reproducibility certificate verified.")
+        else:
+            print("Knoema reproducibility certificate verification failed:")
+            for mismatch in report.mismatches:
+                print(f"- {mismatch}")
+        return 0 if report.verified else 1
+    if args.command == "playground":
+        payload = playground_launch_payload(args.host, args.port)
+        if args.dry_run:
+            if args.json:
+                print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+            else:
+                print(f"Playground would launch at {payload['url']} from {payload['app_file']}")
+            return 0
+        launch_playground(args.host, args.port)
+        return 0
     parser.error(f"Unknown command: {args.command}")
     return 2
 
@@ -390,6 +475,45 @@ def validate_scenario_path(path: str | Path) -> dict[str, Any]:
     }
 
 
+def list_scenarios_payload() -> dict[str, Any]:
+    return {
+        "count": len(PLAYGROUND_SCENARIOS),
+        "scenarios": [dict(scenario) for scenario in PLAYGROUND_SCENARIOS],
+    }
+
+
+def verify_certificate_path(
+    certificate_path: str | Path,
+    *,
+    run_config_path: str | Path | None = None,
+    result_jsonl_path: str | Path | None = None,
+) -> VerificationReport:
+    certificate = json.loads(Path(certificate_path).read_text(encoding="utf-8"))
+    run_config = _load_optional_json_or_text(Path(run_config_path) if run_config_path else None)
+    result = Path(result_jsonl_path).read_text(encoding="utf-8") if result_jsonl_path else None
+    return verify_run_fingerprint(certificate, run_config=run_config, result=result)
+
+
+def playground_launch_payload(host: str = "127.0.0.1", port: int = 7860) -> dict[str, Any]:
+    app_file = _playground_app_file()
+    return {
+        "app_file": str(app_file),
+        "host": host,
+        "port": int(port),
+        "url": f"http://{host}:{int(port)}",
+    }
+
+
+def launch_playground(host: str = "127.0.0.1", port: int = 7860) -> None:
+    app_file = _playground_app_file()
+    module = _load_module_from_path(app_file)
+    build_app = getattr(module, "build_app", None)
+    if not callable(build_app):
+        raise RuntimeError(f"Playground app does not expose build_app(): {app_file}")
+    app = cast(Any, build_app())
+    app.launch(server_name=host, server_port=int(port), share=False)
+
+
 def _discover_scenario_files(path: Path) -> list[Path]:
     if path.is_file():
         return [path]
@@ -399,6 +523,39 @@ def _discover_scenario_files(path: Path) -> list[Path]:
     if not files:
         raise ValueError(f"no scenario YAML files found under: {path}")
     return files
+
+
+def _load_optional_json_or_text(path: Path | None) -> Any | None:
+    if path is None:
+        return None
+    text = path.read_text(encoding="utf-8")
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        return text
+
+
+def _playground_app_file() -> Path:
+    candidates = [
+        Path.cwd() / "playground" / "app.py",
+        Path(__file__).resolve().parents[2] / "playground" / "app.py",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    searched = ", ".join(str(candidate) for candidate in candidates)
+    raise FileNotFoundError(f"Could not find playground/app.py; searched {searched}")
+
+
+def _load_module_from_path(path: Path) -> ModuleType:
+    sys.path.insert(0, str(path.parent.parent))
+    sys.path.insert(0, str(path.parent))
+    spec = importlib.util.spec_from_file_location("knoema_playground_app", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Could not load module spec for {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _resolve_telemetry_client(
@@ -421,8 +578,12 @@ __all__ = [
     "CliRunSummary",
     "SimulationRunConfig",
     "build_parser",
+    "launch_playground",
+    "list_scenarios_payload",
     "load_run_config",
     "main",
+    "playground_launch_payload",
     "run_config",
     "validate_scenario_path",
+    "verify_certificate_path",
 ]
