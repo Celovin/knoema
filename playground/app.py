@@ -36,6 +36,7 @@ from knoema.research import (
     submit_zenodo_bundle,
     summarize_seed_tick_effect,
 )
+from knoema.scenario_synthesis import ScenarioSynthesisError, scenario_to_yaml, synthesize_scenario
 
 try:
     from .analysis.fairness_audit import FairnessAuditReport, audit_trait_action_fairness
@@ -738,6 +739,11 @@ LABELS["ko"]["seed_prompt"] = "시드 프롬프트"
 LABELS["ko"]["seed_prompt_placeholder"] = "예: 분주한 항구 술집, 세 명의 NPC, 경쟁과 협력"
 LABELS["ko"]["seed_prompt_apply"] = "시드로 3명 페르소나 생성"
 LABELS["ko"]["seed_prompt_empty"] = "시드 프롬프트를 입력하면 첫 3명 에이전트와 초기 관계 초안을 채웁니다."
+LABELS["ko"]["scenario_synthesis_panel"] = "자연어 시나리오 생성"
+LABELS["ko"]["scenario_synthesis_input"] = "시나리오 설명"
+LABELS["ko"]["scenario_synthesis_placeholder"] = "예: 중세 시장에서 상인 3명과 고객 2명이 가격을 협상한다"
+LABELS["ko"]["scenario_synthesis_button"] = "시나리오 생성"
+LABELS["ko"]["scenario_synthesis_empty"] = "상황을 설명하면 에이전트 초안, 이벤트, YAML을 생성합니다."
 LABELS["ko"]["event_injections"] = "이벤트 주입"
 LABELS["ko"]["event_injections_placeholder"] = (
     "0 | Tavern Bar | 전령이 봉인된 편지를 들고 뛰어든다 | agent_1,agent_2 | urgent_news"
@@ -783,6 +789,11 @@ LABELS["en"]["seed_prompt"] = "Seed prompt"
 LABELS["en"]["seed_prompt_placeholder"] = "Example: a crowded harbor tavern with three NPCs balancing rivalry and cooperation"
 LABELS["en"]["seed_prompt_apply"] = "Generate three personas from seed"
 LABELS["en"]["seed_prompt_empty"] = "Enter a seed prompt to fill the first three agent editors and draft initial relationship seeds."
+LABELS["en"]["scenario_synthesis_panel"] = "Generate scenario from natural language"
+LABELS["en"]["scenario_synthesis_input"] = "Describe your scenario"
+LABELS["en"]["scenario_synthesis_placeholder"] = "Example: a medieval market where 3 merchants and 2 customers negotiate prices"
+LABELS["en"]["scenario_synthesis_button"] = "Generate scenario"
+LABELS["en"]["scenario_synthesis_empty"] = "Describe a situation to draft agents, events, and YAML."
 LABELS["en"]["event_injections"] = "Event injections"
 LABELS["en"]["event_injections_placeholder"] = "0 | Tavern Bar | A courier bursts in with a sealed letter | agent_1,agent_2 | urgent_news"
 LABELS["en"]["initial_relationships"] = "Initial relationship seeds"
@@ -4945,6 +4956,83 @@ def _seed_prompt_updates(seed_prompt: str, language: str) -> tuple[Any, ...]:
     return tuple(outputs)
 
 
+def _scenario_synthesis_updates(description: str, language: str) -> tuple[Any, ...]:
+    output_count = 1 + ((3 + len(PERSONA_TRAIT_FIELDS)) * AGENT_EDITOR_SLOT_COUNT) + 3
+    key = _language_key(language)
+    if not str(description).strip():
+        return tuple(
+            [gr.update() for _ in range(output_count - 1)]
+            + [gr.update(value=LABELS[key]["scenario_synthesis_empty"])]
+        )
+    try:
+        config = synthesize_scenario(str(description), key)
+    except ScenarioSynthesisError as exc:
+        message = (
+            f"생성 실패: {exc}"
+            if key == "ko"
+            else f"Generation failed: {exc}"
+        )
+        return tuple([gr.update() for _ in range(output_count - 1)] + [gr.update(value=message)])
+
+    agents = list(config.get("agents", []))
+    outputs: list[Any] = [gr.update(value=len(agents))]
+    for slot_index in range(AGENT_EDITOR_SLOT_COUNT):
+        if slot_index < len(agents):
+            agent = cast("dict[str, Any]", agents[slot_index])
+            personality = cast("dict[str, Any]", agent.get("personality", {}))
+            outputs.extend(
+                [
+                    gr.update(value=str(agent.get("name", f"Agent {slot_index + 1}"))),
+                    gr.update(value=int(agent.get("age", 30))),
+                    gr.update(value=""),
+                ]
+            )
+            outputs.extend(
+                gr.update(value=float(personality.get(field_name, PERSONA_TRAIT_DEFAULTS[field_name])))
+                for field_name in PERSONA_TRAIT_FIELDS
+            )
+        else:
+            outputs.extend(gr.update() for _ in range(3 + len(PERSONA_TRAIT_FIELDS)))
+    outputs.append(gr.update(value=_scenario_synthesis_event_lines(config)))
+    outputs.append(gr.update(value=_scenario_synthesis_relationship_lines(agents[:3])))
+    outputs.append(gr.update(value=_scenario_synthesis_preview(config, key)))
+    return tuple(outputs)
+
+
+def _scenario_synthesis_event_lines(config: dict[str, Any]) -> str:
+    lines: list[str] = []
+    for event in cast("list[dict[str, Any]]", config.get("events", [])):
+        participants = ",".join(str(participant) for participant in event.get("participants", []))
+        lines.append(
+            " | ".join(
+                [
+                    "0",
+                    str(event.get("location", "Generated Location")),
+                    str(event.get("description", "")),
+                    participants,
+                    str(event.get("event_type", "scenario.trigger")),
+                ]
+            )
+        )
+    return "\n".join(lines)
+
+
+def _scenario_synthesis_relationship_lines(agents: list[Any]) -> str:
+    agent_ids = [str(cast("dict[str, Any]", agent).get("agent_id", f"agent_{index + 1}")) for index, agent in enumerate(agents)]
+    lines: list[str] = []
+    for left_index, left_id in enumerate(agent_ids):
+        for right_id in agent_ids[left_index + 1 :]:
+            lines.append(f"{left_id} | {right_id} | generated_peer | 0.50 | 0.55 | 0.20")
+            lines.append(f"{right_id} | {left_id} | generated_peer | 0.50 | 0.55 | 0.20")
+    return "\n".join(lines)
+
+
+def _scenario_synthesis_preview(config: dict[str, Any], language: str) -> str:
+    title = "생성된 시나리오 YAML" if language == "ko" else "Synthesized scenario YAML"
+    yaml_text = scenario_to_yaml(config)
+    return f"### {title}\n\n```yaml\n{yaml_text}```"
+
+
 def _jsonl_rows(jsonl_text: str) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for line in str(jsonl_text).splitlines():
@@ -8595,6 +8683,27 @@ def build_app() -> gr.Blocks:
             elem_classes=["knoema-hint"],
         )
 
+        scenario_synthesis_panel = gr.Accordion(
+            labels["scenario_synthesis_panel"],
+            open=False,
+            elem_id="scenario-synthesis-panel",
+        )
+        with scenario_synthesis_panel:
+            scenario_synthesis_input = gr.Textbox(
+                label=labels["scenario_synthesis_input"],
+                placeholder=labels["scenario_synthesis_placeholder"],
+                lines=3,
+                elem_id="scenario-synthesis-input",
+            )
+            scenario_synthesis_button = gr.Button(
+                labels["scenario_synthesis_button"],
+                elem_id="scenario-synthesis-button",
+            )
+            scenario_synthesis_output = gr.Markdown(
+                labels["scenario_synthesis_empty"],
+                elem_id="scenario-synthesis-output",
+            )
+
         with gr.Row():
             batch_mode = gr.Checkbox(
                 label=labels["batch_mode"],
@@ -9430,6 +9539,22 @@ def build_app() -> gr.Blocks:
                 ]
             )
         seed_prompt_outputs.extend([initial_relationships, seed_prompt_summary])
+        scenario_synthesis_outputs: list[Any] = [agent_count]
+        for controls in agent_tabs:
+            scenario_synthesis_outputs.extend(
+                [
+                    controls["name"],
+                    controls["age"],
+                    controls["persona_preset"],
+                    *[
+                        controls["trait_sliders"][field_name]
+                        for field_name in PERSONA_TRAIT_FIELDS
+                    ],
+                ]
+            )
+        scenario_synthesis_outputs.extend(
+            [event_injections, initial_relationships, scenario_synthesis_output]
+        )
         agent_editor_state_inputs: list[Any] = []
         for controls in agent_tabs:
             agent_editor_state_inputs.extend(
@@ -9803,6 +9928,11 @@ def build_app() -> gr.Blocks:
             _seed_prompt_updates,
             inputs=[seed_prompt, language],
             outputs=seed_prompt_outputs,
+        )
+        scenario_synthesis_button.click(
+            _scenario_synthesis_updates,
+            inputs=[scenario_synthesis_input, language],
+            outputs=scenario_synthesis_outputs,
         )
         report_agent_button.click(
             _report_agent_answer,

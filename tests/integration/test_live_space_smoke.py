@@ -16,6 +16,7 @@ EXPECT_FORCE_GRAPH = os.environ.get("KNOEMA_EXPECT_FORCE_GRAPH") == "1"
 EXPECT_CROSS_MODEL = os.environ.get("KNOEMA_EXPECT_CROSS_MODEL") == "1"
 EXPECT_FAIRNESS_AUDIT = os.environ.get("KNOEMA_EXPECT_FAIRNESS_AUDIT") == "1"
 EXPECT_PREREG_TEMPLATE = os.environ.get("KNOEMA_EXPECT_PREREG_TEMPLATE") == "1"
+EXPECT_SCENARIO_SYNTHESIS = os.environ.get("KNOEMA_EXPECT_SCENARIO_SYNTHESIS") == "1"
 
 
 def _set_slider_value(page: Page, *, elem_id: str, value: int) -> None:
@@ -88,6 +89,12 @@ def test_live_space_smoke_flow(page: Page) -> None:
         expect(prereg_panel).to_be_visible(timeout=15_000)
         prereg_panel.click()
         expect(app_frame.locator("#prereg-template-picker")).to_be_visible(timeout=15_000)
+    synthesis_panel = app_frame.locator("#scenario-synthesis-panel")
+    if EXPECT_SCENARIO_SYNTHESIS:
+        expect(synthesis_panel).to_be_visible(timeout=15_000)
+        synthesis_panel.click()
+        expect(app_frame.locator("#scenario-synthesis-input")).to_be_visible(timeout=15_000)
+        expect(app_frame.locator("#scenario-synthesis-button")).to_be_visible(timeout=15_000)
     scenario_input = app_frame.locator("#scenario-dropdown input[role='listbox']")
     expect(scenario_input).to_be_visible(timeout=15_000)
     scenario_input.click()
