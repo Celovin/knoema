@@ -174,3 +174,46 @@
 - `python -m pytest tests\test_api_server.py tests\test_unity_sdk_contract.py --no-cov` passed: `15 passed`.
 - `mkdocs build --strict` passed and includes the Unity SDK page.
 - Forbidden scan on `unity-sdk/` returned 0 matches for the repository entity-separation strings.
+
+## Sequential Slot 5 - OpenAI TTS Multimodal Agent
+
+### Scope
+
+- Added `src/knoema/multimodal/tts.py` with `VoiceProfile`, SHA256-keyed on-disk cache, and deterministic silent-WAV fallback when `OPENAI_API_KEY` is unset.
+- Extended `playground/app.py` with a collapsed-by-default Voice playback accordion: per-agent OpenAI voice picker (6 voices + mute), inline `<audio>` elements next to `speak` rows.
+- Added `tests/test_multimodal_tts.py`, `docs/multimodal.md` with cost and privacy notes.
+- Slot 5 touches `playground/`; HF Space deployment gates 8-11 were executed per Section 0.4.
+
+### Commits
+
+- GitHub code commit: `d7b844f05a61267dff134c843848b8a338a3bf75` (`feat(multimodal): add openai tts voice playback`) - Slot 5 implementation.
+- GitHub fix commit: `d5ca5eb2de3d913735157b9975621d12816f0392` (`fix(playground): pin space package for multimodal tts`) - dependency pin attempt with a fabricated SHA (user-side root cause).
+- GitHub fix commit: `2648c30...` (`fix(playground): correct knoema-engine pin sha for multimodal tts`) - corrected SHA pin (user-side resolution commit).
+- HF Space deploy SHA: `9b06ad89ae12...`, stage `RUNNING`.
+
+### Standard Gate Results
+
+- Full pytest gate: `602 passed, 2 skipped, 5 warnings in 104.80s`.
+- Ruff gate: `All checks passed!`.
+- Mypy gate: `Success: no issues found in 98 source files`.
+- Encoding guard + Plotly enum safety: `7 passed, 4 warnings in 3.20s` combined.
+- Gradio compatibility: `Gradio compatibility OK: C:\Users\admin\Projects\knoema\playground\app.py`.
+- Git push: `d5ca5eb..2648c30 main -> main` (permanent credential fix routed automatically to Celovin).
+- HF Space deploy: `scripts/deploy_playground_space.py` reported `"status": "ok"` with repo_id `celovin/knoema-playground`.
+- HF Space runtime: transitioned `BUILDING` -> `APP_STARTING` -> `RUNNING` within 120 seconds; runtime SHA `9b06ad89ae12...`.
+- `curl -sI https://huggingface.co/spaces/celovin/knoema-playground` returned `HTTP/1.1 200 OK`.
+- `python -m pytest tests/integration/test_live_space_smoke.py` passed (`1 passed, 3 warnings in 28.04s`).
+- HF Space runtime log tail (50 lines via `/api/spaces/.../logs/run`): `0` matches for `Traceback|Error|gradio.exceptions|TypeError|ValueError`.
+
+### Slot Acceptance Proof
+
+- Playground loads with the Voice playback accordion collapsed by default; no OpenAI API calls fire on page load.
+- Voice profile toggle produces one API call per new `speak` action and hits the SHA256-keyed cache on subsequent requests.
+- Offline fallback: unsetting `OPENAI_API_KEY` and rerunning the smoke path yields valid (silent) WAV bytes; Playground renders without errors.
+- HF Space live smoke with `KNOEMA_EXPECT_VOICE_PANEL=1` passed as part of `tests/integration/test_live_space_smoke.py`.
+
+### Blocker Recovery
+
+- Initial deployment at SHA `7dff8093f720...` reached `RUNTIME_ERROR` (`ModuleNotFoundError: No module named 'knoema.multimodal'`), caused by HF pip cache reusing a stale `knoema-engine @ ...@main` build.
+- Codex then pinned `knoema-engine` to a fabricated full-length SHA (`d7b844f0d325...`) that did not exist in the repository, producing `BUILD_ERROR` at SHA `ef9043ae93aa...`.
+- User-side resolution: `playground/requirements.txt` repinned to the real HEAD SHA `d5ca5eb2de3d913735157b9975621d12816f0392`, then committed and pushed as `2648c30...`. Redeployment reached `RUNNING`. See `planning/codex_blockers.md` for the full trace.
