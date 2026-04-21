@@ -323,13 +323,14 @@
   <dialog id="ethics">
     <h2>Pedagogical Profile Notice</h2>
     <p>Archetype profiles are teaching overlays for historical and academic criminology concepts. They are not operational profiles, predictions, or guidance for identifying real people.</p>
+    <p id="ethics-personality-note" hidden>CAT-28 personality overlays are narrative and pedagogical persona patterns. They are separate from criminology overlays and must not be interpreted as risk indicators, diagnoses, or evidence about real people.</p>
     <label class="checkline">
       <input id="ethics-check" type="checkbox">
       I understand this is pedagogical.
     </label>
     <div class="modal-actions">
       <button id="ethics-cancel">Cancel</button>
-      <button class="primary" id="ethics-accept" disabled>Continue</button>
+      <button class="primary" id="ethics-accept" disabled>Inject</button>
     </div>
   </dialog>
 
@@ -403,6 +404,7 @@
       memory: document.getElementById("memory-details"),
       profileDetails: document.getElementById("profile-details"),
       ethics: document.getElementById("ethics"),
+      ethicsPersonalityNote: document.getElementById("ethics-personality-note"),
       ethicsCheck: document.getElementById("ethics-check"),
       ethicsAccept: document.getElementById("ethics-accept"),
       ethicsCancel: document.getElementById("ethics-cancel")
@@ -416,7 +418,15 @@
       { archetype_id: "kicrim-fraud-archetype", display_name: "KICRIM fraud archetype", tier: 1, inspired_by: "Korean financial-fraud prevention research", mobility_radius: "8 cells" },
       { archetype_id: "whitechapel-1888", display_name: "Whitechapel 1888", tier: 2, inspired_by: "Jack the Ripper, unidentified historical offender, active 1888", mobility_radius: "4 cells" },
       { archetype_id: "holmes-1890s", display_name: "H.H. Holmes 1890s", tier: 2, inspired_by: "H.H. Holmes, 1861-1896", mobility_radius: "5 cells" },
-      { archetype_id: "gunness-1900s", display_name: "Belle Gunness 1900s", tier: 2, inspired_by: "Belle Gunness, 1859-disappeared 1908", mobility_radius: "3 cells" }
+      { archetype_id: "gunness-1900s", display_name: "Belle Gunness 1900s", tier: 2, inspired_by: "Belle Gunness, 1859-disappeared 1908", mobility_radius: "3 cells" },
+      { archetype_id: "cat28-tsundere", display_name: "CAT-28 Tsundere", tier: 5, inspired_by: "Published Japanese character typology, progressive warmth pattern", mobility_radius: "4 cells" },
+      { archetype_id: "cat28-kuudere", display_name: "CAT-28 Kuudere", tier: 5, inspired_by: "Published Japanese character typology, reserved analytical persona", mobility_radius: "3 cells" },
+      { archetype_id: "cat28-dandere", display_name: "CAT-28 Dandere", tier: 5, inspired_by: "Published Japanese character typology, quiet introvert persona", mobility_radius: "2 cells" },
+      { archetype_id: "cat28-genki", display_name: "CAT-28 Genki", tier: 5, inspired_by: "Published Japanese character typology, high-energy sociability", mobility_radius: "8 cells" },
+      { archetype_id: "cat28-chuunibyou", display_name: "CAT-28 Chuunibyou", tier: 5, inspired_by: "Published Japanese character typology, dramaturgical symbolic persona", mobility_radius: "6 cells" },
+      { archetype_id: "cat28-oneesan", display_name: "CAT-28 Oneesan", tier: 5, inspired_by: "Published Japanese character typology, mature caregiver persona", mobility_radius: "4 cells" },
+      { archetype_id: "cat28-yankee", display_name: "CAT-28 Yankee", tier: 5, inspired_by: "Postwar Japanese subculture typology, low-surveillance navigation", mobility_radius: "5 cells" },
+      { archetype_id: "cat28-intellectual", display_name: "CAT-28 Intellectual", tier: 5, inspired_by: "Published Japanese character typology, information-dense cognition", mobility_radius: "3 cells" }
     ];
     const state = {
       replay: null,
@@ -467,13 +477,50 @@
 
     function populateProfiles() {
       el.profile.querySelectorAll("option:not(:first-child)").forEach((option) => option.remove());
-      for (const profile of state.profiles) {
-        const option = document.createElement("option");
-        option.value = profile.archetype_id;
-        option.textContent = profile.display_name;
-        el.profile.appendChild(option);
+      el.profile.querySelectorAll("optgroup").forEach((group) => group.remove());
+      const groups = [
+        { label: "Criminology - Tier 1", tiers: [1] },
+        { label: "Criminology - Tier 2 Historical", tiers: [2] },
+        { label: "Personality - CAT-28 (Tier 5)", tiers: [5], separator: true }
+      ];
+      for (const group of groups) {
+        if (group.separator) {
+          const separator = document.createElement("option");
+          separator.disabled = true;
+          separator.textContent = "──────── personality overlays ────────";
+          el.profile.appendChild(separator);
+        }
+        const optgroup = document.createElement("optgroup");
+        optgroup.label = group.label;
+        const profiles = state.profiles.filter((profile) => group.tiers.includes(Number(profile.tier)));
+        for (const profile of profiles) {
+          optgroup.appendChild(profileOption(profile));
+        }
+        el.profile.appendChild(optgroup);
       }
       el.profile.disabled = state.profiles.length === 0;
+      publishProfileSummary();
+    }
+
+    function profileOption(profile) {
+        const option = document.createElement("option");
+        option.value = profile.archetype_id;
+        option.textContent = Number(profile.tier) === 5 ? `${profile.display_name} (pedagogical)` : profile.display_name;
+        return option;
+    }
+
+    function publishProfileSummary() {
+      if (window.parent === window) return;
+      const groups = [...el.profile.querySelectorAll("optgroup")].map((group) => ({
+        label: group.label,
+        count: group.querySelectorAll("option").length
+      }));
+      window.parent.postMessage({
+        type: "knoema-profile-groups",
+        groups,
+        total: groups.reduce((sum, group) => sum + group.count, 0),
+        hasSeparator: Boolean(el.profile.querySelector(":scope > option[disabled]"))
+      }, "*");
     }
 
     function render() {
@@ -627,13 +674,19 @@
       const profile = state.profiles.find((candidate) => candidate.archetype_id === profileId);
       if (!profile) return;
       state.pendingProfile = profile;
-      if (sessionStorage.getItem("knoema_archetype_ethics_ack") === "1") {
+      const ackKey = profileEthicsAckKey(profile);
+      if (sessionStorage.getItem(ackKey) === "1") {
         injectPendingProfile();
       } else {
         el.ethicsCheck.checked = false;
         el.ethicsAccept.disabled = true;
+        el.ethicsPersonalityNote.hidden = Number(profile.tier) !== 5;
         el.ethics.showModal();
       }
+    }
+
+    function profileEthicsAckKey(profile) {
+      return Number(profile.tier) === 5 ? "knoema_personality_ethics_ack" : "knoema_archetype_ethics_ack";
     }
 
     function expandFrames(replay) {
@@ -716,7 +769,7 @@
     el.ethicsCheck.addEventListener("change", () => { el.ethicsAccept.disabled = !el.ethicsCheck.checked; });
     el.ethicsCancel.addEventListener("click", () => { state.pendingProfile = null; el.profile.value = ""; el.ethics.close(); });
     el.ethicsAccept.addEventListener("click", () => {
-      sessionStorage.setItem("knoema_archetype_ethics_ack", "1");
+      if (state.pendingProfile) sessionStorage.setItem(profileEthicsAckKey(state.pendingProfile), "1");
       el.ethics.close();
       injectPendingProfile();
     });
