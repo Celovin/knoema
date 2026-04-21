@@ -78,6 +78,7 @@ nav:
       - Web Scenario Editor: website/scenario-editor.md
       - Interactive Tutorial Website: website/tutorial.md
       - Research Workflow: guides/research-workflow.md
+      - Fine-tuning Dataset Export: export/finetuning.md
       - Red Team Report: safety/red_team_report.md
       - Content Filter Policy: safety/content_filter_policy.md
       - Audit Log Schema: safety/audit_log_schema.md

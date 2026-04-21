@@ -28,6 +28,7 @@ from plotly.subplots import make_subplots
 from scipy.stats import chi2_contingency, mannwhitneyu  # type: ignore[import-untyped]
 from scipy.stats import t as student_t
 
+from knoema.export.finetuning import export_finetuning_jsonl
 from knoema.reproducibility import generate_run_fingerprint, verification_guide_markdown
 from knoema.research import (
     PowerAnalysisPlan,
@@ -724,6 +725,9 @@ LABELS["ko"]["html_report_title"] = "Knoema Playground HTML 보고서"
 LABELS["ko"]["generated_at"] = "생성 시각"
 LABELS["ko"]["csv_bundle_button"] = "CSV 묶음 내보내기"
 LABELS["ko"]["csv_bundle_download"] = "CSV 묶음 다운로드"
+LABELS["ko"]["finetuning_format"] = "파인튜닝 포맷"
+LABELS["ko"]["finetuning_button"] = "파인튜닝 데이터 내보내기"
+LABELS["ko"]["finetuning_download"] = "파인튜닝 JSONL 다운로드"
 LABELS["ko"]["latex_table_button"] = "LaTeX 표 내보내기"
 LABELS["ko"]["latex_table_download"] = "LaTeX 표 다운로드"
 LABELS["en"]["html_report_button"] = "Export HTML report"
@@ -732,6 +736,9 @@ LABELS["en"]["html_report_title"] = "Knoema Playground HTML report"
 LABELS["en"]["generated_at"] = "Generated at"
 LABELS["en"]["csv_bundle_button"] = "Export CSV bundle"
 LABELS["en"]["csv_bundle_download"] = "Download CSV bundle"
+LABELS["en"]["finetuning_format"] = "Fine-tuning format"
+LABELS["en"]["finetuning_button"] = "Export fine-tuning dataset"
+LABELS["en"]["finetuning_download"] = "Download fine-tuning JSONL"
 LABELS["en"]["latex_table_button"] = "Export LaTeX table"
 LABELS["en"]["latex_table_download"] = "Download LaTeX table"
 LABELS["ko"]["mirofish_panel"] = "고급 페르소나 랩"
@@ -4769,6 +4776,35 @@ def _export_csv_bundle(
         return str(archive_path)
 
 
+def _finetuning_format_choices(language: str) -> list[tuple[str, str]]:
+    key = _language_key(language)
+    if key == "ko":
+        return [
+            ("OpenAI 채팅 JSONL", "openai"),
+            ("Anthropic 채팅 JSONL", "anthropic"),
+            ("DPO 선호쌍 JSONL", "dpo"),
+        ]
+    return [
+        ("OpenAI chat JSONL", "openai"),
+        ("Anthropic chat JSONL", "anthropic"),
+        ("DPO preference pairs JSONL", "dpo"),
+    ]
+
+
+def _export_finetuning_dataset(
+    jsonl_text: str,
+    export_format: str,
+    language: str,
+) -> str:
+    del language
+    raw_format = str(export_format or "openai").strip()
+    dataset_text = export_finetuning_jsonl(jsonl_text, raw_format)
+    format_slug = raw_format.lower().replace(" ", "_").replace("-", "_")
+    export_path = Path(tempfile.gettempdir()) / f"knoema_finetuning_{format_slug}_{uuid.uuid4().hex}.jsonl"
+    export_path.write_text(dataset_text, encoding="utf-8")
+    return str(export_path)
+
+
 def _latex_escape(text: object) -> str:
     escaped = str(text)
     replacements = {
@@ -6882,6 +6918,13 @@ def _language_updates(
         gr.update(label=labels["html_report_download"]),
         gr.update(value=labels["csv_bundle_button"]),
         gr.update(label=labels["csv_bundle_download"]),
+        gr.update(
+            label=labels["finetuning_format"],
+            choices=_finetuning_format_choices(key),
+            value="openai",
+        ),
+        gr.update(value=labels["finetuning_button"]),
+        gr.update(label=labels["finetuning_download"]),
         gr.update(value=labels["latex_table_button"]),
         gr.update(label=labels["latex_table_download"]),
         gr.update(value=labels["replication_button"]),
@@ -9141,6 +9184,21 @@ def build_app() -> gr.Blocks:
                 label=labels["csv_bundle_download"],
                 elem_id="csv-bundle-download",
             )
+            finetuning_format = gr.Dropdown(
+                label=labels["finetuning_format"],
+                choices=_finetuning_format_choices("ko"),
+                value="openai",
+                elem_id="finetuning-format",
+            )
+            finetuning_button = gr.Button(
+                labels["finetuning_button"],
+                variant="secondary",
+                elem_id="finetuning-export-button",
+            )
+            finetuning_download = gr.File(
+                label=labels["finetuning_download"],
+                elem_id="finetuning-download",
+            )
             latex_table_button = gr.Button(
                 labels["latex_table_button"],
                 variant="secondary",
@@ -9500,6 +9558,9 @@ def build_app() -> gr.Blocks:
             html_report_download,
             csv_bundle_button,
             csv_bundle_download,
+            finetuning_format,
+            finetuning_button,
+            finetuning_download,
             latex_table_button,
             latex_table_download,
             replication_package_button,
@@ -9820,6 +9881,12 @@ def build_app() -> gr.Blocks:
             inputs=[jsonl, memory_snapshot_state, summary, language],
             outputs=[csv_bundle_download],
             api_name="export_csv_bundle",
+        )
+        finetuning_button.click(
+            _export_finetuning_dataset,
+            inputs=[jsonl, finetuning_format, language],
+            outputs=[finetuning_download],
+            api_name="export_finetuning_dataset",
         )
         latex_table_button.click(
             _export_latex_table,

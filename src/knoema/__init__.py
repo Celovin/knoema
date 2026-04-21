@@ -43,6 +43,7 @@ from knoema.evaluation import (
     compute_inter_rater_reliability,
     fleiss_kappa,
 )
+from knoema.export import export_finetuning_jsonl, to_anthropic_jsonl, to_dpo_pairs, to_openai_jsonl
 from knoema.game import NPC, GameSession, NPCResponse
 from knoema.llm import (
     AnthropicClient,
@@ -222,6 +223,7 @@ __all__ = [
     "compute_rcs",
     "decide",
     "detect_hot_shards",
+    "export_finetuning_jsonl",
     "fleiss_kappa",
     "format_markdown_report",
     "generate_run_fingerprint",
@@ -238,6 +240,9 @@ __all__ = [
     "score_log",
     "shard_agents_by_location",
     "telemetry_opt_in_from_env",
+    "to_anthropic_jsonl",
+    "to_dpo_pairs",
+    "to_openai_jsonl",
     "validate_audit_record",
     "verify_run_fingerprint",
 ]
