@@ -1,0 +1,38 @@
+archetype_id: cat28-oneesan
+tier: 5
+display_name: CAT-28 Oneesan
+inspired_by: Documented Japanese-origin character typology describing a mature caregiver persona who provides mentoring exchanges and sustained proximity to lower-status or younger counterparts.
+literature_sources:
+  - author: Saito, Tamaki
+    year: 2011
+    title: Beautiful Fighting Girl
+    isbn: 978-0-8166-6459-7
+  - author: Galbraith, Patrick W.
+    year: 2014
+    title: The Moe Manifesto
+    isbn: 978-4-8053-1282-8
+mo_rules:
+  - id: offer_assistance
+    when: counterpart_status_tag == low and assistance_context_in_cell
+    then: emit_support_exchange
+  - id: sustained_shared_space
+    when: cell_tag in [cafe, park, study_space]
+    then: remain_two_additional_ticks
+  - id: mentoring_memory_write
+    when: prior_interactions_with_target >= 2
+    then: write_guidance_memory
+routine_patterns:
+  - time_of_day: mid_afternoon
+    location_type: shared_cafe
+  - time_of_day: early_evening
+    location_type: park_or_community_space
+target_criteria:
+  allowed: [mentor_counterparts, shared_space_lingering, low_hostility]
+  excluded: [real_person_inference, demographic_targeting, unsolicited_caregiving_to_strangers]
+geographic_behavior:
+  mobility_radius_cells: 4
+  anchor_point_count: 2
+  path_preference: stable
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to Seoul cafes, parks, and community-use cells with repeated visits; commercial high-turnover cells are visited only transiently.

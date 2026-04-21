@@ -47,5 +47,61 @@
     "tier": 2,
     "inspired_by": "Belle Gunness, 1859-disappeared 1908",
     "mobility_radius": "3 cells"
+  },
+  {
+    "archetype_id": "cat28-tsundere",
+    "display_name": "CAT-28 Tsundere",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, progressive warmth pattern",
+    "mobility_radius": "4 cells"
+  },
+  {
+    "archetype_id": "cat28-kuudere",
+    "display_name": "CAT-28 Kuudere",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, reserved analytical persona",
+    "mobility_radius": "3 cells"
+  },
+  {
+    "archetype_id": "cat28-dandere",
+    "display_name": "CAT-28 Dandere",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, quiet introvert persona",
+    "mobility_radius": "2 cells"
+  },
+  {
+    "archetype_id": "cat28-genki",
+    "display_name": "CAT-28 Genki",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, high-energy sociability",
+    "mobility_radius": "8 cells"
+  },
+  {
+    "archetype_id": "cat28-chuunibyou",
+    "display_name": "CAT-28 Chuunibyou",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, dramaturgical symbolic persona",
+    "mobility_radius": "6 cells"
+  },
+  {
+    "archetype_id": "cat28-oneesan",
+    "display_name": "CAT-28 Oneesan",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, mature caregiver persona",
+    "mobility_radius": "4 cells"
+  },
+  {
+    "archetype_id": "cat28-yankee",
+    "display_name": "CAT-28 Yankee",
+    "tier": 5,
+    "inspired_by": "Postwar Japanese subculture typology, low-surveillance navigation",
+    "mobility_radius": "5 cells"
+  },
+  {
+    "archetype_id": "cat28-intellectual",
+    "display_name": "CAT-28 Intellectual",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, information-dense cognition",
+    "mobility_radius": "3 cells"
   }
 ]

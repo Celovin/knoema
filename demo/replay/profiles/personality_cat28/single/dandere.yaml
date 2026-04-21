@@ -1,0 +1,38 @@
+archetype_id: cat28-dandere
+tier: 5
+display_name: CAT-28 Dandere
+inspired_by: Documented Japanese-origin character typology describing a shy, withdrawn persona that communicates in short utterances and gradually opens up only to agents with repeated familiar exposure.
+literature_sources:
+  - author: Galbraith, Patrick W.
+    year: 2009
+    title: 'Moe: Exploring Virtual Potential in Post-Millennial Japan'
+    issn: 1476-9158
+  - author: Galbraith, Patrick W.
+    year: 2014
+    title: The Moe Manifesto
+    isbn: 978-4-8053-1282-8
+mo_rules:
+  - id: crowd_retreat
+    when: agents_in_cell_count > 3
+    then: move_to_peripheral_cell
+  - id: silent_observation
+    when: unfamiliar_agent_in_cell
+    then: hold_position_no_exchange
+  - id: gradual_opening
+    when: prior_interactions_with_target >= 5 and witnesses_in_cell == 0
+    then: emit_short_exchange
+routine_patterns:
+  - time_of_day: early_morning
+    location_type: peripheral_path
+  - time_of_day: late_evening
+    location_type: back_alley
+target_criteria:
+  allowed: [peripheral_movement, long_history_counterparts, quiet_exchange]
+  excluded: [real_person_inference, demographic_targeting, public_social_prompts]
+geographic_behavior:
+  mobility_radius_cells: 2
+  anchor_point_count: 2
+  path_preference: peripheral_edges
+  edge_preference: low
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to Seoul back-alley networks and low-density residential edges; crowded intersections cause the overlay to retreat to peripheral cells until crowd density drops.

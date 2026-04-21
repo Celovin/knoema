@@ -15,6 +15,12 @@ ETHICS_DISCLAIMER = (
     "This profile is a pedagogical, synthetic replay overlay for criminology education. "
     "It is not an operational profiling tool, a prediction, or guidance for identifying any real person."
 )
+TIER5_DISCLAIMER = (
+    "This profile is a pedagogical personality overlay for replay scenarios. "
+    "It does not model any real individual, group, or proprietary character. "
+    "It must not be used for trait assignment to identifiable populations."
+)
+ALLOWED_TIERS = {1, 2, 5}
 FORBIDDEN_NAMES = ("Bundy", "Kemper", "Gacy", "Dahmer", "Ramirez")
 RESEARCH_BY_ID = {
     "fbi-organized": "tier1_archetypes/fbi_organized_research.md",
@@ -25,6 +31,7 @@ RESEARCH_BY_ID = {
     "holmes-1890s": "tier2_historical/holmes_1890s_research.md",
     "gunness-1900s": "tier2_historical/gunness_1900s_research.md",
 }
+TIER5_CITATION_FILE = "personality_cat28/CITATION.md"
 
 
 def main() -> None:
@@ -80,10 +87,12 @@ def _schema_failures(
 def _policy_failures(path: Path, payload: dict[str, Any]) -> list[str]:
     failures: list[str] = []
     tier = payload.get("tier")
-    if tier not in {1, 2}:
-        failures.append(f"{path}: tier must be 1 or 2")
-    if payload.get("ethical_disclaimer") != ETHICS_DISCLAIMER:
-        failures.append(f"{path}: ethical_disclaimer must match profiles/ETHICS.md section 2")
+    if tier not in ALLOWED_TIERS:
+        failures.append(f"{path}: tier must be one of {sorted(ALLOWED_TIERS)}")
+    expected_disclaimer = TIER5_DISCLAIMER if tier == 5 else ETHICS_DISCLAIMER
+    disclaimer_ref = "personality_cat28/README.md" if tier == 5 else "profiles/ETHICS.md section 2"
+    if payload.get("ethical_disclaimer") != expected_disclaimer:
+        failures.append(f"{path}: ethical_disclaimer must match {disclaimer_ref}")
     sources = payload.get("literature_sources")
     if not isinstance(sources, list) or not sources:
         failures.append(f"{path}: literature_sources must be non-empty")
@@ -94,6 +103,9 @@ def _policy_failures(path: Path, payload: dict[str, Any]) -> list[str]:
 
 def _citation_failures(path: Path, payload: dict[str, Any], root: Path) -> list[str]:
     archetype_id = str(payload.get("archetype_id", ""))
+    tier = payload.get("tier")
+    if tier == 5:
+        return _tier5_citation_failures(path, payload, root)
     research_rel = RESEARCH_BY_ID.get(archetype_id)
     if research_rel is None:
         return [f"{path}: no research mapping for {archetype_id}"]
@@ -112,6 +124,27 @@ def _citation_failures(path: Path, payload: dict[str, Any], root: Path) -> list[
         if identifier not in _normalized_appendix(appendix):
             failures.append(
                 f"{path}: literature_sources[{index}] identifier {identifier} missing from {research_path}"
+            )
+    return failures
+
+
+def _tier5_citation_failures(path: Path, payload: dict[str, Any], root: Path) -> list[str]:
+    citation_path = root / TIER5_CITATION_FILE
+    if not citation_path.exists():
+        return [f"{path}: tier 5 requires {citation_path} bibliography file"]
+    citation_text = citation_path.read_text(encoding="utf-8")
+    failures: list[str] = []
+    for index, source in enumerate(payload.get("literature_sources", [])):
+        if not isinstance(source, dict):
+            failures.append(f"{path}: literature_sources[{index}] must be a mapping")
+            continue
+        identifier = _normalize_identifier(str(source.get("doi") or source.get("isbn") or source.get("issn", "")))
+        if not identifier.strip():
+            failures.append(f"{path}: literature_sources[{index}] missing DOI, ISBN, or ISSN")
+            continue
+        if identifier not in _normalized_appendix(citation_text):
+            failures.append(
+                f"{path}: literature_sources[{index}] identifier {identifier} missing from {citation_path}"
             )
     return failures
 

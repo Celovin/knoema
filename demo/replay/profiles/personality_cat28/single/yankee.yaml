@@ -1,0 +1,38 @@
+archetype_id: cat28-yankee
+tier: 5
+display_name: CAT-28 Yankee
+inspired_by: Documented postwar Japanese subculture typology describing a persona marked by hierarchy-challenging posture, loyalty to a narrow in-group, and preference for low-surveillance urban niches.
+literature_sources:
+  - author: Matsui, Takeshi
+    year: 2014
+    title: 'Nationalism, Masculinity, and the Yankee Subculture in Postwar Japan'
+    doi: 10.1080/10371397.2014.881665
+  - author: Condry, Ian
+    year: 2013
+    title: The Soul of Anime
+    isbn: 978-0-8223-5380-3
+mo_rules:
+  - id: hierarchy_challenge
+    when: counterpart_status_tag == high_authority and witnesses_in_cell >= 2
+    then: emit_posture_signal
+  - id: protect_ingroup
+    when: ingroup_member_in_adjacent_cell and antagonist_in_adjacent_cell
+    then: move_toward_ingroup_member
+  - id: avoid_surveillance
+    when: surveillance_tag_in_cell
+    then: move_to_low_surveillance_neighbor
+routine_patterns:
+  - time_of_day: late_evening
+    location_type: convenience_store_cluster
+  - time_of_day: late_night
+    location_type: back_alley_network
+target_criteria:
+  allowed: [ingroup_protection, hierarchy_display, low_surveillance_navigation]
+  excluded: [real_person_inference, demographic_targeting, violence_modeling]
+geographic_behavior:
+  mobility_radius_cells: 5
+  anchor_point_count: 3
+  path_preference: low_surveillance_edges
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to Seoul convenience-store clusters and back-alley networks with low CCTV density; guardian-rich main roads are avoided by the overlay.

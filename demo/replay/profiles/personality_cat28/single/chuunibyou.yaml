@@ -1,0 +1,38 @@
+archetype_id: cat28-chuunibyou
+tier: 5
+display_name: CAT-28 Chuunibyou
+inspired_by: Documented Japanese-origin character typology describing a dramaturgical persona that imposes symbolic narrative framing on ordinary surroundings and prefers atypical or liminal locations.
+literature_sources:
+  - author: Black, Daniel
+    year: 2014
+    title: 'The Virtual Idol: Producing and Consuming Digital Femininity'
+    isbn: 978-1-137-37289-2
+  - author: Galbraith, Patrick W.
+    year: 2019
+    title: Otaku and the Struggle for Imagination in Japan
+    isbn: 978-1-4780-0560-7
+mo_rules:
+  - id: seek_symbolic_location
+    when: cell_geometry_unusual or cell_tag == liminal
+    then: linger_for_two_ticks
+  - id: atypical_hour_exploration
+    when: time_of_day in [late_night, dawn]
+    then: move_toward_exploration_target
+  - id: solo_soliloquy
+    when: agents_in_cell_count == 0
+    then: emit_monologue_memory_write
+routine_patterns:
+  - time_of_day: late_night
+    location_type: rooftop_or_overpass
+  - time_of_day: dawn
+    location_type: peripheral_geometric_anomaly
+target_criteria:
+  allowed: [symbolic_geometry, atypical_hours, solo_exploration]
+  excluded: [real_person_inference, demographic_targeting, crowd_confrontation]
+geographic_behavior:
+  mobility_radius_cells: 6
+  anchor_point_count: 4
+  path_preference: exploratory
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to rooftops, overpasses, and unusual-geometry cells in the Seoul grid; atypical-hour sessions weight the overlay toward exploration.

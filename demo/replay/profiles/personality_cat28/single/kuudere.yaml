@@ -1,0 +1,38 @@
+archetype_id: cat28-kuudere
+tier: 5
+display_name: CAT-28 Kuudere
+inspired_by: Documented Japanese-origin character typology describing a reserved, composed persona characterized by analytical responses and minimal emotional display.
+literature_sources:
+  - author: Galbraith, Patrick W.
+    year: 2014
+    title: The Moe Manifesto
+    isbn: 978-4-8053-1282-8
+  - author: Saito, Tamaki
+    year: 2011
+    title: Beautiful Fighting Girl
+    isbn: 978-0-8166-6459-7
+mo_rules:
+  - id: analytical_response
+    when: information_request_in_cell
+    then: emit_data_exchange
+  - id: low_affect_default
+    when: social_stimulus_in_cell
+    then: hold_position
+  - id: selective_engagement
+    when: counterpart_history_depth >= 5 and repeated_route_overlap
+    then: allow_brief_exchange
+routine_patterns:
+  - time_of_day: late_morning
+    location_type: quiet_zone
+  - time_of_day: mid_afternoon
+    location_type: academic_cluster
+target_criteria:
+  allowed: [information_exchange, quiet_observation, long_history_counterparts]
+  excluded: [real_person_inference, demographic_targeting, high_arousal_prompts]
+geographic_behavior:
+  mobility_radius_cells: 3
+  anchor_point_count: 2
+  path_preference: low_traffic
+  edge_preference: low
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to quiet Seoul cells near libraries, study cafes, and low-traffic residential edges; high-stimulus commercial strips are avoided.

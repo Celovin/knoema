@@ -1,0 +1,38 @@
+archetype_id: cat28-tsundere
+tier: 5
+display_name: CAT-28 Tsundere
+inspired_by: Documented Japanese-origin character typology describing an initially brusque persona that becomes progressively warmer toward a specific counterpart over repeated exposure.
+literature_sources:
+  - author: Galbraith, Patrick W.
+    year: 2014
+    title: The Moe Manifesto
+    isbn: 978-4-8053-1282-8
+  - author: Azuma, Hiroki
+    year: 2009
+    title: 'Otaku: Japan''s Database Animals'
+    isbn: 978-0-8166-5352-2
+mo_rules:
+  - id: witnessed_deflection
+    when: guardian_distance_cells <= 2 and familiar_agent_in_cell
+    then: defer_reciprocity_one_tick
+  - id: private_reciprocity
+    when: witnesses_in_cell == 0 and familiar_agent_in_cell
+    then: exchange_memory_writeback
+  - id: repeated_exposure_warmup
+    when: prior_interactions_with_target >= 3
+    then: reduce_deflection_probability
+routine_patterns:
+  - time_of_day: morning_commute
+    location_type: transit_path
+  - time_of_day: evening_transition
+    location_type: commercial_edge
+target_criteria:
+  allowed: [recurring_counterpart, familiar_route_overlap]
+  excluded: [real_person_inference, demographic_targeting, forced_social_contact]
+geographic_behavior:
+  mobility_radius_cells: 4
+  anchor_point_count: 3
+  path_preference: familiar_routes
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to commuter-style repetition on familiar Seoul paths, with witnessed commercial-edge cells suppressing overt reciprocity until crowd density drops.

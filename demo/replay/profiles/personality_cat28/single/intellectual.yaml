@@ -1,0 +1,38 @@
+archetype_id: cat28-intellectual
+tier: 5
+display_name: CAT-28 Intellectual
+inspired_by: Documented Japanese-origin character typology describing a persona oriented toward information-dense environments, preference for slow-pace cognition, and low interest in high-arousal social stimuli.
+literature_sources:
+  - author: Azuma, Hiroki
+    year: 2009
+    title: 'Otaku: Japan''s Database Animals'
+    isbn: 978-0-8166-5352-2
+  - author: Galbraith, Patrick W.
+    year: 2019
+    title: Otaku and the Struggle for Imagination in Japan
+    isbn: 978-1-4780-0560-7
+mo_rules:
+  - id: seek_information_dense_cell
+    when: cell_tag in [library, academic_cluster, bookshop]
+    then: linger_for_three_ticks
+  - id: avoid_disruption_zone
+    when: noise_level_tag == high
+    then: move_to_quieter_neighbor
+  - id: slow_pace_navigation
+    when: available_tick_budget > 0
+    then: reduce_move_speed
+routine_patterns:
+  - time_of_day: late_morning
+    location_type: library_or_bookshop
+  - time_of_day: late_afternoon
+    location_type: slow_pace_commercial_strip
+target_criteria:
+  allowed: [information_exchange, slow_pace_navigation, quiet_cognition]
+  excluded: [real_person_inference, demographic_targeting, high_arousal_prompts]
+geographic_behavior:
+  mobility_radius_cells: 3
+  anchor_point_count: 2
+  path_preference: low_noise
+  edge_preference: low
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to Seoul library zones, slow-pace bookshop strips, and quiet academic cells; high-noise transit hubs are avoided by the overlay.
