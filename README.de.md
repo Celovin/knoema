@@ -45,6 +45,7 @@ Alle Public-Safety-Beispiele in diesem Repository sind fiktiv, synthetisch und n
 - Simulationsrunner, CLI und Dashboard mit JSONL-Export
 - Playground, Benchmarks, Game-SDKs und Forschungsberichte
 - 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
+- Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout
 
 ## Schnellstart
 
@@ -78,6 +79,7 @@ streamlit run dashboard/app.py
 - [Scenario Marketplace Beta](scenarios_hub/README.md)
 - [DSL Tutorial](docs/dsl/tutorial.md)
 - [Game SDK Docs](docs/sdk/python-api.md)
+- [Unity SDK (preview)](docs/unity-sdk.md)
 - [Research Positioning](docs/research.md)
 - [Security Policy](docs/SECURITY.md)
 

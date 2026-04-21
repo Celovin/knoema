@@ -229,6 +229,68 @@ class HealthResponse(BaseModel):
     active_simulations: int
 
 
+class UnityTickRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: str = Field(default="unity-demo", min_length=1)
+    agent_id: str = Field(default="guide", min_length=1)
+    player_action: str = Field(min_length=1)
+    context_json: str = "{}"
+
+
+class UnityActionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: str = Field(default="unity-demo", min_length=1)
+    action_type: str = Field(default="speak", min_length=1)
+    target: str | None = None
+    content: str = Field(min_length=1)
+    location: str | None = None
+    metadata_json: str = "{}"
+    context_json: str = "{}"
+
+
+class UnityActionPayload(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    action_type: str
+    target: str | None
+    content: str
+    location: str
+    timestamp: datetime
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class UnityTickResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: str
+    agent_id: str
+    tick: int
+    content: str
+    emotion: str
+    branch_flags: list[str]
+    action: UnityActionPayload
+
+
+class UnityMemoryResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: str
+    agent_id: str
+    memories: list[MemoryItem]
+
+
+class UnityActionAcceptedResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: str
+    agent_id: str
+    tick: int
+    accepted: bool
+    action: UnityActionPayload
+
+
 __all__ = [
     "AgentListResponse",
     "AgentSummary",
@@ -245,4 +307,10 @@ __all__ = [
     "SimulationStatus",
     "SimulationStatusResponse",
     "TheoryOfMindConfig",
+    "UnityActionAcceptedResponse",
+    "UnityActionPayload",
+    "UnityActionRequest",
+    "UnityMemoryResponse",
+    "UnityTickRequest",
+    "UnityTickResponse",
 ]

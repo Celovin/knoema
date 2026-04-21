@@ -1,0 +1,25 @@
+{
+  "name": "com.celovin.knoema",
+  "version": "0.2.0",
+  "displayName": "Knoema Unity SDK",
+  "description": "Preview Unity package for driving NPC ticks through the Knoema FastAPI runtime.",
+  "unity": "2022.3",
+  "author": {
+    "name": "Celovin",
+    "email": "hello@celovin.com",
+    "url": "https://github.com/Celovin/knoema"
+  },
+  "keywords": [
+    "npc",
+    "simulation",
+    "agent",
+    "llm"
+  ],
+  "samples": [
+    {
+      "displayName": "Basic NPC",
+      "description": "Minimal YAML scene description and controller notes for one NPC tick loop.",
+      "path": "Samples~/BasicNPC"
+    }
+  ]
+}

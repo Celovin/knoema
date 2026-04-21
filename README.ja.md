@@ -45,6 +45,7 @@ Knoema Engine は、記憶、関係、感情、環境コンテキスト、LLM �
 - JSONL エクスポート付きシミュレーションランナー、CLI、ダッシュボード
 - Playground、ベンチマーク、ゲーム SDK、研究用レポート
 - 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
+- Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout
 
 ## クイックスタート
 
@@ -78,6 +79,7 @@ streamlit run dashboard/app.py
 - [Scenario Marketplace Beta](scenarios_hub/README.md)
 - [DSL Tutorial](docs/dsl/tutorial.md)
 - [Game SDK Docs](docs/sdk/python-api.md)
+- [Unity SDK (preview)](docs/unity-sdk.md)
 - [Research Positioning](docs/research.md)
 - [Security Policy](docs/SECURITY.md)
 

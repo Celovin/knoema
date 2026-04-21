@@ -45,6 +45,7 @@ Tous les exemples liés à la sécurité publique dans ce dépôt sont fictifs, 
 - Moteur de simulation, CLI et tableau de bord avec export JSONL
 - Playground, benchmarks, SDK de jeu et rapports de recherche
 - 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
+- Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout
 
 ## Démarrage rapide
 

@@ -49,6 +49,7 @@ Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정�
 - JSON과 Markdown 리포트를 생성하는 deterministic benchmark script
 - 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 - Godot 4 어댑터 스캐폴드
+- Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout
 - Python, TypeScript, GDScript Game SDK facade
 - Playback과 live-tail control을 포함한 Streamlit 시뮬레이션 로그 대시보드
 
@@ -171,6 +172,7 @@ print(response.text)
 - [Python Game SDK](docs/sdk/python-api.md)
 - [TypeScript Game SDK](docs/sdk/typescript-api.md)
 - [Godot GDScript Game SDK](docs/sdk/godot-api.md)
+- [Unity SDK (preview)](docs/unity-sdk.md)
 - [Game SDK Integration Patterns](docs/sdk/integration_patterns.md)
 
 ## Godot 연동
@@ -186,6 +188,8 @@ https://github.com/Celovin/knoema.git?path=adapters/unity
 ```
 
 Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 컴포넌트, Basic NPC 샘플은 [adapters/unity/README.md](adapters/unity/README.md)를 참고하세요.
+
+새 Unity SDK (preview) 패키지는 [unity-sdk](unity-sdk/README.md)에 있으며 FastAPI `/simulate/tick`, `/agent/{id}/memory`, `/agent/{id}/action` 계약을 사용합니다.
 
 ## 문서
 

@@ -1,0 +1,14 @@
+{
+  "name": "Knoema.UnitySdk.Runtime",
+  "rootNamespace": "Knoema.UnitySdk",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -1,0 +1,28 @@
+scene:
+  name: BasicNPC
+  unity_version: "2022.3"
+  objects:
+    - name: Guide
+      components:
+        - type: Transform
+          position: [0, 0, 0]
+        - type: KnoemaNPC
+          base_url: http://localhost:8000
+          session_id: unity-demo
+          agent_id: guide
+          context_json: '{"location":"Demo Village > Plaza","agent_name":"Guide"}'
+    - name: Player
+      components:
+        - type: Transform
+          position: [2, 0, 0]
+  interaction:
+    input: "player presses E near Guide"
+    endpoint: "POST /simulate/tick"
+    expected_response_fields:
+      - session_id
+      - agent_id
+      - tick
+      - content
+      - emotion
+      - branch_flags
+      - action

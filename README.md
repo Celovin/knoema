@@ -62,6 +62,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Cloud deployment templates for AWS, GCP, and Azure production planning
 - Godot 4 adapter scaffold
 - Unity 2022 LTS adapter scaffold for Package Manager Git installs
+- Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout
 - Game SDK facades for Python, TypeScript, and GDScript NPC integrations
 - Mobile SDK scaffolds for iOS Swift Package Manager and Android Kotlin clients
 - Browser-side static runtime for no-server 2-agent, 5-agent, and Sally-Anne demos
@@ -354,6 +355,7 @@ SDK references:
 - [Python Game SDK](docs/sdk/python-api.md)
 - [TypeScript Game SDK](docs/sdk/typescript-api.md)
 - [Godot GDScript Game SDK](docs/sdk/godot-api.md)
+- [Unity SDK (preview)](docs/unity-sdk.md)
 - [Game SDK Integration Patterns](docs/sdk/integration_patterns.md)
 
 ## Godot Integration
@@ -381,6 +383,8 @@ https://github.com/Celovin/knoema.git?path=adapters/unity
 ```
 
 See [adapters/unity/README.md](adapters/unity/README.md) for the Unity 2022.3 LTS package scaffold, HTTP/local fallback client, `NPCAgent` component, and Basic NPC sample.
+
+The new preview Unity SDK package lives under [unity-sdk](unity-sdk/README.md) and targets the FastAPI `/simulate/tick`, `/agent/{id}/memory`, and `/agent/{id}/action` contract.
 
 Open the host Unity project with:
 

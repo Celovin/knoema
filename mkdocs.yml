@@ -113,6 +113,7 @@ nav:
       - Python SDK: sdk/python-api.md
       - TypeScript SDK: sdk/typescript-api.md
       - Godot SDK: sdk/godot-api.md
+      - Unity SDK: unity-sdk.md
       - Mobile SDKs: sdk/mobile.md
       - Integration Patterns: sdk/integration_patterns.md
   - Reports:
