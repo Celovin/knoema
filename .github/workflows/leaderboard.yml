@@ -1,0 +1,39 @@
+name: Leaderboard
+
+on:
+  push:
+    paths:
+      - "bench/submissions/*.yaml"
+      - "bench/schema.yaml"
+      - "scripts/build_leaderboard.py"
+      - "scripts/validate_submission.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install validator dependencies
+        run: python -m pip install pyyaml jsonschema
+      - name: Rebuild leaderboard
+        run: python scripts/build_leaderboard.py
+      - name: Commit rebuilt leaderboard
+        run: |
+          if git diff --quiet -- bench/submissions/knoema-0.2.0.yaml docs/bench/leaderboard.md; then
+            echo "leaderboard is current"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bench/submissions/knoema-0.2.0.yaml docs/bench/leaderboard.md
+          git commit -m "docs(bench): rebuild leaderboard"
+          git push

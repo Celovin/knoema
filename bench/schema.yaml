@@ -1,0 +1,73 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Knoema Bench submission"
+type: object
+required:
+  - framework
+  - version
+  - date
+  - contact
+  - results
+additionalProperties: false
+properties:
+  framework:
+    type: string
+    minLength: 1
+  version:
+    type: string
+    minLength: 1
+  date:
+    type: string
+    pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+  contact:
+    type: string
+    minLength: 1
+  repository:
+    type: string
+  results:
+    type: object
+    required:
+      - locomo
+      - memoryagentbench
+      - memoryarena
+      - mlmf
+      - theory_of_mind
+      - htn
+      - realtime_latency
+    additionalProperties: false
+    properties:
+      locomo:
+        $ref: "#/$defs/axis_result"
+      memoryagentbench:
+        $ref: "#/$defs/axis_result"
+      memoryarena:
+        $ref: "#/$defs/axis_result"
+      mlmf:
+        $ref: "#/$defs/axis_result"
+      theory_of_mind:
+        $ref: "#/$defs/axis_result"
+      htn:
+        $ref: "#/$defs/axis_result"
+      realtime_latency:
+        $ref: "#/$defs/axis_result"
+$defs:
+  axis_result:
+    type: object
+    required:
+      - score
+      - target
+      - caveat
+      - source
+    additionalProperties: false
+    properties:
+      score:
+        type: number
+        minimum: 0
+      target:
+        type: number
+        minimum: 0
+      caveat:
+        type: string
+        minLength: 10
+      source:
+        type: string
+        minLength: 1

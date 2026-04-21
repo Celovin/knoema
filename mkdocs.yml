@@ -44,6 +44,11 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Knoema Bench:
+      - Overview: bench/index.md
+      - Leaderboard: bench/leaderboard.md
+      - Methodology: bench/methodology.md
+      - Contributing: bench/contributing.md
   - Getting Started:
       - Installation: getting-started/installation.md
       - First Simulation: getting-started/first-simulation.md

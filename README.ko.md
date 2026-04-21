@@ -12,6 +12,10 @@
 
 0.2.0
 
+## Knoema Bench
+
+Knoema Bench 공개 리더보드는 7개 축의 지속형 에이전트 프레임워크 결과를 정리합니다. 라이브 페이지: [https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/). 제출 템플릿: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml).
+
 ## 언어
 
 | English | 한국어 | 日本語 | 简体中文 | 繁體中文 | Deutsch | Français | Español |

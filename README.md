@@ -14,6 +14,10 @@
 
 0.2.0
 
+## Knoema Bench
+
+Knoema Bench publishes a seven-axis public leaderboard for long-term memory, multi-layer retention, theory-of-mind, hierarchical planning, and real-time latency. See the live page at [https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/) or start from the [submission template](bench/submissions/TEMPLATE.yaml).
+
 ## Languages
 
 | English | 한국어 | 日本語 | 简体中文 | 繁體中文 | Deutsch | Français | Español |

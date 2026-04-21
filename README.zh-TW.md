@@ -12,6 +12,10 @@
 
 0.2.0
 
+## Knoema Bench
+
+Knoema Bench is the seven-axis public leaderboard for persistent-agent frameworks. Live page: [https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/). Submission template: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml).
+
 ## 語言
 
 | English | 한국어 | 日本語 | 简体中文 | 繁體中文 | Deutsch | Français | Español |

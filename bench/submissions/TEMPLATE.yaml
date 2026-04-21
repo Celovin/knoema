@@ -1,0 +1,44 @@
+# Copy this file to bench/submissions/<framework>-<version>.yaml.
+# Use measured values only. If an axis has not been run, do not invent a number;
+# write a caveat that says what is missing and keep the source auditable.
+framework: "Example Framework"
+version: "0.0.0"
+date: "2026-04-21"
+contact: "name@example.com"
+repository: "https://example.com/framework"
+results:
+  locomo:
+    score: 0.0
+    target: 0.8
+    caveat: "not-measured; replace with measured LoCoMo-compatible evidence"
+    source: "https://example.com/evidence/locomo"
+  memoryagentbench:
+    score: 0.0
+    target: 0.8
+    caveat: "not-measured; replace with measured MemoryAgentBench-compatible evidence"
+    source: "https://example.com/evidence/memoryagentbench"
+  memoryarena:
+    score: 0.0
+    target: 0.6
+    caveat: "not-measured; replace with measured MemoryArena-compatible evidence"
+    source: "https://example.com/evidence/memoryarena"
+  mlmf:
+    score: 0.0
+    target: 0.569
+    caveat: "not-measured; replace with measured multi-layer memory retention evidence"
+    source: "https://example.com/evidence/mlmf"
+  theory_of_mind:
+    score: 0.0
+    target: 0.8
+    caveat: "not-measured; replace with measured Sally-Anne false-belief evidence"
+    source: "https://example.com/evidence/theory-of-mind"
+  htn:
+    score: 0.0
+    target: 0.85
+    caveat: "not-measured; replace with measured hierarchical planning evidence"
+    source: "https://example.com/evidence/htn"
+  realtime_latency:
+    score: 0.0
+    target: 1.0
+    caveat: "not-measured; replace with measured latency or published-envelope evidence"
+    source: "https://example.com/evidence/latency"
