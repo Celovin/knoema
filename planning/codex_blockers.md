@@ -27,9 +27,22 @@
 - Local blocked commit: `e39cea0a7cd93515cb08a92c404f8f835dba759e`
 - Remote error: `remote: Permission to Celovin/knoema.git denied to litheonhq. fatal: unable to access 'https://github.com/Celovin/knoema.git/': The requested URL returned error: 403`
 
-## Policy Note - Codex Must Not Change Remote URL
+## Policy Note - Codex Must Not Change Credential Config
 
-- The `origin` remote URL is fixed to `https://Celovin@github.com/Celovin/knoema.git` as a user-side permanent fix for the recurring 403 issue.
+User-side permanent fix (2026-04-22) is now complete. `git push origin main` routes to the Celovin credential independently of `gh auth switch` state. Codex may push without any credential-related workaround.
+
+Fix details (do not modify):
+
+- `origin` remote URL: `https://Celovin@github.com/Celovin/knoema.git` (fetch and push).
+- Repo-local `.git/config` overrides the github.com credential helper to Git Credential Manager:
+  - `credential.https://github.com.helper=` (resets inherited gh helper)
+  - `credential.https://github.com.helper=manager`
+- Git Credential Manager holds a Celovin-keyed entry for `https://github.com` and resolves the `Celovin@github.com` URL hint to that entry.
+
+Hard rules for Codex:
+
 - Codex MUST NOT run `git remote set-url`, `git remote add`, or otherwise rewrite the origin remote.
-- Codex MUST NOT run `gh auth switch`. User-side GCM username hint already routes credentials correctly.
-- If a future push is still denied, halt with `Slot N BLOCKED: git push denied despite embedded-username remote` and let the user diagnose; do not attempt credential workarounds.
+- Codex MUST NOT run `gh auth switch`, `gh auth login`, or `gh auth logout`.
+- Codex MUST NOT modify `credential.*` keys in any git config scope.
+- Codex MUST NOT add or modify files under `.git/`.
+- If a future push is still denied, halt with `Slot N BLOCKED: git push denied despite permanent credential fix` and let the user diagnose.
