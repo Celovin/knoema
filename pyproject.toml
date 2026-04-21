@@ -111,6 +111,7 @@ local-llm = [
 distributed = [
     "ray[default]>=2.40",
 ]
+mcp = []
 
 [project.urls]
 Homepage = "https://github.com/Celovin/knoema"
@@ -120,9 +121,10 @@ Issues = "https://github.com/Celovin/knoema/issues"
 [project.scripts]
 knoema = "knoema.cli:main"
 knoema-verify = "knoema.reproducibility:main"
+knoema-mcp = "knoema_mcp.server:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/knoema"]
+packages = ["src/knoema", "src/knoema_mcp"]
 
 [tool.ruff]
 line-length = 100
