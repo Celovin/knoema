@@ -141,3 +141,36 @@
 - Research phase completed before profile YAML generation. All 7 research docs are within the 1500-3000 word bound, `_source_log.json` records consulted sources, and `python scripts\validate_citations.py demo\replay\profiles\_research` passed.
 - `python scripts\validate_profile.py "demo/replay/profiles/**/*.yaml"` passed; all profile sources cross-reference their research appendices.
 - Forbidden scans for `Litheon|Seizn|Ovriel|Fangden|Notrivo` and Tier 3/4 forbidden-name substrings returned 0 matches in Slot 3 surfaces.
+
+## Sequential Slot 4 - Unity SDK Scaffold
+
+### Scope
+
+- Added a preview Unity SDK package at `unity-sdk/Packages/com.celovin.knoema` with UPM metadata, runtime HTTP client, `KnoemaNPC`, DTO models, Editor settings window, and a YAML Basic NPC sample.
+- Added Unity-compatible FastAPI routes for `POST /simulate/tick`, `GET /agent/{id}/memory`, and `POST /agent/{id}/action`, backed by the existing `Simulator`.
+- Added `docs/unity-sdk.md`, MkDocs navigation, multilingual README bullets, and `tests/test_unity_sdk_contract.py`.
+- Slot 4 did not touch `playground/`; HF Space deployment gates 8-11 were skipped per Section 0.4.
+
+### Commit
+
+- GitHub code commit: `f6de9418ff668021815ad237d1a664ce70bbe5ec` (`feat(unity-sdk): add preview unity package and api server`)
+- HF Space SHA / stage: N/A, no playground deployment.
+
+### Standard Gate Results
+
+- Full pytest gate: `597 passed, 2 skipped, 5 warnings in 113.99s`
+- Ruff gate: `All checks passed!`
+- Mypy gate: `Success: no issues found in 96 source files`
+- Encoding guard: `3 passed`
+- Gradio compatibility: `Gradio compatibility OK: C:\Users\admin\Projects\knoema\playground\app.py`
+- Plotly enum safety: `4 passed`
+- Git push: `origin/main` resolved to `f6de9418ff668021815ad237d1a664ce70bbe5ec` after user-side GitHub auth switch.
+
+### Slot Acceptance Proof
+
+- `python -m pytest tests\test_unity_sdk_contract.py --no-cov` passed: `4 passed`.
+- `package.json` validates the expected UPM fields: package name `com.celovin.knoema`, version `0.2.0`, Unity `2022.3`, and `Samples~/BasicNPC`.
+- Contract tests hit the exact FastAPI payloads documented for the C# client and verified tick, memory, and action response shapes.
+- `python -m pytest tests\test_api_server.py tests\test_unity_sdk_contract.py --no-cov` passed: `15 passed`.
+- `mkdocs build --strict` passed and includes the Unity SDK page.
+- Forbidden scan on `unity-sdk/` returned 0 matches for the repository entity-separation strings.
