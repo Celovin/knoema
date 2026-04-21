@@ -87,6 +87,17 @@ nav:
       - Papers with Code Packet: research/papers_with_code_submission.md
       - Proposal Mapping: research/proposal_mapping.md
       - Effort Allocation: research/effort_allocation.md
+      - Pre-registration Templates:
+          - Theory of Mind Development: research/prereg_templates/theory_of_mind_development.md
+          - Trait Stability Over Time: research/prereg_templates/trait_stability_over_time.md
+          - Group Polarization Dynamics: research/prereg_templates/group_polarization_dynamics.md
+          - Moral Foundation x Action Coupling: research/prereg_templates/moral_foundation_action_coupling.md
+          - Schwartz Value Priority Emergence: research/prereg_templates/schwartz_value_priority_emergence.md
+          - Cultural Variation in Honesty-Humility: research/prereg_templates/cultural_variation_honesty_humility.md
+          - Memory Decay and Retrieval Accuracy: research/prereg_templates/memory_decay_retrieval_accuracy.md
+          - Dark Tetrad x Cooperation Rate: research/prereg_templates/dark_tetrad_cooperation_rate.md
+          - Agent Imitation and Influence: research/prereg_templates/agent_imitation_influence.md
+          - Conversation Coordination Patterns: research/prereg_templates/conversation_coordination_patterns.md
       - Safety Scenarios: guides/safety-scenarios.md
   - SDK:
       - Python SDK: sdk/python-api.md

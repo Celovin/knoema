@@ -58,6 +58,7 @@ try:
         questionnaire_summary_markdown,
         score_hexaco_questionnaire,
     )
+    from .prereg_templates import prereg_template_by_id, prereg_template_choices
     from .simulation import (
         AGENT_COUNT_MAX,
         AGENT_COUNT_MIN,
@@ -119,6 +120,7 @@ except ImportError:  # pragma: no cover - Hugging Face runs app.py as a script.
         questionnaire_summary_markdown,
         score_hexaco_questionnaire,
     )
+    from prereg_templates import prereg_template_by_id, prereg_template_choices
     from simulation import (
         AGENT_COUNT_MAX,
         AGENT_COUNT_MIN,
@@ -800,6 +802,7 @@ LABELS["en"]["report_agent_empty"] = "Run a scenario first, then ask a question 
 LABELS["en"]["competitive_panel"] = "Competitive comparison"
 LABELS["en"]["competitive_intro"] = "Compare research simulators, prediction sandboxes, and orchestration frameworks side by side."
 LABELS["ko"]["prereg_panel"] = "OSF 사전등록"
+LABELS["ko"]["prereg_template"] = "템플릿 라이브러리"
 LABELS["ko"]["prereg_title"] = "연구 제목"
 LABELS["ko"]["prereg_hypotheses"] = "가설 / 연구 질문"
 LABELS["ko"]["prereg_design"] = "연구 설계"
@@ -811,6 +814,7 @@ LABELS["ko"]["prereg_button"] = "사전등록 내보내기"
 LABELS["ko"]["prereg_download"] = "사전등록 다운로드"
 LABELS["ko"]["prereg_preview_empty"] = "연구 정보로 OSF 사전등록 초안을 미리 봅니다."
 LABELS["en"]["prereg_panel"] = "OSF pre-registration"
+LABELS["en"]["prereg_template"] = "Pick from template library"
 LABELS["en"]["prereg_title"] = "Study title"
 LABELS["en"]["prereg_hypotheses"] = "Hypotheses / research questions"
 LABELS["en"]["prereg_design"] = "Study design"
@@ -3742,6 +3746,36 @@ def _simulation_template_defaults() -> dict[str, str]:
     }
 
 
+def _prereg_template_updates(template_id: str, language: str) -> tuple[Any, ...]:
+    template = prereg_template_by_id(str(template_id))
+    key = _language_key(language)
+    planned_n = float(template.planned_n)
+    return (
+        template.title,
+        template.hypotheses,
+        template.design,
+        template.data_generation,
+        template.factor_design,
+        template.outcomes,
+        template.performance_metrics,
+        template.aggregation,
+        template.analysis,
+        template.deviations if key == "en" else "일탈 없음.",
+        planned_n,
+        template.power_test,
+        template.power_effect,
+        template.power_alpha,
+        template.power_target,
+        _power_analysis_markdown(
+            key,
+            template.power_test,
+            template.power_effect,
+            template.power_alpha,
+            template.power_target,
+        ),
+    )
+
+
 def _digest_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
@@ -6653,6 +6687,10 @@ def _language_updates(
         ),
         gr.update(value=labels["cross_model_button"]),
         gr.update(label=labels["prereg_panel"]),
+        gr.update(
+            label=labels["prereg_template"],
+            choices=prereg_template_choices(key),
+        ),
         gr.update(label=labels["prereg_title"]),
         gr.update(label=labels["prereg_hypotheses"]),
         gr.update(label=labels["prereg_design"]),
@@ -8818,6 +8856,12 @@ def build_app() -> gr.Blocks:
             elem_id="preregistration-panel",
         )
         with prereg_panel:
+            prereg_template = gr.Dropdown(
+                label=labels["prereg_template"],
+                choices=prereg_template_choices("ko"),
+                value="theory_of_mind_development",
+                elem_id="prereg-template-picker",
+            )
             prereg_title = gr.Textbox(
                 label=labels["prereg_title"],
                 value=prereg_defaults["title"],
@@ -9280,6 +9324,7 @@ def build_app() -> gr.Blocks:
             cross_model_models,
             cross_model_button,
             prereg_panel,
+            prereg_template,
             prereg_title,
             prereg_hypotheses,
             prereg_design,
@@ -9617,6 +9662,28 @@ def build_app() -> gr.Blocks:
                 ],
                 outputs=[prereg_planned_n, prereg_power_summary],
             )
+        prereg_template.change(
+            _prereg_template_updates,
+            inputs=[prereg_template, language],
+            outputs=[
+                prereg_title,
+                prereg_hypotheses,
+                prereg_design,
+                prereg_data_generation,
+                prereg_factor_design,
+                prereg_outcomes,
+                prereg_performance_metrics,
+                prereg_aggregation,
+                prereg_analysis,
+                prereg_deviations,
+                prereg_planned_n,
+                prereg_power_test,
+                prereg_power_effect,
+                prereg_power_alpha,
+                prereg_power_target,
+                prereg_power_summary,
+            ],
+        )
         html_report_button.click(
             _export_html_report,
             inputs=[timeline, graph, jsonl, summary, language],
