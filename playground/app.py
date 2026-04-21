@@ -2086,6 +2086,42 @@ body,
     color: var(--knoema-text) !important;
     border-color: var(--knoema-border) !important;
 }}
+/* Light-mode: inline code (backticks) inside markdown must be readable - used by timeline timestamps + benchmark caveat/source */
+:root:not([data-knoema-theme="dark"]) .gradio-container :is(.prose, .gr-markdown, [data-testid="markdown"]) code {{
+    background: var(--knoema-surface-alt) !important;
+    color: var(--knoema-text) !important;
+    border: 1px solid var(--knoema-border) !important;
+    padding: 0.05em 0.35em !important;
+    border-radius: 3px !important;
+}}
+/* Light-mode: any remaining label / file-preview / empty-state wrappers that default to dark */
+:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+    label,
+    .file-preview,
+    [data-testid="file-preview"],
+    .file,
+    [data-testid="file"],
+    .empty,
+    [class*="empty-"],
+    .download-link,
+    .file-name
+) {{
+    background: var(--knoema-surface) !important;
+    color: var(--knoema-text) !important;
+    border-color: var(--knoema-border) !important;
+}}
+/* Light-mode: textarea/input/textbox wrappers that still show dark bg because of Gradio default */
+:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+    .gr-textbox,
+    [data-testid="textbox"],
+    .gr-textbox > *,
+    [data-testid="textbox"] > *,
+    .gr-text-input
+) {{
+    background: var(--knoema-surface) !important;
+    color: var(--knoema-text) !important;
+    border-color: var(--knoema-border) !important;
+}}
 .gradio-container *:focus-visible {{
     outline: 3px solid var(--knoema-focus) !important;
     outline-offset: 2px;
@@ -8458,8 +8494,8 @@ def _relationship_figure(
                 z=node_z,
                 mode="markers+text",
                 text=node_text,
-                textposition="top center",
-                textfont={"color": "#0f172a", "size": 12},
+                textposition="bottom center",
+                textfont={"color": "#0f172a", "size": 13, "family": "Inter, sans-serif"},
                 marker={
                     "size": node_size,
                     "symbol": "circle",
