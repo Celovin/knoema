@@ -46,6 +46,7 @@ Tous les exemples liés à la sécurité publique dans ce dépôt sont fictifs, 
 - Playground, benchmarks, SDK de jeu et rapports de recherche
 - 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 - Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout
+- Opt-in OpenAI TTS voice playback for Playground timeline `speak` actions with per-agent voices and cache-backed WAV fallback
 
 ## Démarrage rapide
 

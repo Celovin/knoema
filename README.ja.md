@@ -46,6 +46,7 @@ Knoema Engine は、記憶、関係、感情、環境コンテキスト、LLM �
 - Playground、ベンチマーク、ゲーム SDK、研究用レポート
 - 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 - Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout
+- Opt-in OpenAI TTS voice playback for Playground timeline `speak` actions with per-agent voices and cache-backed WAV fallback
 
 ## クイックスタート
 

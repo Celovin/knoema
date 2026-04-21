@@ -47,6 +47,7 @@ Todos los ejemplos de seguridad pública de este repositorio son ficticios, sint
 - Motor de simulación, CLI y panel con exportación JSONL
 - Playground, benchmarks, SDK de juego e informes de investigación
 - 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
+- Opt-in OpenAI TTS voice playback for Playground timeline `speak` actions with per-agent voices and cache-backed WAV fallback
 
 ## Inicio rápido
 

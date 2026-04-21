@@ -35,6 +35,8 @@ from knoema.community import (
     community_scenario_choices,
 )
 from knoema.export.finetuning import export_finetuning_jsonl
+from knoema.multimodal import OPENAI_TTS_VOICES, VoiceProfile
+from knoema.multimodal import synthesize as synthesize_voice
 from knoema.reproducibility import generate_run_fingerprint, verification_guide_markdown
 from knoema.research import (
     PowerAnalysisPlan,
@@ -974,6 +976,11 @@ LABELS["ko"]["player_voice_input"] = "음성 입력"
 LABELS["ko"]["player_voice_output"] = "에이전트 음성 응답"
 LABELS["ko"]["player_stt_engine"] = "STT 엔진"
 LABELS["ko"]["player_tts_engine"] = "TTS 엔진"
+LABELS["ko"]["voice_playback_panel"] = "음성 재생"
+LABELS["ko"]["voice_playback_enabled"] = "타임라인 음성 재생"
+LABELS["ko"]["voice_agent_1"] = "에이전트 1 음성"
+LABELS["ko"]["voice_agent_2"] = "에이전트 2 음성"
+LABELS["ko"]["voice_agent_3"] = "에이전트 3 음성"
 LABELS["en"]["player_mode"] = "Player mode"
 LABELS["en"]["player_input"] = "Player action"
 LABELS["en"]["player_input_placeholder"] = "Example: Ask Bjorn for one beer"
@@ -983,6 +990,11 @@ LABELS["en"]["player_voice_input"] = "Voice input"
 LABELS["en"]["player_voice_output"] = "Agent voice response"
 LABELS["en"]["player_stt_engine"] = "STT engine"
 LABELS["en"]["player_tts_engine"] = "TTS engine"
+LABELS["en"]["voice_playback_panel"] = "Voice playback"
+LABELS["en"]["voice_playback_enabled"] = "Timeline voice playback"
+LABELS["en"]["voice_agent_1"] = "Agent 1 voice"
+LABELS["en"]["voice_agent_2"] = "Agent 2 voice"
+LABELS["en"]["voice_agent_3"] = "Agent 3 voice"
 LABELS["ko"]["routine_preset"] = "일일 루틴 프리셋"
 LABELS["ko"]["routine_preset_info"] = "학생, 직장인, 야간 근로자, NPC 상인, 자유 상태 중 하나를 선택할 수 있습니다."
 LABELS["ko"]["routine_text"] = "일일 루틴 (선택)"
@@ -8209,12 +8221,89 @@ def _batch_tick_focus_markdown(
     )
 
 
+def _voice_playback_choices(language: str = "en") -> list[tuple[str, str]]:
+    return [("Mute", "mute"), *[(voice.title(), voice) for voice in OPENAI_TTS_VOICES]]
+
+
+def _timeline_agent_order(rows: list[dict[str, Any]]) -> list[str]:
+    ordered: list[str] = []
+    seen: set[str] = set()
+    for row in rows:
+        agent_id = str(row.get("agent_id", "")).strip()
+        if agent_id and agent_id not in seen:
+            ordered.append(agent_id)
+            seen.add(agent_id)
+    return ordered
+
+
+def _timeline_voice_selection(
+    rows: list[dict[str, Any]],
+    voice_agent_1: str,
+    voice_agent_2: str,
+    voice_agent_3: str,
+) -> dict[str, str]:
+    selections = [voice_agent_1, voice_agent_2, voice_agent_3]
+    voices_by_agent: dict[str, str] = {}
+    for index, agent_id in enumerate(_timeline_agent_order(rows)[: len(selections)]):
+        voice = str(selections[index] or "mute").strip()
+        if voice in OPENAI_TTS_VOICES:
+            voices_by_agent[agent_id] = voice
+    return voices_by_agent
+
+
+def _timeline_voice_audio_markup(text: str, agent_id: str, voice_id: str) -> str:
+    audio = synthesize_voice(
+        text,
+        VoiceProfile(agent_id=agent_id, voice_id=voice_id, provider="openai"),
+    )
+    encoded = base64.b64encode(audio).decode("ascii")
+    return (
+        " <audio controls preload=\"none\" "
+        f"src=\"data:audio/wav;base64,{encoded}\" "
+        "style=\"height:32px;vertical-align:middle\"></audio>"
+    )
+
+
+def _timeline_agent_colors_from_jsonl(jsonl_text: str) -> dict[str, str]:
+    rows = _jsonl_rows(jsonl_text)
+    agent_ids = _timeline_agent_order(rows)
+    return _agent_color_map(agent_ids)
+
+
+def _voice_playback_timeline_update(
+    jsonl_text: str,
+    current_timeline: str,
+    language_choice: str,
+    voice_enabled: bool,
+    voice_agent_1: str,
+    voice_agent_2: str,
+    voice_agent_3: str,
+) -> str:
+    if not bool(voice_enabled):
+        return current_timeline
+    language = _language_key(str(language_choice))
+    return _timeline_markdown_with_agent_colors(
+        jsonl_text,
+        current_timeline,
+        _timeline_agent_colors_from_jsonl(jsonl_text),
+        language=language,
+        voice_enabled=True,
+        voice_agent_1=voice_agent_1,
+        voice_agent_2=voice_agent_2,
+        voice_agent_3=voice_agent_3,
+    )
+
+
 def _timeline_markdown_with_agent_colors(
     jsonl_text: str,
     fallback_markdown: str,
     agent_colors: dict[str, str],
     *,
     language: str = "en",
+    voice_enabled: bool = False,
+    voice_agent_1: str = "mute",
+    voice_agent_2: str = "mute",
+    voice_agent_3: str = "mute",
 ) -> str:
     rows: list[dict[str, Any]] = []
     for line in str(jsonl_text).splitlines():
@@ -8233,6 +8322,11 @@ def _timeline_markdown_with_agent_colors(
 
     header = "### 타임라인" if language == "ko" else "### Timeline"
     tick_label = "틱" if language == "ko" else "Tick"
+    voice_by_agent = (
+        _timeline_voice_selection(rows, voice_agent_1, voice_agent_2, voice_agent_3)
+        if voice_enabled
+        else {}
+    )
     lines = [header]
     for row in rows[:80]:
         if "tick" not in row or not isinstance(row.get("action"), dict):
@@ -8244,10 +8338,19 @@ def _timeline_markdown_with_agent_colors(
         color = agent_colors.get(agent_id, "#0f172a")
         timestamp = escape(str(row.get("timestamp", "")))
         content = escape(str(action.get("content", "")).strip())
+        audio_markup = ""
+        action_type = str(action.get("action_type", "")).strip()
+        voice_id = voice_by_agent.get(agent_id)
+        if voice_id and action_type == "speak" and content:
+            audio_markup = _timeline_voice_audio_markup(
+                str(action.get("content", "")).strip(),
+                agent_id,
+                voice_id,
+            )
         lines.append(
             f"- **{tick_label} {int(row['tick']):02d}** `{timestamp}` "
             f"<span style=\"color:{color}\">●</span> "
-            f"**{escape(agent_id)}{target_text}**: {content}"
+            f"**{escape(agent_id)}{target_text}**: {content}{audio_markup}"
         )
     return "\n".join(lines)
 
@@ -9018,6 +9121,36 @@ def build_app() -> gr.Blocks:
                     max_height=TIMELINE_MAX_HEIGHT_PX,
                     container=True,
                 )
+                voice_playback_panel = gr.Accordion(
+                    labels["voice_playback_panel"],
+                    open=False,
+                    elem_id="voice-playback-panel",
+                )
+                with voice_playback_panel:
+                    voice_playback_enabled = gr.Checkbox(
+                        label=labels["voice_playback_enabled"],
+                        value=False,
+                        elem_id="voice-playback-toggle",
+                    )
+                    with gr.Row():
+                        voice_agent_1 = gr.Dropdown(
+                            label=labels["voice_agent_1"],
+                            choices=_voice_playback_choices("en"),
+                            value="mute",
+                            elem_id="voice-agent-1",
+                        )
+                        voice_agent_2 = gr.Dropdown(
+                            label=labels["voice_agent_2"],
+                            choices=_voice_playback_choices("en"),
+                            value="mute",
+                            elem_id="voice-agent-2",
+                        )
+                        voice_agent_3 = gr.Dropdown(
+                            label=labels["voice_agent_3"],
+                            choices=_voice_playback_choices("en"),
+                            value="mute",
+                            elem_id="voice-agent-3",
+                        )
             with gr.Tab(labels["threads_tab"], elem_id="conversation-threads-tab") as threads_tab:
                 thread_view = gr.Markdown(
                     labels["threads_empty"],
@@ -10320,6 +10453,31 @@ def build_app() -> gr.Blocks:
             ],
             api_name="run",
         )
+        voice_playback_inputs = [
+            jsonl,
+            timeline,
+            language,
+            voice_playback_enabled,
+            voice_agent_1,
+            voice_agent_2,
+            voice_agent_3,
+        ]
+        run_event.then(
+            _voice_playback_timeline_update,
+            inputs=voice_playback_inputs,
+            outputs=[timeline],
+        )
+        for voice_control in (
+            voice_playback_enabled,
+            voice_agent_1,
+            voice_agent_2,
+            voice_agent_3,
+        ):
+            voice_control.change(
+                _voice_playback_timeline_update,
+                inputs=voice_playback_inputs,
+                outputs=[timeline],
+            )
         run_event.then(
             _statistical_analysis_markdown,
             inputs=[jsonl, language],

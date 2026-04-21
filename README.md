@@ -56,6 +56,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Jupyter notebooks for MVP demo tracks and a 10-agent village scale-up
 - 50-agent deterministic village experiment with committed metrics, trace sample, and PDF report
 - Gradio Playground for no-key replay demos and user-supplied LLM API keys
+- Opt-in OpenAI TTS voice playback for Playground timeline `speak` actions with per-agent voices and cache-backed WAV fallback
 - Deterministic benchmark scripts with JSON, Markdown, SVG figures, and PDF reports
 - Cross-framework comparison benchmark against AutoGen, CrewAI, LangGraph, Mesa, and NetLogo
 - Human evaluation framework with survey templates, a static review UI, and reliability metrics

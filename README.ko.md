@@ -50,6 +50,7 @@ Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정�
 - 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 - Godot 4 어댑터 스캐폴드
 - Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout
+- Opt-in OpenAI TTS voice playback for Playground timeline `speak` actions with per-agent voices and cache-backed WAV fallback
 - Python, TypeScript, GDScript Game SDK facade
 - Playback과 live-tail control을 포함한 Streamlit 시뮬레이션 로그 대시보드
 

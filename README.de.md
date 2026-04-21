@@ -46,6 +46,7 @@ Alle Public-Safety-Beispiele in diesem Repository sind fiktiv, synthetisch und n
 - Playground, Benchmarks, Game-SDKs und Forschungsberichte
 - 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 - Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout
+- Opt-in OpenAI TTS voice playback for Playground timeline `speak` actions with per-agent voices and cache-backed WAV fallback
 
 ## Schnellstart
 

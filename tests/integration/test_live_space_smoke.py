@@ -19,6 +19,7 @@ EXPECT_PREREG_TEMPLATE = os.environ.get("KNOEMA_EXPECT_PREREG_TEMPLATE") == "1"
 EXPECT_SCENARIO_SYNTHESIS = os.environ.get("KNOEMA_EXPECT_SCENARIO_SYNTHESIS") == "1"
 EXPECT_FINETUNING_EXPORT = os.environ.get("KNOEMA_EXPECT_FINETUNING_EXPORT") == "1"
 EXPECT_COMMUNITY_GALLERY = os.environ.get("KNOEMA_EXPECT_COMMUNITY_GALLERY") == "1"
+EXPECT_VOICE_PANEL = os.environ.get("KNOEMA_EXPECT_VOICE_PANEL") == "1"
 
 
 def _set_slider_value(page: Page, *, elem_id: str, value: int) -> None:
@@ -106,6 +107,13 @@ def test_live_space_smoke_flow(page: Page) -> None:
         community_gallery_panel.click()
         expect(app_frame.locator("#community-gallery-scenario")).to_be_visible(timeout=15_000)
         expect(app_frame.locator("#community-gallery-load")).to_be_visible(timeout=15_000)
+    voice_panel = app_frame.locator("#voice-playback-panel")
+    if EXPECT_VOICE_PANEL:
+        expect(voice_panel).to_be_visible(timeout=15_000)
+        expect(app_frame.locator("#voice-playback-toggle")).not_to_be_visible(timeout=2_000)
+        voice_panel.click()
+        expect(app_frame.locator("#voice-playback-toggle")).to_be_visible(timeout=15_000)
+        expect(app_frame.locator("#voice-agent-1")).to_be_visible(timeout=15_000)
     scenario_input = app_frame.locator("#scenario-dropdown input[role='listbox']")
     expect(scenario_input).to_be_visible(timeout=15_000)
     scenario_input.click()
