@@ -94,6 +94,7 @@ from knoema.safety import (
     audit_event_from_record,
     validate_audit_record,
 )
+from knoema.scaling import CityScaleConfig, CityScaleResult, CityScaleRunner
 from knoema.simulator import SimulationLogEntry, Simulator
 from knoema.telemetry import (
     NullTelemetryClient,
@@ -142,6 +143,9 @@ __all__ = [
     "BenchmarkReport",
     "BenchmarkRun",
     "CachedLLMClient",
+    "CityScaleConfig",
+    "CityScaleResult",
+    "CityScaleRunner",
     "CommunityScenario",
     "ComparisonPair",
     "ComparisonRow",

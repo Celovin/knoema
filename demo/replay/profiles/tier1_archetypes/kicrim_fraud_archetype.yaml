@@ -1,0 +1,42 @@
+archetype_id: kicrim-fraud-archetype
+tier: 1
+display_name: KICRIM fraud archetype
+inspired_by: Korean financial-fraud policy research and routine-activity prevention literature.
+literature_sources:
+  - author: Kim, Im, Kang, and Kim
+    year: 2016
+    title: New Methods of Financial Fraud and Policy Response
+    isbn: '9791187160311'
+  - author: Button and Cross
+    year: 2021
+    title: Policing Fraud in Two Police Jurisdictions
+    doi: 10.1093/police/paab036
+  - author: Jung and Kim
+    year: 2021
+    title: Insurance Fraud in Korea, Its Seriousness, and Policy Implications
+    doi: 10.3389/fpubh.2021.791820
+mo_rules:
+  - id: no_script_generation
+    when: any_interaction
+    then: use_neutral_trust_state_label
+  - id: verification_interrupt
+    when: verification_guardian_present == true
+    then: abort_overlay_action
+  - id: audit_trace
+    when: trust_cue_attempted == true
+    then: record_prevention_memory
+routine_patterns:
+  - time_of_day: commute_overlap
+    location_type: commercial_service_cell
+  - time_of_day: retail_transition
+    location_type: main_road
+target_criteria:
+  allowed: [low_verification_support, time_pressure_state, trust_cue_exposure]
+  excluded: [age_targeting, institution_names, scripts, payment_routes]
+geographic_behavior:
+  mobility_radius_cells: 8
+  anchor_point_count: 2
+  path_preference: service_encounter
+  edge_preference: low
+ethical_disclaimer: This profile is a pedagogical, synthetic replay overlay for criminology education. It is not an operational profiling tool, a prediction, or guidance for identifying any real person.
+contemporary_grid_translation: Fraud-prevention dynamics map to Gangnam-style service and transit cells where verification guardians interrupt trust-cue attempts.

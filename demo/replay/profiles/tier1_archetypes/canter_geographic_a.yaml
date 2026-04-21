@@ -1,0 +1,42 @@
+archetype_id: canter-geographic-a
+tier: 1
+display_name: Canter geographic archetype A
+inspired_by: Geographic profiling and investigative psychology literature.
+literature_sources:
+  - author: Rossmo
+    year: 2000
+    title: Geographic Profiling
+    isbn: '9780849381294'
+  - author: Comerford
+    year: 2022
+    title: A Scoping Review of Serial Homicide Geographic Mobility Literature and Four Typologies
+    doi: 10.1177/1088767921993506
+  - author: Cohen and Felson
+    year: 1979
+    title: 'Social Change and Crime Rate Trends: A Routine Activity Approach'
+    doi: 10.2307/2094589
+mo_rules:
+  - id: maintain_two_anchors
+    when: tick_modulo_route == 0
+    then: return_to_secondary_anchor
+  - id: edge_route
+    when: main_road_distance <= 2
+    then: prefer_path_cell
+  - id: guardian_suppression
+    when: guardian_distance_cells <= 1
+    then: pause_overlay
+routine_patterns:
+  - time_of_day: evening_transition
+    location_type: main_road
+  - time_of_day: commercial_peak
+    location_type: commercial_edge
+target_criteria:
+  allowed: [route_overlap, low_guardianship, repeated_path_exposure]
+  excluded: [real_coordinates, real_addresses, suspect_inference]
+geographic_behavior:
+  mobility_radius_cells: 5
+  anchor_point_count: 2
+  path_preference: high
+  edge_preference: high
+ethical_disclaimer: This profile is a pedagogical, synthetic replay overlay for criminology education. It is not an operational profiling tool, a prediction, or guidance for identifying any real person.
+contemporary_grid_translation: Anchor and route concepts map to Gangnam-style main-road corridors, commercial edge cells, and visible guardian markers.

@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Knoema Offline City Replay</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #18211d;
+      --muted: #5a6a61;
+      --line: #cbd8ce;
+      --paper: #f6f8f4;
+      --panel: #edf3ef;
+      --green: #2f8f59;
+      --red: #c94b4b;
+      --blue: #3577b8;
+      --teal: #2b8b83;
+      --coral: #d66c58;
+      --focus: #195d55;
+      font-family: ui-sans-serif, "Segoe UI", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      min-width: 320px;
+    }
+    button, select, input {
+      font: inherit;
+    }
+    button, select {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fbfcf8;
+      color: var(--ink);
+      min-height: 36px;
+      padding: 0 10px;
+    }
+    button {
+      cursor: pointer;
+    }
+    button:focus-visible, select:focus-visible, input:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--focus) 35%, transparent);
+      outline-offset: 2px;
+    }
+    button.primary {
+      background: var(--focus);
+      border-color: var(--focus);
+      color: #f7fbf5;
+    }
+    button:disabled, select:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .shell {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      min-height: 100vh;
+    }
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+      padding: 18px 22px 12px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcf8;
+    }
+    h1 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    .status {
+      color: var(--focus);
+      font-size: 13px;
+      text-align: right;
+      max-width: 360px;
+    }
+    .toolbar {
+      display: grid;
+      grid-template-columns: repeat(7, max-content) minmax(180px, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 12px 22px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+    .timeline {
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .file-load {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fbfcf8;
+      color: var(--ink);
+      min-height: 36px;
+      padding: 7px 10px 0;
+      cursor: pointer;
+      font-size: 14px;
+      text-align: center;
+    }
+    .file-load input {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--focus);
+    }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(460px, 1fr) minmax(320px, 390px);
+      min-height: 0;
+    }
+    .map-pane {
+      position: relative;
+      padding: 18px 22px 22px;
+    }
+    canvas {
+      display: block;
+      width: min(100%, 840px);
+      aspect-ratio: 1;
+      background: #f9fbf4;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .swatch {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .side {
+      border-left: 1px solid var(--line);
+      padding: 18px 18px 28px;
+      background: #fbfcf8;
+      overflow: auto;
+    }
+    .section + .section {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 104px 1fr;
+      gap: 8px;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+    .label {
+      color: var(--muted);
+    }
+    .memory {
+      border-left: 3px solid var(--teal);
+      padding: 8px 0 8px 10px;
+      margin: 10px 0;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .memory time {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+    .seed {
+      position: fixed;
+      right: 12px;
+      bottom: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      background: color-mix(in srgb, var(--paper) 88%, transparent);
+      padding: 4px 7px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+    dialog {
+      width: min(520px, calc(100vw - 32px));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: #fbfcf8;
+      padding: 20px;
+    }
+    dialog::backdrop {
+      background: rgba(24, 33, 29, 0.32);
+    }
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 18px;
+    }
+    .checkline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    @media (max-width: 860px) {
+      header {
+        grid-template-columns: 1fr;
+      }
+      .status {
+        text-align: left;
+      }
+      .toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .timeline {
+        grid-column: 1 / -1;
+      }
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .side {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+      .map-pane {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <h1>Knoema Offline City Replay</h1>
+        <div class="meta">Deterministic Gangnam-style grid, local msgpack playback, no network dependency.</div>
+      </div>
+      <div class="status" id="status">Loading replay...</div>
+    </header>
+
+    <div class="toolbar">
+      <select id="scenario">
+        <option value="replay_100agents_gangnam_7pm.msgpack">100 agents</option>
+        <option value="replay_1000agents_gangnam_7pm.msgpack">1000 agents</option>
+      </select>
+      <button class="primary" id="play">Play</button>
+      <select id="speed">
+        <option value="1">1x</option>
+        <option value="5">5x</option>
+        <option value="20">20x</option>
+      </select>
+      <button id="heatmap" aria-pressed="false">Heatmap</button>
+      <button id="csv">Export CSV</button>
+      <label class="file-load">Load files<input id="file-input" type="file" accept=".msgpack,application/octet-stream" multiple></label>
+      <select id="profile" disabled>
+        <option value="">Inject archetype</option>
+      </select>
+      <div class="timeline">
+        <input id="scrubber" type="range" min="0" max="0" value="0">
+        <span id="time">00:00</span>
+      </div>
+    </div>
+
+    <main class="workspace">
+      <section class="map-pane" aria-label="Replay map">
+        <canvas id="map" width="1000" height="1000"></canvas>
+        <div class="legend">
+          <span class="swatch"><span class="dot" style="background:var(--green)"></span> general civilian</span>
+          <span class="swatch"><span class="dot" style="background:var(--red)"></span> motivated-offender candidate</span>
+          <span class="swatch"><span class="dot" style="background:var(--blue)"></span> guardian / police</span>
+          <span class="swatch"><span class="dot" style="background:var(--coral)"></span> injected archetype</span>
+        </div>
+      </section>
+      <aside class="side" aria-label="Agent details">
+        <div class="section">
+          <h2>Selected Agent</h2>
+          <div id="agent-details">Click an agent on the grid.</div>
+        </div>
+        <div class="section">
+          <h2>Memory</h2>
+          <div id="memory-details">No agent selected.</div>
+        </div>
+        <div class="section">
+          <h2>Archetype Overlay</h2>
+          <div id="profile-details">No archetype injected.</div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <div class="seed" id="seed">seed: --</div>
+
+  <dialog id="ethics">
+    <h2>Pedagogical Profile Notice</h2>
+    <p>Archetype profiles are teaching overlays for historical and academic criminology concepts. They are not operational profiles, predictions, or guidance for identifying real people.</p>
+    <label class="checkline">
+      <input id="ethics-check" type="checkbox">
+      I understand this is pedagogical.
+    </label>
+    <div class="modal-actions">
+      <button id="ethics-cancel">Cancel</button>
+      <button class="primary" id="ethics-accept" disabled>Continue</button>
+    </div>
+  </dialog>
+
+  <script>
+    class MsgpackDecoder {
+      constructor(buffer) {
+        this.view = new DataView(buffer);
+        this.bytes = new Uint8Array(buffer);
+        this.offset = 0;
+        this.text = new TextDecoder("utf-8");
+      }
+      read() {
+        const prefix = this.u8();
+        if (prefix <= 0x7f) return prefix;
+        if (prefix >= 0xe0) return prefix - 0x100;
+        if ((prefix & 0xe0) === 0xa0) return this.str(prefix & 0x1f);
+        if ((prefix & 0xf0) === 0x90) return this.array(prefix & 0x0f);
+        if ((prefix & 0xf0) === 0x80) return this.map(prefix & 0x0f);
+        switch (prefix) {
+          case 0xc0: return null;
+          case 0xc2: return false;
+          case 0xc3: return true;
+          case 0xcc: return this.u8();
+          case 0xcd: return this.u16();
+          case 0xce: return this.u32();
+          case 0xd0: return this.i8();
+          case 0xd1: return this.i16();
+          case 0xd2: return this.i32();
+          case 0xd9: return this.str(this.u8());
+          case 0xda: return this.str(this.u16());
+          case 0xdb: return this.str(this.u32());
+          case 0xc4: return this.bin(this.u8());
+          case 0xc5: return this.bin(this.u16());
+          case 0xc6: return this.bin(this.u32());
+          case 0xdc: return this.array(this.u16());
+          case 0xdd: return this.array(this.u32());
+          case 0xde: return this.map(this.u16());
+          case 0xdf: return this.map(this.u32());
+          default: throw new Error("Unsupported msgpack prefix 0x" + prefix.toString(16));
+        }
+      }
+      u8() { return this.bytes[this.offset++]; }
+      i8() { const value = this.view.getInt8(this.offset); this.offset += 1; return value; }
+      u16() { const value = this.view.getUint16(this.offset); this.offset += 2; return value; }
+      i16() { const value = this.view.getInt16(this.offset); this.offset += 2; return value; }
+      u32() { const value = this.view.getUint32(this.offset); this.offset += 4; return value; }
+      i32() { const value = this.view.getInt32(this.offset); this.offset += 4; return value; }
+      str(length) { const end = this.offset + length; const value = this.text.decode(this.bytes.slice(this.offset, end)); this.offset = end; return value; }
+      bin(length) { const end = this.offset + length; const value = this.bytes.slice(this.offset, end); this.offset = end; return value; }
+      array(length) { return Array.from({ length }, () => this.read()); }
+      map(length) {
+        const value = {};
+        for (let i = 0; i < length; i += 1) value[this.read()] = this.read();
+        return value;
+      }
+    }
+
+    const el = {
+      canvas: document.getElementById("map"),
+      scenario: document.getElementById("scenario"),
+      play: document.getElementById("play"),
+      speed: document.getElementById("speed"),
+      scrubber: document.getElementById("scrubber"),
+      time: document.getElementById("time"),
+      heatmap: document.getElementById("heatmap"),
+      csv: document.getElementById("csv"),
+      profile: document.getElementById("profile"),
+      status: document.getElementById("status"),
+      seed: document.getElementById("seed"),
+      agent: document.getElementById("agent-details"),
+      memory: document.getElementById("memory-details"),
+      profileDetails: document.getElementById("profile-details"),
+      ethics: document.getElementById("ethics"),
+      ethicsCheck: document.getElementById("ethics-check"),
+      ethicsAccept: document.getElementById("ethics-accept"),
+      ethicsCancel: document.getElementById("ethics-cancel")
+    };
+    const ctx = el.canvas.getContext("2d");
+    const colors = { general: "#2f8f59", motivated_offender: "#c94b4b", guardian: "#3577b8" };
+    const embeddedProfiles = [
+      { archetype_id: "fbi-organized", display_name: "FBI organized archetype", tier: 1, inspired_by: "Literature-derived organized typology", mobility_radius: "6 cells" },
+      { archetype_id: "fbi-disorganized", display_name: "FBI disorganized archetype", tier: 1, inspired_by: "Contested literature-derived typology", mobility_radius: "3 cells" },
+      { archetype_id: "canter-geographic-a", display_name: "Canter geographic archetype A", tier: 1, inspired_by: "Geographic profiling literature", mobility_radius: "5 cells" },
+      { archetype_id: "kicrim-fraud-archetype", display_name: "KICRIM fraud archetype", tier: 1, inspired_by: "Korean financial-fraud prevention research", mobility_radius: "8 cells" },
+      { archetype_id: "whitechapel-1888", display_name: "Whitechapel 1888", tier: 2, inspired_by: "Jack the Ripper, unidentified historical offender, active 1888", mobility_radius: "4 cells" },
+      { archetype_id: "holmes-1890s", display_name: "H.H. Holmes 1890s", tier: 2, inspired_by: "H.H. Holmes, 1861-1896", mobility_radius: "5 cells" },
+      { archetype_id: "gunness-1900s", display_name: "Belle Gunness 1900s", tier: 2, inspired_by: "Belle Gunness, 1859-disappeared 1908", mobility_radius: "3 cells" }
+    ];
+    const state = {
+      replay: null,
+      timeline: [],
+      tick: 0,
+      playing: false,
+      timer: null,
+      selectedAgent: null,
+      heatmap: false,
+      profiles: [],
+      localFiles: new Map(),
+      pendingProfile: null,
+      injectedProfile: null
+    };
+
+    async function loadReplay(file) {
+      el.status.textContent = "Loading " + file + "...";
+      let buffer;
+      if (state.localFiles.has(file)) {
+        buffer = await state.localFiles.get(file).arrayBuffer();
+      } else {
+        const response = await fetch(file, { cache: "no-store" });
+        if (!response.ok) throw new Error("Replay fetch failed: " + response.status);
+        buffer = await response.arrayBuffer();
+      }
+      state.replay = new MsgpackDecoder(buffer).read();
+      state.timeline = expandFrames(state.replay);
+      state.tick = 0;
+      state.selectedAgent = null;
+      el.scrubber.max = String(state.replay.frames.length - 1);
+      el.scrubber.value = "0";
+      el.seed.textContent = "seed: " + state.replay.metadata.seed;
+      el.status.textContent = `${state.replay.metadata.agent_count} agents loaded from local msgpack`;
+      render();
+    }
+
+    async function loadProfiles() {
+      try {
+        const response = await fetch("profiles/manifest.json", { cache: "no-store" });
+        if (!response.ok) throw new Error("missing manifest");
+        state.profiles = await response.json();
+        populateProfiles();
+      } catch {
+        state.profiles = embeddedProfiles;
+        populateProfiles();
+      }
+    }
+
+    function populateProfiles() {
+      el.profile.querySelectorAll("option:not(:first-child)").forEach((option) => option.remove());
+      for (const profile of state.profiles) {
+        const option = document.createElement("option");
+        option.value = profile.archetype_id;
+        option.textContent = profile.display_name;
+        el.profile.appendChild(option);
+      }
+      el.profile.disabled = state.profiles.length === 0;
+    }
+
+    function render() {
+      if (!state.replay) return;
+      const frame = state.replay.frames[state.tick];
+      const size = el.canvas.width;
+      const grid = state.replay.metadata.grid_bounds;
+      const cell = size / grid.width;
+      ctx.clearRect(0, 0, size, size);
+      drawAtlas(cell, grid);
+      if (state.heatmap) drawHeatmap(cell, grid);
+      const deltas = frame.deltas;
+      const fullFrame = state.timeline[state.tick];
+      for (const [agentId, delta] of Object.entries(fullFrame)) {
+        const agent = agentById(agentId);
+        drawAgent(delta.position[0], delta.position[1], cell, colors[agent.role] || "#666", false);
+      }
+      if (state.injectedProfile) drawInjected(cell);
+      el.time.textContent = new Date(frame.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      el.scrubber.value = String(state.tick);
+      renderSidePanel();
+    }
+
+    function drawAtlas(cell, grid) {
+      ctx.fillStyle = "#f9fbf4";
+      ctx.fillRect(0, 0, el.canvas.width, el.canvas.height);
+      ctx.strokeStyle = "#d8e2da";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= grid.width; i += 1) {
+        ctx.beginPath(); ctx.moveTo(i * cell, 0); ctx.lineTo(i * cell, grid.height * cell); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, i * cell); ctx.lineTo(grid.width * cell, i * cell); ctx.stroke();
+      }
+      ctx.fillStyle = "rgba(43, 139, 131, 0.10)";
+      ctx.fillRect(7 * cell, 7 * cell, 7 * cell, 7 * cell);
+      ctx.fillStyle = "rgba(214, 108, 88, 0.13)";
+      for (const [x, y] of [[5,6],[6,6],[7,6],[8,6],[12,13],[13,13],[14,13]]) {
+        ctx.fillRect(x * cell, y * cell, cell, cell);
+      }
+      ctx.fillStyle = "rgba(53, 119, 184, 0.08)";
+      ctx.fillRect(0, 10 * cell, grid.width * cell, cell);
+    }
+
+    function drawHeatmap(cell, grid) {
+      const counts = new Map();
+      for (let tick = 0; tick <= state.tick; tick += 1) {
+        for (const delta of Object.values(state.timeline[tick])) {
+          const key = delta.position[0] + "," + delta.position[1];
+          counts.set(key, (counts.get(key) || 0) + 1);
+        }
+      }
+      const max = Math.max(1, ...counts.values());
+      for (const [key, count] of counts.entries()) {
+        const [x, y] = key.split(",").map(Number);
+        ctx.fillStyle = `rgba(214, 108, 88, ${0.06 + 0.24 * (count / max)})`;
+        ctx.fillRect(x * cell, y * cell, cell, cell);
+      }
+    }
+
+    function drawAgent(x, y, cell, color, triangle) {
+      const cx = x * cell + cell / 2;
+      const cy = y * cell + cell / 2;
+      ctx.fillStyle = color;
+      ctx.strokeStyle = "#18211d";
+      ctx.lineWidth = triangle ? 4 : 1.5;
+      if (triangle) {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - cell * 0.32);
+        ctx.lineTo(cx - cell * 0.32, cy + cell * 0.26);
+        ctx.lineTo(cx + cell * 0.32, cy + cell * 0.26);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.arc(cx, cy, Math.max(3, cell * 0.16), 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawInjected(cell) {
+      const path = [[8, 8], [9, 9], [10, 10], [11, 10], [12, 11], [13, 11]];
+      const point = path[state.tick % path.length];
+      drawAgent(point[0], point[1], cell, "#d66c58", true);
+    }
+
+    function renderSidePanel() {
+      const profile = state.injectedProfile;
+      if (profile) {
+        el.profileDetails.innerHTML = `
+          <div class="row"><span class="label">Profile</span><span>${escapeHtml(profile.display_name)}</span></div>
+          <div class="row"><span class="label">Tier</span><span>${profile.tier}</span></div>
+          <div class="row"><span class="label">Basis</span><span>${escapeHtml(profile.inspired_by)}</span></div>
+          <div class="row"><span class="label">Mobility</span><span>${escapeHtml(profile.mobility_radius || "documented in profile")}</span></div>
+        `;
+      }
+      if (!state.selectedAgent) return;
+      const agent = agentById(state.selectedAgent);
+      const fullDelta = state.timeline[state.tick][state.selectedAgent];
+      el.agent.innerHTML = `
+        <div class="row"><span class="label">ID</span><span>${agent.id}</span></div>
+        <div class="row"><span class="label">Role</span><span>${agent.role}</span></div>
+        <div class="row"><span class="label">Position</span><span>${fullDelta.position.join(", ")}</span></div>
+        <div class="row"><span class="label">Status</span><span>${fullDelta.status_flags.join(", ")}</span></div>
+      `;
+      const memoryIds = [...agent.initial_memory_snapshot];
+      for (let tick = 0; tick <= state.tick; tick += 1) {
+        const tickDelta = state.replay.frames[tick].deltas[state.selectedAgent];
+        if (tickDelta && tickDelta.memory_delta_ids) memoryIds.push(...tickDelta.memory_delta_ids);
+      }
+      el.memory.innerHTML = memoryIds.slice(-6).map((id) => {
+        const memory = state.replay.memory_snapshots[id];
+        if (!memory) return "";
+        return `<div class="memory"><time>${escapeHtml(memory.timestamp)} · ${escapeHtml(memory.label)}</time>${escapeHtml(memory.content)}</div>`;
+      }).join("");
+    }
+
+    function agentById(agentId) {
+      return state.replay.agents.find((agent) => agent.id === agentId);
+    }
+
+    function nearestAgent(x, y) {
+      const frame = state.replay.frames[state.tick];
+      let best = null;
+      let bestDistance = Infinity;
+      for (const [agentId, delta] of Object.entries(state.timeline[state.tick])) {
+        const distance = Math.abs(delta.position[0] - x) + Math.abs(delta.position[1] - y);
+        if (distance < bestDistance) { best = agentId; bestDistance = distance; }
+      }
+      return bestDistance <= 1 ? best : null;
+    }
+
+    function exportCsv() {
+      if (!state.replay) return;
+      const rows = ["tick,timestamp,agent_id,role,x,y,status_flags"];
+      for (const frame of state.replay.frames) {
+        const fullFrame = state.timeline[frame.tick_id];
+        for (const [agentId, delta] of Object.entries(fullFrame)) {
+          const agent = agentById(agentId);
+          rows.push([frame.tick_id, frame.timestamp, agentId, agent.role, delta.position[0], delta.position[1], delta.status_flags.join(";")].join(","));
+        }
+      }
+      const blob = new Blob([rows.join("\n") + "\n"], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `knoema_${state.replay.metadata.agent_count}_agent_trajectory.csv`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function requestProfileInjection(profileId) {
+      const profile = state.profiles.find((candidate) => candidate.archetype_id === profileId);
+      if (!profile) return;
+      state.pendingProfile = profile;
+      if (sessionStorage.getItem("knoema_archetype_ethics_ack") === "1") {
+        injectPendingProfile();
+      } else {
+        el.ethicsCheck.checked = false;
+        el.ethicsAccept.disabled = true;
+        el.ethics.showModal();
+      }
+    }
+
+    function expandFrames(replay) {
+      const current = {};
+      for (const agent of replay.agents) {
+        current[agent.id] = {
+          position: agent.initial_position,
+          status_flags: agent.initial_status_flags
+        };
+      }
+      const expanded = [];
+      for (const frame of replay.frames) {
+        for (const [agentId, delta] of Object.entries(frame.deltas)) {
+          current[agentId] = {
+            position: delta.position || current[agentId].position,
+            status_flags: delta.status_flags || current[agentId].status_flags
+          };
+        }
+        expanded[frame.tick_id] = Object.fromEntries(
+          Object.entries(current).map(([agentId, value]) => [
+            agentId,
+            { position: [...value.position], status_flags: [...value.status_flags] }
+          ])
+        );
+      }
+      return expanded;
+    }
+
+    function injectPendingProfile() {
+      state.injectedProfile = state.pendingProfile;
+      state.pendingProfile = null;
+      state.selectedAgent = null;
+      el.status.textContent = "Archetype overlay injected for pedagogical playback.";
+      render();
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+    }
+
+    el.scenario.addEventListener("change", () => loadReplay(el.scenario.value).catch((error) => { el.status.textContent = error.message; }));
+    el.play.addEventListener("click", () => {
+      state.playing = !state.playing;
+      el.play.textContent = state.playing ? "Pause" : "Play";
+      clearInterval(state.timer);
+      if (state.playing) {
+        state.timer = setInterval(() => {
+          state.tick = (state.tick + 1) % state.replay.frames.length;
+          render();
+        }, 1000 / Number(el.speed.value));
+      }
+    });
+    el.speed.addEventListener("change", () => {
+      if (state.playing) { state.playing = false; el.play.click(); }
+    });
+    el.scrubber.addEventListener("input", () => { state.tick = Number(el.scrubber.value); render(); });
+    el.heatmap.addEventListener("click", () => {
+      state.heatmap = !state.heatmap;
+      el.heatmap.setAttribute("aria-pressed", String(state.heatmap));
+      render();
+    });
+    el.csv.addEventListener("click", exportCsv);
+    el.profile.addEventListener("change", () => requestProfileInjection(el.profile.value));
+    document.getElementById("file-input").addEventListener("change", (event) => {
+      state.localFiles.clear();
+      for (const file of event.target.files) {
+        state.localFiles.set(file.name, file);
+      }
+      loadReplay(el.scenario.value).catch((error) => { el.status.textContent = error.message; });
+    });
+    el.canvas.addEventListener("click", (event) => {
+      if (!state.replay) return;
+      const rect = el.canvas.getBoundingClientRect();
+      const cell = el.canvas.width / state.replay.metadata.grid_bounds.width;
+      const x = Math.floor(((event.clientX - rect.left) / rect.width) * el.canvas.width / cell);
+      const y = Math.floor(((event.clientY - rect.top) / rect.height) * el.canvas.height / cell);
+      state.selectedAgent = nearestAgent(x, y);
+      render();
+    });
+    el.ethicsCheck.addEventListener("change", () => { el.ethicsAccept.disabled = !el.ethicsCheck.checked; });
+    el.ethicsCancel.addEventListener("click", () => { state.pendingProfile = null; el.profile.value = ""; el.ethics.close(); });
+    el.ethicsAccept.addEventListener("click", () => {
+      sessionStorage.setItem("knoema_archetype_ethics_ack", "1");
+      el.ethics.close();
+      injectPendingProfile();
+    });
+
+    loadProfiles();
+    loadReplay(el.scenario.value).catch((error) => {
+      el.status.textContent = error.message + ". Select both local .msgpack files with Load files.";
+    });
+  </script>
+</body>
+</html>

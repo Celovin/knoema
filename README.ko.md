@@ -47,6 +47,7 @@ Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정�
 - YAML 기반 로컬 시뮬레이션을 실행하는 `knoema run` CLI
 - MVP 데모 트랙과 10명 마을 확장 실험을 보여주는 Jupyter 노트북
 - JSON과 Markdown 리포트를 생성하는 deterministic benchmark script
+- 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 - Godot 4 어댑터 스캐폴드
 - Python, TypeScript, GDScript Game SDK facade
 - Playback과 live-tail control을 포함한 Streamlit 시뮬레이션 로그 대시보드

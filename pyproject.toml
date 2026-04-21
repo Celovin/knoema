@@ -42,6 +42,7 @@ dependencies = [
     "sqlalchemy>=2.0",
     "pydantic>=2.8",
     "loguru>=0.7",
+    "msgpack>=1.1",
     "rich>=13.7",
     "pyyaml>=6.0",
     "tenacity>=8.5",
@@ -109,7 +110,10 @@ local-llm = [
     "torch>=2.4",
 ]
 distributed = [
-    "ray[default]>=2.40",
+    "ray[default]>=2.40; python_version < '3.13'",
+]
+scale = [
+    "ray[default]>=2.40; python_version < '3.13'",
 ]
 mcp = []
 bots = [

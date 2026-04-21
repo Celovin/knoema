@@ -44,6 +44,7 @@ Alle Public-Safety-Beispiele in diesem Repository sind fiktiv, synthetisch und n
 - YAML Scenario DSL v1 mit Ethik-Guardrails
 - Simulationsrunner, CLI und Dashboard mit JSONL-Export
 - Playground, Benchmarks, Game-SDKs und Forschungsberichte
+- 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 
 ## Schnellstart
 

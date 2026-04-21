@@ -44,6 +44,7 @@ Knoema Engine は、記憶、関係、感情、環境コンテキスト、LLM �
 - YAML ベースの Scenario DSL v1 と倫理ガードレール
 - JSONL エクスポート付きシミュレーションランナー、CLI、ダッシュボード
 - Playground、ベンチマーク、ゲーム SDK、研究用レポート
+- 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 
 ## クイックスタート
 

@@ -1,0 +1,42 @@
+archetype_id: fbi-disorganized
+tier: 1
+display_name: FBI disorganized archetype
+inspired_by: Literature-derived disorganized typology, retained only as a contested teaching construct.
+literature_sources:
+  - author: Canter, Alison, Alison, and Wentink
+    year: 2004
+    title: 'The Organized/Disorganized Typology of Serial Murder: Myth or Model?'
+    doi: 10.1037/1076-8971.10.3.293
+  - author: Kocsis, Cooksey, and Irwin
+    year: 1998
+    title: Organised and disorganised criminal behaviour syndromes in arsonists
+    doi: 10.1080/13218719809524925
+  - author: Cohen and Felson
+    year: 1979
+    title: 'Social Change and Crime Rate Trends: A Routine Activity Approach'
+    doi: 10.2307/2094589
+mo_rules:
+  - id: short_horizon_move
+    when: route_memory_confidence == low
+    then: move_to_nearest_low_density_cell
+  - id: guardian_abort
+    when: guardian_distance_cells <= 1
+    then: retreat_to_anchor
+  - id: no_signature
+    when: any_event
+    then: suppress_expressive_detail
+routine_patterns:
+  - time_of_day: evening_transition
+    location_type: interior_alley
+  - time_of_day: low_flow_interval
+    location_type: familiar_anchor
+target_criteria:
+  allowed: [sudden_proximity, low_visibility, no_guardian_within_one_cell]
+  excluded: [diagnostic_labels, demographic_targeting, real_person_inference]
+geographic_behavior:
+  mobility_radius_cells: 3
+  anchor_point_count: 1
+  path_preference: local_drift
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical, synthetic replay overlay for criminology education. It is not an operational profiling tool, a prediction, or guidance for identifying any real person.
+contemporary_grid_translation: Disputed disorganized movement maps to short-horizon drift through Gangnam-style interior connector cells, with immediate retreat when guardianship appears.

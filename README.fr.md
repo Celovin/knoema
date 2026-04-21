@@ -44,6 +44,7 @@ Tous les exemples liés à la sécurité publique dans ce dépôt sont fictifs, 
 - Scenario DSL v1 en YAML avec garde-fous éthiques
 - Moteur de simulation, CLI et tableau de bord avec export JSONL
 - Playground, benchmarks, SDK de jeu et rapports de recherche
+- 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 
 ## Démarrage rapide
 

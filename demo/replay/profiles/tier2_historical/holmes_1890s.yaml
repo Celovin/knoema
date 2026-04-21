@@ -1,0 +1,42 @@
+archetype_id: holmes-1890s
+tier: 2
+display_name: H.H. Holmes 1890s
+inspired_by: H.H. Holmes, 1861-1896.
+literature_sources:
+  - author: Selzer
+    year: 2019
+    title: H. H. Holmes
+    isbn: '9781510740846'
+  - author: Franke
+    year: 1975
+    title: The Torture Doctor
+    isbn: '9780801578328'
+  - author: Cohen and Felson
+    year: 1979
+    title: Social Change and Crime Rate Trends
+    doi: 10.2307/2094589
+mo_rules:
+  - id: commercial_trust_cue
+    when: commercial_cell == true
+    then: create_neutral_trust_state
+  - id: verification_abort
+    when: verification_guardian_present == true
+    then: abort_overlay_action
+  - id: myth_suppression
+    when: any_event
+    then: suppress_sensational_detail
+routine_patterns:
+  - time_of_day: commercial_transition
+    location_type: commercial_service_cell
+  - time_of_day: scrutiny_rise
+    location_type: main_road_exit
+target_criteria:
+  allowed: [low_verification_support, commercial_trust_context]
+  excluded: [body_count_claims, building_mechanics, victim_names, scripts]
+geographic_behavior:
+  mobility_radius_cells: 5
+  anchor_point_count: 3
+  path_preference: commercial_anchor_switching
+  edge_preference: low
+ethical_disclaimer: This profile is a pedagogical, synthetic replay overlay for criminology education. It is not an operational profiling tool, a prediction, or guidance for identifying any real person.
+contemporary_grid_translation: Historical commercial deception maps to Gangnam-style service cells where verification guardians interrupt trust-cue states.

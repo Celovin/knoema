@@ -44,6 +44,7 @@ Knoema Engine 是一个早期 MVP，用于构建具备记忆、关系、情绪�
 - 带伦理护栏的 YAML Scenario DSL v1
 - 支持 JSONL 导出的仿真运行器、CLI 与仪表板
 - Playground、基准测试、游戏 SDK 和研究报告
+- 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 
 ## 快速开始
 

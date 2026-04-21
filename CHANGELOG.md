@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+- City-scale 1K deterministic runner with multiprocessing shards, offline msgpack replay artifacts, Canvas viewer, and Tier 1/Tier 2 pedagogical archetype overlays.
+
 ## [0.2.0] - 2026-04-19
 
 ### Added

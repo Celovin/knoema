@@ -46,6 +46,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - Opt-in hierarchical planning for multi-step agent goals
 - Opt-in social learning for observational imitation and skill propagation
 - Optional distributed 1000-agent execution envelope with Ray-compatible fallback
+- City-scale 1K benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 - LLM gateway with Anthropic, OpenAI, and deterministic local clients
 - Prompt templates for English, Korean, Japanese, and Chinese runs
 - Simulation runner with scheduled events and JSONL export

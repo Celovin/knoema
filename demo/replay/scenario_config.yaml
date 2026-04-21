@@ -1,0 +1,43 @@
+# Routine Activity Theory reference: Cohen and Felson (1979), Social Change and
+# Crime Rate Trends: A Routine Activity Approach, American Sociological Review.
+# Role percentages are deterministic demo controls derived from the theory's
+# offender / target / guardian convergence triad, not field prevalence claims.
+scenario_id: gangnam_7pm_offline_replay
+seed: 20260421
+start_time_iso: '2026-04-21T19:00:00'
+tick_minutes: 1
+tick_count: 30
+grid:
+  width: 20
+  height: 20
+  topology: gangnam_style_grid
+  edge_types:
+    alley:
+      description: narrow commercial back-alley connectors
+      cells: [[5, 6], [6, 6], [7, 6], [8, 6], [12, 13], [13, 13], [14, 13]]
+    main_road:
+      description: wide commute corridors and arterial roads
+      cells: [[0, 10], [1, 10], [2, 10], [3, 10], [4, 10], [5, 10], [6, 10], [7, 10], [8, 10], [9, 10], [10, 10], [11, 10], [12, 10], [13, 10], [14, 10], [15, 10], [16, 10], [17, 10], [18, 10], [19, 10]]
+    commercial:
+      description: retail strips, transit exits, and evening footfall zones
+      bounds: [7, 7, 13, 13]
+roles:
+  general: 0.92
+  motivated_offender: 0.03
+  guardian: 0.05
+routine_patterns:
+  - role: general
+    pattern: rush_hour_commute
+    location_type: main_road
+  - role: general
+    pattern: commercial_zone_errand
+    location_type: commercial
+  - role: motivated_offender
+    pattern: commercial_zone_loitering
+    location_type: alley
+  - role: guardian
+    pattern: patrol_route
+    location_type: main_road
+convergence_rule:
+  description: offender plus suitable target with no guardian within one cell
+  radius_cells: 1

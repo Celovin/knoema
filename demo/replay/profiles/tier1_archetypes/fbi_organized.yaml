@@ -1,0 +1,42 @@
+archetype_id: fbi-organized
+tier: 1
+display_name: FBI organized archetype
+inspired_by: Literature-derived organized crime-scene typology with contested validity.
+literature_sources:
+  - author: Ressler, Burgess, Douglas, Hartman, and D'Agostino
+    year: 1986
+    title: Sexual Killers and Their Victims
+    doi: 10.1177/088626086001003003
+  - author: Canter, Alison, Alison, and Wentink
+    year: 2004
+    title: 'The Organized/Disorganized Typology of Serial Murder: Myth or Model?'
+    doi: 10.1037/1076-8971.10.3.293
+  - author: Cohen and Felson
+    year: 1979
+    title: 'Social Change and Crime Rate Trends: A Routine Activity Approach'
+    doi: 10.2307/2094589
+mo_rules:
+  - id: scan_guardianship
+    when: guardian_distance_cells <= 1
+    then: abort_overlay_action
+  - id: prefer_planned_edge
+    when: commercial_density == high
+    then: move_to_edge_cell
+  - id: avoid_overexposure
+    when: heatmap_cell_count > local_median
+    then: wait_one_tick
+routine_patterns:
+  - time_of_day: evening_transition
+    location_type: commercial_edge
+  - time_of_day: late_evening
+    location_type: main_road_exit
+target_criteria:
+  allowed: [low_guardianship, repeated_route_overlap, low_crowd_density]
+  excluded: [demographic_targeting, victim_names, real_person_inference]
+geographic_behavior:
+  mobility_radius_cells: 6
+  anchor_point_count: 3
+  path_preference: planned_edges
+  edge_preference: high
+ethical_disclaimer: This profile is a pedagogical, synthetic replay overlay for criminology education. It is not an operational profiling tool, a prediction, or guidance for identifying any real person.
+contemporary_grid_translation: Organized route planning maps to Gangnam-style commercial strips, visible main-road exits, and guardian-rich cells that cause the overlay to abort.

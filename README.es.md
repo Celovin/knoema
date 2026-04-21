@@ -44,6 +44,7 @@ Todos los ejemplos de seguridad pública de este repositorio son ficticios, sint
 - Scenario DSL v1 en YAML con guardrails éticos
 - Motor de simulación, CLI y panel con exportación JSONL
 - Playground, benchmarks, SDK de juego e informes de investigación
+- 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 
 ## Inicio rápido
 

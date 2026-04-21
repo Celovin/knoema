@@ -1,0 +1,42 @@
+archetype_id: whitechapel-1888
+tier: 2
+display_name: Whitechapel 1888
+inspired_by: Jack the Ripper, unidentified historical offender, active 1888.
+literature_sources:
+  - author: Sugden
+    year: 1994
+    title: The Complete History of Jack the Ripper
+    isbn: '9781841193977'
+  - author: Rossmo
+    year: 2000
+    title: Geographic Profiling
+    isbn: '9780849381294'
+  - author: Cohen and Felson
+    year: 1979
+    title: Social Change and Crime Rate Trends
+    doi: 10.2307/2094589
+mo_rules:
+  - id: alley_convergence
+    when: alley_cell == true and guardian_distance_cells > 1
+    then: mark_unguarded_convergence
+  - id: guardian_withdrawal
+    when: guardian_distance_cells <= 1
+    then: withdraw_to_main_road_edge
+  - id: no_graphic_detail
+    when: any_event
+    then: emit_proximity_only
+routine_patterns:
+  - time_of_day: low_guardian_interval
+    location_type: alley
+  - time_of_day: transition_period
+    location_type: commercial_edge
+target_criteria:
+  allowed: [low_guardianship, alley_proximity, transient_flow]
+  excluded: [victim_names, suspect_theories, graphic_detail]
+geographic_behavior:
+  mobility_radius_cells: 4
+  anchor_point_count: 1
+  path_preference: alley_connectors
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical, synthetic replay overlay for criminology education. It is not an operational profiling tool, a prediction, or guidance for identifying any real person.
+contemporary_grid_translation: Whitechapel alley-network concepts map only by analogy to Gangnam-style commercial back-alleys and visible main-road guardian corridors.

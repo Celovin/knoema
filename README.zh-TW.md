@@ -44,6 +44,7 @@ Knoema Engine 是一個早期 MVP，用來建模具備記憶、關係、情緒�
 - 帶有倫理護欄的 YAML Scenario DSL v1
 - 支援 JSONL 匯出的模擬執行器、CLI 與儀表板
 - Playground、基準測試、遊戲 SDK 與研究報告
+- 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
 
 ## 快速開始
 

@@ -1,0 +1,55 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+title: Knoema replay archetype profile
+type: object
+required:
+  - archetype_id
+  - tier
+  - display_name
+  - inspired_by
+  - literature_sources
+  - mo_rules
+  - routine_patterns
+  - target_criteria
+  - geographic_behavior
+  - ethical_disclaimer
+  - contemporary_grid_translation
+properties:
+  archetype_id:
+    type: string
+    pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+  tier:
+    type: integer
+    enum: [1, 2]
+  display_name:
+    type: string
+    minLength: 1
+  inspired_by:
+    type: string
+    minLength: 1
+  literature_sources:
+    type: array
+    minItems: 1
+    items:
+      type: object
+      required: [author, year, title]
+      properties:
+        author: {type: string, minLength: 1}
+        year: {type: integer}
+        title: {type: string, minLength: 1}
+        doi: {type: string}
+        isbn: {type: string}
+  mo_rules:
+    type: array
+    minItems: 1
+  routine_patterns:
+    type: array
+    minItems: 1
+  target_criteria:
+    type: object
+  geographic_behavior:
+    type: object
+  ethical_disclaimer:
+    type: string
+  contemporary_grid_translation:
+    type: string
+    minLength: 1

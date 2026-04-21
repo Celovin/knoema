@@ -1,0 +1,42 @@
+archetype_id: gunness-1900s
+tier: 2
+display_name: Belle Gunness 1900s
+inspired_by: Belle Gunness, 1859-disappeared 1908.
+literature_sources:
+  - author: Schechter
+    year: 2018
+    title: Hell's Princess
+    isbn: '9781477808955'
+  - author: Harrison, Murphy, Ho, Bowers, and Flaherty
+    year: 2015
+    title: Female serial killers in the United States
+    doi: 10.1080/14789949.2015.1007516
+  - author: Cohen and Felson
+    year: 1979
+    title: Social Change and Crime Rate Trends
+    doi: 10.2307/2094589
+mo_rules:
+  - id: trust_sequence
+    when: verification_guardian_present == false
+    then: show_trust_state_only
+  - id: peer_check_interrupt
+    when: peer_verification_present == true
+    then: abort_overlay_action
+  - id: no_correspondence_script
+    when: any_interaction
+    then: use_neutral_state_label
+routine_patterns:
+  - time_of_day: relationship_building_compressed
+    location_type: commercial_service_cell
+  - time_of_day: verification_moment
+    location_type: guardian_node
+target_criteria:
+  allowed: [low_verification_support, trust_cue_context]
+  excluded: [letters, payment_requests, victim_names, disputed_counts]
+geographic_behavior:
+  mobility_radius_cells: 3
+  anchor_point_count: 2
+  path_preference: trusted_venue_anchor
+  edge_preference: low
+ethical_disclaimer: This profile is a pedagogical, synthetic replay overlay for criminology education. It is not an operational profiling tool, a prediction, or guidance for identifying any real person.
+contemporary_grid_translation: Historical correspondence trust maps to Gangnam-style service cells where peer or institutional verification interrupts commitment.

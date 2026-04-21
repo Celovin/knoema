@@ -56,6 +56,7 @@ nav:
   - Core Concepts:
       - Architecture: architecture.md
       - Distributed Architecture: architecture_distributed.md
+      - City-Scale Scaling: scaling.md
       - Research Positioning: research.md
       - Prompt Templates: prompts.md
       - Hierarchical Planning: cognition/hierarchical_planning.md

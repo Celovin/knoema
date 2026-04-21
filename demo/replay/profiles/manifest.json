@@ -1,0 +1,51 @@
+[
+  {
+    "archetype_id": "fbi-organized",
+    "display_name": "FBI organized archetype",
+    "tier": 1,
+    "inspired_by": "Literature-derived organized typology",
+    "mobility_radius": "6 cells"
+  },
+  {
+    "archetype_id": "fbi-disorganized",
+    "display_name": "FBI disorganized archetype",
+    "tier": 1,
+    "inspired_by": "Contested literature-derived typology",
+    "mobility_radius": "3 cells"
+  },
+  {
+    "archetype_id": "canter-geographic-a",
+    "display_name": "Canter geographic archetype A",
+    "tier": 1,
+    "inspired_by": "Geographic profiling literature",
+    "mobility_radius": "5 cells"
+  },
+  {
+    "archetype_id": "kicrim-fraud-archetype",
+    "display_name": "KICRIM fraud archetype",
+    "tier": 1,
+    "inspired_by": "Korean financial-fraud prevention research",
+    "mobility_radius": "8 cells"
+  },
+  {
+    "archetype_id": "whitechapel-1888",
+    "display_name": "Whitechapel 1888",
+    "tier": 2,
+    "inspired_by": "Jack the Ripper, unidentified historical offender, active 1888",
+    "mobility_radius": "4 cells"
+  },
+  {
+    "archetype_id": "holmes-1890s",
+    "display_name": "H.H. Holmes 1890s",
+    "tier": 2,
+    "inspired_by": "H.H. Holmes, 1861-1896",
+    "mobility_radius": "5 cells"
+  },
+  {
+    "archetype_id": "gunness-1900s",
+    "display_name": "Belle Gunness 1900s",
+    "tier": 2,
+    "inspired_by": "Belle Gunness, 1859-disappeared 1908",
+    "mobility_radius": "3 cells"
+  }
+]
