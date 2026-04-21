@@ -23,11 +23,17 @@ from urllib.parse import quote
 
 import gradio as gr
 import plotly.graph_objects as go
+import yaml
 from plotly.colors import qualitative
 from plotly.subplots import make_subplots
 from scipy.stats import chi2_contingency, mannwhitneyu  # type: ignore[import-untyped]
 from scipy.stats import t as student_t
 
+from knoema.community import (
+    community_gallery_markdown,
+    community_scenario_by_id,
+    community_scenario_choices,
+)
 from knoema.export.finetuning import export_finetuning_jsonl
 from knoema.reproducibility import generate_run_fingerprint, verification_guide_markdown
 from knoema.research import (
@@ -751,6 +757,10 @@ LABELS["ko"]["scenario_synthesis_input"] = "시나리오 설명"
 LABELS["ko"]["scenario_synthesis_placeholder"] = "예: 중세 시장에서 상인 3명과 고객 2명이 가격을 협상한다"
 LABELS["ko"]["scenario_synthesis_button"] = "시나리오 생성"
 LABELS["ko"]["scenario_synthesis_empty"] = "상황을 설명하면 에이전트 초안, 이벤트, YAML을 생성합니다."
+LABELS["ko"]["community_gallery_panel"] = "커뮤니티 시나리오 갤러리"
+LABELS["ko"]["community_gallery_scenario"] = "커뮤니티 시나리오"
+LABELS["ko"]["community_gallery_load"] = "선택한 시나리오 불러오기"
+LABELS["ko"]["community_gallery_empty"] = "GitHub 기반 커뮤니티 시나리오를 선택해 Playground 초안으로 불러옵니다."
 LABELS["ko"]["event_injections"] = "이벤트 주입"
 LABELS["ko"]["event_injections_placeholder"] = (
     "0 | Tavern Bar | 전령이 봉인된 편지를 들고 뛰어든다 | agent_1,agent_2 | urgent_news"
@@ -801,6 +811,10 @@ LABELS["en"]["scenario_synthesis_input"] = "Describe your scenario"
 LABELS["en"]["scenario_synthesis_placeholder"] = "Example: a medieval market where 3 merchants and 2 customers negotiate prices"
 LABELS["en"]["scenario_synthesis_button"] = "Generate scenario"
 LABELS["en"]["scenario_synthesis_empty"] = "Describe a situation to draft agents, events, and YAML."
+LABELS["en"]["community_gallery_panel"] = "Community scenario gallery"
+LABELS["en"]["community_gallery_scenario"] = "Community scenario"
+LABELS["en"]["community_gallery_load"] = "Load selected scenario"
+LABELS["en"]["community_gallery_empty"] = "Choose a GitHub-backed community scenario and load it as a Playground draft."
 LABELS["en"]["event_injections"] = "Event injections"
 LABELS["en"]["event_injections_placeholder"] = "0 | Tavern Bar | A courier bursts in with a sealed letter | agent_1,agent_2 | urgent_news"
 LABELS["en"]["initial_relationships"] = "Initial relationship seeds"
@@ -5035,6 +5049,49 @@ def _scenario_synthesis_updates(description: str, language: str) -> tuple[Any, .
     return tuple(outputs)
 
 
+def _community_scenario_updates(scenario_id: str, language: str) -> tuple[Any, ...]:
+    output_count = 1 + ((3 + len(PERSONA_TRAIT_FIELDS)) * AGENT_EDITOR_SLOT_COUNT) + 3
+    key = _language_key(language)
+    try:
+        scenario = community_scenario_by_id(str(scenario_id))
+        payload = yaml.safe_load(scenario.yaml_text)
+    except Exception as exc:
+        message = (
+            f"불러오기 실패: {exc}"
+            if key == "ko"
+            else f"Load failed: {exc}"
+        )
+        return tuple([gr.update() for _ in range(output_count - 1)] + [gr.update(value=message)])
+    if not isinstance(payload, dict):
+        return tuple(
+            [gr.update() for _ in range(output_count - 1)]
+            + [gr.update(value=LABELS[key]["community_gallery_empty"])]
+        )
+    agents = list(cast("list[dict[str, Any]]", payload.get("agents", [])))
+    outputs: list[Any] = [gr.update(value=len(agents))]
+    for slot_index in range(AGENT_EDITOR_SLOT_COUNT):
+        if slot_index < len(agents):
+            agent = agents[slot_index]
+            personality = cast("dict[str, Any]", agent.get("personality", {}))
+            outputs.extend(
+                [
+                    gr.update(value=str(agent.get("name", f"Agent {slot_index + 1}"))),
+                    gr.update(value=int(agent.get("age", 30))),
+                    gr.update(value=""),
+                ]
+            )
+            outputs.extend(
+                gr.update(value=float(personality.get(field_name, PERSONA_TRAIT_DEFAULTS[field_name])))
+                for field_name in PERSONA_TRAIT_FIELDS
+            )
+        else:
+            outputs.extend(gr.update() for _ in range(3 + len(PERSONA_TRAIT_FIELDS)))
+    outputs.append(gr.update(value=_scenario_synthesis_event_lines(payload)))
+    outputs.append(gr.update(value=_scenario_synthesis_relationship_lines(agents[:3])))
+    outputs.append(gr.update(value=community_gallery_markdown(scenario.scenario_id, key)))
+    return tuple(outputs)
+
+
 def _scenario_synthesis_event_lines(config: dict[str, Any]) -> str:
     lines: list[str] = []
     for event in cast("list[dict[str, Any]]", config.get("events", [])):
@@ -8747,6 +8804,27 @@ def build_app() -> gr.Blocks:
                 elem_id="scenario-synthesis-output",
             )
 
+        community_gallery_panel = gr.Accordion(
+            labels["community_gallery_panel"],
+            open=False,
+            elem_id="community-gallery-panel",
+        )
+        with community_gallery_panel:
+            community_gallery_scenario = gr.Dropdown(
+                label=labels["community_gallery_scenario"],
+                choices=community_scenario_choices(),
+                value=community_scenario_choices()[0][1],
+                elem_id="community-gallery-scenario",
+            )
+            community_gallery_load = gr.Button(
+                labels["community_gallery_load"],
+                elem_id="community-gallery-load",
+            )
+            community_gallery_preview = gr.Markdown(
+                community_gallery_markdown(community_scenario_choices()[0][1], "ko"),
+                elem_id="community-gallery-preview",
+            )
+
         with gr.Row():
             batch_mode = gr.Checkbox(
                 label=labels["batch_mode"],
@@ -9616,6 +9694,22 @@ def build_app() -> gr.Blocks:
         scenario_synthesis_outputs.extend(
             [event_injections, initial_relationships, scenario_synthesis_output]
         )
+        community_scenario_outputs: list[Any] = [agent_count]
+        for controls in agent_tabs:
+            community_scenario_outputs.extend(
+                [
+                    controls["name"],
+                    controls["age"],
+                    controls["persona_preset"],
+                    *[
+                        controls["trait_sliders"][field_name]
+                        for field_name in PERSONA_TRAIT_FIELDS
+                    ],
+                ]
+            )
+        community_scenario_outputs.extend(
+            [event_injections, initial_relationships, community_gallery_preview]
+        )
         agent_editor_state_inputs: list[Any] = []
         for controls in agent_tabs:
             agent_editor_state_inputs.extend(
@@ -10000,6 +10094,11 @@ def build_app() -> gr.Blocks:
             _scenario_synthesis_updates,
             inputs=[scenario_synthesis_input, language],
             outputs=scenario_synthesis_outputs,
+        )
+        community_gallery_load.click(
+            _community_scenario_updates,
+            inputs=[community_gallery_scenario, language],
+            outputs=community_scenario_outputs,
         )
         report_agent_button.click(
             _report_agent_answer,

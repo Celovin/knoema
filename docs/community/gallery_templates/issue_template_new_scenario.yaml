@@ -1,0 +1,26 @@
+name: New community scenario
+description: Propose a safe fictional Knoema scenario for the community gallery.
+title: "[Scenario]: "
+labels: ["scenario", "community"]
+body:
+  - type: input
+    id: scenario_id
+    attributes:
+      label: Scenario ID
+      description: Lowercase snake_case identifier.
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One paragraph describing the fictional situation and safety boundary.
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation evidence
+      description: Paste `knoema validate` output and dry-run notes.
+    validations:
+      required: true

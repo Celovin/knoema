@@ -164,5 +164,7 @@ nav:
   - Community:
       - Discord: community/discord.md
       - Discord Launch Kit: discord_community.md
+      - Scenario Gallery: community/scenario-gallery.md
+      - Scenario Gallery PR Template: community/gallery_templates/pull_request_template.md
       - Contributing: community/contributing.md
       - Roadmap: community/roadmap.md

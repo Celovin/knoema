@@ -20,6 +20,7 @@ from knoema.cognition import (
     ObservedBehavior,
     SocialLearner,
 )
+from knoema.community import CommunityScenario, seed_community_scenarios
 from knoema.config import KnoemaConfig, load_config
 from knoema.decision import DecisionEngine, decide
 from knoema.distributed import (
@@ -141,6 +142,7 @@ __all__ = [
     "BenchmarkReport",
     "BenchmarkRun",
     "CachedLLMClient",
+    "CommunityScenario",
     "ComparisonPair",
     "ComparisonRow",
     "ContentFilter",
@@ -238,6 +240,7 @@ __all__ = [
     "run_knoema_benchmark",
     "run_sally_anne_benchmark",
     "score_log",
+    "seed_community_scenarios",
     "shard_agents_by_location",
     "telemetry_opt_in_from_env",
     "to_anthropic_jsonl",
