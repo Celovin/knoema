@@ -1851,6 +1851,9 @@ body,
 .gradio-container .gr-radio {{
     color: var(--knoema-text) !important;
 }}
+.gradio-container :is(.prose, .gr-markdown, [data-testid="markdown"]) :is(p, li, ul, ol, span, strong, em, code, pre, blockquote, h1, h2, h3, h4, h5, h6, a) {{
+    color: var(--knoema-text) !important;
+}}
 .gradio-container .gr-box,
 .gradio-container .gr-panel,
 .gradio-container .gr-accordion,
@@ -2067,6 +2070,21 @@ body,
 .gradio-container button.secondary,
 .gradio-container button[variant="secondary"] {{
     color: var(--knoema-text) !important;
+}}
+/* Light-mode: force non-primary buttons to surface bg so dark default bg + dark text doesn't go invisible */
+:root:not([data-knoema-theme="dark"]) .gradio-container button:not(.primary):not([variant="primary"]) {{
+    background: var(--knoema-surface) !important;
+    border: 1px solid var(--knoema-border) !important;
+    color: var(--knoema-text) !important;
+}}
+:root:not([data-knoema-theme="dark"]) .gradio-container button:not(.primary):not([variant="primary"]):hover {{
+    background: var(--knoema-surface-alt) !important;
+}}
+/* Light-mode: block-label (the floating badge on Plot/Image/etc.) must use surface bg, not the dark default */
+:root:not([data-knoema-theme="dark"]) .gradio-container :is(.block-label, [class*="block-label"], .label-wrap, [class*="label-wrap"]) {{
+    background: var(--knoema-surface) !important;
+    color: var(--knoema-text) !important;
+    border-color: var(--knoema-border) !important;
 }}
 .gradio-container *:focus-visible {{
     outline: 3px solid var(--knoema-focus) !important;
