@@ -1,5 +1,5 @@
 gradio==5.31.0
-knoema-engine @ git+https://github.com/Celovin/knoema.git@d7b844f0d3257c645f20a48c862cfb7a7223e462
+knoema-engine @ git+https://github.com/Celovin/knoema.git@d5ca5eb2de3d913735157b9975621d12816f0392
 huggingface_hub>=0.24,<1.0
 plotly>=5.24
 pyyaml>=6.0
