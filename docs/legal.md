@@ -4,6 +4,7 @@
 
 Knoema's commercial legal package is maintained in the repository root under `legal/`. The rendered documentation copies are available here for review.
 
+- Root package attribution artifact: [ATTRIBUTIONS.md](https://github.com/Celovin/knoema/blob/main/ATTRIBUTIONS.md)
 - [Commercial Terms v1 Korean](legal/commercial_terms_v1_ko.md)
 - [Commercial Terms v1 English](legal/commercial_terms_v1_en.md)
 - [Privacy Policy v1 Korean](legal/privacy_policy_v1_ko.md)
@@ -16,4 +17,3 @@ Knoema's commercial legal package is maintained in the repository root under `le
 - [Refund and Cancellation Policy v1 English](legal/refund_cancellation_policy_v1_en.md)
 
 The attribution manifest will be consolidated into the root `ATTRIBUTIONS.md` artifact in the attribution packaging step.
-

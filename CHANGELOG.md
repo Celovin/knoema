@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 ### Added
+- Deterministic attribution and SBOM artifacts with CI drift checks for downstream package compliance.
 - Draft commercial legal package covering terms, privacy, DPA, attribution, SLA, security posture, and refund policies.
 - Tiered billing primitives for BYO-key, metered pass-through, and enterprise LLM usage, including webhooks, tenant API keys, and billing documentation.
 - Full CAT-28 tier 5 personality taxonomy with 22 single archetypes, 6 composite overlays, manifest coverage, and replay viewer grouping.
