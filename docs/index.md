@@ -2,6 +2,11 @@
 
 Luvoire is an MIT-licensed runtime for persistent agents with memory, relationships, environment context, emotion, events, deterministic logs, and optional LLM-backed decisions.
 
+## Name and Pronunciation
+
+Luvoire is pronounced `/lu?.vw??r/`; the Korean display name is `猷⑤??꾨Ⅴ`.
+The name is constructed from the French `-oire` suffix family, echoing memory, history, and repertoire without claiming to be a French dictionary word.
+
 Use these docs when you need an implementation-oriented path through the repo:
 
 - Install the package and run a deterministic simulation.
