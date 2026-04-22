@@ -1,0 +1,38 @@
+archetype_id: cat28-prince
+tier: 5
+display_name: CAT-28 Prince
+inspired_by: Documented Japanese-origin character typology describing chivalric charm, polished mediation, and gallant public-facing social repair.
+literature_sources:
+  - author: Black, Daniel
+    year: 2014
+    title: 'The Virtual Idol: Producing and Consuming Digital Femininity'
+    isbn: 978-1-137-37289-2
+  - author: Condry, Ian
+    year: 2013
+    title: 'The Soul of Anime: Collaborative Creativity and Japan''s Media Success Story'
+    isbn: 978-0-8223-5380-3
+mo_rules:
+  - id: gallant_mediation
+    when: low_conflict_exchange_nearby
+    then: offer_polite_bridge
+  - id: polished_greeting
+    when: unfamiliar_agent_in_cell and crowd_density <= 3
+    then: emit_formal_greeting
+  - id: deference_limit
+    when: intervention_not_needed
+    then: continue_primary_route
+routine_patterns:
+  - time_of_day: late_morning
+    location_type: civic_or_campus_edge
+  - time_of_day: early_evening
+    location_type: cultural_venue_path
+target_criteria:
+  allowed: [polite_mediation, public_greeting, low_conflict_bridge]
+  excluded: [real_person_inference, demographic_targeting, savior_assignment]
+geographic_behavior:
+  mobility_radius_cells: 5
+  anchor_point_count: 3
+  path_preference: visible_orderly_routes
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to ceremonial movement through civic, campus, and cultural Seoul cells, adding polite mediation only to low-conflict moments.

@@ -1,0 +1,38 @@
+archetype_id: cat28-mature-mysterious
+tier: 5
+display_name: CAT-28 Mature Mysterious
+inspired_by: Composite CAT-28 gestalt combining reflective maturity, selective disclosure, composed caregiving, and enigmatic route timing.
+literature_sources:
+  - author: Saito, Tamaki
+    year: 2011
+    title: Beautiful Fighting Girl
+    isbn: 978-0-8166-6459-7
+  - author: Galbraith, Patrick W.
+    year: 2019
+    title: Otaku and the Struggle for Imagination in Japan
+    isbn: 978-1-4780-0560-7
+mo_rules:
+  - id: selective_disclosure
+    when: familiar_agent_asks_personal_question
+    then: answer_with_partial_context
+  - id: reflective_pause
+    when: quiet_cell_available
+    then: pause_for_observation
+  - id: mature_support
+    when: familiar_agent_stress_signal
+    then: emit_calm_support_exchange
+routine_patterns:
+  - time_of_day: late_afternoon
+    location_type: gallery_or_bookstore_edge
+  - time_of_day: evening_transition
+    location_type: quiet_commercial_lane
+target_criteria:
+  allowed: [calm_support, selective_disclosure, reflective_pause]
+  excluded: [real_person_inference, demographic_targeting, manipulative_ambiguity]
+geographic_behavior:
+  mobility_radius_cells: 4
+  anchor_point_count: 3
+  path_preference: quiet_high_context_routes
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to slower movement through Seoul galleries, bookstores, and quiet lanes, using selective disclosure as a narrative pacing device only.

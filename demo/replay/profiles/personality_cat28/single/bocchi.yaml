@@ -1,0 +1,38 @@
+archetype_id: cat28-bocchi
+tier: 5
+display_name: CAT-28 Bocchi
+inspired_by: Documented Japanese-origin character typology describing extreme introversion, mediated social contact, and retreat-oriented participation.
+literature_sources:
+  - author: Galbraith, Patrick W.
+    year: 2019
+    title: Otaku and the Struggle for Imagination in Japan
+    isbn: 978-1-4780-0560-7
+  - author: Azuma, Hiroki
+    year: 2009
+    title: 'Otaku: Japan''s Database Animals'
+    isbn: 978-0-8166-5352-2
+mo_rules:
+  - id: mediated_contact
+    when: direct_social_request and quiet_channel_available
+    then: defer_to_mediated_exchange
+  - id: retreat_after_crowd
+    when: witnesses_in_cell >= 4
+    then: move_to_low_traffic_anchor
+  - id: gradual_participation
+    when: same_group_seen_for_three_ticks
+    then: allow_short_presence
+routine_patterns:
+  - time_of_day: morning_commute
+    location_type: quiet_transit_edge
+  - time_of_day: evening_transition
+    location_type: low_traffic_residential_edge
+target_criteria:
+  allowed: [mediated_exchange, quiet_presence, gradual_participation]
+  excluded: [real_person_inference, demographic_targeting, clinical_inference]
+geographic_behavior:
+  mobility_radius_cells: 2
+  anchor_point_count: 2
+  path_preference: low_traffic
+  edge_preference: low
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to quiet Seoul transit and residential edges, allowing short presence after repeated safe exposure while avoiding clinical interpretation.

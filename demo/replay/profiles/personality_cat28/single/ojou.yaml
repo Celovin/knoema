@@ -1,0 +1,38 @@
+archetype_id: cat28-ojou
+tier: 5
+display_name: CAT-28 Ojou
+inspired_by: Documented Japanese-origin character typology describing refined-lady register, etiquette-forward behavior, and high-status composure.
+literature_sources:
+  - author: Black, Daniel
+    year: 2014
+    title: 'The Virtual Idol: Producing and Consuming Digital Femininity'
+    isbn: 978-1-137-37289-2
+  - author: Saito, Tamaki
+    year: 2011
+    title: Beautiful Fighting Girl
+    isbn: 978-0-8166-6459-7
+mo_rules:
+  - id: etiquette_first
+    when: social_exchange_starts
+    then: emit_formal_register
+  - id: composed_detour
+    when: route_blocked_by_crowd
+    then: choose_quiet_alternate_path
+  - id: status_distance
+    when: unfamiliar_agent_too_close
+    then: increase_personal_space_one_cell
+routine_patterns:
+  - time_of_day: late_morning
+    location_type: quiet_cafe_or_gallery
+  - time_of_day: late_afternoon
+    location_type: tree_lined_path
+target_criteria:
+  allowed: [formal_register, etiquette_exchange, quiet_alternate_route]
+  excluded: [real_person_inference, demographic_targeting, class_assignment]
+geographic_behavior:
+  mobility_radius_cells: 3
+  anchor_point_count: 3
+  path_preference: low_noise_high_visibility
+  edge_preference: low
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to formal movement through quiet Seoul cafes, galleries, and landscaped routes, treating high-status register as fiction-coded style only.

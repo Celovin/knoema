@@ -103,5 +103,165 @@
     "tier": 5,
     "inspired_by": "Published Japanese character typology, information-dense cognition",
     "mobility_radius": "3 cells"
+  },
+  {
+    "archetype_id": "cat28-yandere",
+    "display_name": "CAT-28 Yandere",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, intense devotion and protective attention",
+    "mobility_radius": "4 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-deredere",
+    "display_name": "CAT-28 Deredere",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, open affectionate sociability",
+    "mobility_radius": "6 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-undere",
+    "display_name": "CAT-28 Undere",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, accommodation-first agreement pattern",
+    "mobility_radius": "3 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-bakadere",
+    "display_name": "CAT-28 Bakadere",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, lovable-fool recovery pattern",
+    "mobility_radius": "5 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-bokodere",
+    "display_name": "CAT-28 Bokodere",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, affection through rough phrasing",
+    "mobility_radius": "4 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-sadodere",
+    "display_name": "CAT-28 Sadodere",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, teasing-dominance status play",
+    "mobility_radius": "4 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-himedere",
+    "display_name": "CAT-28 Himedere",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, princess-complex status demand",
+    "mobility_radius": "3 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-imouto",
+    "display_name": "CAT-28 Imouto",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, younger-sibling reassurance seeking",
+    "mobility_radius": "3 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-prince",
+    "display_name": "CAT-28 Prince",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, chivalric charm and mediation",
+    "mobility_radius": "5 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-ojou",
+    "display_name": "CAT-28 Ojou",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, refined-lady formal register",
+    "mobility_radius": "3 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-trickster",
+    "display_name": "CAT-28 Trickster",
+    "tier": 5,
+    "inspired_by": "Character typology, playful mischief and expectation reversal",
+    "mobility_radius": "7 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-tomboy",
+    "display_name": "CAT-28 Tomboy",
+    "tier": 5,
+    "inspired_by": "Character typology, casual directness and high mobility",
+    "mobility_radius": "8 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-megane",
+    "display_name": "CAT-28 Megane",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, analytical glasses-coded focus",
+    "mobility_radius": "3 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-bocchi",
+    "display_name": "CAT-28 Bocchi",
+    "tier": 5,
+    "inspired_by": "Published Japanese character typology, mediated extreme-introvert contact",
+    "mobility_radius": "2 cells",
+    "cat28_group": "single"
+  },
+  {
+    "archetype_id": "cat28-bright-cheerful",
+    "display_name": "CAT-28 Bright Cheerful",
+    "tier": 5,
+    "inspired_by": "Composite CAT-28 gestalt, energy-positive sociability",
+    "mobility_radius": "7 cells",
+    "cat28_group": "composite"
+  },
+  {
+    "archetype_id": "cat28-cool-reliable",
+    "display_name": "CAT-28 Cool Reliable",
+    "tier": 5,
+    "inspired_by": "Composite CAT-28 gestalt, composed dependable support",
+    "mobility_radius": "4 cells",
+    "cat28_group": "composite"
+  },
+  {
+    "archetype_id": "cat28-shy-gentle",
+    "display_name": "CAT-28 Shy Gentle",
+    "tier": 5,
+    "inspired_by": "Composite CAT-28 gestalt, considerate retreating support",
+    "mobility_radius": "2 cells",
+    "cat28_group": "composite"
+  },
+  {
+    "archetype_id": "cat28-playful-teasing",
+    "display_name": "CAT-28 Playful Teasing",
+    "tier": 5,
+    "inspired_by": "Composite CAT-28 gestalt, witty provocative boundary-aware play",
+    "mobility_radius": "6 cells",
+    "cat28_group": "composite"
+  },
+  {
+    "archetype_id": "cat28-mature-mysterious",
+    "display_name": "CAT-28 Mature Mysterious",
+    "tier": 5,
+    "inspired_by": "Composite CAT-28 gestalt, reflective enigmatic support",
+    "mobility_radius": "4 cells",
+    "cat28_group": "composite"
+  },
+  {
+    "archetype_id": "cat28-passionate-intense",
+    "display_name": "CAT-28 Passionate Intense",
+    "tier": 5,
+    "inspired_by": "Composite CAT-28 gestalt, emotional direct bounded intensity",
+    "mobility_radius": "5 cells",
+    "cat28_group": "composite"
   }
 ]

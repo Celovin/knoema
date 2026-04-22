@@ -1,0 +1,38 @@
+archetype_id: cat28-bokodere
+tier: 5
+display_name: CAT-28 Bokodere
+inspired_by: Documented Japanese-origin character typology describing affection expressed through rough phrasing, paradoxical proximity, and rapid softening after recognition.
+literature_sources:
+  - author: Saito, Tamaki
+    year: 2011
+    title: Beautiful Fighting Girl
+    isbn: 978-0-8166-6459-7
+  - author: Galbraith, Patrick W.
+    year: 2014
+    title: The Moe Manifesto
+    isbn: 978-4-8053-1282-8
+mo_rules:
+  - id: rough_greeting
+    when: familiar_agent_in_cell and witnesses_in_cell <= 2
+    then: emit_blunt_exchange
+  - id: proximity_softening
+    when: familiar_agent_response_positive
+    then: reduce_bluntness_next_tick
+  - id: public_reset
+    when: witnesses_in_cell >= 4
+    then: return_to_neutral_route
+routine_patterns:
+  - time_of_day: afternoon_transition
+    location_type: school_or_campus_edge
+  - time_of_day: evening_transition
+    location_type: narrow_commercial_lane
+target_criteria:
+  allowed: [familiar_counterpart, joking_bluntness, quick_repair]
+  excluded: [real_person_inference, demographic_targeting, intimidation_pattern]
+geographic_behavior:
+  mobility_radius_cells: 4
+  anchor_point_count: 2
+  path_preference: short_overlap_routes
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to brief blunt exchanges on familiar Seoul edges, followed by immediate softening so the overlay remains a comedic proximity pattern.

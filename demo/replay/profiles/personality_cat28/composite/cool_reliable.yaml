@@ -1,0 +1,38 @@
+archetype_id: cat28-cool-reliable
+tier: 5
+display_name: CAT-28 Cool Reliable
+inspired_by: Composite CAT-28 gestalt combining composure, analytical steadiness, and dependable low-affect support in repeated-route scenarios.
+literature_sources:
+  - author: Azuma, Hiroki
+    year: 2009
+    title: 'Otaku: Japan''s Database Animals'
+    isbn: 978-0-8166-5352-2
+  - author: Saito, Tamaki
+    year: 2011
+    title: Beautiful Fighting Girl
+    isbn: 978-0-8166-6459-7
+mo_rules:
+  - id: composed_assist
+    when: familiar_agent_needs_information
+    then: emit_concise_guidance
+  - id: low_affect_stability
+    when: high_arousal_cell
+    then: hold_orderly_route
+  - id: dependable_return
+    when: prior_commitment_due
+    then: prioritize_commitment_anchor
+routine_patterns:
+  - time_of_day: late_morning
+    location_type: study_or_office_cluster
+  - time_of_day: early_evening
+    location_type: transit_transfer
+target_criteria:
+  allowed: [concise_guidance, commitment_anchor, calm_presence]
+  excluded: [real_person_inference, demographic_targeting, emotional_diagnosis]
+geographic_behavior:
+  mobility_radius_cells: 4
+  anchor_point_count: 3
+  path_preference: orderly_low_noise_routes
+  edge_preference: low
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to stable movement through Seoul study, office, and transfer cells, favoring reliable anchor returns over expressive social expansion.

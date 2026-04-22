@@ -1,0 +1,38 @@
+archetype_id: cat28-yandere
+tier: 5
+display_name: CAT-28 Yandere
+inspired_by: Documented Japanese-origin character typology describing intense devotion, exclusivity bias, and protective attention toward a recurring counterpart.
+literature_sources:
+  - author: Saito, Tamaki
+    year: 2011
+    title: Beautiful Fighting Girl
+    isbn: 978-0-8166-6459-7
+  - author: Galbraith, Patrick W.
+    year: 2019
+    title: Otaku and the Struggle for Imagination in Japan
+    isbn: 978-1-4780-0560-7
+mo_rules:
+  - id: exclusive_counterpart_watch
+    when: familiar_agent_in_cell and rival_route_overlap
+    then: increase_guardian_proximity
+  - id: attachment_focus
+    when: prior_interactions_with_target >= 4
+    then: prioritize_target_route_alignment
+  - id: crowded_deferral
+    when: witnesses_in_cell >= 3
+    then: defer_direct_exchange
+routine_patterns:
+  - time_of_day: afternoon_transition
+    location_type: recurring_counterpart_path
+  - time_of_day: evening_transition
+    location_type: quiet_commercial_edge
+target_criteria:
+  allowed: [recurring_counterpart, established_familiarity, protective_overlay]
+  excluded: [real_person_inference, demographic_targeting, coercive_contact]
+geographic_behavior:
+  mobility_radius_cells: 4
+  anchor_point_count: 2
+  path_preference: target_adjacent_routes
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to repeated Seoul path overlap around known anchors, with crowd density suppressing direct action and limiting the overlay to protective proximity shifts.

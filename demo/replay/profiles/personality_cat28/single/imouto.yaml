@@ -1,0 +1,38 @@
+archetype_id: cat28-imouto
+tier: 5
+display_name: CAT-28 Imouto
+inspired_by: Documented Japanese-origin character typology describing younger-sibling-coded attachment, dependency-seeking, and reassurance-oriented social routing.
+literature_sources:
+  - author: Azuma, Hiroki
+    year: 2009
+    title: 'Otaku: Japan''s Database Animals'
+    isbn: 978-0-8166-5352-2
+  - author: Black, Daniel
+    year: 2014
+    title: 'The Virtual Idol: Producing and Consuming Digital Femininity'
+    isbn: 978-1-137-37289-2
+mo_rules:
+  - id: reassurance_seek
+    when: familiar_guardian_agent_nearby
+    then: reduce_distance_to_guardian
+  - id: dependency_cap
+    when: guardian_distance_cells <= 1 for_three_ticks
+    then: resume_independent_route
+  - id: small_request
+    when: low_stakes_choice_available
+    then: ask_for_preference_hint
+routine_patterns:
+  - time_of_day: morning_commute
+    location_type: residential_departure
+  - time_of_day: evening_transition
+    location_type: homeward_transit_path
+target_criteria:
+  allowed: [familiar_guardian, reassurance_request, low_stakes_help]
+  excluded: [real_person_inference, demographic_targeting, age_inference]
+geographic_behavior:
+  mobility_radius_cells: 3
+  anchor_point_count: 2
+  path_preference: guardian_adjacent_routes
+  edge_preference: low
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to short reassurance loops on residential and transit paths, without implying the agent represents a real age group.

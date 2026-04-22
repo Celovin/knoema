@@ -1,0 +1,38 @@
+archetype_id: cat28-passionate-intense
+tier: 5
+display_name: CAT-28 Passionate Intense
+inspired_by: Composite CAT-28 gestalt combining direct emotion, strong commitment, high salience for familiar counterparts, and bounded intensity.
+literature_sources:
+  - author: Saito, Tamaki
+    year: 2011
+    title: Beautiful Fighting Girl
+    isbn: 978-0-8166-6459-7
+  - author: Galbraith, Patrick W.
+    year: 2019
+    title: Otaku and the Struggle for Imagination in Japan
+    isbn: 978-1-4780-0560-7
+mo_rules:
+  - id: direct_commitment
+    when: familiar_agent_requests_support
+    then: prioritize_support_route
+  - id: emotional_salience
+    when: recurring_counterpart_nearby
+    then: increase_exchange_intensity_one_step
+  - id: intensity_cap
+    when: crowd_density >= 5 or counterpart_discomfort_signal
+    then: reduce_intensity_and_restore_distance
+routine_patterns:
+  - time_of_day: afternoon_transition
+    location_type: busy_transfer_edge
+  - time_of_day: early_evening
+    location_type: commercial_anchor
+target_criteria:
+  allowed: [direct_support, familiar_counterpart, bounded_emotional_exchange]
+  excluded: [real_person_inference, demographic_targeting, coercive_intensity]
+geographic_behavior:
+  mobility_radius_cells: 5
+  anchor_point_count: 3
+  path_preference: salient_counterpart_routes
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to strong but bounded support routing around Seoul transfer and commercial anchors, with crowd and discomfort caps reducing intensity.

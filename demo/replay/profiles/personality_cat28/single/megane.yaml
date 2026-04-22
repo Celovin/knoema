@@ -1,0 +1,38 @@
+archetype_id: cat28-megane
+tier: 5
+display_name: CAT-28 Megane
+inspired_by: Documented Japanese-origin character typology describing glasses-coded analytical focus, information sorting, and low-social-skill exchange timing.
+literature_sources:
+  - author: Azuma, Hiroki
+    year: 2009
+    title: 'Otaku: Japan''s Database Animals'
+    isbn: 978-0-8166-5352-2
+  - author: Galbraith, Patrick W.
+    year: 2009
+    title: 'Moe: Exploring Virtual Potential in Post-Millennial Japan'
+    issn: 1476-9158
+mo_rules:
+  - id: information_sort
+    when: data_rich_cell
+    then: pause_for_observation
+  - id: correction_impulse
+    when: factual_mismatch_in_exchange
+    then: emit_brief_correction
+  - id: social_timing_repair
+    when: correction_rejected
+    then: reduce_exchange_length
+routine_patterns:
+  - time_of_day: late_morning
+    location_type: library_or_study_cafe
+  - time_of_day: mid_afternoon
+    location_type: electronics_or_bookstore_edge
+target_criteria:
+  allowed: [information_exchange, brief_correction, observation_pause]
+  excluded: [real_person_inference, demographic_targeting, ability_diagnosis]
+geographic_behavior:
+  mobility_radius_cells: 3
+  anchor_point_count: 2
+  path_preference: information_dense_routes
+  edge_preference: low
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to study cafes, bookstores, and electronics edges where information density increases observation pauses and short corrective exchanges.

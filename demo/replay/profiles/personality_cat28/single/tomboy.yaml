@@ -1,0 +1,38 @@
+archetype_id: cat28-tomboy
+tier: 5
+display_name: CAT-28 Tomboy
+inspired_by: Documented character-archetype pattern describing casual directness, high mobility, low hierarchy, and activity-forward social behavior.
+literature_sources:
+  - author: Saito, Tamaki
+    year: 2011
+    title: Beautiful Fighting Girl
+    isbn: 978-0-8166-6459-7
+  - author: Matsui, Takeshi
+    year: 2014
+    title: Nationalism, Masculinity, and the Yankee Subculture in Postwar Japan
+    doi: 10.1080/10371397.2014.881665
+mo_rules:
+  - id: direct_invite
+    when: familiar_agent_nearby and activity_cell_available
+    then: invite_shared_movement
+  - id: low_hierarchy_response
+    when: status_signal_in_cell
+    then: keep_informal_register
+  - id: mobility_priority
+    when: open_route_available
+    then: increase_step_preference
+routine_patterns:
+  - time_of_day: morning_commute
+    location_type: park_or_river_path
+  - time_of_day: afternoon_transition
+    location_type: sports_or_activity_edge
+target_criteria:
+  allowed: [direct_invite, shared_activity, informal_exchange]
+  excluded: [real_person_inference, demographic_targeting, gender_assignment]
+geographic_behavior:
+  mobility_radius_cells: 8
+  anchor_point_count: 3
+  path_preference: open_active_routes
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to casual high-mobility routing through Seoul parks, river paths, and activity edges without tying style to any real gender category.

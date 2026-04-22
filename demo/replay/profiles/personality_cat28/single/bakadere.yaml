@@ -1,0 +1,38 @@
+archetype_id: cat28-bakadere
+tier: 5
+display_name: CAT-28 Bakadere
+inspired_by: Documented Japanese-origin character typology describing lovable-fool behavior, high error tolerance, and quick recovery after mistaken assumptions.
+literature_sources:
+  - author: Condry, Ian
+    year: 2013
+    title: 'The Soul of Anime: Collaborative Creativity and Japan''s Media Success Story'
+    isbn: 978-0-8223-5380-3
+  - author: Galbraith, Patrick W.
+    year: 2014
+    title: The Moe Manifesto
+    isbn: 978-4-8053-1282-8
+mo_rules:
+  - id: mistaken_shortcut
+    when: route_choice_has_two_equal_options
+    then: select_noisy_detour
+  - id: cheerful_recovery
+    when: detour_cost_cells >= 2
+    then: emit_self_correction_exchange
+  - id: helper_acceptance
+    when: familiar_agent_offers_direction
+    then: follow_guided_route_one_tick
+routine_patterns:
+  - time_of_day: morning_commute
+    location_type: transit_transfer
+  - time_of_day: afternoon_transition
+    location_type: open_plaza
+target_criteria:
+  allowed: [benign_mistake, route_recovery, friendly_guidance]
+  excluded: [real_person_inference, demographic_targeting, competence_labeling]
+geographic_behavior:
+  mobility_radius_cells: 5
+  anchor_point_count: 3
+  path_preference: high_visibility_routes
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to harmless route noise and quick recovery around Seoul transfer cells, using mistakes as movement variation rather than an assessment of real ability.

@@ -1,0 +1,38 @@
+archetype_id: cat28-bright-cheerful
+tier: 5
+display_name: CAT-28 Bright Cheerful
+inspired_by: Composite CAT-28 gestalt combining high-energy warmth, social inclusion, and positive recovery after minor interaction failures.
+literature_sources:
+  - author: Condry, Ian
+    year: 2013
+    title: 'The Soul of Anime: Collaborative Creativity and Japan''s Media Success Story'
+    isbn: 978-0-8223-5380-3
+  - author: Galbraith, Patrick W.
+    year: 2014
+    title: The Moe Manifesto
+    isbn: 978-4-8053-1282-8
+mo_rules:
+  - id: upbeat_entry
+    when: crowd_density <= 5
+    then: emit_positive_greeting
+  - id: inclusive_pivot
+    when: isolated_agent_nearby
+    then: invite_shared_route_overlap
+  - id: recovery_bounce
+    when: failed_social_exchange
+    then: retry_with_lower_intensity
+routine_patterns:
+  - time_of_day: morning_commute
+    location_type: transit_meeting_point
+  - time_of_day: lunch_window
+    location_type: market_or_food_cell
+target_criteria:
+  allowed: [positive_greeting, group_inclusion, low_pressure_retry]
+  excluded: [real_person_inference, demographic_targeting, forced_optimism]
+geographic_behavior:
+  mobility_radius_cells: 7
+  anchor_point_count: 4
+  path_preference: social_high_overlap_routes
+  edge_preference: medium
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to energetic Seoul transit and food cells where warmth increases route overlap and failure recovery without overriding consent boundaries.

@@ -39,7 +39,8 @@
     const expected = new Map([
       ["Criminology - Tier 1", 4],
       ["Criminology - Tier 2 Historical", 3],
-      ["Personality - CAT-28 (Tier 5)", 8]
+      ["Personality - CAT-28 Single (Tier 5)", 22],
+      ["Personality - CAT-28 Composite (Tier 5)", 6]
     ]);
     const result = document.getElementById("result");
     const iframe = document.getElementById("viewer");
@@ -51,9 +52,9 @@
           throw new Error(`${label} expected ${count}, got ${actual.get(label) || 0}`);
         }
       }
-      if (message.total !== 15) throw new Error(`Expected 15 archetypes, got ${message.total}`);
+      if (message.total !== 35) throw new Error(`Expected 35 archetypes, got ${message.total}`);
       if (!message.hasSeparator) throw new Error("Missing visual separator option");
-      result.textContent = "PASS: 15 archetypes grouped as 4 / 3 / 8.";
+      result.textContent = "PASS: 35 archetypes grouped as 4 / 3 / 22 / 6.";
       result.dataset.status = "pass";
     }
 

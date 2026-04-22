@@ -1,6 +1,6 @@
 # CAT-28 Bibliographic Sources
 
-Composite reference list covering every `literature_sources` entry in the personality archetype yamls under `single/`. Each entry here is independently citable via DOI, ISBN, or ISSN.
+Composite reference list covering every `literature_sources` entry in the personality archetype yamls under `single/` and `composite/`. Each entry here is independently citable via DOI, ISBN, or ISSN.
 
 ## Monographs
 

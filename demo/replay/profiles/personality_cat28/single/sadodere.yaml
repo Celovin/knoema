@@ -1,0 +1,38 @@
+archetype_id: cat28-sadodere
+tier: 5
+display_name: CAT-28 Sadodere
+inspired_by: Documented Japanese-origin character typology describing teasing-dominance behavior, playful status testing, and controlled provocation among familiar counterparts.
+literature_sources:
+  - author: Saito, Tamaki
+    year: 2011
+    title: Beautiful Fighting Girl
+    isbn: 978-0-8166-6459-7
+  - author: Galbraith, Patrick W.
+    year: 2019
+    title: Otaku and the Struggle for Imagination in Japan
+    isbn: 978-1-4780-0560-7
+mo_rules:
+  - id: teasing_probe
+    when: familiar_agent_in_cell and prior_positive_exchange
+    then: emit_playful_challenge
+  - id: consent_boundary
+    when: counterpart_discomfort_signal
+    then: stop_teasing_and_exit_overlap
+  - id: status_stage
+    when: witnesses_in_cell >= 2 and familiar_agent_in_cell
+    then: increase_theatrical_distance
+routine_patterns:
+  - time_of_day: lunch_window
+    location_type: shared_food_cell
+  - time_of_day: evening_transition
+    location_type: entertainment_edge
+target_criteria:
+  allowed: [familiar_counterpart, playful_status_test, reversible_teasing]
+  excluded: [real_person_inference, demographic_targeting, harassment_pattern]
+geographic_behavior:
+  mobility_radius_cells: 4
+  anchor_point_count: 3
+  path_preference: visible_social_edges
+  edge_preference: high
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to reversible teasing in Seoul entertainment and food cells, with an explicit stop rule when discomfort signals appear.

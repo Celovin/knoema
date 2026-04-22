@@ -14,7 +14,7 @@ def test_replay_viewer_groups_cat28_profiles_for_file_mode() -> None:
         try:
             page.goto(VIEWER_PATH.as_uri(), wait_until="domcontentloaded")
             page.wait_for_function(
-                "() => document.querySelectorAll('#profile optgroup option').length === 15"
+                "() => document.querySelectorAll('#profile optgroup option').length === 35"
             )
 
             groups = page.eval_on_selector_all(
@@ -54,8 +54,8 @@ def test_replay_viewer_groups_cat28_profiles_for_file_mode() -> None:
                     ],
                 },
                 {
-                    "label": "Personality - CAT-28 (Tier 5)",
-                    "count": 8,
+                    "label": "Personality - CAT-28 Single (Tier 5)",
+                    "count": 22,
                     "values": [
                         "cat28-tsundere",
                         "cat28-kuudere",
@@ -65,6 +65,20 @@ def test_replay_viewer_groups_cat28_profiles_for_file_mode() -> None:
                         "cat28-oneesan",
                         "cat28-yankee",
                         "cat28-intellectual",
+                        "cat28-yandere",
+                        "cat28-deredere",
+                        "cat28-undere",
+                        "cat28-bakadere",
+                        "cat28-bokodere",
+                        "cat28-sadodere",
+                        "cat28-himedere",
+                        "cat28-imouto",
+                        "cat28-prince",
+                        "cat28-ojou",
+                        "cat28-trickster",
+                        "cat28-tomboy",
+                        "cat28-megane",
+                        "cat28-bocchi",
                     ],
                     "labels": [
                         "CAT-28 Tsundere (pedagogical)",
@@ -75,6 +89,40 @@ def test_replay_viewer_groups_cat28_profiles_for_file_mode() -> None:
                         "CAT-28 Oneesan (pedagogical)",
                         "CAT-28 Yankee (pedagogical)",
                         "CAT-28 Intellectual (pedagogical)",
+                        "CAT-28 Yandere (pedagogical)",
+                        "CAT-28 Deredere (pedagogical)",
+                        "CAT-28 Undere (pedagogical)",
+                        "CAT-28 Bakadere (pedagogical)",
+                        "CAT-28 Bokodere (pedagogical)",
+                        "CAT-28 Sadodere (pedagogical)",
+                        "CAT-28 Himedere (pedagogical)",
+                        "CAT-28 Imouto (pedagogical)",
+                        "CAT-28 Prince (pedagogical)",
+                        "CAT-28 Ojou (pedagogical)",
+                        "CAT-28 Trickster (pedagogical)",
+                        "CAT-28 Tomboy (pedagogical)",
+                        "CAT-28 Megane (pedagogical)",
+                        "CAT-28 Bocchi (pedagogical)",
+                    ],
+                },
+                {
+                    "label": "Personality - CAT-28 Composite (Tier 5)",
+                    "count": 6,
+                    "values": [
+                        "cat28-bright-cheerful",
+                        "cat28-cool-reliable",
+                        "cat28-shy-gentle",
+                        "cat28-playful-teasing",
+                        "cat28-mature-mysterious",
+                        "cat28-passionate-intense",
+                    ],
+                    "labels": [
+                        "CAT-28 Bright Cheerful (pedagogical)",
+                        "CAT-28 Cool Reliable (pedagogical)",
+                        "CAT-28 Shy Gentle (pedagogical)",
+                        "CAT-28 Playful Teasing (pedagogical)",
+                        "CAT-28 Mature Mysterious (pedagogical)",
+                        "CAT-28 Passionate Intense (pedagogical)",
                     ],
                 },
             ]
@@ -90,7 +138,7 @@ def test_replay_viewer_tier5_selection_requires_personality_notice() -> None:
         try:
             page.goto(VIEWER_PATH.as_uri(), wait_until="domcontentloaded")
             page.wait_for_function(
-                "() => document.querySelectorAll('#profile optgroup option').length === 15"
+                "() => document.querySelectorAll('#profile optgroup option').length === 35"
             )
             page.evaluate("sessionStorage.clear()")
 

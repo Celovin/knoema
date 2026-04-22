@@ -6,7 +6,7 @@ Pedagogical archetype set derived from the published Japanese-origin character t
 
 - 22 single archetypes (original planned): single-trait cognitive / emotional patterns.
 - 6 composite archetypes (original planned): broader personality gestalt profiles.
-- This directory ships **8 single archetypes** in the initial demo-ready cut. The remainder are deferred until the handoff allocates research budget for the full 28-entry run.
+- This directory ships the full **28 archetype** CAT-28 set: 22 single archetypes and 6 composite gestalt profiles.
 
 ## Attribution and Derivation
 

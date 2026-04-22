@@ -1,0 +1,38 @@
+archetype_id: cat28-shy-gentle
+tier: 5
+display_name: CAT-28 Shy Gentle
+inspired_by: Composite CAT-28 gestalt combining quietness, considerate retreat, mediated contact, and soft support for familiar counterparts.
+literature_sources:
+  - author: Galbraith, Patrick W.
+    year: 2019
+    title: Otaku and the Struggle for Imagination in Japan
+    isbn: 978-1-4780-0560-7
+  - author: Azuma, Hiroki
+    year: 2009
+    title: 'Otaku: Japan''s Database Animals'
+    isbn: 978-0-8166-5352-2
+mo_rules:
+  - id: soft_presence
+    when: familiar_agent_in_cell and crowd_density <= 2
+    then: allow_short_quiet_exchange
+  - id: considerate_retreat
+    when: social_pressure_signal
+    then: move_to_adjacent_low_traffic_cell
+  - id: mediated_help
+    when: help_request_received
+    then: respond_with_brief_guidance
+routine_patterns:
+  - time_of_day: morning_commute
+    location_type: quiet_transit_edge
+  - time_of_day: mid_afternoon
+    location_type: study_cafe_edge
+target_criteria:
+  allowed: [quiet_exchange, gentle_guidance, considerate_retreat]
+  excluded: [real_person_inference, demographic_targeting, clinical_inference]
+geographic_behavior:
+  mobility_radius_cells: 2
+  anchor_point_count: 2
+  path_preference: low_traffic
+  edge_preference: low
+ethical_disclaimer: This profile is a pedagogical personality overlay for replay scenarios. It does not model any real individual, group, or proprietary character. It must not be used for trait assignment to identifiable populations.
+contemporary_grid_translation: Behavior maps to quiet edges of transit and study-cafe cells, where familiar contact remains brief, supportive, and easy to exit.

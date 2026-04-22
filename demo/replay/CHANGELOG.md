@@ -2,6 +2,8 @@
 
 ## 2026-04-22
 
+- Completed the CAT-28 tier 5 personality taxonomy with 22 single archetypes and 6 composite gestalt overlays.
+- Split CAT-28 replay viewer options into single and composite groups while preserving the existing pedagogical notice flow.
 - Added the 10000-agent 60x60 local replay scenario for the largest current
   offline city-scale demo path.
 - Added the 5000-agent 40x40 local replay scenario for demo-scale playback between
