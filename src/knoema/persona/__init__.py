@@ -46,7 +46,10 @@ class Persona:
         _validate_string_list("values", self.values)
         _validate_string_list("goals", self.goals)
         if self.factions is not None:
-            self.factions = {str(faction_id): float(score) for faction_id, score in self.factions.items()}
+            self.factions = {
+                str(faction_id): float(score)
+                for faction_id, score in self.factions.items()
+            }
         if self.routine is not None:
             self.routine = list(self.routine)
 

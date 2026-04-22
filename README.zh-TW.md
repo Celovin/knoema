@@ -48,6 +48,7 @@ Knoema Engine 是一個早期 MVP，用來建模具備記憶、關係、情緒�
 - 支援 JSONL 匯出的模擬執行器、CLI 與儀表板
 - Playground、基準測試、遊戲 SDK 與研究報告
 - 城市規模 1K 基準、離線 msgpack replay 檢視器，以及 CAT-28 五級人格檔案的教學 overlay
+- 面向本機 10K 江南 replay 的可選 Nemotron-Personas-Korea 人設種子
 
 ## 快速開始
 

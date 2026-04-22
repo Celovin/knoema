@@ -26,7 +26,7 @@ The replay demo lives in `demo/replay/`.
 
 - `generate_replay.py` regenerates deterministic msgpack files.
 - `viewer.html` renders the 100-agent, 1000-agent, and 5000-agent scenarios with Canvas 2D.
-- `profiles/` contains Tier 1 and Tier 2 pedagogical overlays only.
+- `profiles/` contains Tier 1, Tier 2, and CAT-28 Tier 5 pedagogical overlays.
 
 Some browsers block `fetch()` for local `file://` msgpack files. The viewer includes a network-free file-selection fallback: open `viewer.html`, choose the needed replay msgpack files with `Load files`, then use the scenario switcher.
 
@@ -76,6 +76,30 @@ python demo/replay/generate_replay.py --scenario 10k --verify-existing
 The committed file is `demo/replay/replay_10000agents_gangnam_7pm.msgpack`
 (9,539,344 bytes). This replay is local-demo only: it is not bundled into the
 HF Space footprint and should not be uploaded as part of the playground surface.
+
+### Nemotron-Seeded 10K Demo
+
+The optional Nemotron replay keeps the same 10K / 30-tick / 60x60 simulation
+shape while replacing compact stub demographics with synthetic
+Nemotron-Personas-Korea attributes sampled from the committed 512-row Gangnam
+fixture. The existing stub 10K artifact remains byte-identical.
+
+Regenerate the Nemotron variant with:
+
+```bash
+python demo/replay/generate_replay.py --scenario 10k --persona-source nemotron
+```
+
+Verify the committed Nemotron artifact with:
+
+```bash
+python demo/replay/generate_replay.py --scenario 10k --persona-source nemotron --verify-existing
+```
+
+The committed file is
+`demo/replay/replay_10000agents_nemotron_gangnam_7pm.msgpack` (11,802,818
+bytes). Its metadata records `persona_source = "nemotron"` and the pinned
+Nemotron-Personas-Korea dataset revision.
 
 ## Extending Beyond 10K Agents
 

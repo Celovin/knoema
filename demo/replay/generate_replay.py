@@ -11,10 +11,22 @@ from typing import Any
 import msgpack  # type: ignore[import-untyped]
 import yaml
 
+from knoema.persona.nemotron_loader import NemotronPersonaSource
 from knoema.scaling import CityScaleConfig, CityScaleRunner
 from knoema.scaling.city_scale import replay_timestamp
 
 REPLAY_DIR = Path(__file__).resolve().parent
+NEMOTRON_REPO_ID = "nvidia/Nemotron-Personas-Korea"
+NEMOTRON_DATASET_REVISION = "0381f03a403df78a7998000f8b11705635b654fd"
+NEMOTRON_FIXTURE_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "src"
+    / "knoema"
+    / "persona"
+    / "fixtures"
+    / "nemotron_sample_512.jsonl"
+)
+NEMOTRON_10K_SHA256 = "9b3fc9944ee08da97f6775199ce4ef6a3fad0fc2e5db25093e1122547faeb3f9"
 DEFAULT_SCENARIOS = ("100", "1k")
 VERIFY_SCENARIOS = ("100", "1k", "5k", "10k")
 SCENARIOS: dict[str, dict[str, object]] = {
@@ -36,6 +48,7 @@ SCENARIOS: dict[str, dict[str, object]] = {
     "10k": {
         "agent_count": 10000,
         "filename": "replay_10000agents_gangnam_7pm.msgpack",
+        "nemotron_filename": "replay_10000agents_nemotron_gangnam_7pm.msgpack",
         "config": "scenario_config_60x60.yaml",
         "compact_initial_memories": True,
         "compact_demographics": True,
@@ -80,15 +93,20 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=REPLAY_DIR)
     parser.add_argument("--scenario", choices=tuple(SCENARIOS), default=None)
+    parser.add_argument("--persona-source", choices=("stub", "nemotron"), default="stub")
     parser.add_argument("--verify-existing", action="store_true")
     args = parser.parse_args()
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     generated: dict[str, str] = {}
-    scenario_names = _selected_scenarios(args.scenario, verify_existing=args.verify_existing)
+    scenario_names = _selected_scenarios(
+        args.scenario,
+        verify_existing=args.verify_existing,
+        persona_source=args.persona_source,
+    )
     for scenario_name in scenario_names:
         scenario = SCENARIOS[scenario_name]
-        filename = str(scenario["filename"])
+        filename = _scenario_filename(scenario, persona_source=args.persona_source)
         payload = build_replay_payload(
             agent_count=int(scenario["agent_count"]),
             scenario_config=(
@@ -99,6 +117,7 @@ def main() -> None:
             compact_initial_memories=bool(scenario.get("compact_initial_memories", False)),
             compact_demographics=bool(scenario.get("compact_demographics", False)),
             include_memory_deltas=bool(scenario.get("include_memory_deltas", True)),
+            persona_source=args.persona_source,
         )
         encoded = msgpack.packb(payload, use_bin_type=True, strict_types=True)
         output_path = args.output_dir / filename
@@ -109,6 +128,11 @@ def main() -> None:
             if existing_digest != digest:
                 raise SystemExit(
                     f"{filename} is not byte-identical: existing={existing_digest} generated={digest}"
+                )
+            if args.persona_source == "nemotron" and existing_digest != NEMOTRON_10K_SHA256:
+                raise SystemExit(
+                    f"{filename} SHA256 mismatch: existing={existing_digest} "
+                    f"expected={NEMOTRON_10K_SHA256}"
                 )
         else:
             output_path.write_bytes(encoded)
@@ -121,12 +145,27 @@ def main() -> None:
         )
 
 
-def _selected_scenarios(scenario: str | None, *, verify_existing: bool) -> tuple[str, ...]:
+def _selected_scenarios(
+    scenario: str | None,
+    *,
+    verify_existing: bool,
+    persona_source: str,
+) -> tuple[str, ...]:
+    if persona_source == "nemotron":
+        if scenario is not None and scenario != "10k":
+            raise SystemExit("Nemotron persona source is currently wired only for --scenario 10k")
+        return ("10k",)
     if scenario is not None:
         return (scenario,)
     if verify_existing:
         return VERIFY_SCENARIOS
     return DEFAULT_SCENARIOS
+
+
+def _scenario_filename(scenario: dict[str, object], *, persona_source: str) -> str:
+    if persona_source == "nemotron":
+        return str(scenario["nemotron_filename"])
+    return str(scenario["filename"])
 
 
 def build_replay_payload(
@@ -136,6 +175,7 @@ def build_replay_payload(
     compact_initial_memories: bool = False,
     compact_demographics: bool = False,
     include_memory_deltas: bool = True,
+    persona_source: str = "stub",
 ) -> dict[str, Any]:
     scenario_values = _scenario_values(scenario_config)
     config = CityScaleConfig(
@@ -151,14 +191,31 @@ def build_replay_payload(
     )
     result = CityScaleRunner(config).run()
     memory_snapshots: dict[str, dict[str, Any]] = {}
+    nemotron_source: NemotronPersonaSource | None = None
+    nemotron_personas: list[dict[str, Any]] = []
+    if persona_source == "nemotron":
+        nemotron_source = NemotronPersonaSource(
+            repo_id=NEMOTRON_REPO_ID,
+            fixture_path=NEMOTRON_FIXTURE_PATH,
+        )
+        nemotron_personas = nemotron_source.sample(
+            agent_count,
+            seed=config.seed,
+            filters={"region_contains": "Gangnam"},
+        )
     initial_by_agent = {
         frame.agent_id: frame
         for frame in result.frames
         if frame.tick == 0
     }
     agents = []
-    for agent in result.final_agents:
+    for index, agent in enumerate(result.final_agents):
         agent_payload = agent.to_json_dict()
+        persona_attributes = (
+            nemotron_source.to_agent_attributes(nemotron_personas[index])
+            if nemotron_source is not None
+            else None
+        )
         agents.append(
             _agent_static(
                 agent_payload,
@@ -167,6 +224,7 @@ def build_replay_payload(
                 config,
                 compact_initial_memories=compact_initial_memories,
                 compact_demographics=compact_demographics,
+                persona_attributes=persona_attributes,
             )
         )
     frames = _frames_by_tick(
@@ -175,16 +233,21 @@ def build_replay_payload(
         config,
         include_memory_deltas=include_memory_deltas,
     )
+    metadata: dict[str, Any] = {
+        "scenario_id": "gangnam_7pm_offline_replay",
+        "seed": config.seed,
+        "agent_count": agent_count,
+        "tick_count": config.tick_count,
+        "start_time_iso": config.start_time_iso,
+        "grid_bounds": {"width": config.grid_width, "height": config.grid_height},
+        "runner_output_hash": result.output_hash,
+    }
+    if persona_source == "nemotron":
+        metadata["persona_source"] = "nemotron"
+        metadata["persona_dataset_revision"] = NEMOTRON_DATASET_REVISION
+        metadata["persona_dataset_repo_id"] = NEMOTRON_REPO_ID
     return {
-        "metadata": {
-            "scenario_id": "gangnam_7pm_offline_replay",
-            "seed": config.seed,
-            "agent_count": agent_count,
-            "tick_count": config.tick_count,
-            "start_time_iso": config.start_time_iso,
-            "grid_bounds": {"width": config.grid_width, "height": config.grid_height},
-            "runner_output_hash": result.output_hash,
-        },
+        "metadata": metadata,
         "agents": agents,
         "frames": frames,
         "memory_snapshots": memory_snapshots,
@@ -200,6 +263,7 @@ def _agent_static(
     *,
     compact_initial_memories: bool = False,
     compact_demographics: bool = False,
+    persona_attributes: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     agent_id = str(agent["agent_id"])
     role = str(agent["role"])
@@ -210,10 +274,15 @@ def _agent_static(
     )
     for memory in memories:
         memory_snapshots[str(memory["memory_id"])] = memory
+    demographics = (
+        {**persona_attributes, "role_tag": role}
+        if persona_attributes is not None
+        else ({} if compact_demographics else _demographics(agent_id, role))
+    )
     return {
         "id": agent_id,
         "role": role,
-        "demographics": {} if compact_demographics else _demographics(agent_id, role),
+        "demographics": demographics,
         "initial_position": list(initial_frame.position),
         "initial_status_flags": list(initial_frame.status_flags),
         "initial_memory_snapshot": [str(memory["memory_id"]) for memory in memories],

@@ -35,7 +35,7 @@ flowchart LR
 | Module | Responsibility |
 | --- | --- |
 | `types.py` | Shared dataclasses: `Personality`, `Emotion`, `Memory`, `Action`, `WorldEvent` |
-| `persona.py` | Persona identity and system prompt rendering |
+| `persona/` | Persona identity, system prompt rendering, and optional synthetic persona seed loaders |
 | `prompts.py` | English, Korean, Japanese, and Chinese prompt templates |
 | `memory/short_term.py` | FIFO recent memory buffer |
 | `memory/long_term.py` | SQLite metadata plus FAISS vector retrieval, batch inserts, and semantic-temporal reranking |

@@ -45,6 +45,7 @@ Tous les exemples liés à la sécurité publique dans ce dépôt sont fictifs, 
 - Moteur de simulation, CLI et tableau de bord avec export JSONL
 - Playground, benchmarks, SDK de jeu et rapports de recherche
 - Benchmark urbain 1K, visualiseur de replay msgpack hors ligne et profils de personnalité CAT-28 de niveau 5 comme overlays pédagogiques
+- Amorçage Nemotron-Personas-Korea optionnel pour le replay local 10K de Gangnam
 - Unity SDK (aperçu) avec contrat FastAPI tick/mémoire/action et structure de paquet UPM
 - Lecture vocale OpenAI TTS optionnelle pour les actions `speak` de la chronologie Playground, avec voix par agent et fallback WAV en cache
 

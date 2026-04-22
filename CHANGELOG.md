@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 - Full CAT-28 tier 5 personality taxonomy with 22 single archetypes, 6 composite overlays, manifest coverage, and replay viewer grouping.
+- Optional Nemotron-Personas-Korea persona seeding for the local 10K Gangnam replay, with an offline fixture, deterministic loader tests, license record, and docs.
 - City-scale 1K deterministic runner with multiprocessing shards, offline msgpack replay artifacts, Canvas viewer, and Tier 1/Tier 2 pedagogical archetype overlays.
 - Unity SDK preview package with FastAPI tick, memory, and action endpoints plus Python-side contract tests.
 - OpenAI TTS voice playback for Playground timeline `speak` actions, with per-agent voice pickers, cache-backed WAV synthesis, and a silent offline fallback.

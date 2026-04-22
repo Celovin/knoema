@@ -169,6 +169,9 @@ disallow_untyped_defs = true
 testpaths = ["tests"]
 asyncio_mode = "auto"
 addopts = "-v --cov=knoema --cov-report=term-missing"
+markers = [
+    "slow: opt-in tests that require live external services or large downloads",
+]
 
 [tool.coverage.run]
 source = ["src/knoema"]

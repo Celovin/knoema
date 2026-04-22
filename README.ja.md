@@ -45,6 +45,7 @@ Knoema Engine は、記憶、関係、感情、環境コンテキスト、LLM �
 - JSONL エクスポート付きシミュレーションランナー、CLI、ダッシュボード
 - Playground、ベンチマーク、ゲーム SDK、研究用レポート
 - 都市規模1Kベンチマーク、オフラインmsgpackリプレイビューア、CAT-28のティア5人格プロファイルを使う教育用オーバーレイ
+- ローカル10K江南リプレイ向けの任意のNemotron-Personas-Koreaペルソナシード
 - Unity SDK（プレビュー）は、FastAPIのtick・memory・action契約とUPMパッケージ構成を提供
 - Playgroundタイムラインの`speak`アクション向けに、エージェント別音声とキャッシュ済みWAVフォールバックを備えた任意のOpenAI TTS音声再生
 

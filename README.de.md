@@ -45,6 +45,7 @@ Alle Public-Safety-Beispiele in diesem Repository sind fiktiv, synthetisch und n
 - Simulationsrunner, CLI und Dashboard mit JSONL-Export
 - Playground, Benchmarks, Game-SDKs und Forschungsberichte
 - City-scale-1K-Benchmark, Offline-msgpack-Replay-Viewer und CAT-28-Persönlichkeitsprofile der Stufe 5 als pädagogische Overlays
+- Optionale Nemotron-Personas-Korea-Seeds für das lokale 10K-Gangnam-Replay
 - Unity SDK (Vorschau) mit FastAPI-Vertrag für Tick, Memory und Action sowie UPM-Paketlayout
 - Optionale OpenAI TTS-Sprachwiedergabe für `speak`-Aktionen in der Playground-Zeitleiste, mit Stimmen pro Agent und cachegestütztem WAV-Fallback
 

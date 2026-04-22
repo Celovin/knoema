@@ -276,6 +276,10 @@
         <option value="replay_5000agents_gangnam_7pm.msgpack">5000 agents (40x40)</option>
         <option value="replay_10000agents_gangnam_7pm.msgpack">10000 agents (60x60)</option>
       </select>
+      <select id="persona-source">
+        <option value="stub">Stub personas</option>
+        <option value="nemotron">Nemotron personas</option>
+      </select>
       <button class="primary" id="play">Play</button>
       <select id="speed">
         <option value="1">1x</option>
@@ -393,6 +397,7 @@
     const el = {
       canvas: document.getElementById("map"),
       scenario: document.getElementById("scenario"),
+      personaSource: document.getElementById("persona-source"),
       play: document.getElementById("play"),
       speed: document.getElementById("speed"),
       scrubber: document.getElementById("scrubber"),
@@ -677,10 +682,11 @@
       const fullDelta = state.timeline[state.tick][state.selectedAgent];
       el.agent.innerHTML = `
         <div class="row"><span class="label">ID</span><span>${agent.id}</span></div>
-        <div class="row"><span class="label">Role</span><span>${agent.role}</span></div>
-        <div class="row"><span class="label">Position</span><span>${fullDelta.position.join(", ")}</span></div>
-        <div class="row"><span class="label">Status</span><span>${fullDelta.status_flags.join(", ")}</span></div>
-      `;
+          <div class="row"><span class="label">Role</span><span>${agent.role}</span></div>
+          <div class="row"><span class="label">Position</span><span>${fullDelta.position.join(", ")}</span></div>
+          <div class="row"><span class="label">Status</span><span>${fullDelta.status_flags.join(", ")}</span></div>
+          ${personaSourceLine()}
+        `;
       const memoryIds = [...agent.initial_memory_snapshot];
       for (let tick = 0; tick <= state.tick; tick += 1) {
         const tickDelta = state.replay.frames[tick].deltas[state.selectedAgent];
@@ -792,8 +798,38 @@
     }
 
     function scenarioLabel(file) {
+      if (file === "replay_10000agents_nemotron_gangnam_7pm.msgpack") {
+        return "10000 agents (60x60), Nemotron personas";
+      }
       const option = [...el.scenario.options].find((candidate) => candidate.value === file);
       return option ? option.textContent : file;
+    }
+
+    function selectedReplayFile() {
+      if (
+        el.personaSource.value === "nemotron"
+        && el.scenario.value === "replay_10000agents_gangnam_7pm.msgpack"
+      ) {
+        return "replay_10000agents_nemotron_gangnam_7pm.msgpack";
+      }
+      return el.scenario.value;
+    }
+
+    function syncPersonaSourceOptions() {
+      const supportsNemotron = el.scenario.value === "replay_10000agents_gangnam_7pm.msgpack";
+      for (const option of el.personaSource.options) {
+        if (option.value === "nemotron") option.disabled = !supportsNemotron;
+      }
+      if (!supportsNemotron && el.personaSource.value === "nemotron") {
+        el.personaSource.value = "stub";
+      }
+    }
+
+    function personaSourceLine() {
+      const metadata = state.replay.metadata;
+      if (metadata.persona_source !== "nemotron") return "";
+      const revision = metadata.persona_dataset_revision || "unknown";
+      return `<div class="row"><span class="label">Persona source</span><span>Nemotron-Personas-Korea (sample from ${escapeHtml(revision)})</span></div>`;
     }
 
     function nextPaint() {
@@ -808,6 +844,7 @@
       el.heatmap.disabled = disabled;
       el.csv.disabled = disabled;
       el.scenario.disabled = state.loading;
+      el.personaSource.disabled = state.loading;
       el.fileInput.disabled = state.loading;
       el.profile.disabled = state.loading || state.profiles.length === 0;
     }
@@ -824,7 +861,13 @@
       return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
     }
 
-    el.scenario.addEventListener("change", () => loadReplay(el.scenario.value).catch((error) => { el.status.textContent = error.message; }));
+    el.scenario.addEventListener("change", () => {
+      syncPersonaSourceOptions();
+      loadReplay(selectedReplayFile()).catch((error) => { el.status.textContent = error.message; });
+    });
+    el.personaSource.addEventListener("change", () => {
+      loadReplay(selectedReplayFile()).catch((error) => { el.status.textContent = error.message; });
+    });
     el.play.addEventListener("click", () => {
       if (!state.replay || state.loading) return;
       state.playing = !state.playing;
@@ -853,7 +896,7 @@
       for (const file of event.target.files) {
         state.localFiles.set(file.name, file);
       }
-      loadReplay(el.scenario.value).catch((error) => { el.status.textContent = error.message; });
+      loadReplay(selectedReplayFile()).catch((error) => { el.status.textContent = error.message; });
     });
     el.canvas.addEventListener("click", (event) => {
       if (!state.replay) return;
@@ -873,7 +916,8 @@
     });
 
     loadProfiles();
-    loadReplay(el.scenario.value).catch((error) => {
+    syncPersonaSourceOptions();
+    loadReplay(selectedReplayFile()).catch((error) => {
       el.status.textContent = error.message + ". Select local .msgpack files with Load files.";
     });
   </script>

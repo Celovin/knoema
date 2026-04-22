@@ -151,6 +151,7 @@ nav:
       - CLI: reference/cli.md
       - CI and Release: ci-release-automation.md
       - Playground Deploy: playground-deploy.md
+      - Persona Seeding: persona_seeding.md
       - Didimdol One-Pager: didimdol-onepager.md
       - Privacy: PRIVACY.md
       - Security Policy: SECURITY.md

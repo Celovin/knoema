@@ -48,6 +48,7 @@ Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정�
 - MVP 데모 트랙과 10명 마을 확장 실험을 보여주는 Jupyter 노트북
 - JSON과 Markdown 리포트를 생성하는 deterministic benchmark script
 - 도시 규모 1K 벤치마크, 오프라인 msgpack 리플레이 뷰어, CAT-28 티어 5 성격 프로필 기반 교육용 오버레이
+- 로컬 10K 강남 리플레이를 위한 선택형 Nemotron-Personas-Korea 페르소나 시딩
 - Godot 4 어댑터 스캐폴드
 - Unity SDK 미리보기: FastAPI tick/memory/action 계약과 UPM 패키지 레이아웃 제공
 - Playground 타임라인의 `speak` 액션을 위한 선택형 OpenAI TTS 음성 재생, 에이전트별 음성과 캐시 기반 WAV fallback 포함

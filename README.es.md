@@ -47,6 +47,7 @@ Todos los ejemplos de seguridad pública de este repositorio son ficticios, sint
 - Motor de simulación, CLI y panel con exportación JSONL
 - Playground, benchmarks, SDK de juego e informes de investigación
 - Benchmark urbano 1K, visor de replay msgpack sin conexión y perfiles de personalidad CAT-28 de nivel 5 como overlays pedagógicos
+- Semillas opcionales de Nemotron-Personas-Korea para el replay local 10K de Gangnam
 - Reproducción de voz OpenAI TTS opcional para acciones `speak` en la línea de tiempo del Playground, con voces por agente y fallback WAV en caché
 
 ## Inicio rápido
