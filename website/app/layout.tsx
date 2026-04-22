@@ -3,13 +3,13 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://luvoire.celovin.com"),
-  title: "Luvoire",
+  title: "Luvoire — Agent simulation that remembers.",
   description:
-    "LLM-based multi-agent social simulation engine for games, fictional public-safety replay research, and academic simulation.",
+    "City-scale multi-agent simulation with deterministic replay, a layered memory stack, and 28 research-grounded personality archetypes.",
   openGraph: {
     title: "Luvoire",
     description:
-      "One engine for persistent NPCs, synthetic replay research, and reproducible social simulation.",
+      "City-scale multi-agent simulation with deterministic replay and 28 research-grounded personality archetypes.",
     url: "/",
     siteName: "Luvoire",
     images: ["/og-image.png"],
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Luvoire",
     description:
-      "One engine for persistent NPCs, synthetic replay research, and reproducible social simulation.",
+      "City-scale multi-agent simulation with deterministic replay and 28 research-grounded personality archetypes.",
     images: ["/og-image.png"],
   },
   alternates: {
@@ -32,12 +32,24 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   colorScheme: "light",
-  themeColor: "#0c6b4d",
+  themeColor: "#A8753A",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=JetBrains+Mono:wght@400;500&display=swap"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );

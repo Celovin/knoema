@@ -1,0 +1,66 @@
+{
+  "components": {
+    "ci": {
+      "label": "CI",
+      "windows": {
+        "30d": {
+          "insufficient_data": true,
+          "sample_count": 12,
+          "window_days": 30
+        },
+        "7d": {
+          "insufficient_data": true,
+          "sample_count": 12,
+          "window_days": 7
+        },
+        "90d": {
+          "insufficient_data": true,
+          "sample_count": 12,
+          "window_days": 90
+        }
+      }
+    },
+    "replay_artifacts": {
+      "label": "Replay artifacts",
+      "windows": {
+        "30d": {
+          "insufficient_data": true,
+          "sample_count": 12,
+          "window_days": 30
+        },
+        "7d": {
+          "insufficient_data": true,
+          "sample_count": 12,
+          "window_days": 7
+        },
+        "90d": {
+          "insufficient_data": true,
+          "sample_count": 12,
+          "window_days": 90
+        }
+      }
+    },
+    "space": {
+      "label": "HF Space",
+      "windows": {
+        "30d": {
+          "insufficient_data": true,
+          "sample_count": 12,
+          "window_days": 30
+        },
+        "7d": {
+          "insufficient_data": true,
+          "sample_count": 12,
+          "window_days": 7
+        },
+        "90d": {
+          "insufficient_data": true,
+          "sample_count": 12,
+          "window_days": 90
+        }
+      }
+    }
+  },
+  "generated_at": "2026-04-22T10:36:12Z",
+  "sample_count": 12
+}

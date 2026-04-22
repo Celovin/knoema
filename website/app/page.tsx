@@ -1,17 +1,23 @@
-import { Architecture } from "../components/Architecture";
-import { CTA } from "../components/CTA";
-import { CodeDemo } from "../components/CodeDemo";
-import { Hero } from "../components/Hero";
-import { ThreeApplications } from "../components/ThreeApplications";
+import { headers } from "next/headers";
+import LuvoireLanding from "../components/LuvoireLanding";
 
-export default function Home() {
+type Lang = "en" | "ko";
+
+async function resolveInitialLang(): Promise<Lang> {
+  const h = await headers();
+  const country = (h.get("x-vercel-ip-country") || h.get("cf-ipcountry") || "").toUpperCase();
+  if (country === "KR") return "ko";
+  if (country && country !== "KR") return "en";
+  const accept = (h.get("accept-language") || "").toLowerCase();
+  if (/(^|[,;\s])ko\b/.test(accept)) return "ko";
+  return "en";
+}
+
+export default async function Home() {
+  const initialLang = await resolveInitialLang();
   return (
     <main>
-      <Hero />
-      <ThreeApplications />
-      <CodeDemo />
-      <Architecture />
-      <CTA />
+      <LuvoireLanding initialLang={initialLang} />
     </main>
   );
 }
