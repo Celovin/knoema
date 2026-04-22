@@ -7,3 +7,4 @@
 {"ci_state": "in_progress", "replay_verified": true, "space_stage": "RUNNING", "timestamp": "2026-04-22T06:57:55Z"}
 {"ci_state": "in_progress", "replay_verified": true, "space_stage": "RUNNING", "timestamp": "2026-04-22T07:10:25Z"}
 {"ci_state": "in_progress", "replay_verified": true, "space_stage": "RUNNING", "timestamp": "2026-04-22T07:30:35Z"}
+{"ci_state": "skipped", "replay_verified": true, "space_stage": "RUNNING", "timestamp": "2026-04-22T07:44:22Z"}
