@@ -13,6 +13,7 @@ from time import sleep
 from typing import Protocol
 from urllib import request
 
+from knoema.observability.metrics import record_webhook_dispatch
 from knoema.safety.audit_log import CommercialAuditLogger, NoOpAuditLog
 
 WebhookEvent = str
@@ -122,9 +123,11 @@ class WebhookDispatcher:
             try:
                 last_status = self._http_post(self.endpoint_url, body, headers, 5.0)
                 if 200 <= last_status < 300:
+                    record_webhook_dispatch("delivered")
                     return WebhookResult(delivered=True, attempts=attempts, last_status=last_status)
             except OSError:
                 last_status = None
+            record_webhook_dispatch("failed")
             self.audit_log.append(
                 "commercial.webhook_failed",
                 actor="webhook-dispatcher",
@@ -150,6 +153,7 @@ class WebhookDispatcher:
                 "url_hash": url_hash,
             },
         )
+        record_webhook_dispatch("exhausted")
         return WebhookResult(delivered=False, attempts=attempts, last_status=last_status)
 
     def _worker_loop(self) -> None:

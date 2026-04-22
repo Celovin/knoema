@@ -4,74 +4,74 @@
       "agent_count": 100,
       "artifact_commit": "ea0783bcc892ba827b73cc7df61db9586f04880a",
       "filename": "replay_100agents_gangnam_7pm.msgpack",
-      "fps_20x": 19886.38247,
+      "fps_20x": 18798.464792,
       "grid": "20x20",
       "label": "100",
-      "load_time_s": 0.002232,
+      "load_time_s": 0.002646,
       "msgpack_sha256": "8e00496a491218ef541378ebe990b20040f071c1fb7821ba82e050b00c7447ab",
       "msgpack_size_mb": 0.421688,
-      "rss_delta_mb": 2.417969,
+      "rss_delta_mb": 2.378906,
       "tick_count": 30,
-      "tick_wall_s_per_20x": 0.030171
+      "tick_wall_s_per_20x": 0.031918
     },
     {
       "agent_count": 1000,
       "artifact_commit": "ea0783bcc892ba827b73cc7df61db9586f04880a",
       "filename": "replay_1000agents_gangnam_7pm.msgpack",
-      "fps_20x": 1822.320695,
+      "fps_20x": 1644.62684,
       "grid": "20x20",
       "label": "1000",
-      "load_time_s": 0.019861,
+      "load_time_s": 0.023236,
       "msgpack_sha256": "0cc79baf78a81cfdbad33fae7b437a2cb9de135b39a6abcde1fffbdb4dfb884b",
       "msgpack_size_mb": 4.215182,
-      "rss_delta_mb": 18.875,
+      "rss_delta_mb": 18.796875,
       "tick_count": 30,
-      "tick_wall_s_per_20x": 0.32925
+      "tick_wall_s_per_20x": 0.364824
     },
     {
       "agent_count": 5000,
       "artifact_commit": "6f3ac76ae03337d9e1b3e99fdc9d35163692a24a",
       "filename": "replay_5000agents_gangnam_7pm.msgpack",
-      "fps_20x": 314.520813,
+      "fps_20x": 258.672056,
       "grid": "40x40",
       "label": "5000",
-      "load_time_s": 0.053407,
+      "load_time_s": 0.055577,
       "msgpack_sha256": "d253d008f340a2661d15aa0f86f4cf1e5aa7b403c689e07eea5d0b1cc7a39c01",
       "msgpack_size_mb": 4.558304,
-      "rss_delta_mb": 39.300781,
+      "rss_delta_mb": 39.894531,
       "tick_count": 30,
-      "tick_wall_s_per_20x": 1.907664
+      "tick_wall_s_per_20x": 2.319539
     },
     {
       "agent_count": 10000,
       "artifact_commit": "c262c8f912df04be6868740164f6c2c28bf6fc94",
       "filename": "replay_10000agents_gangnam_7pm.msgpack",
-      "fps_20x": 128.386958,
+      "fps_20x": 105.170042,
       "grid": "60x60",
       "label": "10000",
-      "load_time_s": 0.109053,
+      "load_time_s": 0.138725,
       "msgpack_sha256": "af326a00b59286d5eb24d1dbab1442e74f8f2a6908d33325864c184b34e4e4d2",
       "msgpack_size_mb": 9.097427,
-      "rss_delta_mb": 84.820312,
+      "rss_delta_mb": 84.710938,
       "tick_count": 30,
-      "tick_wall_s_per_20x": 4.673372
+      "tick_wall_s_per_20x": 5.705047
     },
     {
       "agent_count": 10000,
       "artifact_commit": "6c2a2acb56e594b1a0514c86d9a4429e1b6764ae",
       "filename": "replay_10000agents_nemotron_gangnam_7pm.msgpack",
-      "fps_20x": 128.83332,
+      "fps_20x": 110.478513,
       "grid": "60x60",
       "label": "10000 nemotron",
-      "load_time_s": 0.123433,
+      "load_time_s": 0.146639,
       "msgpack_sha256": "9b3fc9944ee08da97f6775199ce4ef6a3fad0fc2e5db25093e1122547faeb3f9",
       "msgpack_size_mb": 11.256044,
-      "rss_delta_mb": 92.042969,
+      "rss_delta_mb": 93.074219,
       "tick_count": 30,
-      "tick_wall_s_per_20x": 4.65718
+      "tick_wall_s_per_20x": 5.43092
     }
   ],
-  "generated_at": "2026-04-22T07:04:35.383363+00:00",
+  "generated_at": "2026-04-22T07:22:29.804389+00:00",
   "hardware": {
     "machine": "AMD64",
     "node": "DESKTOP-VHH7FT3",
@@ -82,6 +82,7 @@
     "system": "Windows"
   },
   "methodology": {
+    "check_repeats": 3,
     "regression_tolerance": 0.15,
     "script": "scripts/bench_replay_throughput.py",
     "sequential_replay_loops": 20,

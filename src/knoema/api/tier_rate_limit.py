@@ -13,6 +13,7 @@ from fastapi import Depends, HTTPException, Request, Response, status
 from knoema.api.auth import AuthenticatedTenant, require_tenant
 from knoema.api.rate_limit import TokenBucket
 from knoema.billing.tiers import TierName
+from knoema.observability.metrics import record_rate_limit_hit
 
 
 @dataclass(frozen=True, slots=True)
@@ -91,6 +92,7 @@ def enforce_tier_rate_limit(
     response.headers["X-Knoema-RateLimit-Tier"] = tenant.tier
     response.headers["X-Knoema-RateLimit-Remaining"] = str(result.remaining)
     if not result.allowed:
+        record_rate_limit_hit(tenant.tier)
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Rate limit exceeded for tenant tier.",

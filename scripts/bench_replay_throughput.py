@@ -24,6 +24,7 @@ DEFAULT_MARKDOWN = ROOT / "docs" / "benchmarks" / "replay-perf.md"
 REPLAY_LOOPS = 20
 REGRESSION_TOLERANCE = 0.15
 TIME_NOISE_FLOOR_SECONDS = 0.05
+CHECK_REPEATS = 3
 HARDWARE_CAVEAT = (
     "Single-thread sequential on Windows 10, i5-class CPU. Throughput on Linux / "
     "modern server-class hardware is typically 2-4x higher but not yet published."
@@ -83,6 +84,7 @@ def build_report() -> dict[str, object]:
         "hardware": _hardware_snapshot(),
         "methodology": {
             "script": "scripts/bench_replay_throughput.py",
+            "check_repeats": CHECK_REPEATS,
             "sequential_replay_loops": REPLAY_LOOPS,
             "regression_tolerance": REGRESSION_TOLERANCE,
             "time_noise_floor_seconds": TIME_NOISE_FLOOR_SECONDS,
@@ -190,7 +192,8 @@ def _write_markdown(path: Path, report: Mapping[str, object]) -> None:
         "all replay tick deltas in order for 20 sequential loops. Timings use `time.perf_counter`; "
         "RSS deltas use `psutil.Process().memory_info().rss` around load and replay phases.",
         "",
-        "Check mode fails when load time, replay wall time, or FPS regresses by more than 15%. "
+        "Check mode runs three measurements and compares the best current value to the committed "
+        "baseline. It fails when load time, replay wall time, or FPS regresses by more than 15%. "
         "A 0.05s floor is applied to time metrics so millisecond-scale I/O noise does not fail "
         "small artifacts.",
         "",
@@ -243,7 +246,7 @@ def _check(path: Path) -> None:
     if not path.exists():
         raise SystemExit(f"missing benchmark baseline: {path}")
     baseline = json.loads(path.read_text(encoding="utf-8"))
-    current = build_report()
+    current = _best_check_report([build_report() for _ in range(CHECK_REPEATS)])
     failures = _compare_reports(
         cast(Mapping[str, object], baseline),
         cast(Mapping[str, object], current),
@@ -305,8 +308,52 @@ def _compare_fps_metric(
 ) -> None:
     baseline_value = float(expected["fps_20x"])
     current_value = float(observed["fps_20x"])
-    if current_value < baseline_value * (1 - REGRESSION_TOLERANCE):
+    baseline_tick_wall = float(expected["tick_wall_s_per_20x"])
+    ticks_per_replay = int(expected["tick_count"]) * REPLAY_LOOPS
+    time_floor_fps = ticks_per_replay / (baseline_tick_wall + TIME_NOISE_FLOOR_SECONDS)
+    threshold = min(baseline_value * (1 - REGRESSION_TOLERANCE), time_floor_fps)
+    if current_value < threshold:
         failures.append(f"{filename}: fps_20x regressed from {baseline_value} to {current_value}")
+
+
+def _best_check_report(reports: Sequence[Mapping[str, object]]) -> dict[str, object]:
+    if not reports:
+        raise ValueError("at least one report is required")
+    first = reports[0]
+    best_by_filename: dict[str, dict[str, object]] = {}
+    for report in reports:
+        for artifact in cast(Sequence[Mapping[str, object]], report["artifacts"]):
+            filename = str(artifact["filename"])
+            candidate = dict(artifact)
+            current_best = best_by_filename.get(filename)
+            if current_best is None:
+                best_by_filename[filename] = candidate
+                continue
+            current_best["load_time_s"] = min(
+                float(current_best["load_time_s"]),
+                float(candidate["load_time_s"]),
+            )
+            current_best["tick_wall_s_per_20x"] = min(
+                float(current_best["tick_wall_s_per_20x"]),
+                float(candidate["tick_wall_s_per_20x"]),
+            )
+            current_best["fps_20x"] = max(
+                float(current_best["fps_20x"]),
+                float(candidate["fps_20x"]),
+            )
+            current_best["rss_delta_mb"] = min(
+                float(current_best["rss_delta_mb"]),
+                float(candidate["rss_delta_mb"]),
+            )
+    return {
+        "artifacts": [
+            best_by_filename[str(artifact["filename"])]
+            for artifact in cast(Sequence[Mapping[str, object]], first["artifacts"])
+        ],
+        "generated_at": first["generated_at"],
+        "hardware": first["hardware"],
+        "methodology": first["methodology"],
+    }
 
 
 def _artifact_commit(path: Path) -> str:

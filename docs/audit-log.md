@@ -35,4 +35,4 @@ For a non-default path:
 python scripts/audit_log_show.py tenant_123 --path var/audit/commercial.jsonl
 ```
 
-For live operational metrics, use the observability guide once that optional module is enabled. For forensic records, this audit log remains the source of truth.
+For live operational metrics, use the [observability guide](observability.md) once that optional module is enabled. For forensic records, this audit log remains the source of truth.

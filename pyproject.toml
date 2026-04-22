@@ -76,6 +76,13 @@ api = [
     "httpx>=0.28",
     "uvicorn[standard]>=0.32",
 ]
+observability = [
+    "opentelemetry-api>=1.25,<2",
+    "opentelemetry-sdk>=1.25,<2",
+    "opentelemetry-instrumentation-fastapi>=0.45b0",
+    "opentelemetry-exporter-otlp-proto-http>=1.25,<2",
+    "prometheus-client>=0.20,<1.0",
+]
 dashboard = [
     "streamlit>=1.38",
     "plotly>=5.24",

@@ -48,6 +48,7 @@ nav:
   - Customer Onboarding: customer-onboarding.md
   - Status: status.md
   - Audit Log: audit-log.md
+  - Observability: observability.md
   - Legal (Drafts):
       - Overview: legal.md
       - Commercial Terms Korean: legal/commercial_terms_v1_ko.md

@@ -23,6 +23,8 @@ from knoema.billing.tiers import (
     monthly_output_token_cap,
 )
 from knoema.llm.gateway import estimate_tokens
+from knoema.observability.metrics import record_billing_tokens
+from knoema.observability.tracing import trace_span
 from knoema.protocols import Message
 from knoema.safety.audit_log import CommercialAuditLogger, NoOpAuditLog
 
@@ -117,6 +119,12 @@ class UsageMeter:
         )
         self.records.append(record)
         self._append_spool(record)
+        record_billing_tokens(
+            tenant_id=tenant_id,
+            tier=tier,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
         return record
 
     def monthly_output_tokens(
@@ -198,80 +206,88 @@ class LLMGateway:
     ) -> GatewayResponse:
         """Complete a chat request through the configured source while enforcing tier limits."""
 
-        prompt_hash = prompt_messages_hash(messages)
-        input_tokens = estimate_tokens(_messages_to_text(messages))
-        quota_error = self._quota_error(tenant_id, tier, kwargs)
-        source_error = self._source_error(tier, api_key_source, model, byo_api_key)
-        error_code = quota_error or source_error
-        if error_code is not None:
-            self._audit_blocked_call(
-                tenant_id=tenant_id,
-                tier=tier,
-                api_key_source=api_key_source,
-                model=model,
-                kwargs=kwargs,
-                error_code=error_code,
-            )
-            self._record_blocked(
-                tenant_id=tenant_id,
-                tier=tier,
-                api_key_source=api_key_source,
-                model=model,
-                prompt_hash=prompt_hash,
-                input_tokens=input_tokens,
-                error_code=error_code,
-            )
-            return GatewayResponse(
-                ok=False,
-                content="",
-                usage=None,
-                error_code=error_code,
-                error_message=error_code.replace("_", " "),
-            )
+        with trace_span(
+            "knoema.billing.llm.complete",
+            {
+                "knoema.tier": tier,
+                "knoema.api_key_source": api_key_source,
+                "llm.model": model,
+            },
+        ):
+            prompt_hash = prompt_messages_hash(messages)
+            input_tokens = estimate_tokens(_messages_to_text(messages))
+            quota_error = self._quota_error(tenant_id, tier, kwargs)
+            source_error = self._source_error(tier, api_key_source, model, byo_api_key)
+            error_code = quota_error or source_error
+            if error_code is not None:
+                self._audit_blocked_call(
+                    tenant_id=tenant_id,
+                    tier=tier,
+                    api_key_source=api_key_source,
+                    model=model,
+                    kwargs=kwargs,
+                    error_code=error_code,
+                )
+                self._record_blocked(
+                    tenant_id=tenant_id,
+                    tier=tier,
+                    api_key_source=api_key_source,
+                    model=model,
+                    prompt_hash=prompt_hash,
+                    input_tokens=input_tokens,
+                    error_code=error_code,
+                )
+                return GatewayResponse(
+                    ok=False,
+                    content="",
+                    usage=None,
+                    error_code=error_code,
+                    error_message=error_code.replace("_", " "),
+                )
 
-        request_kwargs = dict(kwargs)
-        if api_key_source == "byo_key":
-            request_kwargs["api_key"] = byo_api_key
-        elif api_key_source == "pass_through":
-            master_key = os.environ.get("OPENAI_API_KEY")
-            if master_key:
-                request_kwargs["api_key"] = master_key
-        elif dedicated_endpoint:
-            request_kwargs["api_base"] = dedicated_endpoint
+            request_kwargs = dict(kwargs)
+            if api_key_source == "byo_key":
+                request_kwargs["api_key"] = byo_api_key
+            elif api_key_source == "pass_through":
+                master_key = os.environ.get("OPENAI_API_KEY")
+                if master_key:
+                    request_kwargs["api_key"] = master_key
+            elif dedicated_endpoint:
+                request_kwargs["api_base"] = dedicated_endpoint
 
-        started_at = perf_counter()
-        response = self._completion_client(model=model, messages=list(messages), **request_kwargs)
-        latency_ms = Decimal(str((perf_counter() - started_at) * 1000))
-        content = _completion_to_text(response)
-        output_tokens = _extract_output_tokens(response, content)
-        input_tokens = _extract_input_tokens(response, input_tokens)
-        provider_cost = _extract_cost_decimal(response, input_tokens, output_tokens)
-        billed_cost = _billed_cost(provider_cost, tier, api_key_source)
-        usage = GatewayUsage(
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            provider_cost_usd=provider_cost,
-            billed_cost_usd=billed_cost,
-        )
-        self.usage_meter.record(tenant_id, model, input_tokens, output_tokens, billed_cost, tier)
-        self.records.append(
-            GatewayCallLog(
-                tenant_id=tenant_id,
-                tier=tier,
-                api_key_source=api_key_source,
-                model=model,
-                prompt_hash=prompt_hash,
-                completion_hash=completion_text_hash(content),
+            started_at = perf_counter()
+            response = self._completion_client(model=model, messages=list(messages), **request_kwargs)
+            latency_ms = Decimal(str((perf_counter() - started_at) * 1000))
+            content = _completion_to_text(response)
+            output_tokens = _extract_output_tokens(response, content)
+            input_tokens = _extract_input_tokens(response, input_tokens)
+            provider_cost = _extract_cost_decimal(response, input_tokens, output_tokens)
+            billed_cost = _billed_cost(provider_cost, tier, api_key_source)
+            usage = GatewayUsage(
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
                 provider_cost_usd=provider_cost,
                 billed_cost_usd=billed_cost,
-                latency_ms=latency_ms,
-                ok=True,
-                error_code=None,
             )
-        )
-        return GatewayResponse(ok=True, content=content, usage=usage)
+            self.usage_meter.record(tenant_id, model, input_tokens, output_tokens, billed_cost, tier)
+            self.records.append(
+                GatewayCallLog(
+                    tenant_id=tenant_id,
+                    tier=tier,
+                    api_key_source=api_key_source,
+                    model=model,
+                    prompt_hash=prompt_hash,
+                    completion_hash=completion_text_hash(content),
+                    input_tokens=input_tokens,
+                    output_tokens=output_tokens,
+                    provider_cost_usd=provider_cost,
+                    billed_cost_usd=billed_cost,
+                    latency_ms=latency_ms,
+                    ok=True,
+                    error_code=None,
+                )
+            )
+            return GatewayResponse(ok=True, content=content, usage=usage)
 
     def _quota_error(
         self,

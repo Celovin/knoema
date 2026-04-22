@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -17,6 +19,22 @@ from knoema.api.usage_middleware import UsageMeteringMiddleware
 from knoema.billing.api_keys import APIKeyManager
 from knoema.billing.gateway import UsageMeter
 from knoema.billing.tenant_registry import TenantRegistry
+from knoema.observability.metrics import setup_metrics
+from knoema.observability.tracing import setup_tracing
+
+LOGGER = logging.getLogger(__name__)
+
+
+def _optional_env(name: str) -> str | None:
+    value = os.getenv(name)
+    if value is None:
+        return None
+    cleaned = value.strip()
+    return cleaned or None
+
+
+def _env_flag(name: str) -> bool:
+    return (_optional_env(name) or "").lower() in {"1", "true", "yes", "on"}
 
 
 def create_app(
@@ -34,6 +52,8 @@ def create_app(
     tenant_keys = api_key_manager or TenantRegistry().key_manager()
     meter = usage_meter or UsageMeter()
     tenant_limiter = tier_rate_limiter or TierRateLimiter()
+    otel_exporter = _optional_env("KNOEMA_OTEL_EXPORTER")
+    metrics_enabled = _env_flag("KNOEMA_METRICS_ENABLED")
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
@@ -43,6 +63,17 @@ def create_app(
         app.state.api_key_manager = tenant_keys
         app.state.usage_meter = meter
         app.state.tier_rate_limiter = tenant_limiter
+        app.state.observability = {
+            "metrics_enabled": metrics_enabled,
+            "otel_exporter": otel_exporter or "none",
+        }
+        LOGGER.info(
+            "knoema_observability_startup",
+            extra={
+                "knoema_metrics_enabled": metrics_enabled,
+                "knoema_otel_exporter": otel_exporter or "none",
+            },
+        )
         try:
             yield
         finally:
@@ -56,6 +87,8 @@ def create_app(
         lifespan=lifespan,
     )
     app.add_middleware(UsageMeteringMiddleware)
+    setup_metrics(app, enabled=metrics_enabled)
+    setup_tracing(otel_exporter, app=app)
 
     @app.get("/healthz", response_model=HealthResponse, tags=["health"])
     def healthz() -> HealthResponse:
@@ -74,5 +107,6 @@ def create_app(
 
 
 app = create_app()
+
 
 __all__ = ["app", "create_app"]
