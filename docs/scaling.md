@@ -25,10 +25,33 @@ Comparison rows for Concordia and Mesa are marked `not-measured` unless those fr
 The replay demo lives in `demo/replay/`.
 
 - `generate_replay.py` regenerates deterministic msgpack files.
-- `viewer.html` renders the 100-agent and 1000-agent scenarios with Canvas 2D.
+- `viewer.html` renders the 100-agent, 1000-agent, and 5000-agent scenarios with Canvas 2D.
 - `profiles/` contains Tier 1 and Tier 2 pedagogical overlays only.
 
-Some browsers block `fetch()` for local `file://` msgpack files. The viewer includes a network-free file-selection fallback: open `viewer.html`, choose both replay files with `Load files`, then use the scenario switcher.
+Some browsers block `fetch()` for local `file://` msgpack files. The viewer includes a network-free file-selection fallback: open `viewer.html`, choose the needed replay msgpack files with `Load files`, then use the scenario switcher.
+
+### 5K Scenario
+
+The 5K replay uses `demo/replay/scenario_config_40x40.yaml`, a 40x40 variant of
+the same alley, main-road, and commercial-edge topology used by the 20x20 replay.
+The doubled grid keeps the agent-per-cell density close to the 1K/20x20 demo while
+leaving the existing 100-agent and 1000-agent artifacts byte-identical.
+
+Regenerate the artifact with:
+
+```bash
+python demo/replay/generate_replay.py --scenario 5k
+```
+
+Verify the committed artifact with:
+
+```bash
+python demo/replay/generate_replay.py --scenario 5k --verify-existing
+```
+
+The committed file is `demo/replay/replay_5000agents_gangnam_7pm.msgpack`
+(4,779,728 bytes). This replay is local-demo only: it is not bundled into the
+HF Space footprint and should not be uploaded as part of the playground surface.
 
 ## Extending To 10K Agents
 

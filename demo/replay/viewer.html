@@ -271,8 +271,9 @@
 
     <div class="toolbar">
       <select id="scenario">
-        <option value="replay_100agents_gangnam_7pm.msgpack">100 agents</option>
-        <option value="replay_1000agents_gangnam_7pm.msgpack">1000 agents</option>
+        <option value="replay_100agents_gangnam_7pm.msgpack">100 agents (20x20)</option>
+        <option value="replay_1000agents_gangnam_7pm.msgpack">1000 agents (20x20)</option>
+        <option value="replay_5000agents_gangnam_7pm.msgpack">5000 agents (40x40)</option>
       </select>
       <button class="primary" id="play">Play</button>
       <select id="speed">
@@ -398,6 +399,7 @@
       heatmap: document.getElementById("heatmap"),
       csv: document.getElementById("csv"),
       profile: document.getElementById("profile"),
+      fileInput: document.getElementById("file-input"),
       status: document.getElementById("status"),
       seed: document.getElementById("seed"),
       agent: document.getElementById("agent-details"),
@@ -439,28 +441,44 @@
       profiles: [],
       localFiles: new Map(),
       pendingProfile: null,
-      injectedProfile: null
+      injectedProfile: null,
+      loading: false
     };
 
     async function loadReplay(file) {
-      el.status.textContent = "Loading " + file + "...";
-      let buffer;
-      if (state.localFiles.has(file)) {
-        buffer = await state.localFiles.get(file).arrayBuffer();
-      } else {
-        const response = await fetch(file, { cache: "no-store" });
-        if (!response.ok) throw new Error("Replay fetch failed: " + response.status);
-        buffer = await response.arrayBuffer();
+      state.playing = false;
+      clearInterval(state.timer);
+      el.play.textContent = "Play";
+      state.loading = true;
+      syncControlState();
+      el.status.dataset.loading = "true";
+      el.status.textContent = "Loading " + scenarioLabel(file) + "...";
+      await nextPaint();
+      try {
+        let buffer;
+        if (state.localFiles.has(file)) {
+          buffer = await state.localFiles.get(file).arrayBuffer();
+        } else {
+          const response = await fetch(file, { cache: "no-store" });
+          if (!response.ok) throw new Error("Replay fetch failed: " + response.status);
+          buffer = await response.arrayBuffer();
+        }
+        const started = performance.now();
+        state.replay = new MsgpackDecoder(buffer).read();
+        state.timeline = expandFrames(state.replay);
+        state.tick = 0;
+        state.selectedAgent = null;
+        el.scrubber.max = String(state.replay.frames.length - 1);
+        el.scrubber.value = "0";
+        el.seed.textContent = "seed: " + state.replay.metadata.seed;
+        const elapsedSeconds = ((performance.now() - started) / 1000).toFixed(2);
+        el.status.textContent = `${state.replay.metadata.agent_count} agents loaded from local msgpack in ${elapsedSeconds}s`;
+        render();
+      } finally {
+        state.loading = false;
+        delete el.status.dataset.loading;
+        syncControlState();
       }
-      state.replay = new MsgpackDecoder(buffer).read();
-      state.timeline = expandFrames(state.replay);
-      state.tick = 0;
-      state.selectedAgent = null;
-      el.scrubber.max = String(state.replay.frames.length - 1);
-      el.scrubber.value = "0";
-      el.seed.textContent = "seed: " + state.replay.metadata.seed;
-      el.status.textContent = `${state.replay.metadata.agent_count} agents loaded from local msgpack`;
-      render();
     }
 
     async function loadProfiles() {
@@ -499,6 +517,7 @@
         el.profile.appendChild(optgroup);
       }
       el.profile.disabled = state.profiles.length === 0;
+      syncControlState();
       publishProfileSummary();
     }
 
@@ -551,16 +570,25 @@
       ctx.lineWidth = 1;
       for (let i = 0; i <= grid.width; i += 1) {
         ctx.beginPath(); ctx.moveTo(i * cell, 0); ctx.lineTo(i * cell, grid.height * cell); ctx.stroke();
+      }
+      for (let i = 0; i <= grid.height; i += 1) {
         ctx.beginPath(); ctx.moveTo(0, i * cell); ctx.lineTo(grid.width * cell, i * cell); ctx.stroke();
       }
+      const commercial = scaledBounds(7, 7, 13, 13, grid);
       ctx.fillStyle = "rgba(43, 139, 131, 0.10)";
-      ctx.fillRect(7 * cell, 7 * cell, 7 * cell, 7 * cell);
+      ctx.fillRect(
+        commercial.x0 * cell,
+        commercial.y0 * cell,
+        (commercial.x1 - commercial.x0 + 1) * cell,
+        (commercial.y1 - commercial.y0 + 1) * cell
+      );
       ctx.fillStyle = "rgba(214, 108, 88, 0.13)";
       for (const [x, y] of [[5,6],[6,6],[7,6],[8,6],[12,13],[13,13],[14,13]]) {
-        ctx.fillRect(x * cell, y * cell, cell, cell);
+        const scaled = scaledPoint(x, y, grid);
+        ctx.fillRect(scaled[0] * cell, scaled[1] * cell, cell, cell);
       }
       ctx.fillStyle = "rgba(53, 119, 184, 0.08)";
-      ctx.fillRect(0, 10 * cell, grid.width * cell, cell);
+      ctx.fillRect(0, scaledY(10, grid) * cell, grid.width * cell, cell);
     }
 
     function drawHeatmap(cell, grid) {
@@ -602,7 +630,8 @@
 
     function drawInjected(cell) {
       const path = [[8, 8], [9, 9], [10, 10], [11, 10], [12, 11], [13, 11]];
-      const point = path[state.tick % path.length];
+      const grid = state.replay.metadata.grid_bounds;
+      const point = scaledPoint(...path[state.tick % path.length], grid);
       drawAgent(point[0], point[1], cell, "#d66c58", true);
     }
 
@@ -715,6 +744,47 @@
       return expanded;
     }
 
+    function scaledBounds(x0, y0, x1, y1, grid) {
+      const start = scaledPoint(x0, y0, grid);
+      const end = [
+        Math.max(start[0], Math.min(grid.width - 1, Math.round(((x1 + 1) * grid.width) / 20) - 1)),
+        Math.max(start[1], Math.min(grid.height - 1, Math.round(((y1 + 1) * grid.height) / 20) - 1))
+      ];
+      return { x0: start[0], y0: start[1], x1: end[0], y1: end[1] };
+    }
+
+    function scaledPoint(x, y, grid) {
+      return [
+        Math.min(grid.width - 1, Math.round((x * grid.width) / 20)),
+        Math.min(grid.height - 1, Math.round((y * grid.height) / 20))
+      ];
+    }
+
+    function scaledY(y, grid) {
+      return Math.min(grid.height - 1, Math.round((y * grid.height) / 20));
+    }
+
+    function scenarioLabel(file) {
+      const option = [...el.scenario.options].find((candidate) => candidate.value === file);
+      return option ? option.textContent : file;
+    }
+
+    function nextPaint() {
+      return new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+
+    function syncControlState() {
+      const disabled = state.loading || !state.replay;
+      el.play.disabled = disabled;
+      el.speed.disabled = disabled;
+      el.scrubber.disabled = disabled;
+      el.heatmap.disabled = disabled;
+      el.csv.disabled = disabled;
+      el.scenario.disabled = state.loading;
+      el.fileInput.disabled = state.loading;
+      el.profile.disabled = state.loading || state.profiles.length === 0;
+    }
+
     function injectPendingProfile() {
       state.injectedProfile = state.pendingProfile;
       state.pendingProfile = null;
@@ -729,6 +799,7 @@
 
     el.scenario.addEventListener("change", () => loadReplay(el.scenario.value).catch((error) => { el.status.textContent = error.message; }));
     el.play.addEventListener("click", () => {
+      if (!state.replay || state.loading) return;
       state.playing = !state.playing;
       el.play.textContent = state.playing ? "Pause" : "Play";
       clearInterval(state.timer);
@@ -750,7 +821,7 @@
     });
     el.csv.addEventListener("click", exportCsv);
     el.profile.addEventListener("change", () => requestProfileInjection(el.profile.value));
-    document.getElementById("file-input").addEventListener("change", (event) => {
+    el.fileInput.addEventListener("change", (event) => {
       state.localFiles.clear();
       for (const file of event.target.files) {
         state.localFiles.set(file.name, file);
@@ -776,7 +847,7 @@
 
     loadProfiles();
     loadReplay(el.scenario.value).catch((error) => {
-      el.status.textContent = error.message + ". Select both local .msgpack files with Load files.";
+      el.status.textContent = error.message + ". Select local .msgpack files with Load files.";
     });
   </script>
 </body>

@@ -1,0 +1,43 @@
+# Routine Activity Theory reference: Cohen and Felson (1979), Social Change and
+# Crime Rate Trends: A Routine Activity Approach, American Sociological Review.
+# Role percentages are deterministic demo controls derived from the theory's
+# offender / target / guardian convergence triad, not field prevalence claims.
+scenario_id: gangnam_7pm_offline_replay_5k
+seed: 20260421
+start_time_iso: '2026-04-21T19:00:00'
+tick_minutes: 1
+tick_count: 30
+grid:
+  width: 40
+  height: 40
+  topology: gangnam_style_grid_scaled_40x40
+  edge_types:
+    alley:
+      description: narrow commercial back-alley connectors, scaled from the 20x20 replay
+      cells: [[10, 12], [12, 12], [14, 12], [16, 12], [24, 26], [26, 26], [28, 26]]
+    main_road:
+      description: wide commute corridors and arterial roads
+      cells: [[0, 20], [1, 20], [2, 20], [3, 20], [4, 20], [5, 20], [6, 20], [7, 20], [8, 20], [9, 20], [10, 20], [11, 20], [12, 20], [13, 20], [14, 20], [15, 20], [16, 20], [17, 20], [18, 20], [19, 20], [20, 20], [21, 20], [22, 20], [23, 20], [24, 20], [25, 20], [26, 20], [27, 20], [28, 20], [29, 20], [30, 20], [31, 20], [32, 20], [33, 20], [34, 20], [35, 20], [36, 20], [37, 20], [38, 20], [39, 20]]
+    commercial:
+      description: retail strips, transit exits, and evening footfall zones
+      bounds: [14, 14, 27, 27]
+roles:
+  general: 0.92
+  motivated_offender: 0.03
+  guardian: 0.05
+routine_patterns:
+  - role: general
+    pattern: rush_hour_commute
+    location_type: main_road
+  - role: general
+    pattern: commercial_zone_errand
+    location_type: commercial
+  - role: motivated_offender
+    pattern: commercial_zone_loitering
+    location_type: alley
+  - role: guardian
+    pattern: patrol_route
+    location_type: main_road
+convergence_rule:
+  description: offender plus suitable target with no guardian within one cell
+  radius_cells: 1
