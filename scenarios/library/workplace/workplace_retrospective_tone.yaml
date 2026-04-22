@@ -8,7 +8,7 @@ tick_duration_minutes: 720
 duration_days: 1
 environment:
   start_time: "2026-06-06T09:00:00"
-  location_path: [Knoema Demo World, Scenario Library, Workplace]
+  location_path: [Luvoire Demo World, Scenario Library, Workplace]
   conditions:
     mode: deterministic
     category: workplace
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-06-06T13:00:00"
     event_type: work.retro_checkpoint
     participants: [agent_a, agent_b]
-    location: Knoema Demo World > Scenario Library > Workplace
+    location: Luvoire Demo World > Scenario Library > Workplace
     description: "Participants convert a complaint into an actionable improvement."
 metrics:
   - name: tone_constructiveness

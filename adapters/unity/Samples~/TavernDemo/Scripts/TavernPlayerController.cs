@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Knoema.Unity.Samples
+namespace Luvoire.Unity.Samples
 {
     public sealed class TavernPlayerController : MonoBehaviour
     {

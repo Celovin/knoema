@@ -8,7 +8,7 @@ tick_duration_minutes: 360
 duration_days: 1
 environment:
   start_time: "2026-10-01T09:00:00"
-  location_path: [Knoema Demo World, Template Space]
+  location_path: [Luvoire Demo World, Template Space]
   conditions:
     review_mode: true
 agents:
@@ -29,7 +29,7 @@ events:
   - timestamp: "2026-10-01T12:00:00"
     event_type: template.checkpoint
     participants: [agent_a]
-    location: Knoema Demo World > Template Space
+    location: Luvoire Demo World > Template Space
     description: Synthetic checkpoint for validator review.
 metrics:
   - name: replay_quality

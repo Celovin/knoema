@@ -43,8 +43,8 @@ def test_phase56_latency_sources_stay_official_and_vendor_specific() -> None:
 def test_phase56_summary_and_report_include_latency_comparison() -> None:
     summary = (ROOT / "results/summary.md").read_text(encoding="utf-8")
 
-    assert "Knoema Playground replay-only" in summary
-    assert "Knoema Playground OpenAI mode" in summary
+    assert "Luvoire Playground replay-only" in summary
+    assert "Luvoire Playground OpenAI mode" in summary
     assert "NVIDIA ACE target envelope" in summary
     assert "Inworld TTS-1.5 first audio chunk" in summary
     assert (ROOT / "report.pdf").exists()

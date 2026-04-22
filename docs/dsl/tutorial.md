@@ -1,13 +1,13 @@
 # Scenario DSL Tutorial
 
-Scenario DSL v1 describes a reproducible Knoema scenario in YAML. It is intended for fictional game scenes, synthetic public-safety replay research, and academic simulations.
+Scenario DSL v1 describes a reproducible Luvoire scenario in YAML. It is intended for fictional game scenes, synthetic public-safety replay research, and academic simulations.
 
 ## Minimal Run
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 .venv\Scripts\python - <<'PY'
-from knoema.dsl import load_scenario
+from luvoire.dsl import load_scenario
 
 scenario = load_scenario('examples/scenarios/01_shopkeeper_winter_crime.yaml')
 simulator = scenario.to_simulator()

@@ -4,7 +4,7 @@
     "branch": "main",
     "error": "Could not fetch GitHub Actions runs: HTTP Error 404: Not Found",
     "last_deploy_time": null,
-    "repo": "Celovin/knoema",
+    "repo": "Celovin/luvoire",
     "runs": [],
     "source": "public fallback"
   },
@@ -46,7 +46,7 @@
   },
   "schema_version": 1,
   "space": {
-    "repo_id": "celovin/knoema-playground",
+    "repo_id": "celovin/luvoire-playground",
     "stage": "RUNNING"
   }
 }

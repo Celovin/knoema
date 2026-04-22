@@ -8,7 +8,7 @@ from collections.abc import Sequence
 from datetime import datetime
 from statistics import fmean
 
-from knoema.types import Memory
+from luvoire.types import Memory
 
 
 class MemorySummarizer:

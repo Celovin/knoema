@@ -3,7 +3,7 @@ import { performance } from "node:perf_hooks";
 
 globalThis.performance = performance;
 
-const runtime = await import("../demo/knoema-core.js");
+const runtime = await import("../demo/luvoire-core.js");
 
 const twoAgent = runtime.runSimulation({
   personas: runtime.createDormAgents(2),

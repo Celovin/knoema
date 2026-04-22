@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 
-from knoema.cli import SimulationRunConfig
-from knoema.scenario_synthesis import scenario_to_yaml, synthesize_scenario
+from luvoire.cli import SimulationRunConfig
+from luvoire.scenario_synthesis import scenario_to_yaml, synthesize_scenario
 
 
 def test_batch_v_synthesizes_valid_run_config_from_natural_language() -> None:

@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path.cwd() / "src"))
 sys.path.insert(0, str(Path.cwd()))
 
 playground_app = importlib.import_module("playground.app")
-research_power = importlib.import_module("knoema.research.power")
+research_power = importlib.import_module("luvoire.research.power")
 
 
 def _walk_components(component: object) -> list[object]:

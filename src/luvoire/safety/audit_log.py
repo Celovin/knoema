@@ -42,7 +42,7 @@ class AuditEvent:
     category: str
     outcome: AuditOutcome
     reason: str
-    source: str = "knoema"
+    source: str = "luvoire"
 
     @classmethod
     def create(
@@ -53,7 +53,7 @@ class AuditEvent:
         category: str,
         outcome: AuditOutcome,
         reason: str,
-        source: str = "knoema",
+        source: str = "luvoire",
         timestamp: datetime | None = None,
     ) -> AuditEvent:
         moment = timestamp or datetime.now(tz=UTC)

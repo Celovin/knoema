@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from knoema import Memory, SQLiteFaissMemoryStore
+from luvoire import Memory, SQLiteFaissMemoryStore
 
 
 def test_selective_forgetting_drops_stale_entries(tmp_path: Path) -> None:

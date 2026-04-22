@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Showcase | Knoema Engine",
+  title: "Showcase | Luvoire",
   description:
-    "Knoema Engine paths for browser playground demos, game SDK prototyping, and research SaaS inspection.",
+    "Luvoire paths for browser playground demos, game SDK prototyping, and research SaaS inspection.",
   alternates: {
     canonical: "/showcase",
   },
@@ -20,7 +20,7 @@ export default function ShowcasePage() {
   return (
     <main className="subpage">
       <Link className="back-link" href="/">
-        Knoema Engine
+        Luvoire
       </Link>
       <h1>Three Paths Into The Engine</h1>
       <div className="path-list">
@@ -32,7 +32,7 @@ export default function ShowcasePage() {
         ))}
       </div>
       <div className="cta-links">
-        <a className="primary-link" href="https://huggingface.co/spaces/celovin/knoema-playground">
+        <a className="primary-link" href="https://huggingface.co/spaces/celovin/luvoire-playground">
           Open Playground
         </a>
         <Link className="primary-link" href="/game-demos">

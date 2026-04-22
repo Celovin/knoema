@@ -24,4 +24,4 @@ COPY deploy/docker ./deploy/docker
 
 EXPOSE 8000 8501 8502
 
-CMD ["uvicorn", "knoema.api.server:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "luvoire.api.server:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -4,10 +4,10 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Knoema.Unity
+namespace Luvoire.Unity
 {
     [Serializable]
-    public sealed class KnoemaRequest
+    public sealed class LuvoireRequest
     {
         public string session_id = "unity-demo";
         public string agent_id = "npc";
@@ -16,18 +16,18 @@ namespace Knoema.Unity
     }
 
     [Serializable]
-    public sealed class KnoemaResponse
+    public sealed class LuvoireResponse
     {
         public string content = "";
         public string emotion = "neutral";
         public string[] branch_flags = Array.Empty<string>();
     }
 
-    public sealed class KnoemaClient
+    public sealed class LuvoireClient
     {
-        private readonly KnoemaConfig config;
+        private readonly LuvoireConfig config;
 
-        public KnoemaClient(KnoemaConfig config)
+        public LuvoireClient(LuvoireConfig config)
         {
             this.config = config;
         }
@@ -36,7 +36,7 @@ namespace Knoema.Unity
             string agentId,
             string playerAction,
             string contextJson,
-            Action<KnoemaResponse> onCompleted,
+            Action<LuvoireResponse> onCompleted,
             Action<string> onError = null
         )
         {
@@ -46,7 +46,7 @@ namespace Knoema.Unity
                 yield break;
             }
 
-            var request = new KnoemaRequest
+            var request = new LuvoireRequest
             {
                 session_id = config.SessionId,
                 agent_id = string.IsNullOrWhiteSpace(agentId) ? "npc" : agentId,
@@ -66,13 +66,13 @@ namespace Knoema.Unity
 
             if (HasRequestError(http))
             {
-                var error = string.IsNullOrEmpty(http.error) ? "Knoema request failed." : http.error;
+                var error = string.IsNullOrEmpty(http.error) ? "Luvoire request failed." : http.error;
                 onError?.Invoke(error);
                 onCompleted?.Invoke(LocalFallback(agentId, playerAction));
                 yield break;
             }
 
-            var response = JsonUtility.FromJson<KnoemaResponse>(http.downloadHandler.text);
+            var response = JsonUtility.FromJson<LuvoireResponse>(http.downloadHandler.text);
             if (response == null || string.IsNullOrWhiteSpace(response.content))
             {
                 onCompleted?.Invoke(LocalFallback(agentId, playerAction));
@@ -91,11 +91,11 @@ namespace Knoema.Unity
 #endif
         }
 
-        private static KnoemaResponse LocalFallback(string agentId, string playerAction)
+        private static LuvoireResponse LocalFallback(string agentId, string playerAction)
         {
             var safeAgentId = string.IsNullOrWhiteSpace(agentId) ? "npc" : agentId;
             var safeAction = string.IsNullOrWhiteSpace(playerAction) ? "the current scene" : playerAction;
-            return new KnoemaResponse
+            return new LuvoireResponse
             {
                 content = $"{safeAgentId} remembers '{safeAction}' and responds with a small next step.",
                 emotion = "calm",

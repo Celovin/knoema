@@ -1,12 +1,12 @@
-# Knoema Privacy Policy v1
+# Luvoire Privacy Policy v1
 
 > STATUS: DRAFT - LEGAL REVIEW PENDING (do not publish)
 
-This privacy policy is a first draft for Knoema commercial operations. It must be reviewed against the Korean Personal Information Protection Act, GDPR, CCPA/CPRA, payment processor contracts, and the actual infrastructure configuration before publication.
+This privacy policy is a first draft for Luvoire commercial operations. It must be reviewed against the Korean Personal Information Protection Act, GDPR, CCPA/CPRA, payment processor contracts, and the actual infrastructure configuration before publication.
 
 ## 1. Who We Are
 
-Celovin operates Knoema. For self-service accounts, Celovin generally acts as the business or controller for account, billing, security, and usage operations. For enterprise deployments, Celovin may act as a processor or service provider for Customer under a data processing agreement.
+Celovin operates Luvoire. For self-service accounts, Celovin generally acts as the business or controller for account, billing, security, and usage operations. For enterprise deployments, Celovin may act as a processor or service provider for Customer under a data processing agreement.
 
 ## 2. Personal Information We Process
 
@@ -57,7 +57,7 @@ Where the CCPA/CPRA applies, California residents may have rights to know, acces
 
 ## 9. Children
 
-Knoema commercial services are not directed to children under 14. If Celovin learns that it has processed a child's personal information without appropriate authorization, Celovin will take appropriate steps to restrict or delete the account and information.
+Luvoire commercial services are not directed to children under 14. If Celovin learns that it has processed a child's personal information without appropriate authorization, Celovin will take appropriate steps to restrict or delete the account and information.
 
 ## 10. Security
 

@@ -1,6 +1,6 @@
 # Code of Conduct
 
-Knoema Engine is an early research and engineering project. Contributors are expected to keep collaboration professional, specific, and respectful.
+Luvoire is an early research and engineering project. Contributors are expected to keep collaboration professional, specific, and respectful.
 
 ## Expected Behavior
 

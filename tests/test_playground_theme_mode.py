@@ -44,8 +44,8 @@ def test_subtask52_theme_head_and_css_define_persistent_theme_system() -> None:
     assert playground_app.THEME_STORAGE_KEY in playground_app.APP_HEAD
     assert "prefers-color-scheme: dark" in playground_app.APP_HEAD
     assert "setFromLabel" in playground_app.APP_HEAD
-    assert "--knoema-bg" in playground_app.FOOTER_CSS
-    assert 'data-knoema-theme="dark"' in playground_app.FOOTER_CSS
+    assert "--luvoire-bg" in playground_app.FOOTER_CSS
+    assert 'data-luvoire-theme="dark"' in playground_app.FOOTER_CSS
 
 
 def test_subtask52_theme_helpers_round_trip_localized_modes() -> None:

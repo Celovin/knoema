@@ -6,8 +6,8 @@ import streamlit as st
 
 
 def main() -> None:
-    st.set_page_config(page_title="Knoema Research", layout="wide")
-    st.title("Knoema Research")
+    st.set_page_config(page_title="Luvoire Research", layout="wide")
+    st.title("Luvoire Research")
     st.write("Run, compare, inspect, and export reproducible agent simulation experiments.")
     st.page_link("pages/1_Simulation_Runner.py", label="Simulation Runner")
     st.page_link("pages/2_Experiment_Comparison.py", label="Experiment Comparison")

@@ -14,12 +14,12 @@ from typing import Protocol
 from huggingface_hub import HfApi, hf_hub_download
 
 HF_NAMESPACE = "celovin"
-SPACE_NAME = "knoema-playground"
+SPACE_NAME = "luvoire-playground"
 SPACE_REPO_ID = f"{HF_NAMESPACE}/{SPACE_NAME}"
 SPACE_URL = f"https://huggingface.co/spaces/{SPACE_REPO_ID}"
-DEFAULT_COMMIT_MESSAGE = "Deploy Knoema Playground"
-KNOEMA_REQUIREMENT_PATTERN = re.compile(
-    r"^knoema-engine\s*@\s*git\+https://github\.com/Celovin/knoema\.git@[0-9a-fA-F]{7,40}\s*$",
+DEFAULT_COMMIT_MESSAGE = "Deploy Luvoire Playground"
+LUVOIRE_REQUIREMENT_PATTERN = re.compile(
+    r"^luvoire-engine\s*@\s*git\+https://github\.com/Celovin/luvoire\.git@[0-9a-fA-F]{7,40}\s*$",
     re.MULTILINE,
 )
 GIT_SHA_PATTERN = re.compile(r"^[0-9a-f]{40}$")
@@ -104,11 +104,11 @@ def _current_verified_head_sha(run_command: CommandRunner, root: Path) -> str:
 def _rewrite_requirements_pin(root: Path, sha: str) -> bool:
     requirements_path = root / "playground" / "requirements.txt"
     text = requirements_path.read_text(encoding="utf-8")
-    pinned_line = f"knoema-engine @ git+https://github.com/Celovin/knoema.git@{sha}"
-    updated, replacements = KNOEMA_REQUIREMENT_PATTERN.subn(pinned_line, text, count=1)
+    pinned_line = f"luvoire-engine @ git+https://github.com/Celovin/luvoire.git@{sha}"
+    updated, replacements = LUVOIRE_REQUIREMENT_PATTERN.subn(pinned_line, text, count=1)
     if replacements != 1:
         raise SystemExit(
-            "Could not rewrite playground/requirements.txt: missing knoema-engine git pin."
+            "Could not rewrite playground/requirements.txt: missing luvoire-engine git pin."
         )
     if text.endswith("\n") and not updated.endswith("\n"):
         updated += "\n"
@@ -143,7 +143,7 @@ def _space_revision(api: HfApi, repo_id: str) -> str | None:
 def _pinned_source_sha(requirements_text: str | None) -> str | None:
     if requirements_text is None:
         return None
-    match = KNOEMA_REQUIREMENT_PATTERN.search(requirements_text)
+    match = LUVOIRE_REQUIREMENT_PATTERN.search(requirements_text)
     if match is None:
         return None
     return match.group(0).rsplit("@", 1)[-1]
@@ -287,7 +287,7 @@ def run_playground_space_deploy(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Create or update the Knoema Hugging Face Space from the playground directory."
+        description="Create or update the Luvoire Hugging Face Space from the playground directory."
     )
     parser.add_argument(
         "--repo-id",

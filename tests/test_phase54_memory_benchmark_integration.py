@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from knoema.memory.external_benchmark_integration import (
+from luvoire.memory.external_benchmark_integration import (
     run_external_memory_benchmark_integration,
 )
 

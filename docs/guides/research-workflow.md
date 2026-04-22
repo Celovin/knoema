@@ -1,6 +1,6 @@
 # Research Workflow Guide
 
-Knoema research workflows should be reproducible before they are persuasive.
+Luvoire research workflows should be reproducible before they are persuasive.
 
 ## Baseline Workflow
 

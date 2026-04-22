@@ -6,10 +6,10 @@ The Phase 44 API server exposes a small REST surface for simulation lifecycle ma
 
 ```bash
 pip install -e ".[api]"
-uvicorn knoema.api.server:app --host 127.0.0.1 --port 8000
+uvicorn luvoire.api.server:app --host 127.0.0.1 --port 8000
 ```
 
-Optional bearer authentication is enabled when `KNOEMA_API_KEY` is present in the environment.
+Optional bearer authentication is enabled when `LUVOIRE_API_KEY` is present in the environment.
 
 ## Endpoints
 

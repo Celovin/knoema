@@ -6,7 +6,7 @@ const css = await readFile(new URL("../app/tutorial/tutorial.module.css", import
 const checks = {
   noThirdPartyScripts: !source.includes("<script"),
   imageCountBounded: (source.match(/image: "/g) || []).length <= 5,
-  localStorageScoped: source.includes("knoema.tutorial.progress"),
+  localStorageScoped: source.includes("luvoire.tutorial.progress"),
   responsiveRules: css.includes("@media (max-width: 900px)") && css.includes("@media (max-width: 540px)"),
 };
 

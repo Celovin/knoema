@@ -8,7 +8,7 @@
 
 ## Validation
 
-- [ ] `knoema validate scenarios/<id>.yaml`
+- [ ] `luvoire validate scenarios/<id>.yaml`
 - [ ] Replay dry run completed
 - [ ] Manifest entry added
 - [ ] No real people, no prediction, no suspect scoring

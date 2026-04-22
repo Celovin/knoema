@@ -1,9 +1,9 @@
 using System;
 
-namespace Knoema.UnitySdk.Models
+namespace Luvoire.UnitySdk.Models
 {
     [Serializable]
-    public sealed class KnoemaActionRequest
+    public sealed class LuvoireActionRequest
     {
         public string session_id = "unity-demo";
         public string action_type = "speak";

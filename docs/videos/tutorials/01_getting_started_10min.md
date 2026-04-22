@@ -1,4 +1,4 @@
-# Tutorial 01 - Getting Started With Knoema In 10 Minutes
+# Tutorial 01 - Getting Started With Luvoire In 10 Minutes
 
 ## Goal
 
@@ -26,7 +26,7 @@
 Screen: GitHub repository top page.
 
 Narration:
-Knoema Engine은 LLM 기반 multi-agent social simulation engine입니다. 오늘은 API 키 없이 deterministic local mode로 설치, 실행, 로그 확인까지 10분 안에 끝내겠습니다.
+Luvoire은 LLM 기반 multi-agent social simulation engine입니다. 오늘은 API 키 없이 deterministic local mode로 설치, 실행, 로그 확인까지 10분 안에 끝내겠습니다.
 
 Action:
 Show README headline, applications table, CI badge.
@@ -38,8 +38,8 @@ Screen: Terminal in repository root.
 Commands:
 
 ```bash
-git clone https://github.com/Celovin/knoema.git
-cd knoema
+git clone https://github.com/Celovin/luvoire.git
+cd luvoire
 python -m venv .venv
 .venv\Scripts\activate
 pip install -e ".[dev,dashboard]"
@@ -61,7 +61,7 @@ mypy src
 ```
 
 Narration:
-Knoema는 public demo보다 재현성을 먼저 확인합니다. 테스트에는 memory, relationship, environment, simulator, DSL, benchmark, SDK가 포함됩니다.
+Luvoire는 public demo보다 재현성을 먼저 확인합니다. 테스트에는 memory, relationship, environment, simulator, DSL, benchmark, SDK가 포함됩니다.
 
 ### 03:10 - 05:30 Run A YAML Simulation
 
@@ -70,7 +70,7 @@ Screen: `examples/cli_dorm.yaml`, then terminal.
 Commands:
 
 ```bash
-knoema run examples/cli_dorm.yaml --output runs/demo_dorm.jsonl --json
+luvoire run examples/cli_dorm.yaml --output runs/demo_dorm.jsonl --json
 ```
 
 Narration:
@@ -105,11 +105,11 @@ Narration:
 
 ## YouTube Description
 
-Knoema Engine을 설치하고 deterministic local simulation을 실행하는 10분 튜토리얼입니다. API 키 없이 YAML config, JSONL export, Streamlit dashboard까지 확인합니다.
+Luvoire을 설치하고 deterministic local simulation을 실행하는 10분 튜토리얼입니다. API 키 없이 YAML config, JSONL export, Streamlit dashboard까지 확인합니다.
 
 Links:
-- GitHub: https://github.com/Celovin/knoema
-- Playground: https://huggingface.co/spaces/celovin/knoema-playground
-- CLI docs: https://github.com/Celovin/knoema/blob/main/docs/cli.md
-- Dashboard app: https://github.com/Celovin/knoema/tree/main/dashboard
+- GitHub: https://github.com/Celovin/luvoire
+- Playground: https://huggingface.co/spaces/celovin/luvoire-playground
+- CLI docs: https://github.com/Celovin/luvoire/blob/main/docs/cli.md
+- Dashboard app: https://github.com/Celovin/luvoire/tree/main/dashboard
 

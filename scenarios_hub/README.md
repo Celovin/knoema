@@ -1,6 +1,6 @@
 # Scenario Marketplace Beta
 
-Knoema's scenario marketplace beta is a repository-backed hub for sharing reproducible, validated YAML scenarios.
+Luvoire's scenario marketplace beta is a repository-backed hub for sharing reproducible, validated YAML scenarios.
 
 ## Submission Flow
 
@@ -27,7 +27,7 @@ Knoema's scenario marketplace beta is a repository-backed hub for sharing reprod
 ## Local Validation
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 .venv\Scripts\python scripts\validate_scenarios.py
 ```
 

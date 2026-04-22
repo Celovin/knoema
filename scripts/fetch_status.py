@@ -15,8 +15,8 @@ from typing import Any, Protocol
 
 from huggingface_hub import HfApi
 
-DEFAULT_SPACE_ID = "celovin/knoema-playground"
-DEFAULT_GITHUB_REPO = "Celovin/knoema"
+DEFAULT_SPACE_ID = "celovin/luvoire-playground"
+DEFAULT_GITHUB_REPO = "Celovin/luvoire"
 DEFAULT_BRANCH = "main"
 DEFAULT_OUTPUT_PATH = Path("site-snapshot/status.json")
 REPLAY_SHA256 = {
@@ -98,7 +98,7 @@ def _github_deploy_api_url(repo: str, branch: str) -> str:
 def _load_public_json(url: str, environment: Mapping[str, str]) -> dict[str, Any]:
     headers = {
         "Accept": "application/vnd.github+json",
-        "User-Agent": "knoema-status-page",
+        "User-Agent": "luvoire-status-page",
     }
     token = environment.get("GITHUB_TOKEN") or environment.get("GH_TOKEN")
     if token:
@@ -311,7 +311,7 @@ def write_status(status: Mapping[str, Any], output_path: Path = DEFAULT_OUTPUT_P
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Fetch public Knoema status signals.")
+    parser = argparse.ArgumentParser(description="Fetch public Luvoire status signals.")
     parser.add_argument("--space-id", default=DEFAULT_SPACE_ID)
     parser.add_argument("--github-repo", default=DEFAULT_GITHUB_REPO)
     parser.add_argument("--branch", default=DEFAULT_BRANCH)

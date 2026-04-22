@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from statistics import mean
 
-from knoema.planning import AgentContext, HierarchicalPlanner, WorldState
+from luvoire.planning import AgentContext, HierarchicalPlanner, WorldState
 
 ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = ROOT / "results"

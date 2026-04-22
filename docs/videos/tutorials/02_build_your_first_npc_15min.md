@@ -1,4 +1,4 @@
-# Tutorial 02 - Build Your First Knoema NPC In 15 Minutes
+# Tutorial 02 - Build Your First Luvoire NPC In 15 Minutes
 
 ## Goal
 
@@ -25,7 +25,7 @@ Python Game SDK로 deterministic NPC를 만들고, player action, context, respo
 Screen: `docs/sdk/integration_patterns.md`.
 
 Narration:
-이번 영상에서는 Knoema의 Game SDK 표면을 사용해 첫 NPC를 만듭니다. 목표는 멋진 대사를 한 번 뽑는 것이 아니라, 게임 규칙에 연결 가능한 deterministic response contract를 확인하는 것입니다.
+이번 영상에서는 Luvoire의 Game SDK 표면을 사용해 첫 NPC를 만듭니다. 목표는 멋진 대사를 한 번 뽑는 것이 아니라, 게임 규칙에 연결 가능한 deterministic response contract를 확인하는 것입니다.
 
 ### 00:50 - 02:30 Persona File
 
@@ -51,7 +51,7 @@ Screen: `sdk/python/examples/basic_npc.py`.
 Code:
 
 ```python
-from knoema.game import GameSession
+from luvoire.game import GameSession
 
 session = GameSession(game_id='demo-village')
 npc = session.create_npc(
@@ -70,7 +70,7 @@ GameSession은 게임 id와 provider를 갖고, create_npc는 persona와 초기 
 
 ### 05:30 - 08:20 Response Contract
 
-Screen: Terminal output and `src/knoema/game.py`.
+Screen: Terminal output and `src/luvoire/game.py`.
 
 Narration:
 응답은 `text`, `emotion`, `branch_flags`, `raw`로 나뉩니다. text는 UI에 보여줄 문장이고, emotion은 portrait나 animation state에 연결할 수 있습니다. branch flags는 quest와 narrative branch에 연결합니다. raw metadata는 디버깅과 replay에 사용합니다.
@@ -84,7 +84,7 @@ TypeScript SDK도 같은 개념을 유지합니다. Electron tooling이나 web-b
 
 ### 10:30 - 12:40 Godot Surface
 
-Screen: `sdk/godot-gdscript/knoema.gd`.
+Screen: `sdk/godot-gdscript/luvoire.gd`.
 
 Narration:
 Godot GDScript facade는 direct prototype용입니다. 실제 runtime 연결 전에도 NPC id, player action, context, response dictionary를 씬에서 다뤄볼 수 있습니다.
@@ -105,11 +105,11 @@ Narration:
 
 ## YouTube Description
 
-Knoema Game SDK로 첫 NPC를 만드는 15분 튜토리얼입니다. Python, TypeScript, Godot GDScript가 공유하는 response contract를 확인하고 branch flags를 게임 규칙에 연결하는 방식을 다룹니다.
+Luvoire Game SDK로 첫 NPC를 만드는 15분 튜토리얼입니다. Python, TypeScript, Godot GDScript가 공유하는 response contract를 확인하고 branch flags를 게임 규칙에 연결하는 방식을 다룹니다.
 
 Links:
-- GitHub: https://github.com/Celovin/knoema
-- Python SDK: https://github.com/Celovin/knoema/blob/main/docs/sdk/python-api.md
-- TypeScript SDK: https://github.com/Celovin/knoema/blob/main/docs/sdk/typescript-api.md
-- Godot SDK: https://github.com/Celovin/knoema/blob/main/docs/sdk/godot-api.md
+- GitHub: https://github.com/Celovin/luvoire
+- Python SDK: https://github.com/Celovin/luvoire/blob/main/docs/sdk/python-api.md
+- TypeScript SDK: https://github.com/Celovin/luvoire/blob/main/docs/sdk/typescript-api.md
+- Godot SDK: https://github.com/Celovin/luvoire/blob/main/docs/sdk/godot-api.md
 

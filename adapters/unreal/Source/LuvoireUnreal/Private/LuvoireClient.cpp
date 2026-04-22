@@ -1,4 +1,4 @@
-#include "KnoemaClient.h"
+#include "LuvoireClient.h"
 
 #include "Dom/JsonObject.h"
 #include "HttpModule.h"
@@ -6,13 +6,13 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 
-void UKnoemaClient::Configure(const FString& InBaseUrl, const FString& InApiKey)
+void ULuvoireClient::Configure(const FString& InBaseUrl, const FString& InApiKey)
 {
     BaseUrl = NormalizeBaseUrl(InBaseUrl);
     ApiKey = InApiKey;
 }
 
-void UKnoemaClient::CreateSimulation(const FString& RequestJson)
+void ULuvoireClient::CreateSimulation(const FString& RequestJson)
 {
     SendJsonRequest(
         TEXT("POST"),
@@ -36,7 +36,7 @@ void UKnoemaClient::CreateSimulation(const FString& RequestJson)
     );
 }
 
-void UKnoemaClient::PollSimulation(const FString& SimulationId)
+void ULuvoireClient::PollSimulation(const FString& SimulationId)
 {
     const FString TargetId = !SimulationId.IsEmpty() ? SimulationId : ActiveSimulationId;
     if (TargetId.IsEmpty())
@@ -68,7 +68,7 @@ void UKnoemaClient::PollSimulation(const FString& SimulationId)
     );
 }
 
-void UKnoemaClient::InjectEvent(const FString& SimulationId, const FString& EventJson)
+void ULuvoireClient::InjectEvent(const FString& SimulationId, const FString& EventJson)
 {
     const FString TargetId = !SimulationId.IsEmpty() ? SimulationId : ActiveSimulationId;
     if (TargetId.IsEmpty())
@@ -94,12 +94,12 @@ void UKnoemaClient::InjectEvent(const FString& SimulationId, const FString& Even
     );
 }
 
-bool UKnoemaClient::HasActiveSimulation() const
+bool ULuvoireClient::HasActiveSimulation() const
 {
     return !ActiveSimulationId.IsEmpty();
 }
 
-void UKnoemaClient::SendJsonRequest(
+void ULuvoireClient::SendJsonRequest(
     const FString& Verb,
     const FString& Path,
     const FString& Body,
@@ -125,7 +125,7 @@ void UKnoemaClient::SendJsonRequest(
     Request->ProcessRequest();
 }
 
-void UKnoemaClient::ApplyAuthHeader(
+void ULuvoireClient::ApplyAuthHeader(
     const TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Request
 ) const
 {
@@ -135,13 +135,13 @@ void UKnoemaClient::ApplyAuthHeader(
     }
 }
 
-void UKnoemaClient::UpdateStatusFromJson(const FString& ResponseBody)
+void ULuvoireClient::UpdateStatusFromJson(const FString& ResponseBody)
 {
     TSharedPtr<FJsonObject> Payload;
     const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ResponseBody);
     if (!FJsonSerializer::Deserialize(Reader, Payload) || !Payload.IsValid())
     {
-        LastError = TEXT("Failed to parse Knoema response JSON.");
+        LastError = TEXT("Failed to parse Luvoire response JSON.");
         return;
     }
 
@@ -159,7 +159,7 @@ void UKnoemaClient::UpdateStatusFromJson(const FString& ResponseBody)
     }
 }
 
-FString UKnoemaClient::NormalizeBaseUrl(const FString& InBaseUrl)
+FString ULuvoireClient::NormalizeBaseUrl(const FString& InBaseUrl)
 {
     FString Normalized = InBaseUrl;
     if (Normalized.IsEmpty())

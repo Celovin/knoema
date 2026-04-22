@@ -1,11 +1,11 @@
 # Pricing
 
-Knoema pricing separates bring-your-own-key evaluation from metered hosted usage. Prices are pre-tax and are listed in USD unless the checkout provider shows a local currency during checkout.
+Luvoire pricing separates bring-your-own-key evaluation from metered hosted usage. Prices are pre-tax and are listed in USD unless the checkout provider shows a local currency during checkout.
 
 | Tier | Price | Monthly token cap | Concurrent requests | Support | SLA target | LLM cost model |
 | --- | ---: | ---: | ---: | --- | --- | --- |
-| Free | $0/mo | 100,000 output tokens | 1 | Community docs and GitHub issues | No uptime SLA | Customer BYO OpenAI key; usage is counted only, with no Knoema-side variable charge |
-| Pro | $49/mo | 2,000,000 output tokens | 4 | Email support, next-business-day target | Best-effort, no contractual SLA | Knoema pass-through key; provider cost plus 30% markup |
+| Free | $0/mo | 100,000 output tokens | 1 | Community docs and GitHub issues | No uptime SLA | Customer BYO OpenAI key; usage is counted only, with no Luvoire-side variable charge |
+| Pro | $49/mo | 2,000,000 output tokens | 4 | Email support, next-business-day target | Best-effort, no contractual SLA | Luvoire pass-through key; provider cost plus 30% markup |
 | Team | $199/mo | 10,000,000 output tokens | 16 | Priority email for workspace admins | 99.5% target after commercial terms are countersigned | Shared pass-through key; provider cost plus 30% markup |
 | Enterprise | Contact sales | Contract-specific | 64 default | Named support path and launch review | Contract-specific SLA target | Dedicated endpoint or approved customer provider; flat contract with usage analytics |
 
@@ -19,7 +19,7 @@ Use the customer onboarding CLI to create a PoC tenant and issue a hashed tenant
 
 **Start with your own OpenAI key**
 
-Use Free when you want to run local or hosted evaluation with your own provider credentials. Knoema records usage counts and safety hashes, but it does not store raw customer API keys.
+Use Free when you want to run local or hosted evaluation with your own provider credentials. Luvoire records usage counts and safety hashes, but it does not store raw customer API keys.
 
 ### Pro
 

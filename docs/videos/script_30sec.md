@@ -6,7 +6,7 @@ Goal: quick elevator pitch for a professor, reviewer, or developer who has not o
 
 | Time | Screen | Narration |
 | --- | --- | --- |
-| 0:00-0:04 | Knoema README, CI badge, Playground badge | Knoema Engine is an open-source runtime for persistent LLM agents in simulated social worlds. |
+| 0:00-0:04 | Luvoire README, CI badge, Playground badge | Luvoire is an open-source runtime for persistent LLM agents in simulated social worlds. |
 | 0:04-0:09 | Playground scenario dropdown | Start with a no-key replay scenario, or bring an OpenAI or Anthropic key for a live run. |
 | 0:09-0:15 | Timeline after running Dorm: two agents | Each tick produces structured agent actions, relationship updates, and JSONL logs. |
 | 0:15-0:21 | Relationship graph | The engine tracks trust, familiarity, and interaction weight as a directed graph. |

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from knoema.types import Action
+from luvoire.types import Action
 
 
 def _validate_item_id(item_id: str) -> str:

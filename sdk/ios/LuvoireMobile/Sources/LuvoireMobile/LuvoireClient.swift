@@ -31,7 +31,7 @@ public struct AgentSnapshot: Codable, Equatable, Sendable {
     }
 }
 
-public final class KnoemaClient: @unchecked Sendable {
+public final class LuvoireClient: @unchecked Sendable {
     public let baseURL: URL
     public let token: String?
     private var responseCache: [String: NPCActionResponse]

@@ -1,4 +1,4 @@
-# Contributing to Knoema Bench
+# Contributing to Luvoire Bench
 
 External framework contributors can add a row by submitting a YAML file under
 `bench/submissions/`.

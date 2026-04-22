@@ -1,13 +1,14 @@
-"""Simple token-bucket rate limiting for the Knoema API server."""
+"""Simple token-bucket rate limiting for the Luvoire API server."""
 
 from __future__ import annotations
 
-import os
 import threading
 import time
 from dataclasses import dataclass
 
 from fastapi import HTTPException, Request, WebSocket, WebSocketException, status
+
+from luvoire.config import get_env
 
 
 @dataclass(slots=True)
@@ -36,8 +37,17 @@ class RateLimiter:
 
     @classmethod
     def from_env(cls) -> RateLimiter:
-        tokens_per_second = float(os.getenv("KNOEMA_RATE_LIMIT_TOKENS_PER_SECOND", "100"))
-        burst = float(os.getenv("KNOEMA_RATE_LIMIT_BURST", "100"))
+        tokens_per_second = float(
+            get_env(
+                "LUVOIRE_RATE_LIMIT_TOKENS_PER_SECOND",
+                "KNOEMA_RATE_LIMIT_TOKENS_PER_SECOND",
+                "100",
+            )
+            or "100"
+        )
+        burst = float(
+            get_env("LUVOIRE_RATE_LIMIT_BURST", "KNOEMA_RATE_LIMIT_BURST", "100") or "100"
+        )
         return cls(tokens_per_second=tokens_per_second, burst=burst)
 
     def consume(self, key: str, *, cost: float = 1.0) -> bool:

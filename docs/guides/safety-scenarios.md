@@ -1,6 +1,6 @@
 # Safety Scenario Guide
 
-Knoema can model fictional replay scenarios, but the public boundary is strict.
+Luvoire can model fictional replay scenarios, but the public boundary is strict.
 
 ## Allowed
 

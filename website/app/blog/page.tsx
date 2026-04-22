@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Blog | Knoema Engine",
+  title: "Blog | Luvoire",
   description:
-    "Knoema Engine publication queue for game NPC integration, memory design, reproducibility, and safety notes.",
+    "Luvoire publication queue for game NPC integration, memory design, reproducibility, and safety notes.",
   alternates: {
     canonical: "/blog",
   },
 };
 
 const drafts = [
-  "Why Knoema for Korean indie games",
+  "Why Luvoire for Korean indie games",
   "LLM NPC memory design principles",
   "Godot integration step by step",
   "Academic research reproducibility",
@@ -22,7 +22,7 @@ export default function BlogPage() {
   return (
     <main className="subpage">
       <Link className="back-link" href="/">
-        Knoema Engine
+        Luvoire
       </Link>
       <h1>Publication Queue</h1>
       <p>Draft topics are kept public so early users can see what is being documented next.</p>
@@ -31,7 +31,7 @@ export default function BlogPage() {
           <li key={draft}>{draft}</li>
         ))}
       </ol>
-      <a className="primary-link" href="https://github.com/Celovin/knoema/blob/main/docs/tutorial_blog.md">
+      <a className="primary-link" href="https://github.com/Celovin/luvoire/blob/main/docs/tutorial_blog.md">
         Read Tutorial Draft
       </a>
     </main>

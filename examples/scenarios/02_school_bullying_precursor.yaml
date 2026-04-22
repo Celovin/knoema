@@ -8,7 +8,7 @@ tick_duration_minutes: 720
 duration_days: 1
 environment:
   start_time: "2026-03-03T08:00:00"
-  location_path: [Knoema Demo World, School Wing, Classroom 2]
+  location_path: [Luvoire Demo World, School Wing, Classroom 2]
   conditions:
     semester_week: 3
     supervision: present
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-03-03T14:00:00"
     event_type: classroom.support_checkpoint
     participants: [student_a, teacher]
-    location: Knoema Demo World > School Wing > Classroom 2
+    location: Luvoire Demo World > School Wing > Classroom 2
     description: Teacher checks whether group expectations are clear.
 metrics:
   - name: support_latency

@@ -1,4 +1,4 @@
-"""Convert Knoema run logs into fine-tuning JSONL datasets."""
+"""Convert Luvoire run logs into fine-tuning JSONL datasets."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ RunLogInput: TypeAlias = str | Path | Sequence[Mapping[str, Any]]
 
 
 def parse_run_log(run_log: RunLogInput) -> list[dict[str, Any]]:
-    """Parse a Knoema JSONL log or normalize an in-memory row sequence."""
+    """Parse a Luvoire JSONL log or normalize an in-memory row sequence."""
 
     if isinstance(run_log, Path):
         return _parse_jsonl_text(run_log.read_text(encoding="utf-8"))
@@ -22,7 +22,7 @@ def parse_run_log(run_log: RunLogInput) -> list[dict[str, Any]]:
 
 
 def to_openai_jsonl(run_log: RunLogInput) -> list[dict[str, Any]]:
-    """Return OpenAI chat fine-tuning rows from a Knoema run log."""
+    """Return OpenAI chat fine-tuning rows from a Luvoire run log."""
 
     records: list[dict[str, Any]] = []
     for row in _action_rows(parse_run_log(run_log)):
@@ -40,7 +40,7 @@ def to_openai_jsonl(run_log: RunLogInput) -> list[dict[str, Any]]:
 
 
 def to_anthropic_jsonl(run_log: RunLogInput) -> list[dict[str, Any]]:
-    """Return Anthropic-style chat JSONL rows from a Knoema run log."""
+    """Return Anthropic-style chat JSONL rows from a Luvoire run log."""
 
     records: list[dict[str, Any]] = []
     for row in _action_rows(parse_run_log(run_log)):
@@ -183,7 +183,7 @@ def _metadata(row: Mapping[str, Any]) -> dict[str, Any]:
 def _system_prompt(row: Mapping[str, Any]) -> str:
     agent_id = _row_key(row)[1]
     return (
-        f"You are {agent_id}, a Knoema simulation agent. "
+        f"You are {agent_id}, a Luvoire simulation agent. "
         "Respond only with a JSON action containing action_type, target, content, and location."
     )
 

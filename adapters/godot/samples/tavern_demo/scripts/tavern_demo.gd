@@ -12,12 +12,12 @@ const BJORN_AGENT_ID := "bjorn_tavern_keeper"
 @onready var send_button: Button = %SendButton
 @onready var transcript: RichTextLabel = %Transcript
 
-var client: KnoemaClient
+var client: LuvoireClient
 var idle_phase: float = 0.0
 
 
 func _ready() -> void:
-	client = preload("res://scripts/knoema_client.gd").new()
+	client = preload("res://scripts/luvoire_client.gd").new()
 	client.endpoint_url = ""
 	add_child(client)
 	dialog_panel.visible = false

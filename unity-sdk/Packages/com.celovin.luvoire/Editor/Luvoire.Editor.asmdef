@@ -1,8 +1,8 @@
 {
-  "name": "Knoema.UnitySdk.Editor",
-  "rootNamespace": "Knoema.UnitySdk.Editor",
+  "name": "Luvoire.UnitySdk.Editor",
+  "rootNamespace": "Luvoire.UnitySdk.Editor",
   "references": [
-    "Knoema.UnitySdk.Runtime"
+    "Luvoire.UnitySdk.Runtime"
   ],
   "includePlatforms": [
     "Editor"

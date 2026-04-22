@@ -80,7 +80,7 @@ void UNPCAgentComponent::EnsureClient()
         return;
     }
 
-    Client = NewObject<UKnoemaClient>(this, TEXT("KnoemaClient"));
+    Client = NewObject<ULuvoireClient>(this, TEXT("LuvoireClient"));
     if (Client)
     {
         Client->Configure(BaseUrl, ApiKey);

@@ -4,7 +4,7 @@ ticks_per_run: 6
 tick_duration_minutes: 30
 environment:
   start_time: "2026-06-15T06:30:00"
-  location_path: ["Knoema Demo World", "Seoul Metropolis", "Transit Spine"]
+  location_path: ["Luvoire Demo World", "Seoul Metropolis", "Transit Spine"]
   conditions:
     weather: clear
     rush_window: morning

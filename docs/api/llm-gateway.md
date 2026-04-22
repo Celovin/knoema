@@ -1,13 +1,13 @@
 # LLM Gateway API
 
-Knoema can use deterministic local clients for tests and optional provider clients for live model calls.
+Luvoire can use deterministic local clients for tests and optional provider clients for live model calls.
 
-::: knoema.llm.local_client.LocalClient
+::: luvoire.llm.local_client.LocalClient
 
-::: knoema.llm.gateway.LLMCallRecord
+::: luvoire.llm.gateway.LLMCallRecord
 
-::: knoema.llm.gateway.LLMGateway
+::: luvoire.llm.gateway.LLMGateway
 
-::: knoema.llm.openai_client.OpenAIClient
+::: luvoire.llm.openai_client.OpenAIClient
 
-::: knoema.llm.anthropic_client.AnthropicClient
+::: luvoire.llm.anthropic_client.AnthropicClient

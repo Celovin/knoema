@@ -18,7 +18,7 @@ For any agent outside this repository that needs to verify the derivation: each 
 
 - Character names from commercial companion products, games, or visual novels.
 - Cross-axis personality codings (e.g., Enneagram, MBTI, Big Five numeric ratings). These are not part of the academic taxonomy tradition.
-- Emotion-tag conventions (`[emotion:TAG]` and similar) are simulation conventions used elsewhere in the Knoema engine but are NOT stored in this directory.
+- Emotion-tag conventions (`[emotion:TAG]` and similar) are simulation conventions used elsewhere in the Luvoire engine but are NOT stored in this directory.
 - Any training data, fine-tune weights, or generated dialogue samples.
 
 ## Usage in Replay Viewer

@@ -1,20 +1,20 @@
-# Knoema Engine
+# Luvoire
 
 > Motor de simulación social multiagente basado en LLM para juegos, investigación de seguridad pública y simulación académica.
 
-[![CI](https://github.com/Celovin/knoema/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/knoema/actions/workflows/ci.yml)
+[![CI](https://github.com/Celovin/luvoire/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/luvoire/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/knoema-playground)
+[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/luvoire-playground)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19643409.svg)](https://doi.org/10.5281/zenodo.19643409)
 
 ## Current version
 
-0.2.0
+0.3.0
 
-## Knoema Bench
+## Luvoire Bench
 
-Knoema Bench es la tabla pública de siete ejes para frameworks de agentes persistentes. Página en vivo: [https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/). Plantilla de envío: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml).
+Luvoire Bench es la tabla pública de siete ejes para frameworks de agentes persistentes. Página en vivo: [https://celovin.github.io/luvoire/bench/](https://celovin.github.io/luvoire/bench/). Plantilla de envío: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml).
 
 - Unity SDK (vista previa) con contrato FastAPI de tick, memoria y acción, más diseño de paquete UPM.
 
@@ -24,7 +24,7 @@ Knoema Bench es la tabla pública de siete ejes para frameworks de agentes persi
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) |
 
-Knoema Engine es un MVP temprano para modelar agentes persistentes con memoria, relaciones, emociones, contexto ambiental y decisiones guiadas por LLM. El mismo runtime puede servir para NPC de juegos, investigación ficticia de replay en seguridad pública y simulación social reproducible.
+Luvoire es un MVP temprano para modelar agentes persistentes con memoria, relaciones, emociones, contexto ambiental y decisiones guiadas por LLM. El mismo runtime puede servir para NPC de juegos, investigación ficticia de replay en seguridad pública y simulación social reproducible.
 
 Todos los ejemplos de seguridad pública de este repositorio son ficticios, sintéticos y no identificables. No es una herramienta de predicción del crimen, puntuación de sospechosos ni automatización de decisiones operativas.
 
@@ -59,7 +59,7 @@ pip install -e ".[dev]"
 Ejecutar una simulación YAML local:
 
 ```bash
-knoema run examples/cli_dorm.yaml --json
+luvoire run examples/cli_dorm.yaml --json
 ```
 
 Iniciar el Playground en local:
@@ -78,7 +78,7 @@ streamlit run dashboard/app.py
 
 ## Enlaces clave
 
-- [Knoema Playground](https://huggingface.co/spaces/celovin/knoema-playground)
+- [Luvoire Playground](https://huggingface.co/spaces/celovin/luvoire-playground)
 - [Scenario Marketplace Beta](scenarios_hub/README.md)
 - [DSL Tutorial](docs/dsl/tutorial.md)
 - [Game SDK Docs](docs/sdk/python-api.md)

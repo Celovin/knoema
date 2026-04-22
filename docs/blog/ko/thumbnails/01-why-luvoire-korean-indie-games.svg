@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Knoema game NPC article thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Luvoire game NPC article thumbnail">
   <rect width="1200" height="630" fill="#f7fbf8" />
   <rect x="72" y="70" width="1056" height="490" rx="8" fill="#0c6b4d" />
   <circle cx="946" cy="190" r="92" fill="#c8dc58" />
   <path d="M190 430V170h78v110l116-110h118L352 315l166 115H382L268 334v96z" fill="#f7fbf8" />
-  <text x="612" y="310" fill="#f7fbf8" font-family="Georgia, serif" font-size="72" font-weight="800" text-anchor="middle">Knoema for Games</text>
+  <text x="612" y="310" fill="#f7fbf8" font-family="Georgia, serif" font-size="72" font-weight="800" text-anchor="middle">Luvoire for Games</text>
   <text x="612" y="372" fill="#c8dc58" font-family="Segoe UI, sans-serif" font-size="32" font-weight="700" text-anchor="middle">Persistent NPC memory for indie teams</text>
 </svg>

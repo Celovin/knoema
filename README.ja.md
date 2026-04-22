@@ -1,20 +1,20 @@
-# Knoema Engine
+# Luvoire
 
 > ゲーム、公共安全研究、学術シミュレーション向けの LLM ベース多エージェント社会シミュレーションエンジン。
 
-[![CI](https://github.com/Celovin/knoema/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/knoema/actions/workflows/ci.yml)
+[![CI](https://github.com/Celovin/luvoire/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/luvoire/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/knoema-playground)
+[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/luvoire-playground)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19643409.svg)](https://doi.org/10.5281/zenodo.19643409)
 
 ## Current version
 
-0.2.0
+0.3.0
 
-## Knoema Bench
+## Luvoire Bench
 
-Knoema Bench は、永続エージェント向けフレームワークを七つの軸で比較する公開リーダーボードです。ライブページ: [https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/)。提出テンプレート: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml)。
+Luvoire Bench は、永続エージェント向けフレームワークを七つの軸で比較する公開リーダーボードです。ライブページ: [https://celovin.github.io/luvoire/bench/](https://celovin.github.io/luvoire/bench/)。提出テンプレート: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml)。
 
 ## 言語
 
@@ -22,7 +22,7 @@ Knoema Bench は、永続エージェント向けフレームワークを七つ�
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) |
 
-Knoema Engine は、記憶、関係、感情、環境コンテキスト、LLM ベース意思決定を持つ持続型エージェントを扱う初期 MVP です。ゲーム NPC、架空の公共安全リプレイ研究、再現可能なエージェントベース社会シミュレーションを同じランタイムで支えます。
+Luvoire は、記憶、関係、感情、環境コンテキスト、LLM ベース意思決定を持つ持続型エージェントを扱う初期 MVP です。ゲーム NPC、架空の公共安全リプレイ研究、再現可能なエージェントベース社会シミュレーションを同じランタイムで支えます。
 
 このリポジトリの公共安全サンプルはすべて架空・合成・非識別です。犯罪予測、容疑者スコアリング、実務判断の自動化を目的としたものではありません。
 
@@ -58,7 +58,7 @@ pip install -e ".[dev]"
 ローカル YAML シミュレーション:
 
 ```bash
-knoema run examples/cli_dorm.yaml --json
+luvoire run examples/cli_dorm.yaml --json
 ```
 
 Playground をローカル起動:
@@ -77,7 +77,7 @@ streamlit run dashboard/app.py
 
 ## 主要リンク
 
-- [Knoema Playground](https://huggingface.co/spaces/celovin/knoema-playground)
+- [Luvoire Playground](https://huggingface.co/spaces/celovin/luvoire-playground)
 - [Scenario Marketplace Beta](scenarios_hub/README.md)
 - [DSL Tutorial](docs/dsl/tutorial.md)
 - [Game SDK Docs](docs/sdk/python-api.md)

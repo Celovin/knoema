@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Knoema API ECS Fargate stack with PostgreSQL and Redis placeholders.
+Description: Luvoire API ECS Fargate stack with PostgreSQL and Redis placeholders.
 Parameters:
   ContainerImage:
     Type: String
@@ -24,7 +24,7 @@ Resources:
   ApiSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Knoema API security group
+      GroupDescription: Luvoire API security group
       VpcId: !Ref Vpc
   ApiLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -39,7 +39,7 @@ Resources:
   ApiTask:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: knoema-api
+      Family: luvoire-api
       Cpu: "512"
       Memory: "1024"
       NetworkMode: awsvpc
@@ -61,11 +61,11 @@ Resources:
   Postgres:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBName: knoema
+      DBName: luvoire
       Engine: postgres
       DBInstanceClass: db.t4g.micro
       AllocatedStorage: "20"
-      MasterUsername: knoema
+      MasterUsername: luvoire
       MasterUserPassword: !Ref DBPassword
   Redis:
     Type: AWS::ElastiCache::CacheCluster

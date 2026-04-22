@@ -1,4 +1,4 @@
-"""Build a meeting-ready PDF preview of the Knoema arXiv v2 report."""
+"""Build a meeting-ready PDF preview of the Luvoire arXiv v2 report."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from reportlab.platypus import (
 )
 
 ROOT = Path(__file__).resolve().parent
-OUTPUT = ROOT / "knoema_technical_report.pdf"
+OUTPUT = ROOT / "luvoire_technical_report.pdf"
 
 
 def build_pdf() -> None:
@@ -32,11 +32,11 @@ def build_pdf() -> None:
         leftMargin=0.72 * inch,
         topMargin=0.72 * inch,
         bottomMargin=0.72 * inch,
-        title="Knoema Engine arXiv v2 Technical Report",
+        title="Luvoire arXiv v2 Technical Report",
         author="Celovin",
     )
     story = [
-        Paragraph("Knoema Engine", styles["Title"]),
+        Paragraph("Luvoire", styles["Title"]),
         Paragraph(
             "An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation",
             styles["Subtitle"],
@@ -161,7 +161,7 @@ def footer(canvas, document) -> None:  # type: ignore[no-untyped-def]
     canvas.saveState()
     canvas.setFont("Helvetica", 8)
     canvas.setFillColor(colors.HexColor("#6B7280"))
-    canvas.drawString(0.72 * inch, 0.42 * inch, "Knoema Engine Technical Report")
+    canvas.drawString(0.72 * inch, 0.42 * inch, "Luvoire Technical Report")
     canvas.drawRightString(7.78 * inch, 0.42 * inch, f"Page {document.page}")
     canvas.restoreState()
 
@@ -171,7 +171,7 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
         (
             "Abstract",
             [
-                "Knoema Engine is an open, MIT-licensed runtime for persistent social agents whose state is inspectable outside of a model prompt. The system combines persona definitions, short-term and long-term memory, directed relationship state, environment context, PAD-style emotion, event scheduling, deterministic logs, REST and WebSocket interfaces, game adapters, and optional LLM-backed decisions.",
+                "Luvoire is an open, MIT-licensed runtime for persistent social agents whose state is inspectable outside of a model prompt. The system combines persona definitions, short-term and long-term memory, directed relationship state, environment context, PAD-style emotion, event scheduling, deterministic logs, REST and WebSocket interfaces, game adapters, and optional LLM-backed decisions.",
                 "This arXiv v2 revision extends that runtime with persona opt-in theory-of-mind tracking, classic ABM reproductions, a 500-agent metropolis run, PCS/RCS scoring, a scenario-library catalog, and a Papers with Code submission packet.",
                 "The report keeps the central claim modest: persistent-agent applications need explicit runtime state, replayable artifacts, adapter contracts, and safety-bounded scenario definitions before they need larger prompts.",
             ],
@@ -180,7 +180,7 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
             "1. Introduction",
             [
                 "LLM-based agents can generate plausible language, but prompt-only designs often hide the state that a simulation, game, or research workflow needs to inspect. Persistent NPCs need memory and relationship state that a game can test. Research simulations need fixed configuration, deterministic replay, and exportable logs. Synthetic replay workflows need explicit safety boundaries around data use and claims.",
-                "Knoema addresses this engineering layer. It is not a general task-automation framework and it is not a hosted model service. It is a small runtime for building agents whose state is represented by ordinary package objects: persona, memory, relationships, environment, emotion, events, decisions, and logs.",
+                "Luvoire addresses this engineering layer. It is not a general task-automation framework and it is not a hosted model service. It is a small runtime for building agents whose state is represented by ordinary package objects: persona, memory, relationships, environment, emotion, events, decisions, and logs.",
                 [
                     ["Track", "Primary surface", "arXiv v2 status"],
                     ["Games", "Python, TypeScript, GDScript, Unity, Godot, and Unreal surfaces", "Implemented"],
@@ -193,14 +193,14 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
             "2. Related Work",
             [
                 "Generative Agents showed that natural-language memory, planning, and reflection can produce believable behavior in interactive environments. Concordia frames generative agent-based modeling as grounded interaction among entities. The Sally-Anne task remains a compact probe for explicit false-belief reasoning. AutoGen, CAMEL, MetaGPT, ChatDev, Voyager, Reflexion, ReAct, and Toolformer explore ways to coordinate LLM behavior through roles, tools, self-reflection, or conversational protocols.",
-                "Classical agent-based modeling systems such as Mesa, NetLogo, MASON, Repast, Swarm, GAMA, and AnyLogic represent a long tradition of explicit model state, scheduling, and reproducible simulation loops. Knoema borrows this inspectable-loop discipline while adding natural-language memory and model-backed decision generation.",
-                "Retrieval-augmented generation, dense passage retrieval, approximate nearest-neighbor indexes, and vector stores provide the substrate for long-term agent context. Knoema currently uses deterministic hash embeddings in tests and examples to keep local runs reproducible.",
+                "Classical agent-based modeling systems such as Mesa, NetLogo, MASON, Repast, Swarm, GAMA, and AnyLogic represent a long tradition of explicit model state, scheduling, and reproducible simulation loops. Luvoire borrows this inspectable-loop discipline while adding natural-language memory and model-backed decision generation.",
+                "Retrieval-augmented generation, dense passage retrieval, approximate nearest-neighbor indexes, and vector stores provide the substrate for long-term agent context. Luvoire currently uses deterministic hash embeddings in tests and examples to keep local runs reproducible.",
             ],
         ),
         (
             "3. Architecture",
             [
-                "Knoema separates persistent state, decision generation, and adapters. State modules build an agent-specific context, the decision layer produces an action, and the simulator commits that action to logs, memories, relationship state, and downstream artifacts.",
+                "Luvoire separates persistent state, decision generation, and adapters. State modules build an agent-specific context, the decision layer produces an action, and the simulator commits that action to logs, memories, relationship state, and downstream artifacts.",
                 [
                     ["Module", "Responsibility", "MVP status"],
                     ["Persona", "Identity, values, goals, prompt rendering", "Implemented"],
@@ -219,7 +219,7 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
         (
             "4. Experiments and Evidence",
             [
-                "Knoema's arXiv v2 evidence is engineering-oriented. The experiments answer whether the runtime can generate reproducible artifacts, whether the memory policy improves deterministic proxy metrics over a naive full-context baseline, whether theory-of-mind behavior can be tested in an opt-in module, and whether larger deterministic runs can be committed and replayed as public artifacts.",
+                "Luvoire's arXiv v2 evidence is engineering-oriented. The experiments answer whether the runtime can generate reproducible artifacts, whether the memory policy improves deterministic proxy metrics over a naive full-context baseline, whether theory-of-mind behavior can be tested in an opt-in module, and whether larger deterministic runs can be committed and replayed as public artifacts.",
                 "The 50-agent village experiment runs a deterministic week with 50 synthetic agents, 42 ticks, and 2,100 committed actions. Each agent contributes 42 actions. The run records 100 relationship edges, a deterministic seed of 20260418, a bit-for-bit artifact check, and zero provider cost because it uses local deterministic decisions.",
                 [
                     ["50-agent metric", "Value", "Artifact"],
@@ -232,16 +232,16 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
                 ],
                 "The formal benchmark bundle runs four scenarios across two approaches and three local model profiles, producing 24 deterministic runs. The comparison baseline is a naive full-context prompt policy.",
                 [
-                    ["Scenario", "Knoema recall", "Naive recall"],
+                    ["Scenario", "Luvoire recall", "Naive recall"],
                     ["A memory recall", "0.789", "0.500"],
                     ["B relationship dynamics", "0.786", "0.495"],
                     ["C narrative branching", "0.784", "0.492"],
                     ["D scalability", "0.780", "0.487"],
                 ],
-                "Across the deterministic matrix, the Knoema memory policy improves top-k memory recall proxies and token efficiency proxies in every scenario. The paired sign-test over the composite score reports p=0.000244. This is deterministic evidence over the benchmark proxy, not a real-world behavioral claim.",
+                "Across the deterministic matrix, the Luvoire memory policy improves top-k memory recall proxies and token efficiency proxies in every scenario. The paired sign-test over the composite score reports p=0.000244. This is deterministic evidence over the benchmark proxy, not a real-world behavioral claim.",
                 "Phase 43 adds a persona opt-in theory-of-mind module and a deterministic Sally-Anne harness. The harness covers 20 structured cases and reproduces the expected search location in 20 out of 20 cases for an accuracy of 1.000 against a target gate of 0.800.",
                 [
-                    ["Theory-of-mind metric", "Knoema", "Reference status"],
+                    ["Theory-of-mind metric", "Luvoire", "Reference status"],
                     ["Opt-in surface", "Persona opt-in symbolic belief tracker", "Concordia and Stanford are reference only"],
                     ["Sally-Anne reproduction", "20/20 (1.000)", "No public external score asserted"],
                 ],
@@ -282,7 +282,7 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
                 "The current evidence supports an engineering claim: explicit state, deterministic logs, and adapter contracts make persistent-agent systems easier to inspect and test. The repository demonstrates this through a 250+ test gate, benchmark artifacts, API routes, dashboards, SDK facades, game-engine adapters, a scenario editor, and generated documentation.",
                 "The current evidence does not establish real-world behavioral validity, general human simulation accuracy, production game quality, or safe deployment in operational public-safety environments. The public-safety track is limited to synthetic replay and prevention-oriented analysis.",
                 "Threats to validity include deterministic local clients, lightweight hash embeddings, a simple naive baseline, and the absence of human evaluation. Larger-scale experiments need memory-store stress tests, model comparisons, and independent review.",
-                "Knoema uses repository-level checks to prevent private planning documents and unrelated entity references from entering public files. Runtime artifacts such as logs, SQLite databases, FAISS indexes, checkpoints, and documentation build output are ignored by git.",
+                "Luvoire uses repository-level checks to prevent private planning documents and unrelated entity references from entering public files. Runtime artifacts such as logs, SQLite databases, FAISS indexes, checkpoints, and documentation build output are ignored by git.",
             ],
         ),
         (
@@ -300,30 +300,30 @@ def sections() -> list[tuple[str, list[str | list[list[str]]]]]:
         (
             "8. Conclusion",
             [
-                "Knoema Engine demonstrates a compact open runtime for persistent social agents. The arXiv v2 version expands the original technical report with scenario DSL artifacts, SDK surfaces, API surfaces, a formal benchmark bundle, a 50-agent village experiment, a 500-agent metropolis run, classic reproductions, theory-of-mind tests, documentation infrastructure, and a stricter safety boundary.",
+                "Luvoire demonstrates a compact open runtime for persistent social agents. The arXiv v2 version expands the original technical report with scenario DSL artifacts, SDK surfaces, API surfaces, a formal benchmark bundle, a 50-agent village experiment, a 500-agent metropolis run, classic reproductions, theory-of-mind tests, documentation infrastructure, and a stricter safety boundary.",
                 "The next research step is to replace deterministic proxy evaluation with controlled provider-backed runs, stronger semantic retrieval, human review of plausibility and safety, and fairer external baseline reproduction.",
             ],
         ),
         (
             "Appendix A. Artifact Map",
             [
-                "The public repository is organized so each claim in the report points to a runnable artifact. Core runtime code lives in src/knoema. Scenario definitions and DSL docs live in examples/scenarios, schemas, and docs/dsl. Game integrations live in adapters and sdk. Benchmarks and committed results live in experiments and benchmarks. Documentation surfaces live in docs, website, and mkdocs.yml.",
+                "The public repository is organized so each claim in the report points to a runnable artifact. Core runtime code lives in src/luvoire. Scenario definitions and DSL docs live in examples/scenarios, schemas, and docs/dsl. Game integrations live in adapters and sdk. Benchmarks and committed results live in experiments and benchmarks. Documentation surfaces live in docs, website, and mkdocs.yml.",
                 [
                     ["Artifact", "Path", "Purpose"],
-                    ["Core runtime", "src/knoema", "State, decisions, events, memory, and simulation"],
-                    ["Scenario DSL", "src/knoema/dsl and schemas", "Validated YAML scenario definitions"],
+                    ["Core runtime", "src/luvoire", "State, decisions, events, memory, and simulation"],
+                    ["Scenario DSL", "src/luvoire/dsl and schemas", "Validated YAML scenario definitions"],
                     ["50-agent run", "experiments/50_agent_village", "Scale and reproducibility artifact"],
                     ["Formal benchmark", "benchmarks/formal_report", "Deterministic memory-policy comparison"],
                     ["Game SDKs", "sdk and adapters", "NPC response contracts and engine scaffolds"],
                     ["Docs site", "mkdocs.yml and docs", "API and workflow documentation"],
                 ],
-                "The LaTeX source includes figure and table fragments under paper/figures and paper/tables. The generated PDF preview is committed as paper/knoema_technical_report.pdf for reviewers who do not have a local TeX installation.",
+                "The LaTeX source includes figure and table fragments under paper/figures and paper/tables. The generated PDF preview is committed as paper/luvoire_technical_report.pdf for reviewers who do not have a local TeX installation.",
             ],
         ),
         (
             "Appendix B. Reproducibility Checklist",
             [
-                "Knoema treats reproducibility as an implementation requirement. Fixed seeds are part of scenario and experiment configuration. JSONL logs are committed for formal experiments when appropriate. Dashboard inspection consumes exported logs rather than simulator internals. Public-safety examples are fictional, synthetic, and non-identifying.",
+                "Luvoire treats reproducibility as an implementation requirement. Fixed seeds are part of scenario and experiment configuration. JSONL logs are committed for formal experiments when appropriate. Dashboard inspection consumes exported logs rather than simulator internals. Public-safety examples are fictional, synthetic, and non-identifying.",
                 [
                     ["Check", "Current status", "Verification path"],
                     ["Same-seed determinism", "Implemented", "tests/reproducibility/test_deterministic_runs.py"],
@@ -361,9 +361,9 @@ def phase50_annex_sections() -> list[tuple[str, list[str | list[list[str]]]]]:
             "10. Theory-of-Mind Evidence",
             [
                 "The theory-of-mind module is opt-in at the persona level. Disabled personas preserve the prior behavior and do not receive belief-state prompt sections.",
-                "The Sally-Anne harness alternates false-belief and witnessed-move cases. Knoema returns the expected search location in 20 out of 20 deterministic cases, clearing the 0.800 acceptance gate.",
+                "The Sally-Anne harness alternates false-belief and witnessed-move cases. Luvoire returns the expected search location in 20 out of 20 deterministic cases, clearing the 0.800 acceptance gate.",
                 [
-                    ["Comparison point", "Knoema", "External reference"],
+                    ["Comparison point", "Luvoire", "External reference"],
                     ["Opt-in ToM API", "Yes", "No public equivalent asserted for Stanford or Concordia"],
                     ["Sally-Anne score", "1.000", "No external score asserted"],
                     ["Claim boundary", "Symbolic false-belief check", "Not human-level cognition"],
@@ -442,7 +442,7 @@ def phase50_annex_sections() -> list[tuple[str, list[str | list[list[str]]]]]:
         (
             "16. Game Adapter Coverage",
             [
-                "Knoema now covers the three major indie and professional engine paths at scaffold level: Godot, Unity, and Unreal Engine 5. The adapters consume action contracts and REST/log surfaces rather than private simulator internals.",
+                "Luvoire now covers the three major indie and professional engine paths at scaffold level: Godot, Unity, and Unreal Engine 5. The adapters consume action contracts and REST/log surfaces rather than private simulator internals.",
                 [
                     ["Adapter", "Status", "Contract"],
                     ["Godot", "Scaffold and GDScript SDK", "Local fallback and HTTP client path"],
@@ -497,7 +497,7 @@ def phase50_annex_sections() -> list[tuple[str, list[str | list[list[str]]]]]:
             "20. External Baseline Discipline",
             [
                 "Stanford Generative Agents, Concordia, Mesa, NetLogo, GAMA, AnyLogic, AutoGen, CrewAI, and LangGraph are comparison references, not measured baselines in this report.",
-                "A fair baseline would require a recorded external commit, equivalent scenario translation, dependency lockfile, provider/model setting, prompt policy, seed set, and artifact storage. Until that exists, Knoema reports only local deterministic results.",
+                "A fair baseline would require a recorded external commit, equivalent scenario translation, dependency lockfile, provider/model setting, prompt policy, seed set, and artifact storage. Until that exists, Luvoire reports only local deterministic results.",
                 [
                     ["External system", "Current treatment", "Future requirement"],
                     ["Stanford", "Architecture reference", "Controlled equivalent scenario"],
@@ -544,7 +544,7 @@ def phase50_annex_sections() -> list[tuple[str, list[str | list[list[str]]]]]:
         (
             "24. Conclusion for Reviewers",
             [
-                "Knoema should be evaluated as an inspectable runtime, not as a claim that LLM agents accurately model real people. Its value is the integration of typed state, deterministic artifacts, scenario safety rules, adapters, and reproducible reports.",
+                "Luvoire should be evaluated as an inspectable runtime, not as a claim that LLM agents accurately model real people. Its value is the integration of typed state, deterministic artifacts, scenario safety rules, adapters, and reproducible reports.",
                 "The v2 packet gives reviewers a direct path from claims to files: code, configs, logs, summaries, figures, tables, paper source, PDF preview, citation metadata, and external-submission packet.",
             ],
         ),

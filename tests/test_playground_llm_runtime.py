@@ -11,8 +11,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path.cwd() / "src"))
 sys.path.insert(0, str(Path.cwd()))
 
-from knoema import CachedLLMClient, Environment, Persona, Personality, Simulator
-from knoema.protocols import Message
+from luvoire import CachedLLMClient, Environment, Persona, Personality, Simulator
+from luvoire.protocols import Message
 
 playground_simulation = importlib.import_module("playground.simulation")
 

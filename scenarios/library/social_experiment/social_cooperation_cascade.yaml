@@ -8,7 +8,7 @@ tick_duration_minutes: 720
 duration_days: 1
 environment:
   start_time: "2026-06-05T09:00:00"
-  location_path: [Knoema Demo World, Scenario Library, Social Experiment]
+  location_path: [Luvoire Demo World, Scenario Library, Social Experiment]
   conditions:
     mode: deterministic
     category: social_experiment
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-06-05T13:00:00"
     event_type: social.cooperation_checkpoint
     participants: [agent_a, agent_b]
-    location: Knoema Demo World > Scenario Library > Social Experiment
+    location: Luvoire Demo World > Scenario Library > Social Experiment
     description: "One agent models a helpful action and another repeats it with attribution."
 metrics:
   - name: cooperation_spread

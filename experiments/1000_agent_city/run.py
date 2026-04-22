@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from knoema.distributed import DistributedSimulationConfig, RayExecutor
+from luvoire.distributed import DistributedSimulationConfig, RayExecutor
 
 ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = ROOT / "results"

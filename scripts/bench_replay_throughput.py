@@ -201,7 +201,7 @@ def _write_markdown(path: Path, report: Mapping[str, object]) -> None:
         "",
         "Methodology script: "
         "[scripts/bench_replay_throughput.py]"
-        "(https://github.com/Celovin/knoema/blob/main/scripts/bench_replay_throughput.py).",
+        "(https://github.com/Celovin/luvoire/blob/main/scripts/bench_replay_throughput.py).",
         "",
         "## Hardware",
         "",

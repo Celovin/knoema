@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from knoema import Environment, LocalClient, Persona, Personality, Simulator
+from luvoire import Environment, LocalClient, Persona, Personality, Simulator
 
 
 def _agent(agent_id: str) -> Persona:

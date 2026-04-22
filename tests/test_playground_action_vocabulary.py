@@ -11,9 +11,9 @@ sys.path.insert(0, str(Path.cwd() / "src"))
 sys.path.insert(0, str(Path.cwd()))
 
 playground_simulation = importlib.import_module("playground.simulation")
-decision = importlib.import_module("knoema.decision")
-simulator = importlib.import_module("knoema.simulator")
-types_module = importlib.import_module("knoema.types")
+decision = importlib.import_module("luvoire.decision")
+simulator = importlib.import_module("luvoire.simulator")
+types_module = importlib.import_module("luvoire.types")
 
 parse_action_response = decision.parse_action_response
 SimulationLogEntry = simulator.SimulationLogEntry

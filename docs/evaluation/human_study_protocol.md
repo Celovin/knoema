@@ -53,7 +53,7 @@ Artifacts:
 ## Python API
 
 ```python
-from knoema.evaluation import compute_inter_rater_reliability
+from luvoire.evaluation import compute_inter_rater_reliability
 
 ratings = {
     "pair_001": {"rater_a": "left", "rater_b": "left", "rater_c": "right"},

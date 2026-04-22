@@ -4,11 +4,11 @@ Each lab is designed for a 30-minute classroom or recitation slot.
 
 ## Lab 1 - Install and Run
 
-Run `knoema run examples\cli_dorm.yaml --json`, inspect the JSONL output, and identify tick, agent, and action fields.
+Run `luvoire run examples\cli_dorm.yaml --json`, inspect the JSONL output, and identify tick, agent, and action fields.
 
 ## Lab 2 - Scenario DSL Validation
 
-Edit a safe Scenario DSL file, run `knoema validate`, and fix every validation issue.
+Edit a safe Scenario DSL file, run `luvoire validate`, and fix every validation issue.
 
 ## Lab 3 - Trait Perturbation
 

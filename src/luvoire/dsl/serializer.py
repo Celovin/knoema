@@ -6,7 +6,7 @@ from typing import Any
 
 import yaml
 
-from knoema.dsl.scenario import Scenario
+from luvoire.dsl.scenario import Scenario
 
 
 def scenario_to_dict(scenario: Scenario) -> dict[str, Any]:

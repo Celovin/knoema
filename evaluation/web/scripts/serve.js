@@ -26,5 +26,5 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(port, "127.0.0.1", () => {
-  console.log(`Knoema evaluation web listening on http://127.0.0.1:${port}`);
+  console.log(`Luvoire evaluation web listening on http://127.0.0.1:${port}`);
 });

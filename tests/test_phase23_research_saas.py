@@ -72,9 +72,9 @@ def test_phase23_memory_relationship_timeline_and_budget() -> None:
 
 
 def test_phase23_citation_bundle_exports_bibtex_and_apa() -> None:
-    bundle = citation_bundle(title="Knoema Engine Research Experiment")
+    bundle = citation_bundle(title="Luvoire Research Experiment")
 
-    assert "@software{knoemaengineresearchex" in bundle["bibtex"]
+    assert "@software{luvoireengineresearchex" in bundle["bibtex"]
     assert "Celovin. (2026)." in bundle["apa"]
 
 
@@ -89,6 +89,6 @@ def _record(tick: int, agent_id: str, target: str | None) -> dict[str, object]:
             "action_type": "speak",
             "target": target,
             "content": f"{agent_id} acts at tick {tick}",
-            "location": "Knoema Demo World > Lab",
+            "location": "Luvoire Demo World > Lab",
         },
     }

@@ -5,8 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from knoema.cli import main, playground_launch_payload, verify_certificate_path
-from knoema.reproducibility import generate_run_fingerprint
+from luvoire.cli import main, playground_launch_payload, verify_certificate_path
+from luvoire.reproducibility import generate_run_fingerprint
 
 
 def test_cli_list_scenarios_json(capsys) -> None:  # type: ignore[no-untyped-def]
@@ -72,7 +72,7 @@ def test_cli_verify_reproducibility_certificate(tmp_path: Path, capsys) -> None:
 
 def test_python_module_entry_point_supports_cli() -> None:
     result = subprocess.run(
-        [sys.executable, "-m", "knoema", "list-scenarios", "--json"],
+        [sys.executable, "-m", "luvoire", "list-scenarios", "--json"],
         check=True,
         capture_output=True,
         text=True,

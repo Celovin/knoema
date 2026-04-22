@@ -1,4 +1,4 @@
-# Knoema Service Level Agreement Template v1
+# Luvoire Service Level Agreement Template v1
 
 > STATUS: DRAFT - LEGAL REVIEW PENDING (do not publish)
 
@@ -6,7 +6,7 @@ This SLA template is intended for enterprise and team customers. It must be atta
 
 ## 1. Covered Service
 
-This SLA applies to the paid hosted Knoema API, hosted replay services, and enterprise deployment endpoints identified in the applicable order form. It does not apply to local open-source use, free demos, preview experiments, third-party model provider outages, customer-managed infrastructure, or customer bring-your-own provider keys.
+This SLA applies to the paid hosted Luvoire API, hosted replay services, and enterprise deployment endpoints identified in the applicable order form. It does not apply to local open-source use, free demos, preview experiments, third-party model provider outages, customer-managed infrastructure, or customer bring-your-own provider keys.
 
 ## 2. Uptime Commitment
 

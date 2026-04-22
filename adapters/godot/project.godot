@@ -1,17 +1,17 @@
 ; Engine configuration file.
-; Godot 4.2+ demo project for the Knoema Engine adapter.
+; Godot 4.2+ demo project for the Luvoire adapter.
 
 config_version=5
 
 [application]
 
-config/name="Knoema Godot Adapter Demo"
+config/name="Luvoire Godot Adapter Demo"
 run/main_scene="res://scenes/chat_demo.tscn"
 config/features=PackedStringArray("4.2")
 
 [autoload]
 
-KnoemaClient="*res://scripts/knoema_client.gd"
+LuvoireClient="*res://scripts/luvoire_client.gd"
 
 [display]
 
@@ -20,4 +20,4 @@ window/size/viewport_height=540
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/knoema/plugin.cfg")
+enabled=PackedStringArray("res://addons/luvoire/plugin.cfg")

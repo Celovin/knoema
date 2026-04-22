@@ -5,7 +5,7 @@ Phase 42 extends the deterministic scale envelope to a 500-agent metropolis rush
 Run:
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 .venv\Scripts\python experiments\500_agent_metropolis\run.py
 ```
 

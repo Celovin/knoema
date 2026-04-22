@@ -4,9 +4,9 @@ Use the game SDK when you need a stable NPC contract before committing to a host
 
 ## Current Paths
 
-- Python package facade: `knoema.game.GameSession`
+- Python package facade: `luvoire.game.GameSession`
 - TypeScript package scaffold: `sdk/typescript`
-- Godot GDScript facade: `sdk/godot-gdscript/knoema.gd`
+- Godot GDScript facade: `sdk/godot-gdscript/luvoire.gd`
 - Godot adapter scaffold: `adapters/godot`
 - Unity Package Manager scaffold: `adapters/unity`
 - Unreal Engine 5 plugin scaffold: `adapters/unreal`
@@ -14,7 +14,7 @@ Use the game SDK when you need a stable NPC contract before committing to a host
 ## Minimal Python NPC
 
 ```python
-from knoema.game import GameSession
+from luvoire.game import GameSession
 
 session = GameSession(game_id='demo-village')
 npc = session.create_npc(

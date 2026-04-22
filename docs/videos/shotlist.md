@@ -38,8 +38,8 @@ Use this common shot list for the 30-second, 3-minute, and 10-minute recordings.
 ## Reusable End Card
 
 ```text
-Knoema Engine
-https://github.com/Celovin/knoema
-Playground: https://huggingface.co/spaces/celovin/knoema-playground
+Luvoire
+https://github.com/Celovin/luvoire
+Playground: https://huggingface.co/spaces/celovin/luvoire-playground
 MIT License - Copyright (c) 2026 Celovin
 ```

@@ -8,7 +8,7 @@ tick_duration_minutes: 360
 duration_days: 1
 environment:
   start_time: "2026-05-11T09:00:00"
-  location_path: [Knoema Demo World, Sunfield Town, Market Square]
+  location_path: [Luvoire Demo World, Sunfield Town, Market Square]
   conditions:
     market_day: true
     quest_board_slots: 6
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-05-11T12:00:00"
     event_type: game.quest_selection_checkpoint
     participants: [steward, courier]
-    location: Knoema Demo World > Sunfield Town > Market Square
+    location: Luvoire Demo World > Sunfield Town > Market Square
     description: Steward groups similar errands and points the courier to the shortest loop.
 metrics:
   - name: quest_choice_confidence

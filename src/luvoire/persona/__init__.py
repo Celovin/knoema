@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from knoema.game.inventory import Inventory
-from knoema.game.schedule import RoutineEntry
-from knoema.theory_of_mind import TheoryOfMindProfile
-from knoema.types import AgentID, Personality
+from luvoire.game.inventory import Inventory
+from luvoire.game.schedule import RoutineEntry
+from luvoire.theory_of_mind import TheoryOfMindProfile
+from luvoire.types import AgentID, Personality
 
 
 def _validate_non_empty_string(name: str, value: str) -> None:
@@ -54,7 +54,7 @@ class Persona:
             self.routine = list(self.routine)
 
     def to_system_prompt(self, language: str = "en") -> str:
-        from knoema.prompts import render_persona_system_prompt
+        from luvoire.prompts import render_persona_system_prompt
 
         return render_persona_system_prompt(self, language)
 

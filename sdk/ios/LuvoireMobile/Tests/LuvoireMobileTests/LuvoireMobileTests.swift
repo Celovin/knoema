@@ -1,10 +1,10 @@
 import Foundation
 import XCTest
-@testable import KnoemaMobile
+@testable import LuvoireMobile
 
-final class KnoemaMobileTests: XCTestCase {
+final class LuvoireMobileTests: XCTestCase {
     func testBuildsAuthorizedRESTRequest() throws {
-        let client = KnoemaClient(baseURL: URL(string: "https://api.example.test")!, token: "demo")
+        let client = LuvoireClient(baseURL: URL(string: "https://api.example.test")!, token: "demo")
         let request = client.buildRESTRequest(path: "/agents/alice", method: "POST")
 
         XCTAssertEqual(request.url?.absoluteString, "https://api.example.test/agents/alice")
@@ -13,7 +13,7 @@ final class KnoemaMobileTests: XCTestCase {
     }
 
     func testBuildsWebSocketURL() throws {
-        let client = KnoemaClient(baseURL: URL(string: "https://api.example.test")!)
+        let client = LuvoireClient(baseURL: URL(string: "https://api.example.test")!)
 
         XCTAssertEqual(
             client.buildWebSocketURL(path: "/ws/simulations/demo").absoluteString,
@@ -22,7 +22,7 @@ final class KnoemaMobileTests: XCTestCase {
     }
 
     func testNpcAgentCachesOfflineResponse() throws {
-        let client = KnoemaClient(baseURL: URL(string: "http://localhost:8000")!)
+        let client = LuvoireClient(baseURL: URL(string: "http://localhost:8000")!)
         let agent = NPCAgent(agentId: "alice", displayName: "Alice", client: client)
 
         let first = agent.cachedOrOfflineResponse(input: "hello")

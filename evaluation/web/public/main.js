@@ -5,13 +5,13 @@ form?.addEventListener("submit", (event) => {
   event.preventDefault();
   const data = new FormData(form);
   const rating = data.get("rating");
-  window.localStorage.setItem("knoema.phase58.rating", String(rating));
+  window.localStorage.setItem("luvoire.phase58.rating", String(rating));
   if (output) {
     output.textContent = `Saved rating: ${rating}`;
   }
 });
 
-const prior = window.localStorage.getItem("knoema.phase58.rating");
+const prior = window.localStorage.getItem("luvoire.phase58.rating");
 if (prior && output) {
   output.textContent = `Saved rating: ${prior}`;
 }

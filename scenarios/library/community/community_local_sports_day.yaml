@@ -8,7 +8,7 @@ tick_duration_minutes: 720
 duration_days: 1
 environment:
   start_time: "2026-06-07T09:00:00"
-  location_path: [Knoema Demo World, Scenario Library, Community]
+  location_path: [Luvoire Demo World, Scenario Library, Community]
   conditions:
     mode: deterministic
     category: community
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-06-07T13:00:00"
     event_type: community.sports_checkpoint
     participants: [agent_a, agent_b]
-    location: Knoema Demo World > Scenario Library > Community
+    location: Luvoire Demo World > Scenario Library > Community
     description: "Neighbors assign setup, scoring, and cleanup roles."
 metrics:
   - name: event_readiness

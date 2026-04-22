@@ -1,1 +1,1 @@
-"""SDK facades and examples for Knoema integrations."""
+"""SDK facades and examples for Luvoire integrations."""

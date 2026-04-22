@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-from knoema.cli import load_run_config
+from luvoire.cli import load_run_config
 
 
 def test_yaml_run_config_round_trips_through_schema(tmp_path: Path) -> None:
@@ -19,7 +19,7 @@ def test_yaml_run_config_round_trips_through_schema(tmp_path: Path) -> None:
                 "  prompt_language: en",
                 "environment:",
                 "  start_time: 2026-06-01T09:00:00",
-                "  location_path: [Knoema Demo World, Reproducibility Lab]",
+                "  location_path: [Luvoire Demo World, Reproducibility Lab]",
                 "  conditions:",
                 "    seed: 20260418",
                 "agents:",

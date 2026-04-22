@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from heapq import heappop, heappush
 
-from knoema.types import WorldEvent
+from luvoire.types import WorldEvent
 
 
 @dataclass(order=True, slots=True)

@@ -1,6 +1,6 @@
-# Knoema Bench Methodology
+# Luvoire Bench Methodology
 
-Knoema Bench uses seven axes because the current public evidence bundle spans
+Luvoire Bench uses seven axes because the current public evidence bundle spans
 memory, planning, belief tracking, and runtime latency. The goal is not to claim
 that one score fully summarizes a framework; it is to make evidence boundaries
 visible in a single table.
@@ -10,7 +10,7 @@ visible in a single table.
 - LoCoMo, MemoryAgentBench, MemoryArena, MLMF, ToM Sally-Anne, and HTN rows are
   deterministic synthetic harnesses generated from committed repository
   artifacts.
-- Real-time latency uses measured Knoema replay-only tick latency normalized
+- Real-time latency uses measured Luvoire replay-only tick latency normalized
   against published ACE and Inworld target envelopes. It is not an audio-input
   to audio-output conversational pipeline benchmark.
 - Published reference rows are treated as target envelopes unless the external

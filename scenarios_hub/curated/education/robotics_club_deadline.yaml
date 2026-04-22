@@ -8,7 +8,7 @@ tick_duration_minutes: 360
 duration_days: 1
 environment:
   start_time: "2026-11-06T15:00:00"
-  location_path: [Knoema Demo World, Maker Wing, Robotics Lab]
+  location_path: [Luvoire Demo World, Maker Wing, Robotics Lab]
   conditions:
     competition_week: true
     spare_parts_available: limited
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-11-06T18:00:00"
     event_type: club.checklist_checkpoint
     participants: [captain, programmer]
-    location: Knoema Demo World > Maker Wing > Robotics Lab
+    location: Luvoire Demo World > Maker Wing > Robotics Lab
     description: Captain converts the blocker list into a shared task board.
 metrics:
   - name: role_clarity

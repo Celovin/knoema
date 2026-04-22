@@ -1,9 +1,9 @@
 using UnityEngine;
 
-namespace Knoema.Unity
+namespace Luvoire.Unity
 {
-    [CreateAssetMenu(fileName = "KnoemaConfig", menuName = "Knoema/Config")]
-    public sealed class KnoemaConfig : ScriptableObject
+    [CreateAssetMenu(fileName = "LuvoireConfig", menuName = "Luvoire/Config")]
+    public sealed class LuvoireConfig : ScriptableObject
     {
         [SerializeField] private string endpointUrl = "http://localhost:8000/interact";
         [SerializeField] private string sessionId = "unity-demo";

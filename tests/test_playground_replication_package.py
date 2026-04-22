@@ -72,6 +72,6 @@ def test_subtask37_export_replication_package_writes_required_members() -> None:
                 "source/playground/app.py",
             }.issubset(members)
             notebook = archive.read("notebooks/reproduce_run.ipynb").decode("utf-8")
-            assert "Knoema replication notebook" in notebook
+            assert "Luvoire replication notebook" in notebook
     finally:
         archive_path.unlink(missing_ok=True)

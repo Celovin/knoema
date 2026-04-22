@@ -1,4 +1,4 @@
-# Knoema Technical Report
+# Luvoire Technical Report
 
 [![arXiv: pending](https://img.shields.io/badge/arXiv-ARXIV_ID_PENDING-b31b1b.svg)](main.tex)
 
@@ -14,12 +14,12 @@ This folder contains the arXiv v2 technical report draft. It keeps the earlier P
 - `appendix.tex`: artifact and reproducibility appendix.
 - `references.bib`: 80+ BibTeX references for the preprint.
 - `build_pdf.py`: local PDF preview builder using ReportLab.
-- `knoema_technical_report.pdf`: generated preview PDF for meetings.
+- `luvoire_technical_report.pdf`: generated preview PDF for meetings.
 
 ## Build Preview PDF
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 .venv\Scripts\pip install reportlab pdfplumber pypdf
 .venv\Scripts\python paper\build_pdf.py
 ```
@@ -29,7 +29,7 @@ cd C:\Users\admin\Projects\knoema
 Install a LaTeX engine such as TeX Live, MiKTeX, or Tectonic, then run:
 
 ```powershell
-cd C:\Users\admin\Projects\knoema\paper
+cd C:\Users\admin\Projects\luvoire\paper
 pdflatex main.tex
 bibtex main
 pdflatex main.tex

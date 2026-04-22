@@ -1,5 +1,5 @@
 name: New community scenario
-description: Propose a safe fictional Knoema scenario for the community gallery.
+description: Propose a safe fictional Luvoire scenario for the community gallery.
 title: "[Scenario]: "
 labels: ["scenario", "community"]
 body:
@@ -21,6 +21,6 @@ body:
     id: validation
     attributes:
       label: Validation evidence
-      description: Paste `knoema validate` output and dry-run notes.
+      description: Paste `luvoire validate` output and dry-run notes.
     validations:
       required: true

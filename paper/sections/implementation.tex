@@ -1,6 +1,6 @@
 \section{Implementation Snapshot}
 
-The current repository implements the MVP as an installable Python package named \texttt{knoema-engine}. Source modules live under \texttt{src/knoema}, tests under \texttt{tests}, notebooks under \texttt{examples}, game integration under \texttt{adapters/godot}, and dashboard code under \texttt{dashboard}. The repository also includes dual-language README files, architecture notes, research positioning notes, and GitHub Actions CI.
+The current repository implements the MVP as an installable Python package named \texttt{luvoire-engine}. Source modules live under \texttt{src/luvoire}, tests under \texttt{tests}, notebooks under \texttt{examples}, game integration under \texttt{adapters/godot}, and dashboard code under \texttt{dashboard}. The repository also includes dual-language README files, architecture notes, research positioning notes, and GitHub Actions CI.
 
 \begin{table}[h]
 \centering
@@ -8,8 +8,8 @@ The current repository implements the MVP as an installable Python package named
 \toprule
 Area & Files & Verification \\
 \midrule
-Core package & \texttt{src/knoema/*.py} & unit tests, mypy \\
-Memory & \texttt{src/knoema/memory} & retrieval and persistence tests \\
+Core package & \texttt{src/luvoire/*.py} & unit tests, mypy \\
+Memory & \texttt{src/luvoire/memory} & retrieval and persistence tests \\
 Decision loop & \texttt{decision.py}, \texttt{llm/} & mock client tests \\
 Simulation & \texttt{simulator.py}, \texttt{events/} & 7-day run test \\
 Examples & \texttt{examples/*.ipynb} & nbconvert execution \\

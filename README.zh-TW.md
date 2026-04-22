@@ -1,20 +1,20 @@
-# Knoema Engine
+# Luvoire
 
 > 面向遊戲、公共安全研究與學術模擬的 LLM 多代理社會模擬引擎。
 
-[![CI](https://github.com/Celovin/knoema/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/knoema/actions/workflows/ci.yml)
+[![CI](https://github.com/Celovin/luvoire/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/luvoire/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/knoema-playground)
+[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/luvoire-playground)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19643409.svg)](https://doi.org/10.5281/zenodo.19643409)
 
 ## Current version
 
-0.2.0
+0.3.0
 
-## Knoema Bench
+## Luvoire Bench
 
-Knoema Bench 是面向持久型代理框架的七軸公開排行榜。線上頁面：[https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/)。提交範本：[bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml)。
+Luvoire Bench 是面向持久型代理框架的七軸公開排行榜。線上頁面：[https://celovin.github.io/luvoire/bench/](https://celovin.github.io/luvoire/bench/)。提交範本：[bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml)。
 
 - Unity SDK（預覽）提供 FastAPI tick、memory、action 合約與 UPM 套件結構。
 - 可選 OpenAI TTS 語音播放支援 Playground 時間軸中的 `speak` 動作，包含每個代理的聲音與基於快取的 WAV fallback。
@@ -25,7 +25,7 @@ Knoema Bench 是面向持久型代理框架的七軸公開排行榜。線上頁�
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) |
 
-Knoema Engine 是一個早期 MVP，用來建模具備記憶、關係、情緒、環境脈絡與 LLM 驅動決策的持續型代理。它可以在同一套執行時中支援遊戲 NPC、虛構公共安全回放研究，以及可重現的社會模擬。
+Luvoire 是一個早期 MVP，用來建模具備記憶、關係、情緒、環境脈絡與 LLM 驅動決策的持續型代理。它可以在同一套執行時中支援遊戲 NPC、虛構公共安全回放研究，以及可重現的社會模擬。
 
 本儲存庫中的公共安全範例皆為虛構、合成且不可識別的資料。它不是犯罪預測、嫌疑人評分或真實執法自動化工具。
 
@@ -59,7 +59,7 @@ pip install -e ".[dev]"
 執行本機 YAML 模擬：
 
 ```bash
-knoema run examples/cli_dorm.yaml --json
+luvoire run examples/cli_dorm.yaml --json
 ```
 
 在本機啟動 Playground：
@@ -78,7 +78,7 @@ streamlit run dashboard/app.py
 
 ## 重要連結
 
-- [Knoema Playground](https://huggingface.co/spaces/celovin/knoema-playground)
+- [Luvoire Playground](https://huggingface.co/spaces/celovin/luvoire-playground)
 - [Scenario Marketplace Beta](scenarios_hub/README.md)
 - [DSL Tutorial](docs/dsl/tutorial.md)
 - [Game SDK Docs](docs/sdk/python-api.md)

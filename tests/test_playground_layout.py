@@ -92,7 +92,7 @@ def test_subtask12_export_html_report_writes_self_contained_html() -> None:
 
     try:
         assert report_file.suffix == ".html"
-        assert "Knoema Playground HTML report" in report_html
+        assert "Luvoire Playground HTML report" in report_html
         assert "Mode: Replay only | Agents: 2" in report_html
         assert "### Timeline" in report_html
         assert '"agent_id": "agent_1"' in unescape(report_html)

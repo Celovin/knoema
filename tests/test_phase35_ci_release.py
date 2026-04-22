@@ -9,16 +9,16 @@ def test_phase35_default_ci_uses_fast_cached_quality_gate() -> None:
     workflow = Path(".github/workflows/ci.yml").read_text(encoding="utf-8")
 
     assert "concurrency:" in workflow
-    assert "PRE_COMMIT_HOME: /tmp/knoema-pre-commit-cache" in workflow
+    assert "PRE_COMMIT_HOME: /tmp/luvoire-pre-commit-cache" in workflow
     assert "cache-dependency-path: pyproject.toml" in workflow
-    assert "path: /tmp/knoema-pre-commit-cache" in workflow
+    assert "path: /tmp/luvoire-pre-commit-cache" in workflow
     assert "actions/cache@v5" in workflow
     assert "path: .pytest_cache" in workflow
     assert 'python-version: "3.12"' in workflow
     assert "python -m pip install -e \".[dev,release]\"" in workflow
     assert "mypy src" in workflow
     assert "pytest --cov-fail-under=90" in workflow
-    assert "python scripts/release_dry_run.py --version 0.2.0" in workflow
+    assert "python scripts/release_dry_run.py --version 0.3.0" in workflow
 
 
 def test_phase35_compatibility_workflow_declares_cross_platform_matrix() -> None:
@@ -55,10 +55,10 @@ def test_phase35_release_please_manifest_is_configured() -> None:
 
     package = config["packages"]["."]
     assert package["release-type"] == "python"
-    assert package["package-name"] == "knoema-engine"
+    assert package["package-name"] == "luvoire-engine"
     assert package["changelog-path"] == "CHANGELOG.md"
-    assert "src/knoema/__init__.py" in package["extra-files"]
-    assert manifest["."] == "0.2.0"
+    assert "src/luvoire/__init__.py" in package["extra-files"]
+    assert manifest["."] == "0.3.0"
     assert "vars.ENABLE_RELEASE_PLEASE == '1'" in workflow
 
 
@@ -72,7 +72,7 @@ def test_phase35_release_dry_run_script_and_docs_exist() -> None:
 
     assert '"-m", "build"' in script
     assert "twine" in script
-    assert "--version 0.2.0" in docs
+    assert "--version 0.3.0" in docs
     assert "Trusted Publisher" in docs
     assert "external_activation_status.py" in docs
     assert "pre_release_check.py" in docs
@@ -80,9 +80,9 @@ def test_phase35_release_dry_run_script_and_docs_exist() -> None:
     assert "Suggested next actions" in docs
     assert "--fail-on-blockers" in docs
     assert "python scripts/external_activation_status.py" in readme
-    assert "python scripts/pre_release_check.py --version 0.2.0" in readme
+    assert "python scripts/pre_release_check.py --version 0.3.0" in readme
     assert "python scripts/deploy_playground_space.py" in readme
     assert "ENABLE_RELEASE_PLEASE" in status_script
     assert "suggested_actions" in status_script
     assert "ready_for_release_tag" in pre_release_script
-    assert "knoema-playground" in deploy_playground_script
+    assert "luvoire-playground" in deploy_playground_script

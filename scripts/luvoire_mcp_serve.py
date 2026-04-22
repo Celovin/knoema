@@ -1,8 +1,8 @@
-"""Run the Knoema MCP stdio server."""
+"""Run the Luvoire MCP stdio server."""
 
 from __future__ import annotations
 
-from knoema_mcp.server import main
+from luvoire_mcp.server import main
 
 if __name__ == "__main__":
     raise SystemExit(main())

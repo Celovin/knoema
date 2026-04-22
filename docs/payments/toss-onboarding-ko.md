@@ -34,7 +34,7 @@
 
 Toss Payments API 키 문서는 클라이언트 키와 시크릿 키가 세트로 발급된다고 설명한다. 시크릿 키는 외부에 노출되면 안 되며 GitHub, 클라이언트 코드, 문서에 넣지 않는다.
 
-Knoema 환경 변수 명명:
+Luvoire 환경 변수 명명:
 
 ```text
 TOSS_CLIENT_KEY=

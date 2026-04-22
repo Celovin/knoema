@@ -8,7 +8,7 @@ tick_duration_minutes: 360
 duration_days: 1
 environment:
   start_time: "2026-05-12T18:00:00"
-  location_path: [Knoema Demo World, Old Port, Lantern Tavern]
+  location_path: [Luvoire Demo World, Old Port, Lantern Tavern]
   conditions:
     evening_rush: true
     bard_on_stage: true
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-05-12T21:00:00"
     event_type: game.rumor_checkpoint
     participants: [innkeeper, ranger]
-    location: Knoema Demo World > Old Port > Lantern Tavern
+    location: Luvoire Demo World > Old Port > Lantern Tavern
     description: Innkeeper repeats the useful route note after dismissing a playful exaggeration.
 metrics:
   - name: memory_carryover

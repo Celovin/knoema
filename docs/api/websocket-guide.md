@@ -8,7 +8,7 @@ The WebSocket stream provides live JSON envelopes while a simulation is running.
 /simulations/{simulation_id}/stream
 ```
 
-If `KNOEMA_API_KEY` is configured, send the same bearer token used by the REST routes.
+If `LUVOIRE_API_KEY` is configured, send the same bearer token used by the REST routes.
 
 ## Event Shapes
 

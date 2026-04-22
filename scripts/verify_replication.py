@@ -1,4 +1,4 @@
-"""Verify a Knoema replication package archive."""
+"""Verify a Luvoire replication package archive."""
 
 from __future__ import annotations
 
@@ -12,8 +12,8 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
-ARCHIVE_ENV = "KNOEMA_REPLICATION_ARCHIVE"
-EXTRACT_DIR_ENV = "KNOEMA_REPLICATION_EXTRACT_DIR"
+ARCHIVE_ENV = "LUVOIRE_REPLICATION_ARCHIVE"
+EXTRACT_DIR_ENV = "LUVOIRE_REPLICATION_EXTRACT_DIR"
 PYTEST_TARGET = "tests/reproducibility/test_replication_package_verify.py"
 REQUIRED_MEMBERS = (
     "README.md",
@@ -56,7 +56,7 @@ def verify_replication_package(archive_path: Path, *, run_pytest: bool = True) -
     report = inspect_replication_archive(resolved_archive)
     repo_root = Path(__file__).resolve().parents[1]
 
-    with tempfile.TemporaryDirectory(prefix="knoema-replication-verify-") as temp_dir:
+    with tempfile.TemporaryDirectory(prefix="luvoire-replication-verify-") as temp_dir:
         extract_dir = Path(temp_dir)
         with zipfile.ZipFile(resolved_archive) as archive:
             archive.extractall(extract_dir)
@@ -98,7 +98,7 @@ def verify_replication_package(archive_path: Path, *, run_pytest: bool = True) -
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Verify a Knoema replication package zip.")
+    parser = argparse.ArgumentParser(description="Verify a Luvoire replication package zip.")
     parser.add_argument("archive", help="Path to the replication package zip")
     args = parser.parse_args()
 

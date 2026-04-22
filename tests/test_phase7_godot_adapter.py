@@ -13,9 +13,9 @@ def test_godot_adapter_expected_files_exist() -> None:
         "README.md",
         "scenes/chat_demo.tscn",
         "scripts/npc.gd",
-        "scripts/knoema_client.gd",
-        "addons/knoema/plugin.cfg",
-        "addons/knoema/plugin.gd",
+        "scripts/luvoire_client.gd",
+        "addons/luvoire/plugin.cfg",
+        "addons/luvoire/plugin.gd",
     ]
 
     missing = [path for path in expected if not (GODOT_ROOT / path).exists()]
@@ -27,11 +27,11 @@ def test_godot_project_points_to_chat_demo_scene() -> None:
     project = (GODOT_ROOT / "project.godot").read_text(encoding="utf-8")
 
     assert 'run/main_scene="res://scenes/chat_demo.tscn"' in project
-    assert 'KnoemaClient="*res://scripts/knoema_client.gd"' in project
+    assert 'LuvoireClient="*res://scripts/luvoire_client.gd"' in project
 
 
 def test_godot_client_supports_http_and_local_fallback() -> None:
-    client = (GODOT_ROOT / "scripts/knoema_client.gd").read_text(encoding="utf-8")
+    client = (GODOT_ROOT / "scripts/luvoire_client.gd").read_text(encoding="utf-8")
 
     assert "HTTPRequest.new()" in client
     assert "_fallback_response" in client

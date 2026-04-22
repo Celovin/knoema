@@ -16,7 +16,7 @@ from pathlib import Path
 import faiss  # type: ignore[import-untyped]
 import numpy as np
 
-from knoema.types import Memory
+from luvoire.types import Memory
 
 _TOKEN_PATTERN = re.compile(r"\w+", flags=re.UNICODE)
 

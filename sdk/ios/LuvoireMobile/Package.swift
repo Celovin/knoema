@@ -3,16 +3,16 @@
 import PackageDescription
 
 let package = Package(
-    name: "KnoemaMobile",
+    name: "LuvoireMobile",
     platforms: [
         .iOS(.v16),
         .macOS(.v13)
     ],
     products: [
-        .library(name: "KnoemaMobile", targets: ["KnoemaMobile"])
+        .library(name: "LuvoireMobile", targets: ["LuvoireMobile"])
     ],
     targets: [
-        .target(name: "KnoemaMobile"),
-        .testTarget(name: "KnoemaMobileTests", dependencies: ["KnoemaMobile"])
+        .target(name: "LuvoireMobile"),
+        .testTarget(name: "LuvoireMobileTests", dependencies: ["LuvoireMobile"])
     ]
 )

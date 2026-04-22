@@ -10,7 +10,7 @@ from pathlib import Path
 from statistics import mean
 from typing import Literal
 
-from knoema.memory.long_term import HashEmbeddingEncoder
+from luvoire.memory.long_term import HashEmbeddingEncoder
 
 MemoryLayer = Literal["episodic", "semantic", "procedural", "emotional"]
 MEMORY_LAYERS: tuple[MemoryLayer, ...] = (

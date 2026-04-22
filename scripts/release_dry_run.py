@@ -58,7 +58,7 @@ def _patch_version(worktree: Path, version: str) -> str:
         encoding="utf-8",
     )
 
-    init_path = worktree / "src" / "knoema" / "__init__.py"
+    init_path = worktree / "src" / "luvoire" / "__init__.py"
     init_text = init_path.read_text(encoding="utf-8")
     init_path.write_text(
         init_text.replace(
@@ -76,7 +76,7 @@ def run_release_dry_run(version: str, keep: bool = False) -> dict[str, object]:
         raise SystemExit(f"Invalid semantic version: {version}")
 
     root = _repo_root()
-    temp_root = Path(tempfile.mkdtemp(prefix="knoema-release-dry-run-"))
+    temp_root = Path(tempfile.mkdtemp(prefix="luvoire-release-dry-run-"))
     try:
         worktree = temp_root / "worktree"
         dist_dir = temp_root / "dist"
@@ -106,7 +106,7 @@ def run_release_dry_run(version: str, keep: bool = False) -> dict[str, object]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build and twine-check a temporary release version.")
-    parser.add_argument("--version", required=True, help="Semantic version to test, for example 0.2.0.")
+    parser.add_argument("--version", required=True, help="Semantic version to test, for example 0.3.0.")
     parser.add_argument("--keep", action="store_true", help="Keep the temporary build tree for inspection.")
     args = parser.parse_args()
 

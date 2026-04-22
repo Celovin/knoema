@@ -4,7 +4,7 @@ import importlib
 import sys
 from pathlib import Path
 
-from knoema.community import (
+from luvoire.community import (
     community_gallery_markdown,
     community_scenario_by_id,
     community_scenario_choices,

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from knoema.demo.ollama_live import DEFAULT_OLLAMA_MODEL, available_ollama_models
-from knoema.llm import LocalLLMError
+from luvoire.demo.ollama_live import DEFAULT_OLLAMA_MODEL, available_ollama_models
+from luvoire.llm import LocalLLMError
 
 
 @pytest.fixture(scope="session")

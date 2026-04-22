@@ -1,6 +1,6 @@
 """Demo helpers for notebooks, recordings, and reproducible showcases."""
 
-from knoema.demo.ollama_live import (
+from luvoire.demo.ollama_live import (
     DEFAULT_OLLAMA_MODEL,
     DEFAULT_OLLAMA_SEED,
     OllamaLiveDemoResult,

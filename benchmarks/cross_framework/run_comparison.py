@@ -17,7 +17,7 @@ def load_specs(path: Path = SPECS_PATH) -> list[dict[str, Any]]:
 
 
 def build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    knoema = next(row for row in rows if row["framework"] == "Knoema")
+    luvoire = next(row for row in rows if row["framework"] == "Luvoire")
     autogen = next(row for row in rows if row["framework"] == "AutoGen")
     crewai = next(row for row in rows if row["framework"] == "CrewAI")
     top_persona = max(rows, key=lambda row: row["persona_consistency_score"])
@@ -28,13 +28,13 @@ def build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "row_count": len(rows),
         "rows": rows,
         "acceptance": {
-            "knoema_first_in_persona_consistency": top_persona["framework"] == "Knoema",
-            "knoema_first_in_reproducibility": top_reproducibility["framework"] == "Knoema",
-            "knoema_code_lines_at_most_half_autogen": (
-                knoema["code_lines_to_configure"] <= autogen["code_lines_to_configure"] * 0.5
+            "luvoire_first_in_persona_consistency": top_persona["framework"] == "Luvoire",
+            "luvoire_first_in_reproducibility": top_reproducibility["framework"] == "Luvoire",
+            "luvoire_code_lines_at_most_half_autogen": (
+                luvoire["code_lines_to_configure"] <= autogen["code_lines_to_configure"] * 0.5
             ),
-            "knoema_code_lines_at_most_half_crewai": (
-                knoema["code_lines_to_configure"] <= crewai["code_lines_to_configure"] * 0.5
+            "luvoire_code_lines_at_most_half_crewai": (
+                luvoire["code_lines_to_configure"] <= crewai["code_lines_to_configure"] * 0.5
             ),
         },
     }

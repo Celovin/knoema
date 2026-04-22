@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any
 
-from knoema.types import AgentID, WorldEvent
+from luvoire.types import AgentID, WorldEvent
 
 
 def _validate_location_path(location_path: tuple[str, ...]) -> None:

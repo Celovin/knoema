@@ -1,6 +1,6 @@
 # Community Scenario Gallery
 
-The community gallery is designed for a separate GitHub repository, `Celovin/knoema-scenarios`, while Knoema keeps the loader, validation rules, and Playground browsing surface in this repository.
+The community gallery is designed for a separate GitHub repository, `Celovin/luvoire-scenarios`, while Luvoire keeps the loader, validation rules, and Playground browsing surface in this repository.
 
 ## Manifest
 
@@ -17,7 +17,7 @@ The expected manifest shape is:
       "summary": "Students negotiate feedback norms after a draft exchange.",
       "author": "Contributor name",
       "tags": ["education", "feedback"],
-      "source_url": "https://github.com/Celovin/knoema-scenarios/blob/main/scenarios/classroom_peer_review.yaml",
+      "source_url": "https://github.com/Celovin/luvoire-scenarios/blob/main/scenarios/classroom_peer_review.yaml",
       "yaml": "schema_version: \"1.0\"\\nscenario_id: classroom_peer_review\\n..."
     }
   ]

@@ -1,4 +1,4 @@
-"""Validate a Knoema Bench YAML submission."""
+"""Validate a Luvoire Bench YAML submission."""
 
 from __future__ import annotations
 

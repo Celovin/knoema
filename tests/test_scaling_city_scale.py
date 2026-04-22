@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from knoema.scaling import CityScaleConfig, CityScaleRunner
+from luvoire.scaling import CityScaleConfig, CityScaleRunner
 
 
 def test_city_scale_small_run_is_reproducible_across_backends() -> None:

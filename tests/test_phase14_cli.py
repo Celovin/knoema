@@ -6,7 +6,7 @@ import sys
 import tomllib
 from pathlib import Path
 
-from knoema.cli import main, run_config
+from luvoire.cli import main, run_config
 
 
 def _write_run_config(path: Path, output_name: str = "cli_logs.jsonl") -> None:
@@ -115,7 +115,7 @@ def test_phase14_cli_module_and_entry_point_are_available(tmp_path: Path) -> Non
         [
             sys.executable,
             "-m",
-            "knoema.cli",
+            "luvoire.cli",
             "run",
             str(config_path),
             "--output",
@@ -129,4 +129,4 @@ def test_phase14_cli_module_and_entry_point_are_available(tmp_path: Path) -> Non
     pyproject = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
 
     assert json.loads(result.stdout)["log_count"] == 4
-    assert pyproject["project"]["scripts"]["knoema"] == "knoema.cli:main"
+    assert pyproject["project"]["scripts"]["luvoire"] == "luvoire.cli:main"

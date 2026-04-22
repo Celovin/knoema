@@ -1,12 +1,12 @@
 # City-Scale Scaling
 
-Knoema's city-scale runner is a deterministic proof-of-concept for large offline social simulation runs. It is designed for benchmark evidence, replay demos, and reproducibility checks rather than live LLM inference.
+Luvoire's city-scale runner is a deterministic proof-of-concept for large offline social simulation runs. It is designed for benchmark evidence, replay demos, and reproducibility checks rather than live LLM inference.
 
 ## Architecture
 
 `CityScaleRunner` shards agents into worker-owned state partitions. Each shard receives an immutable tick payload and returns updated agent state, frame deltas, and outbound messages. The coordinator merges shard outputs and routes the next tick's inbox through a deterministic round-robin queue. No worker mutates shared state.
 
-The default backend is `multiprocessing`. The `ray` backend flag is accepted for compatibility with `knoema[scale]`, but Ray is optional; when Ray is unavailable, the runner falls back to the same deterministic multiprocessing path.
+The default backend is `multiprocessing`. The `ray` backend flag is accepted for compatibility with `luvoire[scale]`, but Ray is optional; when Ray is unavailable, the runner falls back to the same deterministic multiprocessing path.
 
 ## Benchmark
 

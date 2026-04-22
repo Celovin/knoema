@@ -6,9 +6,9 @@ import json
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from knoema import Action
-from knoema.cognition import SocialLearner
-from knoema.planning import WorldState
+from luvoire import Action
+from luvoire.cognition import SocialLearner
+from luvoire.planning import WorldState
 
 ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = ROOT / "results"

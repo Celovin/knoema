@@ -246,9 +246,9 @@ def _measure_playground_mode(
     return MeasuredLatencyRow(
         path_id="playground_replay" if provider == "Replay only" else "playground_openai",
         label=(
-            "Knoema Playground replay-only"
+            "Luvoire Playground replay-only"
             if provider == "Replay only"
-            else "Knoema Playground OpenAI mode"
+            else "Luvoire Playground OpenAI mode"
         ),
         mode=provider,
         model=model,

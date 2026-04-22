@@ -52,7 +52,7 @@ def test_phase25_website_copy_keeps_safety_and_sdk_surfaces() -> None:
 
     assert "One engine. Three worlds." in combined
     assert "synthetic, non-identifying scenarios" in combined
-    assert "from knoema.game import GameSession" in combined
+    assert "from luvoire.game import GameSession" in combined
     assert "Python, TypeScript, and GDScript" in combined
 
 

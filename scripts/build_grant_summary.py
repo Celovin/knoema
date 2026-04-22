@@ -20,7 +20,7 @@ from reportlab.pdfgen import canvas
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_DIR = ROOT / "scripts" / "grant_summary_templates"
 DIST_DIR = ROOT / "dist"
-HF_SPACE_URL: Final[str] = "https://huggingface.co/spaces/celovin/knoema-playground"
+HF_SPACE_URL: Final[str] = "https://huggingface.co/spaces/celovin/luvoire-playground"
 FORBIDDEN_STRINGS: Final[tuple[str, ...]] = tuple(
     "".join(parts)
     for parts in (
@@ -237,7 +237,7 @@ def _render_pdf(markdown: str, output_path: Path, *, language: str) -> None:
         pageCompression=0,
         invariant=1,
     )
-    c.setTitle(f"Knoema Didimdol Onepager {language.upper()}")
+    c.setTitle(f"Luvoire Didimdol Onepager {language.upper()}")
     c.setAuthor("Celovin")
     c.setSubject("Didimdol grant one-page summary")
 

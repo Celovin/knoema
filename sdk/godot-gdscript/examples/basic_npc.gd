@@ -1,7 +1,7 @@
 extends Node
 
 func _ready() -> void:
-    var session := KnoemaGameSession.new("demo-village")
+    var session := LuvoireGameSession.new("demo-village")
     session.create_npc(
         "shopkeeper",
         "Mina",

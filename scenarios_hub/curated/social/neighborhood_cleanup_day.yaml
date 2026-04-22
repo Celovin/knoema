@@ -8,7 +8,7 @@ tick_duration_minutes: 360
 duration_days: 1
 environment:
   start_time: "2026-04-18T08:00:00"
-  location_path: [Knoema Demo World, Maple District, Community Park]
+  location_path: [Luvoire Demo World, Maple District, Community Park]
   conditions:
     volunteers_expected: 12
     weather: clear
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-04-18T11:00:00"
     event_type: volunteer.rotation_checkpoint
     participants: [organizer, volunteer]
-    location: Knoema Demo World > Maple District > Community Park
+    location: Luvoire Demo World > Maple District > Community Park
     description: Organizer moves a small team to the next zone and repeats the rest plan.
 metrics:
   - name: rotation_alignment

@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from knoema.memory.retrieval_benchmark import run_memory_retrieval_benchmark
+from luvoire.memory.retrieval_benchmark import run_memory_retrieval_benchmark
 
 
 def test_phase43_memory_retrieval_benchmark_meets_recall_gate() -> None:

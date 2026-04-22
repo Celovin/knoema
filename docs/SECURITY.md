@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Knoema Engine is pre-1.0 software. Security fixes are applied to the `main` branch and the latest tagged release line.
+Luvoire is pre-1.0 software. Security fixes are applied to the `main` branch and the latest tagged release line.
 
 | Version | Supported |
 | --- | --- |
@@ -28,7 +28,7 @@ Do not open a public issue for exploitable vulnerabilities or leaked credentials
 
 In scope:
 
-- Python package code under `src/knoema`;
+- Python package code under `src/luvoire`;
 - CLI, dashboard, playground, SaaS scaffold, website, and adapters;
 - GitHub Actions workflows;
 - dependency metadata and release artifacts;
@@ -43,7 +43,7 @@ Out of scope:
 
 ## Secrets And API Keys
 
-Knoema examples must not persist user API keys. Playground keys are session inputs only and should never be logged, committed, or stored in exported JSONL files.
+Luvoire examples must not persist user API keys. Playground keys are session inputs only and should never be logged, committed, or stored in exported JSONL files.
 
 The repository ignores `.env`, `.env.*`, private keys, SQLite databases, runtime logs, and private planning files. If a secret is accidentally committed:
 
@@ -55,7 +55,7 @@ The repository ignores `.env`, `.env.*`, private keys, SQLite databases, runtime
 
 ## Public-Safety Boundary
 
-All public-safety examples must remain fictional, synthetic, and non-identifying. Knoema is not designed for prediction, suspect scoring, surveillance, or enforcement automation.
+All public-safety examples must remain fictional, synthetic, and non-identifying. Luvoire is not designed for prediction, suspect scoring, surveillance, or enforcement automation.
 
 ## Local Audit Commands
 
@@ -71,7 +71,7 @@ Run the current Phase 34 checks:
 bandit -r src
 pip-audit
 safety check
-cyclonedx-py environment .venv --pyproject pyproject.toml --mc-type library --of JSON -o docs/security/knoema-sbom.cdx.json
+cyclonedx-py environment .venv --pyproject pyproject.toml --mc-type library --of JSON -o docs/security/luvoire-sbom.cdx.json
 cd website && npm audit
 cd ../sdk/typescript && npm audit
 ```

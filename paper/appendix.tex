@@ -5,9 +5,9 @@ This appendix follows the spirit of the Papers with Code ML reproducibility chec
 \subsection{Artifacts and Access}
 
 \begin{itemize}
-  \item Code is public under the MIT license at \texttt{https://github.com/Celovin/knoema}.
-  \item The package source is under \texttt{src/knoema}; tests are under \texttt{tests}.
-  \item Paper source is under \texttt{paper}; the generated preview PDF is \texttt{paper/knoema\_technical\_report.pdf}.
+  \item Code is public under the MIT license at \texttt{https://github.com/Celovin/luvoire}.
+  \item The package source is under \texttt{src/luvoire}; tests are under \texttt{tests}.
+  \item Paper source is under \texttt{paper}; the generated preview PDF is \texttt{paper/luvoire\_technical\_report.pdf}.
   \item Citation metadata is stored in \texttt{CITATION.cff}; archival metadata is stored in \texttt{.zenodo.json}.
   \item The Papers with Code packet is stored in \texttt{docs/research/papers\_with\_code\_submission.md} and \texttt{docs/research/papers\_with\_code\_submission.json}.
 \end{itemize}
@@ -17,7 +17,7 @@ This appendix follows the spirit of the Papers with Code ML reproducibility chec
 \begin{itemize}
   \item Fixed seeds are part of scenario and experiment configuration.
   \item The 500-agent metropolis experiment stores 20 seed files under \texttt{experiments/500\_agent\_metropolis/seeds}.
-  \item Scenario DSL files are validated through \texttt{knoema validate}.
+  \item Scenario DSL files are validated through \texttt{luvoire validate}.
   \item Config fingerprints and JSONL hashes are recorded in experiment summaries where appropriate.
   \item Deterministic local clients are used for reproducibility gates; live provider runs are optional and separately labeled.
 \end{itemize}

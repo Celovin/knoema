@@ -904,7 +904,7 @@
       "version": "0.36.2"
     },
     {
-      "bom-ref": "pkg:pypi/knoema-engine@0.2.0",
+      "bom-ref": "pkg:pypi/luvoire-engine@0.3.0",
       "licenses": [
         {
           "license": {
@@ -912,13 +912,13 @@
           }
         }
       ],
-      "name": "knoema-engine",
-      "purl": "pkg:pypi/knoema-engine@0.2.0",
+      "name": "luvoire-engine",
+      "purl": "pkg:pypi/luvoire-engine@0.3.0",
       "supplier": {
         "name": "Python Package Index"
       },
       "type": "library",
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     {
       "bom-ref": "pkg:pypi/loguru@0.7.3",
@@ -1433,9 +1433,9 @@
   ],
   "metadata": {
     "component": {
-      "name": "knoema-engine",
+      "name": "luvoire-engine",
       "type": "application",
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     "tools": [
       {

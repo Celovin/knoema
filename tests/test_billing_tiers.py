@@ -3,8 +3,8 @@ from __future__ import annotations
 from decimal import Decimal
 from pathlib import Path
 
-from knoema.billing.gateway import LLMGateway, UsageMeter
-from knoema.billing.tiers import TIER_LIMITS
+from luvoire.billing.gateway import LLMGateway, UsageMeter
+from luvoire.billing.tiers import TIER_LIMITS
 
 
 class CountingClient:

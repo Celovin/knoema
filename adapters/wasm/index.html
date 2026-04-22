@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Knoema Browser Runtime</title>
+    <title>Luvoire Browser Runtime</title>
     <style>
       body {
         margin: 0;
@@ -58,7 +58,7 @@
   </head>
   <body>
     <main>
-      <h1>Knoema Browser Runtime</h1>
+      <h1>Luvoire Browser Runtime</h1>
       <p>Run deterministic agent simulations directly in the browser with no API key.</p>
       <nav>
         <a href="./demo/2-agent.html">2-agent demo</a>
@@ -69,7 +69,7 @@
       <pre id="output" aria-live="polite">Ready.</pre>
     </main>
     <script type="module">
-      import { Environment, LocalClient, createDormAgents, runSimulation } from "./demo/knoema-core.js";
+      import { Environment, LocalClient, createDormAgents, runSimulation } from "./demo/luvoire-core.js";
 
       const output = document.querySelector("#output");
       document.querySelector("#runDemo").addEventListener("click", () => {

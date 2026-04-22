@@ -19,7 +19,7 @@ from latency_comparison import (
     load_latency_comparison_report,
 )
 
-from knoema.theory_of_mind import SallyAnneBenchmarkResult, run_sally_anne_benchmark
+from luvoire.theory_of_mind import SallyAnneBenchmarkResult, run_sally_anne_benchmark
 from scenarios import (
     scenario_A_memory_recall,
     scenario_B_relationship_dynamics,
@@ -46,7 +46,7 @@ MODEL_PROFILES: tuple[dict[str, float | str], ...] = (
     {"name": "local-large", "token_multiplier": 1.26, "latency_factor": 1.38, "quality_bonus": 0.07},
 )
 
-APPROACHES = ("knoema", "naive_llm")
+APPROACHES = ("luvoire", "naive_llm")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -144,7 +144,7 @@ def build_summary(
         "## Run Matrix",
         "",
         "- Scenarios: 4",
-        "- Approaches: Knoema memory policy and naive full-context LLM baseline",
+        "- Approaches: Luvoire memory policy and naive full-context LLM baseline",
         "- Model profiles: local-small, local-medium, local-large",
         f"- Total deterministic runs: {len(runs)}",
         "",
@@ -163,9 +163,9 @@ def build_summary(
             "",
             "## Significance",
             "",
-            "Composite score compares paired Knoema and naive runs for each scenario or model profile.",
+            "Composite score compares paired Luvoire and naive runs for each scenario or model profile.",
             f"- Paired sign-test p-value: {p_value:.6f}",
-            "- Interpretation: deterministic evidence favors the Knoema memory policy across all paired profiles.",
+            "- Interpretation: deterministic evidence favors the Luvoire memory policy across all paired profiles.",
             "",
             "## Metrics",
             "",
@@ -202,18 +202,18 @@ def build_summary(
             "- Figure source: results/figures/metropolis_scale.svg",
             "- 1000-agent source: experiments/1000_agent_city/results/summary.json",
             "- 1000-agent figure: results/figures/city_1000_scale.svg",
-            "- Theory-of-mind source: deterministic Sally-Anne harness in src/knoema/theory_of_mind.py",
+            "- Theory-of-mind source: deterministic Sally-Anne harness in src/luvoire/theory_of_mind.py",
             "",
-            "| Metric | Knoema 500-Agent Metropolis | Google DeepMind Concordia | Stanford Generative Agents |",
+            "| Metric | Luvoire 500-Agent Metropolis | Google DeepMind Concordia | Stanford Generative Agents |",
             "| --- | --- | --- | --- |",
         ]
     )
-    for metric, knoema, concordia, stanford in _comparison_markdown_rows(
+    for metric, luvoire, concordia, stanford in _comparison_markdown_rows(
         metropolis_summary,
         city_summary,
         theory_of_mind_result,
     ):
-        lines.append(f"| {metric} | {knoema} | {concordia} | {stanford} |")
+        lines.append(f"| {metric} | {luvoire} | {concordia} | {stanford} |")
     lines.extend(
         [
             "",
@@ -485,7 +485,7 @@ def _pdf_page_specs(
             "kind": "text",
             "title": "Formal Benchmark Report v1",
             "lines": [
-                "Knoema Engine Phase 20",
+                "Luvoire Phase 20",
                 "24 deterministic runs",
                 "4 scenarios x 2 approaches x 3 local model profiles",
             ],
@@ -552,7 +552,7 @@ def _pdf_page_specs(
             "title": "Significance",
             "lines": [
                 f"Paired sign-test p-value: {p_value:.6f}",
-                "All paired scenario/model profiles favor the Knoema memory policy.",
+                "All paired scenario/model profiles favor the Luvoire memory policy.",
             ],
         },
         {
@@ -589,7 +589,7 @@ def _pdf_page_specs(
                 "Phase 52 adds the 1000-agent city backend comparison.",
                 "Phase 43 adds persona opt-in theory-of-mind and a deterministic Sally-Anne harness.",
             ],
-            "headers": ["Metric", "Knoema 500-Agent", "Concordia", "Stanford"],
+            "headers": ["Metric", "Luvoire 500-Agent", "Concordia", "Stanford"],
             "rows": _comparison_pdf_rows(metropolis_summary, city_summary, theory_of_mind_result),
         },
         {
@@ -822,7 +822,7 @@ def _run_row(
         multiplier=token_multiplier,
     )
 
-    if approach == "knoema":
+    if approach == "luvoire":
         prompt_tokens = int(turns * (110 + agent_count * 3 + memory_facts * 4) * token_multiplier)
         completion_tokens = int(turns * 36 * token_multiplier)
         recall = round(max(0.0, min(1.0, 0.76 + quality_bonus - complexity * 0.035)), 3)
@@ -878,7 +878,7 @@ def _scalability_points(runs: Sequence[Mapping[str, Any]]) -> list[tuple[int, fl
     scalability_rows = [
         row
         for row in runs
-        if row["scenario_id"] == "D" and row["approach"] == "knoema"
+        if row["scenario_id"] == "D" and row["approach"] == "luvoire"
     ]
     base = _mean(float(row["actions_per_second"]) for row in scalability_rows)
     return [(agents, round(base / (1 + agents * 0.012), 3)) for agents in [5, 10, 25, 50]]
@@ -889,7 +889,7 @@ def _paired_sign_test_p_value(runs: Sequence[Mapping[str, Any]]) -> float:
     for row in runs:
         key = (str(row["scenario_id"]), str(row["model_profile"]))
         grouped[key][str(row["approach"])] = float(row["composite_score"])
-    wins = sum(1 for pair in grouped.values() if pair["knoema"] > pair["naive_llm"])
+    wins = sum(1 for pair in grouped.values() if pair["luvoire"] > pair["naive_llm"])
     total = len(grouped)
     tail = sum(math.comb(total, count) for count in range(wins, total + 1))
     return tail / (2**total)

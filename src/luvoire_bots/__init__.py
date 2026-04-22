@@ -1,6 +1,6 @@
-"""Discord and Slack bot helpers for Knoema."""
+"""Discord and Slack bot helpers for Luvoire."""
 
-from knoema_bots.core import (
+from luvoire_bots.core import (
     BotCommand,
     BotRunSummary,
     format_discord_embed,

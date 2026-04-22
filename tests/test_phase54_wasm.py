@@ -10,9 +10,9 @@ def test_phase54_wasm_runtime_files_exist() -> None:
     expected = [
         "package.json",
         "scripts/build.mjs",
-        "src/knoema-core.ts",
+        "src/luvoire-core.ts",
         "index.html",
-        "demo/knoema-core.js",
+        "demo/luvoire-core.js",
         "demo/2-agent.html",
         "demo/5-agent.html",
         "demo/sally-anne.html",
@@ -33,7 +33,7 @@ def test_phase54_wasm_package_declares_build_test_and_e2e_scripts() -> None:
 
 
 def test_phase54_wasm_bundle_is_under_five_hundred_kb_and_has_runtime_api() -> None:
-    bundle = WASM_ROOT / "demo/knoema-core.js"
+    bundle = WASM_ROOT / "demo/luvoire-core.js"
     text = bundle.read_text(encoding="utf-8")
 
     assert bundle.stat().st_size < 500_000
@@ -50,7 +50,7 @@ def test_phase54_wasm_bundle_is_under_five_hundred_kb_and_has_runtime_api() -> N
 def test_phase54_wasm_demo_is_copied_to_website_static_path() -> None:
     assert Path("website/app/wasm-demo/page.tsx").exists()
     assert Path("website/public/wasm/index.html").exists()
-    assert Path("website/public/wasm/demo/knoema-core.js").exists()
+    assert Path("website/public/wasm/demo/luvoire-core.js").exists()
 
 
 def test_phase54_docs_and_navigation_are_linked() -> None:

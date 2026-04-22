@@ -13,20 +13,20 @@ from pathlib import Path
 from time import perf_counter
 from typing import Any, cast
 
-from knoema.billing.markup import compute_markup_price
-from knoema.billing.stripe_adapter import StripeUsageAdapter, StripeUsageRecordResult
-from knoema.billing.tiers import (
+from luvoire.billing.markup import compute_markup_price
+from luvoire.billing.stripe_adapter import StripeUsageAdapter, StripeUsageRecordResult
+from luvoire.billing.tiers import (
     ApiKeySource,
     TierName,
     is_api_key_source_allowed,
     is_model_allowed,
     monthly_output_token_cap,
 )
-from knoema.llm.gateway import estimate_tokens
-from knoema.observability.metrics import record_billing_tokens
-from knoema.observability.tracing import trace_span
-from knoema.protocols import Message
-from knoema.safety.audit_log import CommercialAuditLogger, NoOpAuditLog
+from luvoire.llm.gateway import estimate_tokens
+from luvoire.observability.metrics import record_billing_tokens
+from luvoire.observability.tracing import trace_span
+from luvoire.protocols import Message
+from luvoire.safety.audit_log import CommercialAuditLogger, NoOpAuditLog
 
 CompletionCallable = Callable[..., object]
 
@@ -207,10 +207,10 @@ class LLMGateway:
         """Complete a chat request through the configured source while enforcing tier limits."""
 
         with trace_span(
-            "knoema.billing.llm.complete",
+            "luvoire.billing.llm.complete",
             {
-                "knoema.tier": tier,
-                "knoema.api_key_source": api_key_source,
+                "luvoire.tier": tier,
+                "luvoire.api_key_source": api_key_source,
                 "llm.model": model,
             },
         ):

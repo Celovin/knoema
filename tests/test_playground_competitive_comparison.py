@@ -35,7 +35,7 @@ def test_subtask29_competitive_comparison_markdown_covers_required_frameworks() 
     markdown = playground_app._competitive_comparison_markdown("English")
 
     for name in [
-        "Knoema",
+        "Luvoire",
         "Stanford Generative Agents",
         "Google DeepMind Concordia",
         "CAMEL-AI",

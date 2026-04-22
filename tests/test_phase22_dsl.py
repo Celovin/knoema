@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from knoema.dsl import (
+from luvoire.dsl import (
     Scenario,
     collect_validation_issues,
     load_scenario,
@@ -24,11 +24,11 @@ SAMPLE_PATHS = [
 
 def test_phase22_dsl_files_exist() -> None:
     expected = [
-        "src/knoema/dsl/__init__.py",
-        "src/knoema/dsl/scenario.py",
-        "src/knoema/dsl/parser.py",
-        "src/knoema/dsl/validator.py",
-        "src/knoema/dsl/serializer.py",
+        "src/luvoire/dsl/__init__.py",
+        "src/luvoire/dsl/scenario.py",
+        "src/luvoire/dsl/parser.py",
+        "src/luvoire/dsl/validator.py",
+        "src/luvoire/dsl/serializer.py",
         "schemas/scenario_v1.json",
         "docs/dsl/tutorial.md",
         "docs/dsl/reference.md",
@@ -126,7 +126,7 @@ def _base_payload() -> dict[str, object]:
         "duration_days": 1,
         "environment": {
             "start_time": "2026-06-01T09:00:00",
-            "location_path": ["Knoema Demo World", "Scenario Lab"],
+            "location_path": ["Luvoire Demo World", "Scenario Lab"],
             "conditions": {"review": True},
         },
         "agents": [
@@ -152,7 +152,7 @@ def _base_payload() -> dict[str, object]:
                 "timestamp": "2026-06-01T15:00:00",
                 "event_type": "review.checkpoint",
                 "participants": ["agent_a"],
-                "location": "Knoema Demo World > Scenario Lab",
+                "location": "Luvoire Demo World > Scenario Lab",
                 "description": "Synthetic checkpoint.",
             }
         ],

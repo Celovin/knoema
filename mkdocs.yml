@@ -1,8 +1,8 @@
-site_name: Knoema Engine
+site_name: Luvoire
 site_description: Persistent-agent simulation engine documentation for games, synthetic replay research, and academic workflows.
-site_url: https://knoema.celovin.com/docs/
-repo_url: https://github.com/Celovin/knoema
-repo_name: Celovin/knoema
+site_url: https://luvoire.celovin.com/docs/
+repo_url: https://github.com/Celovin/luvoire
+repo_name: Celovin/luvoire
 edit_uri: edit/main/docs/
 strict: true
 
@@ -65,7 +65,7 @@ nav:
       - Overview: payments/index.md
       - Toss Payments Korean: payments/toss-onboarding-ko.md
       - Paddle English: payments/paddle-onboarding-en.md
-  - Knoema Bench:
+  - Luvoire Bench:
       - Overview: bench/index.md
       - Leaderboard: bench/leaderboard.md
       - Methodology: bench/methodology.md
@@ -190,7 +190,7 @@ nav:
       - Tutorial 03 Research Experiment: videos/tutorials/03_research_experiment_20min.md
   - Blog Drafts:
       - Tutorial Blog Draft: tutorial_blog.md
-      - Korean Blog 01 Why Knoema: blog/ko/01-why-knoema-korean-indie-games.md
+      - Korean Blog 01 Why Luvoire: blog/ko/01-why-luvoire-korean-indie-games.md
       - Korean Blog 02 NPC Memory Principles: blog/ko/02-llm-npc-memory-principles.md
       - Korean Blog 03 Godot Integration: blog/ko/03-godot-integration-step-by-step.md
       - Korean Blog 04 Research Reproducibility: blog/ko/04-academic-research-reproducibility.md

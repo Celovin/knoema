@@ -1,4 +1,4 @@
-"""Gradio app for the Knoema Playground."""
+"""Gradio app for the Luvoire Playground."""
 
 from __future__ import annotations
 
@@ -29,23 +29,23 @@ from plotly.subplots import make_subplots
 from scipy.stats import chi2_contingency, mannwhitneyu  # type: ignore[import-untyped]
 from scipy.stats import t as student_t
 
-from knoema.community import (
+from luvoire.community import (
     community_gallery_markdown,
     community_scenario_by_id,
     community_scenario_choices,
 )
-from knoema.export.finetuning import export_finetuning_jsonl
-from knoema.multimodal import OPENAI_TTS_VOICES, VoiceProfile
-from knoema.multimodal import synthesize as synthesize_voice
-from knoema.reproducibility import generate_run_fingerprint, verification_guide_markdown
-from knoema.research import (
+from luvoire.export.finetuning import export_finetuning_jsonl
+from luvoire.multimodal import OPENAI_TTS_VOICES, VoiceProfile
+from luvoire.multimodal import synthesize as synthesize_voice
+from luvoire.reproducibility import generate_run_fingerprint, verification_guide_markdown
+from luvoire.research import (
     PowerAnalysisPlan,
     ZenodoDepositResult,
     estimate_sample_size,
     submit_zenodo_bundle,
     summarize_seed_tick_effect,
 )
-from knoema.scenario_synthesis import ScenarioSynthesisError, scenario_to_yaml, synthesize_scenario
+from luvoire.scenario_synthesis import ScenarioSynthesisError, scenario_to_yaml, synthesize_scenario
 
 try:
     from .analysis.fairness_audit import FairnessAuditReport, audit_trait_action_fairness
@@ -196,8 +196,8 @@ CROSS_MODEL_CHOICES: tuple[tuple[str, str], ...] = (
     ("Claude", "Claude"),
     ("Replay", "Replay"),
 )
-TUTORIAL_STORAGE_KEY = "knoema_tutorial_completed"
-THEME_STORAGE_KEY = "knoema_theme_mode"
+TUTORIAL_STORAGE_KEY = "luvoire_tutorial_completed"
+THEME_STORAGE_KEY = "luvoire_theme_mode"
 TUTORIAL_STEPS = {
     "ko": [
         {
@@ -592,7 +592,7 @@ TRAIT_COPY = {
 BASE_LABELS = {
     "ko": {
         "header": (
-            "# Knoema Playground\n\n"
+            "# Luvoire Playground\n\n"
             "브라우저에서 지속형 에이전트 시뮬레이션을 실행합니다. **재생 전용**은 API 키 없이 결정론적 데모로 동작하고, "
             "OpenAI 또는 Anthropic 키를 입력하면 실시간 LLM 호출을 사용할 수 있습니다. API 키는 현재 요청에만 사용되며 디스크에 저장되지 않습니다."
         ),
@@ -615,7 +615,7 @@ BASE_LABELS = {
         "tier_f_panel": "Tier F - 도덕 기반",
         "tier_g_panel": "Tier G - 보편적 가치관 (Schwartz 10)",
         "dark_tetrad_notice": (
-            "<div class='knoema-muted'>병리 성격 차원은 학술 연구와 가상 시나리오 재현 목적에 한해 노출됩니다.</div>"
+            "<div class='luvoire-muted'>병리 성격 차원은 학술 연구와 가상 시나리오 재현 목적에 한해 노출됩니다.</div>"
         ),
         "name": "이름",
         "age": "나이",
@@ -639,7 +639,7 @@ BASE_LABELS = {
     },
     "en": {
         "header": (
-            "# Knoema Playground\n\n"
+            "# Luvoire Playground\n\n"
             "Run a short persistent-agent simulation in the browser. Use **Replay only** for a deterministic no-key demo, "
             "or provide your own API key for a live LLM-backed run. API keys are used only for the current request and are not written to disk."
         ),
@@ -662,7 +662,7 @@ BASE_LABELS = {
         "tier_f_panel": "Tier F - Moral foundations",
         "tier_g_panel": "Tier G - Schwartz 10 values",
         "dark_tetrad_notice": (
-            "<div class='knoema-muted'>Dark Tetrad dimensions are exposed for academic research and fictional scenario replay only.</div>"
+            "<div class='luvoire-muted'>Dark Tetrad dimensions are exposed for academic research and fictional scenario replay only.</div>"
         ),
         "name": "Name",
         "age": "Age",
@@ -729,7 +729,7 @@ def _build_labels() -> dict[str, dict[str, str]]:
 LABELS = _build_labels()
 LABELS["ko"]["html_report_button"] = "HTML 보고서 내보내기"
 LABELS["ko"]["html_report_download"] = "HTML 보고서 다운로드"
-LABELS["ko"]["html_report_title"] = "Knoema Playground HTML 보고서"
+LABELS["ko"]["html_report_title"] = "Luvoire Playground HTML 보고서"
 LABELS["ko"]["generated_at"] = "생성 시각"
 LABELS["ko"]["csv_bundle_button"] = "CSV 묶음 내보내기"
 LABELS["ko"]["csv_bundle_download"] = "CSV 묶음 다운로드"
@@ -740,7 +740,7 @@ LABELS["ko"]["latex_table_button"] = "LaTeX 표 내보내기"
 LABELS["ko"]["latex_table_download"] = "LaTeX 표 다운로드"
 LABELS["en"]["html_report_button"] = "Export HTML report"
 LABELS["en"]["html_report_download"] = "Download HTML report"
-LABELS["en"]["html_report_title"] = "Knoema Playground HTML report"
+LABELS["en"]["html_report_title"] = "Luvoire Playground HTML report"
 LABELS["en"]["generated_at"] = "Generated at"
 LABELS["en"]["csv_bundle_button"] = "Export CSV bundle"
 LABELS["en"]["csv_bundle_download"] = "Download CSV bundle"
@@ -1072,7 +1072,7 @@ ACTION_FLOW_COLOR_SEQUENCE: tuple[str, ...] = tuple(
 )
 COMPETITIVE_COMPARISON_ROWS: tuple[dict[str, object], ...] = (
     {
-        "system": "Knoema",
+        "system": "Luvoire",
         "focus_en": "Open-source social simulation engine",
         "focus_ko": "오픈소스 사회 시뮬레이션 엔진",
         "memory_en": "Persistent memory plus directed trust graph",
@@ -1082,7 +1082,7 @@ COMPETITIVE_COMPARISON_ROWS: tuple[dict[str, object], ...] = (
         "game_en": "Godot and Unity scaffolds",
         "game_ko": "Godot/Unity 스캐폴드",
         "license": "MIT",
-        "reference": "https://github.com/Celovin/knoema",
+        "reference": "https://github.com/Celovin/luvoire",
     },
     {
         "system": "Stanford Generative Agents",
@@ -1257,21 +1257,21 @@ HONESTY_HUMILITY_CAVEAT_COPY = {
 def _tutorial_head() -> str:
     return f"""
 <style>
-.knoema-tour-root {{
+.luvoire-tour-root {{
   position: fixed;
   inset: 0;
   z-index: 2147483645;
   pointer-events: none;
 }}
-.knoema-tour-root[data-open="true"] {{
+.luvoire-tour-root[data-open="true"] {{
   pointer-events: auto;
 }}
-.knoema-tour-backdrop {{
+.luvoire-tour-backdrop {{
   position: absolute;
   inset: 0;
   background: rgba(15, 23, 42, 0.22);
 }}
-.knoema-tour-card {{
+.luvoire-tour-card {{
   position: absolute;
   width: min(360px, calc(100vw - 32px));
   background: #ffffff;
@@ -1281,7 +1281,7 @@ def _tutorial_head() -> str:
   box-shadow: 0 24px 64px rgba(15, 23, 42, 0.24);
   padding: 16px;
 }}
-.knoema-tour-card::before {{
+.luvoire-tour-card::before {{
   content: "";
   position: absolute;
   top: -10px;
@@ -1290,29 +1290,29 @@ def _tutorial_head() -> str:
   border-right: 10px solid transparent;
   border-bottom: 10px solid #ffffff;
 }}
-.knoema-tour-counter {{
+.luvoire-tour-counter {{
   font-size: 12px;
   color: #475569;
   margin-bottom: 6px;
 }}
-.knoema-tour-title {{
+.luvoire-tour-title {{
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 8px;
 }}
-.knoema-tour-body {{
+.luvoire-tour-body {{
   font-size: 14px;
   line-height: 1.5;
   color: #334155;
   margin-bottom: 14px;
 }}
-.knoema-tour-controls {{
+.luvoire-tour-controls {{
   display: flex;
   gap: 8px;
   justify-content: flex-end;
   flex-wrap: wrap;
 }}
-.knoema-tour-controls button {{
+.luvoire-tour-controls button {{
   border: 1px solid rgba(148, 163, 184, 0.55);
   background: #ffffff;
   color: #0f172a;
@@ -1321,11 +1321,11 @@ def _tutorial_head() -> str:
   font-size: 13px;
   cursor: pointer;
 }}
-.knoema-tour-controls button[data-tour-action="next"] {{
+.luvoire-tour-controls button[data-tour-action="next"] {{
   background: #0f172a;
   color: #ffffff;
 }}
-.knoema-tour-highlight {{
+.luvoire-tour-highlight {{
   position: relative;
   z-index: 2147483646 !important;
   border-radius: 8px;
@@ -1334,17 +1334,17 @@ def _tutorial_head() -> str:
     0 0 0 9999px rgba(15, 23, 42, 0.18);
 }}
 @media (max-width: 720px) {{
-  .knoema-tour-card {{
+  .luvoire-tour-card {{
     left: 16px !important;
     right: 16px !important;
     top: auto !important;
     bottom: 16px !important;
     width: auto;
   }}
-  .knoema-tour-card::before {{
+  .luvoire-tour-card::before {{
     display: none;
   }}
-  .knoema-tour-controls {{
+  .luvoire-tour-controls {{
     flex-direction: column;
     align-items: stretch;
   }}
@@ -1368,18 +1368,18 @@ def _tutorial_head() -> str:
   }};
 
   function ensureRoot() {{
-    let root = document.querySelector(".knoema-tour-root");
+    let root = document.querySelector(".luvoire-tour-root");
     if (root) return root;
     root = document.createElement("div");
-    root.className = "knoema-tour-root";
+    root.className = "luvoire-tour-root";
     root.setAttribute("data-open", "false");
     root.innerHTML = `
-      <div class="knoema-tour-backdrop" data-tour-action="skip"></div>
-      <div class="knoema-tour-card" role="dialog" aria-modal="true" aria-live="polite">
-        <div class="knoema-tour-counter"></div>
-        <div class="knoema-tour-title"></div>
-        <div class="knoema-tour-body"></div>
-        <div class="knoema-tour-controls">
+      <div class="luvoire-tour-backdrop" data-tour-action="skip"></div>
+      <div class="luvoire-tour-card" role="dialog" aria-modal="true" aria-live="polite">
+        <div class="luvoire-tour-counter"></div>
+        <div class="luvoire-tour-title"></div>
+        <div class="luvoire-tour-body"></div>
+        <div class="luvoire-tour-controls">
           <button type="button" data-tour-action="skip"></button>
           <button type="button" data-tour-action="prev"></button>
           <button type="button" data-tour-action="next"></button>
@@ -1413,7 +1413,7 @@ def _tutorial_head() -> str:
 
   function clearHighlight() {{
     if (state.highlighted) {{
-      state.highlighted.classList.remove("knoema-tour-highlight");
+      state.highlighted.classList.remove("luvoire-tour-highlight");
       state.highlighted = null;
     }}
   }}
@@ -1438,23 +1438,23 @@ def _tutorial_head() -> str:
 
   function render() {{
     const root = ensureRoot();
-    const card = root.querySelector(".knoema-tour-card");
+    const card = root.querySelector(".luvoire-tour-card");
     const step = state.steps[state.index];
     const target = document.querySelector(step.selector);
     clearHighlight();
     if (target) {{
-      target.classList.add("knoema-tour-highlight");
+      target.classList.add("luvoire-tour-highlight");
       target.scrollIntoView({{ block: "center", behavior: "smooth", inline: "center" }});
       state.highlighted = target;
     }}
-    root.querySelector(".knoema-tour-counter").textContent =
+    root.querySelector(".luvoire-tour-counter").textContent =
       String(state.index + 1) + " / " + String(state.steps.length);
-    root.querySelector(".knoema-tour-title").textContent = step.title;
-    root.querySelector(".knoema-tour-body").textContent = step.body;
+    root.querySelector(".luvoire-tour-title").textContent = step.title;
+    root.querySelector(".luvoire-tour-body").textContent = step.body;
     const buttonLabels = labels[state.lang];
     const prevButton = root.querySelector('[data-tour-action="prev"]');
     const nextButton = root.querySelector('[data-tour-action="next"]');
-    const skipButton = root.querySelector('[data-tour-action="skip"]:not(.knoema-tour-backdrop)');
+    const skipButton = root.querySelector('[data-tour-action="skip"]:not(.luvoire-tour-backdrop)');
     prevButton.textContent = buttonLabels.prev;
     prevButton.disabled = state.index === 0;
     nextButton.textContent = state.index === state.steps.length - 1 ? buttonLabels.finish : buttonLabels.next;
@@ -1482,7 +1482,7 @@ def _tutorial_head() -> str:
     render();
   }}
 
-  window.KNOEMA_TUTORIAL = {{ start, close }};
+  window.LUVOIRE_TUTORIAL = {{ start, close }};
   window.addEventListener("load", () => {{
     window.setTimeout(() => {{
       if (!window.localStorage.getItem(storageKey)) {{
@@ -1539,8 +1539,8 @@ def _theme_head() -> str:
   function applyMode(mode, persist) {{
     const normalized = normalizeMode(mode);
     const active = resolvedMode(normalized);
-    document.documentElement.dataset.knoemaThemeMode = normalized;
-    document.documentElement.dataset.knoemaTheme = active;
+    document.documentElement.dataset.luvoireThemeMode = normalized;
+    document.documentElement.dataset.luvoireTheme = active;
     document.documentElement.style.colorScheme = active;
     if (persist !== false) {{
       window.localStorage.setItem(storageKey, normalized);
@@ -1558,7 +1558,7 @@ def _theme_head() -> str:
     }}
   }});
 
-  window.KNOEMA_THEME = {{
+  window.LUVOIRE_THEME = {{
     sync(languageChoice) {{
       return applyMode(readStoredMode(), false);
     }},
@@ -1653,7 +1653,7 @@ ACCESSIBILITY_HEAD = _accessibility_head()
 def _reviewer_head() -> str:
     return """
 <script>
-window.KNOEMA_REVIEWER = {
+window.LUVOIRE_REVIEWER = {
   enabled: () => new URLSearchParams(window.location.search).get("reviewer") === "1",
   targetId: "reviewer-mode-toggle"
 };
@@ -1692,7 +1692,7 @@ def _presentation_head() -> str:
   bottom: 20px !important;
   z-index: 2147483000 !important;
 }
-.knoema-present-hint {
+.luvoire-present-hint {
   position: fixed;
   left: 50%;
   top: 20px;
@@ -1706,7 +1706,7 @@ def _presentation_head() -> str:
   box-shadow: 0 18px 48px rgba(15, 23, 42, 0.25);
   font: 14px/1.5 Inter, Segoe UI, Arial, sans-serif;
 }
-.knoema-present-hint[data-hidden="true"] {
+.luvoire-present-hint[data-hidden="true"] {
   display: none;
 }
 </style>
@@ -1721,10 +1721,10 @@ def _presentation_head() -> str:
   ].join(",");
 
   function ensureHint() {
-    let hint = document.querySelector(".knoema-present-hint");
+    let hint = document.querySelector(".luvoire-present-hint");
     if (hint) return hint;
     hint = document.createElement("div");
-    hint.className = "knoema-present-hint";
+    hint.className = "luvoire-present-hint";
     hint.textContent = "Presentation mode: Right/Left moves tabs, Space runs the scenario, Esc exits.";
     hint.setAttribute("data-hidden", "false");
     document.body.appendChild(hint);
@@ -1737,11 +1737,11 @@ def _presentation_head() -> str:
       const insideOutput = element.closest("#run-summary, #export-panel, #relationship-graph");
       if (insideOutput) return;
       if (disabled) {
-        element.dataset.knoemaPresentDisabled = "1";
+        element.dataset.luvoirePresentDisabled = "1";
         element.setAttribute("disabled", "disabled");
-      } else if (element.dataset.knoemaPresentDisabled === "1") {
+      } else if (element.dataset.luvoirePresentDisabled === "1") {
         element.removeAttribute("disabled");
-        delete element.dataset.knoemaPresentDisabled;
+        delete element.dataset.luvoirePresentDisabled;
       }
     });
   }
@@ -1777,7 +1777,7 @@ def _presentation_head() -> str:
     applyPresentationMode(false);
   }
 
-  window.KNOEMA_PRESENTATION = { apply: applyPresentationMode, exit: exitPresentationMode };
+  window.LUVOIRE_PRESENTATION = { apply: applyPresentationMode, exit: exitPresentationMode };
 
   window.addEventListener("keydown", (event) => {
     if (!document.documentElement.classList.contains("present-mode")) return;
@@ -1823,31 +1823,31 @@ APP_HEAD = TUTORIAL_HEAD + THEME_HEAD + ACCESSIBILITY_HEAD + REVIEWER_HEAD + PRE
 
 FOOTER_CSS = f"""
 :root {{
-    --knoema-bg: #f5f7fb;
-    --knoema-surface: #ffffff;
-    --knoema-surface-alt: #edf2f7;
-    --knoema-text: #102033;
-    --knoema-muted: #526273;
-    --knoema-border: rgba(100, 116, 139, 0.35);
-    --knoema-accent: #0f766e;
-    --knoema-accent-strong: #115e59;
-    --knoema-focus: #f97316;
+    --luvoire-bg: #f5f7fb;
+    --luvoire-surface: #ffffff;
+    --luvoire-surface-alt: #edf2f7;
+    --luvoire-text: #102033;
+    --luvoire-muted: #526273;
+    --luvoire-border: rgba(100, 116, 139, 0.35);
+    --luvoire-accent: #0f766e;
+    --luvoire-accent-strong: #115e59;
+    --luvoire-focus: #f97316;
 }}
-:root[data-knoema-theme="dark"] {{
-    --knoema-bg: #0f172a;
-    --knoema-surface: #162033;
-    --knoema-surface-alt: #1e293b;
-    --knoema-text: #e5eef7;
-    --knoema-muted: #c0cfdd;
-    --knoema-border: rgba(148, 163, 184, 0.35);
-    --knoema-accent: #34d399;
-    --knoema-accent-strong: #10b981;
-    --knoema-focus: #fbbf24;
+:root[data-luvoire-theme="dark"] {{
+    --luvoire-bg: #0f172a;
+    --luvoire-surface: #162033;
+    --luvoire-surface-alt: #1e293b;
+    --luvoire-text: #e5eef7;
+    --luvoire-muted: #c0cfdd;
+    --luvoire-border: rgba(148, 163, 184, 0.35);
+    --luvoire-accent: #34d399;
+    --luvoire-accent-strong: #10b981;
+    --luvoire-focus: #fbbf24;
 }}
 body,
 .gradio-container {{
-    background: var(--knoema-bg) !important;
-    color: var(--knoema-text) !important;
+    background: var(--luvoire-bg) !important;
+    color: var(--luvoire-text) !important;
 }}
 .gradio-container h1,
 .gradio-container h2,
@@ -1861,10 +1861,10 @@ body,
 .gradio-container .gr-number,
 .gradio-container .gr-dropdown,
 .gradio-container .gr-radio {{
-    color: var(--knoema-text) !important;
+    color: var(--luvoire-text) !important;
 }}
 .gradio-container :is(.prose, .gr-markdown, [data-testid="markdown"]) :is(p, li, ul, ol, span, strong, em, code, pre, blockquote, h1, h2, h3, h4, h5, h6, a) {{
-    color: var(--knoema-text) !important;
+    color: var(--luvoire-text) !important;
 }}
 .gradio-container .gr-box,
 .gradio-container .gr-panel,
@@ -1872,44 +1872,44 @@ body,
 .gradio-container .gr-form,
 .gradio-container .block,
 .gradio-container .wrap {{
-    background: var(--knoema-surface) !important;
-    border-color: var(--knoema-border) !important;
+    background: var(--luvoire-surface) !important;
+    border-color: var(--luvoire-border) !important;
 }}
 .gradio-container input,
 .gradio-container textarea,
 .gradio-container select,
 .gradio-container .cm-editor,
 .gradio-container .cm-gutters {{
-    background: var(--knoema-surface-alt) !important;
-    color: var(--knoema-text) !important;
-    border-color: var(--knoema-border) !important;
+    background: var(--luvoire-surface-alt) !important;
+    color: var(--luvoire-text) !important;
+    border-color: var(--luvoire-border) !important;
 }}
 .gradio-container button {{
-    border-color: var(--knoema-border) !important;
+    border-color: var(--luvoire-border) !important;
 }}
 .gradio-container :is(.gr-radio label, .wrap label.gr-radio, [data-testid="radio"] label, fieldset label) {{
-    color: var(--knoema-text) !important;
+    color: var(--luvoire-text) !important;
     cursor: pointer !important;
     pointer-events: auto !important;
 }}
 .gradio-container :is(.block-label, .block-info, span, legend) {{
-    color: var(--knoema-text) !important;
+    color: var(--luvoire-text) !important;
 }}
 .gradio-container :is(.gr-radio label span, [data-testid="radio"] label span, fieldset label span) {{
-    color: var(--knoema-text) !important;
+    color: var(--luvoire-text) !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+:root:not([data-luvoire-theme="dark"]) .gradio-container :is(
     .gr-radio label,
     [data-testid="radio"] label,
     fieldset label
 ) {{
-    background: var(--knoema-surface) !important;
-    color: var(--knoema-text) !important;
-    border: 1px solid var(--knoema-border) !important;
+    background: var(--luvoire-surface) !important;
+    color: var(--luvoire-text) !important;
+    border: 1px solid var(--luvoire-border) !important;
 }}
 /* Make radio inputs and their checked state visible across themes */
 .gradio-container :is(.gr-radio input[type="radio"], [data-testid="radio"] input[type="radio"], fieldset input[type="radio"]) {{
-    accent-color: var(--knoema-accent) !important;
+    accent-color: var(--luvoire-accent) !important;
     width: 18px !important;
     height: 18px !important;
     opacity: 1 !important;
@@ -1921,9 +1921,9 @@ body,
     margin-right: 8px !important;
 }}
 .gradio-container :is(.gr-radio label:has(input[type="radio"]:checked), [data-testid="radio"] label:has(input[type="radio"]:checked)) {{
-    background: var(--knoema-accent) !important;
+    background: var(--luvoire-accent) !important;
     color: #ffffff !important;
-    border-color: var(--knoema-accent-strong) !important;
+    border-color: var(--luvoire-accent-strong) !important;
 }}
 .gradio-container :is(.gr-radio label:has(input[type="radio"]:checked) span, [data-testid="radio"] label:has(input[type="radio"]:checked) span) {{
     color: #ffffff !important;
@@ -1932,7 +1932,7 @@ body,
 .gradio-container input[type="checkbox"] {{
     appearance: auto !important;
     -webkit-appearance: auto !important;
-    accent-color: var(--knoema-accent) !important;
+    accent-color: var(--luvoire-accent) !important;
     width: 18px !important;
     height: 18px !important;
     opacity: 1 !important;
@@ -1945,38 +1945,38 @@ body,
 .gradio-container [data-testid="checkbox"] label {{
     cursor: pointer !important;
     pointer-events: auto !important;
-    color: var(--knoema-text) !important;
+    color: var(--luvoire-text) !important;
 }}
 /* Number input spinners visible */
 .gradio-container input[type="number"] {{
-    color: var(--knoema-text) !important;
-    background: var(--knoema-surface-alt) !important;
+    color: var(--luvoire-text) !important;
+    background: var(--luvoire-surface-alt) !important;
 }}
 .gradio-container input[type="number"]::-webkit-inner-spin-button,
 .gradio-container input[type="number"]::-webkit-outer-spin-button {{
     opacity: 1 !important;
     filter: invert(0%);
 }}
-:root[data-knoema-theme="dark"] .gradio-container input[type="number"]::-webkit-inner-spin-button,
-:root[data-knoema-theme="dark"] .gradio-container input[type="number"]::-webkit-outer-spin-button {{
+:root[data-luvoire-theme="dark"] .gradio-container input[type="number"]::-webkit-inner-spin-button,
+:root[data-luvoire-theme="dark"] .gradio-container input[type="number"]::-webkit-outer-spin-button {{
     filter: invert(100%);
 }}
 /* Selected text contrast */
 .gradio-container ::selection {{
-    background: var(--knoema-accent) !important;
+    background: var(--luvoire-accent) !important;
     color: #ffffff !important;
 }}
 /* Tabs: active tab text visible in both themes */
 .gradio-container :is(.tab-nav button.selected, .tabs button.selected, [role="tab"][aria-selected="true"]) {{
-    background: var(--knoema-accent) !important;
-    border-color: var(--knoema-accent-strong) !important;
+    background: var(--luvoire-accent) !important;
+    border-color: var(--luvoire-accent-strong) !important;
     color: #ffffff !important;
 }}
 .gradio-container :is(.tab-nav button, .tabs button, [role="tab"]) {{
-    color: var(--knoema-text) !important;
+    color: var(--luvoire-text) !important;
 }}
 /* Force light-mode dark-bg sections (Code/Files components) to readable colors */
-:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+:root:not([data-luvoire-theme="dark"]) .gradio-container :is(
     .gr-file,
     [data-testid="file"],
     .gr-code,
@@ -1984,11 +1984,11 @@ body,
     .gr-code *,
     [data-testid="code"] *
 ) {{
-    background: var(--knoema-surface) !important;
-    color: var(--knoema-text) !important;
-    border-color: var(--knoema-border) !important;
+    background: var(--luvoire-surface) !important;
+    color: var(--luvoire-text) !important;
+    border-color: var(--luvoire-border) !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+:root:not([data-luvoire-theme="dark"]) .gradio-container :is(
     .gr-accordion,
     [data-testid="accordion"],
     .tabitem,
@@ -2013,11 +2013,11 @@ body,
     th,
     pre
 ) {{
-    background: var(--knoema-surface) !important;
-    color: var(--knoema-text) !important;
-    border-color: var(--knoema-border) !important;
+    background: var(--luvoire-surface) !important;
+    color: var(--luvoire-text) !important;
+    border-color: var(--luvoire-border) !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+:root:not([data-luvoire-theme="dark"]) .gradio-container :is(
     .cm-editor,
     .cm-scroller,
     .cm-content,
@@ -2026,19 +2026,19 @@ body,
     .cm-activeLine,
     .cm-activeLineGutter
 ) {{
-    background: var(--knoema-surface-alt) !important;
-    color: var(--knoema-text) !important;
+    background: var(--luvoire-surface-alt) !important;
+    color: var(--luvoire-text) !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+:root:not([data-luvoire-theme="dark"]) .gradio-container :is(
     .tab-nav button,
     .tabs button,
     [role="tab"]
 ) {{
-    background: var(--knoema-surface) !important;
-    color: var(--knoema-text) !important;
-    border-color: var(--knoema-border) !important;
+    background: var(--luvoire-surface) !important;
+    color: var(--luvoire-text) !important;
+    border-color: var(--luvoire-border) !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+:root:not([data-luvoire-theme="dark"]) .gradio-container :is(
     .gr-accordion *,
     [role="tabpanel"] *,
     .gr-file *,
@@ -2051,19 +2051,19 @@ body,
     [data-testid="slider"] *,
     .gr-dataframe *
 ) {{
-    color: var(--knoema-text) !important;
-    border-color: var(--knoema-border) !important;
+    color: var(--luvoire-text) !important;
+    border-color: var(--luvoire-border) !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container input[type="range"] {{
-    accent-color: var(--knoema-accent) !important;
+:root:not([data-luvoire-theme="dark"]) .gradio-container input[type="range"] {{
+    accent-color: var(--luvoire-accent) !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container button {{
-    color: var(--knoema-text) !important;
+:root:not([data-luvoire-theme="dark"]) .gradio-container button {{
+    color: var(--luvoire-text) !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container :is(button.primary, button[variant="primary"]) {{
+:root:not([data-luvoire-theme="dark"]) .gradio-container :is(button.primary, button[variant="primary"]) {{
     color: #ffffff !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+:root:not([data-luvoire-theme="dark"]) .gradio-container :is(
     .block-label,
     .block-info,
     .gr-form > label,
@@ -2077,37 +2077,37 @@ body,
 }}
 .gradio-container button.primary,
 .gradio-container button[variant="primary"] {{
-    background: var(--knoema-accent) !important;
+    background: var(--luvoire-accent) !important;
 }}
 .gradio-container button.secondary,
 .gradio-container button[variant="secondary"] {{
-    color: var(--knoema-text) !important;
+    color: var(--luvoire-text) !important;
 }}
 /* Light-mode: force non-primary buttons to surface bg so dark default bg + dark text doesn't go invisible */
-:root:not([data-knoema-theme="dark"]) .gradio-container button:not(.primary):not([variant="primary"]) {{
-    background: var(--knoema-surface) !important;
-    border: 1px solid var(--knoema-border) !important;
-    color: var(--knoema-text) !important;
+:root:not([data-luvoire-theme="dark"]) .gradio-container button:not(.primary):not([variant="primary"]) {{
+    background: var(--luvoire-surface) !important;
+    border: 1px solid var(--luvoire-border) !important;
+    color: var(--luvoire-text) !important;
 }}
-:root:not([data-knoema-theme="dark"]) .gradio-container button:not(.primary):not([variant="primary"]):hover {{
-    background: var(--knoema-surface-alt) !important;
+:root:not([data-luvoire-theme="dark"]) .gradio-container button:not(.primary):not([variant="primary"]):hover {{
+    background: var(--luvoire-surface-alt) !important;
 }}
 /* Light-mode: block-label (the floating badge on Plot/Image/etc.) must use surface bg, not the dark default */
-:root:not([data-knoema-theme="dark"]) .gradio-container :is(.block-label, [class*="block-label"], .label-wrap, [class*="label-wrap"]) {{
-    background: var(--knoema-surface) !important;
-    color: var(--knoema-text) !important;
-    border-color: var(--knoema-border) !important;
+:root:not([data-luvoire-theme="dark"]) .gradio-container :is(.block-label, [class*="block-label"], .label-wrap, [class*="label-wrap"]) {{
+    background: var(--luvoire-surface) !important;
+    color: var(--luvoire-text) !important;
+    border-color: var(--luvoire-border) !important;
 }}
 /* Light-mode: inline code (backticks) inside markdown must be readable - used by timeline timestamps + benchmark caveat/source */
-:root:not([data-knoema-theme="dark"]) .gradio-container :is(.prose, .gr-markdown, [data-testid="markdown"]) code {{
-    background: var(--knoema-surface-alt) !important;
-    color: var(--knoema-text) !important;
-    border: 1px solid var(--knoema-border) !important;
+:root:not([data-luvoire-theme="dark"]) .gradio-container :is(.prose, .gr-markdown, [data-testid="markdown"]) code {{
+    background: var(--luvoire-surface-alt) !important;
+    color: var(--luvoire-text) !important;
+    border: 1px solid var(--luvoire-border) !important;
     padding: 0.05em 0.35em !important;
     border-radius: 3px !important;
 }}
 /* Light-mode: any remaining label / file-preview / empty-state wrappers that default to dark */
-:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+:root:not([data-luvoire-theme="dark"]) .gradio-container :is(
     label,
     .file-preview,
     [data-testid="file-preview"],
@@ -2118,24 +2118,24 @@ body,
     .download-link,
     .file-name
 ) {{
-    background: var(--knoema-surface) !important;
-    color: var(--knoema-text) !important;
-    border-color: var(--knoema-border) !important;
+    background: var(--luvoire-surface) !important;
+    color: var(--luvoire-text) !important;
+    border-color: var(--luvoire-border) !important;
 }}
 /* Light-mode: textarea/input/textbox wrappers that still show dark bg because of Gradio default */
-:root:not([data-knoema-theme="dark"]) .gradio-container :is(
+:root:not([data-luvoire-theme="dark"]) .gradio-container :is(
     .gr-textbox,
     [data-testid="textbox"],
     .gr-textbox > *,
     [data-testid="textbox"] > *,
     .gr-text-input
 ) {{
-    background: var(--knoema-surface) !important;
-    color: var(--knoema-text) !important;
-    border-color: var(--knoema-border) !important;
+    background: var(--luvoire-surface) !important;
+    color: var(--luvoire-text) !important;
+    border-color: var(--luvoire-border) !important;
 }}
 .gradio-container *:focus-visible {{
-    outline: 3px solid var(--knoema-focus) !important;
+    outline: 3px solid var(--luvoire-focus) !important;
     outline-offset: 2px;
 }}
 footer {{display: none !important;}}
@@ -2155,22 +2155,22 @@ footer {{display: none !important;}}
 }}
 #topbar-row > div:has(#tutorial-button),
 #topbar-row > div:has(.gr-radio) {{
-    background: var(--knoema-surface) !important;
-    border: 1px solid var(--knoema-border) !important;
+    background: var(--luvoire-surface) !important;
+    border: 1px solid var(--luvoire-border) !important;
     border-radius: 8px !important;
     padding: 8px 12px !important;
 }}
 #relationship-graph,
 #relationship-graph .js-plotly-plot,
 #relationship-graph .plot-container,
-#relationship-graph .knoema-force-graph-shell,
-#relationship-graph .knoema-force-graph-frame {{
+#relationship-graph .luvoire-force-graph-shell,
+#relationship-graph .luvoire-force-graph-frame {{
     min-height: {GRAPH_HEIGHT_PX}px;
 }}
-#relationship-graph .knoema-force-graph-shell {{
+#relationship-graph .luvoire-force-graph-shell {{
     width: 100%;
 }}
-#relationship-graph .knoema-force-graph-frame {{
+#relationship-graph .luvoire-force-graph-frame {{
     width: 100%;
     height: {GRAPH_HEIGHT_PX}px;
     border: 0;
@@ -2181,15 +2181,15 @@ footer {{display: none !important;}}
     max-height: {TIMELINE_MAX_HEIGHT_PX}px;
     overflow-y: auto;
 }}
-.knoema-hint {{
-    color: var(--knoema-muted);
+.luvoire-hint {{
+    color: var(--luvoire-muted);
     font-size: 0.95rem;
 }}
-.knoema-hint p {{
+.luvoire-hint p {{
     margin-bottom: 0;
 }}
-.knoema-muted {{
-    color: var(--knoema-muted);
+.luvoire-muted {{
+    color: var(--luvoire-muted);
     font-size: 0.92rem;
 }}
 """
@@ -2598,7 +2598,7 @@ def _build_agent_editor_tab(
             with questionnaire_panel:
                 questionnaire_intro = gr.Markdown(
                     questionnaire_intro_markdown("ko"),
-                    elem_classes=["knoema-muted"],
+                    elem_classes=["luvoire-muted"],
                     elem_id=f"hexaco-questionnaire-intro{suffix}",
                 )
                 for domain in HEXACO_DOMAINS:
@@ -2676,7 +2676,7 @@ def _build_agent_editor_tab(
                     honesty_humility_caveat = gr.Markdown(
                         _honesty_humility_caveat_markdown(KOREAN_CHOICE),
                         visible=True,
-                        elem_classes=["knoema-muted"],
+                        elem_classes=["luvoire-muted"],
                         elem_id=f"honesty-humility-caveat{suffix}",
                     )
 
@@ -3130,7 +3130,7 @@ def _reviewer_jsonl_text(jsonl_text: str, aliases: dict[str, str]) -> str:
 
 
 def _reviewer_download_path(jsonl_text: str) -> str:
-    export_path = Path(tempfile.gettempdir()) / f"knoema_reviewer_run_{uuid.uuid4().hex}.jsonl"
+    export_path = Path(tempfile.gettempdir()) / f"luvoire_reviewer_run_{uuid.uuid4().hex}.jsonl"
     export_path.write_text(jsonl_text, encoding="utf-8")
     return str(export_path)
 
@@ -3522,7 +3522,7 @@ def _force_graph_template() -> str:
   <title>Relationship graph</title>
 </head>
 <body>
-<!-- KNOEMA_FORCE_GRAPH_BOOTSTRAP -->
+<!-- LUVOIRE_FORCE_GRAPH_BOOTSTRAP -->
 <p>Force graph asset missing.</p>
 </body>
 </html>
@@ -3589,11 +3589,11 @@ def _force_graph_srcdoc(payload: dict[str, Any], *, theme_mode: str | None = Non
         "cdnUrl": FORCE_GRAPH_CDN_URL,
     }
     script = (
-        "<script>window.KNOEMA_FORCE_GRAPH_BOOT = "
+        "<script>window.LUVOIRE_FORCE_GRAPH_BOOT = "
         + json.dumps(bootstrap, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
         + ";</script>"
     )
-    return _force_graph_template().replace("<!-- KNOEMA_FORCE_GRAPH_BOOTSTRAP -->", script, 1)
+    return _force_graph_template().replace("<!-- LUVOIRE_FORCE_GRAPH_BOOTSTRAP -->", script, 1)
 
 
 def _force_graph_iframe_html(
@@ -3607,11 +3607,11 @@ def _force_graph_iframe_html(
     payload_token = _force_graph_payload_token(payload)
     srcdoc = _force_graph_srcdoc(payload, theme_mode=theme_mode)
     return (
-        '<div class="knoema-force-graph-shell"'
-        ' data-knoema-force-graph="1"'
-        f' data-knoema-language="{escape(language_key, quote=True)}"'
-        f' data-knoema-payload="{escape(payload_token, quote=True)}">'
-        f'<iframe class="knoema-force-graph-frame" title="{escape(title, quote=True)}"'
+        '<div class="luvoire-force-graph-shell"'
+        ' data-luvoire-force-graph="1"'
+        f' data-luvoire-language="{escape(language_key, quote=True)}"'
+        f' data-luvoire-payload="{escape(payload_token, quote=True)}">'
+        f'<iframe class="luvoire-force-graph-frame" title="{escape(title, quote=True)}"'
         ' loading="lazy" referrerpolicy="no-referrer"'
         f' srcdoc="{escape(srcdoc, quote=True)}"></iframe>'
         "</div>"
@@ -3627,7 +3627,7 @@ def _relationship_graph_placeholder_html(language: str = "en") -> str:
         else "No relationship edges yet. Run more ticks or use a conversational scenario."
     )
     return (
-        '<div class="knoema-force-graph-shell" data-knoema-force-graph="0">'
+        '<div class="luvoire-force-graph-shell" data-luvoire-force-graph="0">'
         '<div style="min-height: 620px; display: flex; align-items: center; justify-content: center;'
         ' border: 1px solid rgba(100, 116, 139, 0.25); border-radius: 8px;'
         ' background: rgba(248,250,252,1); color: #0f172a; padding: 24px; text-align: center;">'
@@ -3658,10 +3658,10 @@ def _relationship_graph_html(
 
 
 def _relationship_graph_theme_update(graph_html: str, theme_mode: str) -> str:
-    if 'data-knoema-force-graph="1"' not in graph_html:
+    if 'data-luvoire-force-graph="1"' not in graph_html:
         return graph_html
-    payload_token = _html_attr_value(graph_html, "data-knoema-payload")
-    language_key = _html_attr_value(graph_html, "data-knoema-language") or "en"
+    payload_token = _html_attr_value(graph_html, "data-luvoire-payload")
+    language_key = _html_attr_value(graph_html, "data-luvoire-language") or "en"
     if not payload_token:
         return graph_html
     try:
@@ -3688,7 +3688,7 @@ def _prereg_defaults(language: str) -> dict[str, str]:
     key = language if language in {"ko", "en"} else _language_key(language)
     if key == "ko":
         return {
-            "title": "Knoema 사회 관계 재생 실험서",
+            "title": "Luvoire 사회 관계 재생 실험서",
             "hypotheses": (
                 "H1. 친화성과 배려/위해 점수가 높을수록 협조적인 행동 비율이 늘어난다.\n"
                 "H2. 정서 불안정성과 권력 성향이 높을수록 스트레스 상황에서 거절 / 위협 행동이 증가한다."
@@ -3708,7 +3708,7 @@ def _prereg_defaults(language: str) -> dict[str, str]:
             "deviations": "일탈 없음.",
         }
     return {
-        "title": "Knoema social replay study",
+        "title": "Luvoire social replay study",
         "hypotheses": (
             "H1. Higher agreeableness and care/harm scores increase cooperative action frequency.\n"
             "H2. Higher emotional volatility and power increase refusal or threat actions under stress."
@@ -3825,13 +3825,13 @@ def _deposit_defaults(language: str) -> dict[str, str]:
     if key == "ko":
         return {
             "creators": "Celovin",
-            "description": "Knoema playground run export with JSONL log, current pre-registration draft, and upload metadata.",
-            "keywords": "knoema, simulation, zenodo, arxiv",
+            "description": "Luvoire playground run export with JSONL log, current pre-registration draft, and upload metadata.",
+            "keywords": "luvoire, simulation, zenodo, arxiv",
         }
     return {
         "creators": "Celovin",
-        "description": "Knoema playground run export with JSONL log, current pre-registration draft, and upload metadata.",
-        "keywords": "knoema, simulation, zenodo, arxiv",
+        "description": "Luvoire playground run export with JSONL log, current pre-registration draft, and upload metadata.",
+        "keywords": "luvoire, simulation, zenodo, arxiv",
     }
 
 
@@ -4173,7 +4173,7 @@ def _export_preregistration(
         performance_metrics,
         aggregation_plan,
     )
-    export_path = Path(tempfile.gettempdir()) / f"knoema_preregistration_{uuid.uuid4().hex}.md"
+    export_path = Path(tempfile.gettempdir()) / f"luvoire_preregistration_{uuid.uuid4().hex}.md"
     export_path.write_text(document, encoding="utf-8")
     return document, str(export_path)
 
@@ -4222,7 +4222,7 @@ def _export_deposit_bundle(
     sandbox: bool,
     publish: bool,
 ) -> tuple[str, str]:
-    resolved_title = title.strip() or "Knoema playground run dataset"
+    resolved_title = title.strip() or "Luvoire playground run dataset"
     try:
         result = submit_zenodo_bundle(
             title=resolved_title,
@@ -4270,7 +4270,7 @@ def _environment_freeze() -> str:
 
 
 def _replication_notebook(summary: str, language: str) -> str:
-    title = "Knoema replication notebook" if _language_key(language) == "en" else "Knoema 재현 노트북"
+    title = "Luvoire replication notebook" if _language_key(language) == "en" else "Luvoire 재현 노트북"
     notebook = {
         "cells": [
             {
@@ -4339,9 +4339,9 @@ def _replication_source_paths() -> tuple[Path, ...]:
         root / "pyproject.toml",
         root / "playground" / "app.py",
         root / "playground" / "simulation.py",
-        root / "src" / "knoema" / "simulator.py",
-        root / "src" / "knoema" / "memory" / "long_term.py",
-        root / "src" / "knoema" / "research" / "statistics.py",
+        root / "src" / "luvoire" / "simulator.py",
+        root / "src" / "luvoire" / "memory" / "long_term.py",
+        root / "src" / "luvoire" / "research" / "statistics.py",
     )
     return tuple(path for path in candidate_paths if path.exists())
 
@@ -4365,9 +4365,9 @@ def _export_replication_package(
             for path in _replication_source_paths()
         ],
     }
-    archive_path = Path(tempfile.gettempdir()) / f"knoema_replication_package_{uuid.uuid4().hex}.zip"
+    archive_path = Path(tempfile.gettempdir()) / f"luvoire_replication_package_{uuid.uuid4().hex}.zip"
     with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr("README.md", "# Knoema replication package\n\nUse the notebook in `notebooks/` to inspect the bundled run.\n")
+        archive.writestr("README.md", "# Luvoire replication package\n\nUse the notebook in `notebooks/` to inspect the bundled run.\n")
         archive.writestr("data/run.jsonl", jsonl_text)
         archive.writestr("data/summary.txt", summary or "n/a")
         archive.writestr(
@@ -4411,7 +4411,7 @@ def _export_reproducibility_certificate(
         *trait_and_runtime,
     )
     run_config = {
-        "source": "knoema-playground",
+        "source": "luvoire-playground",
         "scenario_name": request["scenario_name"],
         "environment_preset_id": request["environment_preset_id"],
         "cultural_prior_id": request["cultural_prior_id"],
@@ -4446,7 +4446,7 @@ def _export_reproducibility_certificate(
         },
     )
     guide = verification_guide_markdown(certificate)
-    archive_path = Path(tempfile.gettempdir()) / f"knoema_reproducibility_certificate_{uuid.uuid4().hex}.zip"
+    archive_path = Path(tempfile.gettempdir()) / f"luvoire_reproducibility_certificate_{uuid.uuid4().hex}.zip"
     with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr(
             "run_fingerprint.json",
@@ -4457,11 +4457,11 @@ def _export_reproducibility_certificate(
             "verification_guide.pdf",
             _simple_pdf_bytes(
                 [
-                    "Knoema reproducibility certificate",
+                    "Luvoire reproducibility certificate",
                     f"Fingerprint: {certificate['fingerprint']}",
                     f"Input hash: {certificate['input_hash']}",
                     f"Output Merkle root: {certificate['output_merkle_root']}",
-                    "Verify with: python scripts/knoema_verify.py run_fingerprint.json --result-jsonl run.jsonl",
+                    "Verify with: python scripts/luvoire_verify.py run_fingerprint.json --result-jsonl run.jsonl",
                 ]
             ),
         )
@@ -4601,7 +4601,7 @@ def _export_html_report(
         mode="w",
         encoding="utf-8",
         suffix=".html",
-        prefix="knoema_playground_report_",
+        prefix="luvoire_playground_report_",
         delete=False,
     ) as handle:
         handle.write(document)
@@ -4835,7 +4835,7 @@ def _export_csv_bundle(
         if any("record_type" in row for row in rows)
         else _single_run_export_tables(jsonl_text, memory_snapshot)
     )
-    with tempfile.TemporaryDirectory(prefix="knoema_playground_csv_") as directory:
+    with tempfile.TemporaryDirectory(prefix="luvoire_playground_csv_") as directory:
         directory_path = Path(directory)
         (directory_path / "run_summary.txt").write_text(str(summary), encoding="utf-8")
         for filename, (fieldnames, table_rows) in tables.items():
@@ -4846,7 +4846,7 @@ def _export_csv_bundle(
             )
         with tempfile.NamedTemporaryFile(
             suffix=".zip",
-            prefix="knoema_playground_csv_bundle_",
+            prefix="luvoire_playground_csv_bundle_",
             delete=False,
         ) as handle:
             archive_path = Path(handle.name)
@@ -4880,7 +4880,7 @@ def _export_finetuning_dataset(
     raw_format = str(export_format or "openai").strip()
     dataset_text = export_finetuning_jsonl(jsonl_text, raw_format)
     format_slug = raw_format.lower().replace(" ", "_").replace("-", "_")
-    export_path = Path(tempfile.gettempdir()) / f"knoema_finetuning_{format_slug}_{uuid.uuid4().hex}.jsonl"
+    export_path = Path(tempfile.gettempdir()) / f"luvoire_finetuning_{format_slug}_{uuid.uuid4().hex}.jsonl"
     export_path.write_text(dataset_text, encoding="utf-8")
     return str(export_path)
 
@@ -4970,7 +4970,7 @@ def _export_latex_table(
         [
             r"\hline",
             r"\end{tabular}",
-            r"\label{tab:knoema_playground_export}",
+            r"\label{tab:luvoire_playground_export}",
             r"\end{table}",
             "",
             "% Run summary",
@@ -4982,7 +4982,7 @@ def _export_latex_table(
         mode="w",
         encoding="utf-8",
         suffix=".tex",
-        prefix="knoema_playground_table_",
+        prefix="luvoire_playground_table_",
         delete=False,
     ) as handle:
         handle.write("\n".join(lines))
@@ -6027,8 +6027,8 @@ def _run_with_optional_streaming(
 
     from fastapi.testclient import TestClient
 
-    from knoema.api.server import create_app
-    from knoema.api.service import SimulationRecord, SimulationService
+    from luvoire.api.server import create_app
+    from luvoire.api.service import SimulationRecord, SimulationService
 
     artifacts = _prepare_playground_run(
         scenario_name=str(request["scenario_name"]),
@@ -6070,7 +6070,7 @@ def _run_with_optional_streaming(
         target=service._run_record,
         args=(record, None),
         daemon=True,
-        name=f"knoema-stream-{simulation_id}",
+        name=f"luvoire-stream-{simulation_id}",
     )
     service._records[simulation_id] = record
     record.worker.start()
@@ -8772,7 +8772,7 @@ def build_app() -> gr.Blocks:
     simulation_defaults = _simulation_template_defaults()
 
     with gr.Blocks(
-        title="Knoema Playground",
+        title="Luvoire Playground",
         css=FOOTER_CSS,
         head=APP_HEAD,
         analytics_enabled=False,
@@ -8937,7 +8937,7 @@ def build_app() -> gr.Blocks:
                 LANGUAGE_CHOICES[0],
                 _default_environment_id(),
             ),
-            elem_classes=["knoema-hint"],
+            elem_classes=["luvoire-hint"],
         )
 
         scenario_synthesis_panel = gr.Accordion(
@@ -9970,7 +9970,7 @@ def build_app() -> gr.Blocks:
             fn=None,
             inputs=[language],
             outputs=None,
-            js="(language) => { window.KNOEMA_TUTORIAL?.start(language); }",
+            js="(language) => { window.LUVOIRE_TUTORIAL?.start(language); }",
             queue=False,
             show_progress="hidden",
         )
@@ -9979,7 +9979,7 @@ def build_app() -> gr.Blocks:
             fn=None,
             inputs=[language],
             outputs=[theme_mode, reviewer_mode],
-            js="(language) => [window.KNOEMA_THEME?.sync(language) ?? 'auto', new URLSearchParams(window.location.search).get('reviewer') === '1']",
+            js="(language) => [window.LUVOIRE_THEME?.sync(language) ?? 'auto', new URLSearchParams(window.location.search).get('reviewer') === '1']",
             queue=False,
             show_progress="hidden",
         )
@@ -9988,7 +9988,7 @@ def build_app() -> gr.Blocks:
             fn=None,
             inputs=[theme_mode, language],
             outputs=[theme_mode],
-            js="(theme, language) => window.KNOEMA_THEME?.setFromLabel(theme, language) ?? theme",
+            js="(theme, language) => window.LUVOIRE_THEME?.setFromLabel(theme, language) ?? theme",
             queue=False,
             show_progress="hidden",
         ).then(

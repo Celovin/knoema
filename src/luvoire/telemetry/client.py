@@ -9,10 +9,11 @@ from pathlib import Path
 from typing import Protocol
 from urllib import request
 
-from knoema.telemetry.schema import TelemetryEvent, TelemetryProperties
+from luvoire.config import get_env
+from luvoire.telemetry.schema import TelemetryEvent, TelemetryProperties
 
 _TRUTHY_VALUES = {"1", "true", "yes", "on"}
-_DEFAULT_ID_PATH = Path.home() / ".knoema" / "telemetry_id"
+_DEFAULT_ID_PATH = Path.home() / ".luvoire" / "telemetry_id"
 
 
 class TelemetryTransport(Protocol):
@@ -90,7 +91,8 @@ class TelemetryClient:
 
 def telemetry_opt_in_from_env(env: Mapping[str, str] | None = None) -> bool:
     env_map = os.environ if env is None else env
-    return env_map.get("KNOEMA_TELEMETRY", "").strip().lower() in _TRUTHY_VALUES
+    value = get_env("LUVOIRE_TELEMETRY", "KNOEMA_TELEMETRY", "", environ=env_map)
+    return (value or "").strip().lower() in _TRUTHY_VALUES
 
 
 def load_or_create_anonymous_id(path: Path | None = None) -> str:
@@ -114,14 +116,24 @@ def build_env_telemetry_client(
 ) -> TelemetryClient | NullTelemetryClient:
     env_map = os.environ if env is None else env
     enabled = force_enable or telemetry_opt_in_from_env(env_map)
-    endpoint = env_map.get("KNOEMA_TELEMETRY_ENDPOINT")
+    endpoint = get_env(
+        "LUVOIRE_TELEMETRY_ENDPOINT",
+        "KNOEMA_TELEMETRY_ENDPOINT",
+        environ=env_map,
+    )
     if not enabled or endpoint is None or not endpoint.strip():
         return NullTelemetryClient()
-    distinct_id = env_map.get("KNOEMA_TELEMETRY_ID") or load_or_create_anonymous_id(id_path)
+    distinct_id = get_env("LUVOIRE_TELEMETRY_ID", "KNOEMA_TELEMETRY_ID", environ=env_map)
+    if distinct_id is None:
+        distinct_id = load_or_create_anonymous_id(id_path)
     settings = TelemetrySettings(
         enabled=True,
         endpoint=endpoint,
-        api_key=env_map.get("KNOEMA_TELEMETRY_API_KEY"),
+        api_key=get_env(
+            "LUVOIRE_TELEMETRY_API_KEY",
+            "KNOEMA_TELEMETRY_API_KEY",
+            environ=env_map,
+        ),
         distinct_id=distinct_id,
     )
     return TelemetryClient(settings, transport=transport)

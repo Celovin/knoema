@@ -1,8 +1,8 @@
 using UnrealBuildTool;
 
-public class KnoemaUnreal : ModuleRules
+public class LuvoireUnreal : ModuleRules
 {
-    public KnoemaUnreal(ReadOnlyTargetRules Target) : base(Target)
+    public LuvoireUnreal(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         CppStandard = CppStandardVersion.Cpp20;

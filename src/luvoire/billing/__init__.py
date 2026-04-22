@@ -1,11 +1,11 @@
 """Billing, usage metering, webhooks, and tenant API key primitives."""
 
-from knoema.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore
-from knoema.billing.gateway import LLMGateway, UsageMeter
-from knoema.billing.markup import compute_markup_price
-from knoema.billing.tenant_registry import TenantRegistry
-from knoema.billing.tiers import TIER_LIMITS
-from knoema.billing.webhooks import WebhookDispatcher
+from luvoire.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore
+from luvoire.billing.gateway import LLMGateway, UsageMeter
+from luvoire.billing.markup import compute_markup_price
+from luvoire.billing.tenant_registry import TenantRegistry
+from luvoire.billing.tiers import TIER_LIMITS
+from luvoire.billing.webhooks import WebhookDispatcher
 
 __all__ = [
     "TIER_LIMITS",

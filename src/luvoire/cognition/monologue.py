@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from knoema.environment import EnvironmentContext
-from knoema.persona import Persona
-from knoema.prompts import normalize_prompt_language
-from knoema.protocols import LLMClient, Message
-from knoema.types import PERSONALITY_NEUTRAL_DEFAULTS
+from luvoire.environment import EnvironmentContext
+from luvoire.persona import Persona
+from luvoire.prompts import normalize_prompt_language
+from luvoire.protocols import LLMClient, Message
+from luvoire.types import PERSONALITY_NEUTRAL_DEFAULTS
 
 
 @dataclass(frozen=True, slots=True)

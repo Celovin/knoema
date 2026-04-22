@@ -1,16 +1,16 @@
 # CLI
 
-Knoema provides a small command line entry point for deterministic simulation runs:
+Luvoire provides a small command line entry point for deterministic simulation runs:
 
 ```powershell
-knoema run examples\cli_dorm.yaml --json
+luvoire run examples\cli_dorm.yaml --json
 ```
 
 When running from a source checkout, this equivalent command also works:
 
 ```powershell
-python -m knoema.cli run examples\cli_dorm.yaml --json
-python -m knoema run examples\cli_dorm.yaml --json
+python -m luvoire.cli run examples\cli_dorm.yaml --json
+python -m luvoire run examples\cli_dorm.yaml --json
 ```
 
 ## Config Shape
@@ -53,7 +53,7 @@ local_response: '{"action_type": "wait", "target": null, "content": "observes th
 Use `--dry-run` to validate a config without running the simulation or writing logs:
 
 ```powershell
-knoema run examples\cli_dorm.yaml --dry-run --json
+luvoire run examples\cli_dorm.yaml --dry-run --json
 ```
 
 The CLI is intentionally local-first. It uses `LocalClient` and the configured `local_response`, so it does not need API keys.
@@ -63,7 +63,7 @@ The CLI is intentionally local-first. It uses `LocalClient` and the configured `
 Use `score` to compute Persona Consistency Score (PCS) and Relationship Coherence Score (RCS) from a JSONL log:
 
 ```powershell
-knoema score experiments\50_agent_village\results\sim_log.jsonl
+luvoire score experiments\50_agent_village\results\sim_log.jsonl
 ```
 
 The command prints JSON with PCS summary statistics, per-agent PCS values, RCS pair counts, and an RCS sample for quick inspection.
@@ -73,7 +73,7 @@ The command prints JSON with PCS summary statistics, per-agent PCS values, RCS p
 Use `validate` to check one Scenario DSL YAML file or every YAML file under a directory:
 
 ```powershell
-knoema validate scenarios\library --json
+luvoire validate scenarios\library --json
 ```
 
 The command prints the number of validated files, failed files, and per-file issues. It returns exit code `0` only when all scenarios load and pass the ethics validator.
@@ -83,7 +83,7 @@ The command prints the number of validated files, failed files, and per-file iss
 Use `list-scenarios` to inspect the packaged Playground scenarios:
 
 ```powershell
-knoema list-scenarios --json
+luvoire list-scenarios --json
 ```
 
 ## Certificate Verification
@@ -91,7 +91,7 @@ knoema list-scenarios --json
 Use `verify` to check a reproducibility certificate and optional artifacts:
 
 ```powershell
-knoema verify run_fingerprint.json --run-config run_config.json --result-jsonl run.jsonl --json
+luvoire verify run_fingerprint.json --run-config run_config.json --result-jsonl run.jsonl --json
 ```
 
 The command returns exit code `0` only when the certificate fingerprint and supplied artifact hashes match.
@@ -101,7 +101,7 @@ The command returns exit code `0` only when the certificate fingerprint and supp
 Start the Gradio Playground from the same CLI:
 
 ```powershell
-knoema playground --host 127.0.0.1 --port 7860
+luvoire playground --host 127.0.0.1 --port 7860
 ```
 
-Use `knoema playground --dry-run --json` to print the app file and URL without starting a server.
+Use `luvoire playground --dry-run --json` to print the app file and URL without starting a server.

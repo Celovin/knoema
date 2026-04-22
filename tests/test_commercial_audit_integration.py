@@ -8,10 +8,10 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
-from knoema.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore
-from knoema.billing.gateway import LLMGateway, UsageMeter
-from knoema.billing.webhooks import WebhookDispatcher
-from knoema.safety.audit_log import COMMERCIAL_AUDIT_EVENT_TYPES, AuditLog
+from luvoire.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore
+from luvoire.billing.gateway import LLMGateway, UsageMeter
+from luvoire.billing.webhooks import WebhookDispatcher
+from luvoire.safety.audit_log import COMMERCIAL_AUDIT_EVENT_TYPES, AuditLog
 
 
 class MockLiteLLM:

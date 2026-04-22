@@ -1,10 +1,10 @@
 # Discord Community Launch Kit
 
-This document is a launch kit for creating the public Knoema Engine Discord community. It is safe to publish with the repository and contains no account credentials, invite tokens, or private planning notes.
+This document is a launch kit for creating the public Luvoire Discord community. It is safe to publish with the repository and contains no account credentials, invite tokens, or private planning notes.
 
 ## Server Basics
 
-- Server name: Knoema Engine
+- Server name: Luvoire
 - Purpose: persistent-agent simulation discussion for builders, researchers, and game AI developers
 - Public link target: GitHub repository, docs, examples, and dashboard demos
 - Tone: practical, research-aware, synthetic-data-first
@@ -42,7 +42,7 @@ Optional private channels:
 
 1. Use only fictional, synthetic, or fully consented data.
 2. Do not post real incident names, victim names, suspect names, addresses, operational logs, or sensitive case details.
-3. Do not frame Knoema as a prediction, surveillance, profiling, or suspect-scoring system.
+3. Do not frame Luvoire as a prediction, surveillance, profiling, or suspect-scoring system.
 4. Do not paste API keys, access tokens, private repository links, or credentials.
 5. Keep research criticism concrete and evidence-based.
 6. Keep demos reproducible: include config, commit hash, or notebook path when possible.
@@ -50,7 +50,7 @@ Optional private channels:
 
 ## Pinned Links
 
-- Repository: `https://github.com/Celovin/knoema`
+- Repository: `https://github.com/Celovin/luvoire`
 - README: `README.md`
 - Korean README: `README.ko.md`
 - CLI docs: `docs/cli.md`
@@ -61,20 +61,20 @@ Optional private channels:
 
 ## First Announcement Draft
 
-Knoema Engine is an early MVP for persistent-agent simulation. The first public surface includes a Python package, deterministic CLI runs, executable notebooks, a Streamlit replay dashboard, multilingual prompt templates, semantic-temporal memory retrieval, and a Godot adapter scaffold.
+Luvoire is an early MVP for persistent-agent simulation. The first public surface includes a Python package, deterministic CLI runs, executable notebooks, a Streamlit replay dashboard, multilingual prompt templates, semantic-temporal memory retrieval, and a Godot adapter scaffold.
 
 The community starts with one rule: keep examples synthetic and reproducible. Share configs, notebooks, dashboard captures, and engine adapter experiments. Avoid real-world sensitive data.
 
 Start here:
 
-- Run `knoema run examples/cli_dorm.yaml --json`
+- Run `luvoire run examples/cli_dorm.yaml --json`
 - Open the dashboard with `streamlit run dashboard/app.py`
 - Read `docs/tutorial_blog.md`
 - Share questions in `#help` and demos in `#demo-gallery`
 
 ## Launch Checklist
 
-1. Create the Discord server with the name `Knoema Engine`.
+1. Create the Discord server with the name `Luvoire`.
 2. Add roles from the role table.
 3. Create public channels from the channel layout.
 4. Create private maintainer channels only if needed.

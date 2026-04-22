@@ -1,8 +1,8 @@
 {
-  "name": "Knoema.EditorTests",
-  "rootNamespace": "Knoema.Unity.Tests",
+  "name": "Luvoire.EditorTests",
+  "rootNamespace": "Luvoire.Unity.Tests",
   "references": [
-    "Knoema.Runtime"
+    "Luvoire.Runtime"
   ],
   "includePlatforms": [
     "Editor"

@@ -7,7 +7,7 @@ from pathlib import Path
 
 import yaml
 
-from knoema.evaluation import (
+from luvoire.evaluation import (
     ComparisonPair,
     EvaluationSession,
     cohen_kappa,
@@ -20,8 +20,8 @@ NPM = "npm.cmd" if os.name == "nt" else "npm"
 
 def test_phase58_human_evaluation_files_exist() -> None:
     expected = [
-        "src/knoema/evaluation/__init__.py",
-        "src/knoema/evaluation/human.py",
+        "src/luvoire/evaluation/__init__.py",
+        "src/luvoire/evaluation/human.py",
         "evaluation/templates/realism_survey.yaml",
         "evaluation/templates/preference_pairwise.yaml",
         "evaluation/templates/turing_style.yaml",

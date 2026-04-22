@@ -1,20 +1,20 @@
-# Knoema Engine
+# Luvoire
 
 > LLM-basierte Multi-Agenten-Sozialsimulations-Engine für Spiele, Public-Safety-Forschung und akademische Simulation.
 
-[![CI](https://github.com/Celovin/knoema/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/knoema/actions/workflows/ci.yml)
+[![CI](https://github.com/Celovin/luvoire/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/luvoire/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/knoema-playground)
+[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/luvoire-playground)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19643409.svg)](https://doi.org/10.5281/zenodo.19643409)
 
 ## Current version
 
-0.2.0
+0.3.0
 
-## Knoema Bench
+## Luvoire Bench
 
-Knoema Bench ist die öffentliche Bestenliste mit sieben Achsen für Frameworks persistenter Agenten. Live-Seite: [https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/). Einreichungsvorlage: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml).
+Luvoire Bench ist die öffentliche Bestenliste mit sieben Achsen für Frameworks persistenter Agenten. Live-Seite: [https://celovin.github.io/luvoire/bench/](https://celovin.github.io/luvoire/bench/). Einreichungsvorlage: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml).
 
 ## Sprachen
 
@@ -22,7 +22,7 @@ Knoema Bench ist die öffentliche Bestenliste mit sieben Achsen für Frameworks 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) |
 
-Knoema Engine ist ein frühes MVP zur Modellierung persistenter Agenten mit Gedächtnis, Beziehungen, Emotionen, Umgebungskontext und LLM-gestützten Entscheidungen. Dieselbe Laufzeit unterstützt Spiel-NPCs, fiktive Public-Safety-Replay-Forschung und reproduzierbare agentenbasierte Sozialsimulation.
+Luvoire ist ein frühes MVP zur Modellierung persistenter Agenten mit Gedächtnis, Beziehungen, Emotionen, Umgebungskontext und LLM-gestützten Entscheidungen. Dieselbe Laufzeit unterstützt Spiel-NPCs, fiktive Public-Safety-Replay-Forschung und reproduzierbare agentenbasierte Sozialsimulation.
 
 Alle Public-Safety-Beispiele in diesem Repository sind fiktiv, synthetisch und nicht identifizierend. Das Projekt ist kein Werkzeug für Kriminalitätsprognosen, Verdächtigenbewertung oder automatisierte operative Entscheidungen.
 
@@ -58,7 +58,7 @@ pip install -e ".[dev]"
 Lokale YAML-Simulation ausführen:
 
 ```bash
-knoema run examples/cli_dorm.yaml --json
+luvoire run examples/cli_dorm.yaml --json
 ```
 
 Playground lokal starten:
@@ -77,7 +77,7 @@ streamlit run dashboard/app.py
 
 ## Wichtige Links
 
-- [Knoema Playground](https://huggingface.co/spaces/celovin/knoema-playground)
+- [Luvoire Playground](https://huggingface.co/spaces/celovin/luvoire-playground)
 - [Scenario Marketplace Beta](scenarios_hub/README.md)
 - [DSL Tutorial](docs/dsl/tutorial.md)
 - [Game SDK Docs](docs/sdk/python-api.md)

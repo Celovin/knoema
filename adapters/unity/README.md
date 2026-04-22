@@ -1,19 +1,19 @@
-# Knoema Unity Adapter
+# Luvoire Unity Adapter
 
-Unity 2022.3 LTS package scaffold for connecting a game NPC to a local or hosted Knoema runtime.
+Unity 2022.3 LTS package scaffold for connecting a game NPC to a local or hosted Luvoire runtime.
 
 ## Install
 
 Open Unity Package Manager, choose **Add package from git URL**, and enter:
 
 ```text
-https://github.com/Celovin/knoema.git?path=adapters/unity
+https://github.com/Celovin/luvoire.git?path=adapters/unity
 ```
 
 ## Runtime
 
-- `Runtime/KnoemaConfig.cs`: ScriptableObject settings for endpoint URL, session ID, and fallback mode.
-- `Runtime/KnoemaClient.cs`: coroutine-based HTTP client with deterministic local fallback.
+- `Runtime/LuvoireConfig.cs`: ScriptableObject settings for endpoint URL, session ID, and fallback mode.
+- `Runtime/LuvoireClient.cs`: coroutine-based HTTP client with deterministic local fallback.
 - `Runtime/NPCAgent.cs`: MonoBehaviour wrapper for game NPC interactions.
 
 Default endpoint:
@@ -80,4 +80,4 @@ Import `Samples~/TavernDemo` for the tavern loop surface:
 
 ## Unity Test Runner
 
-The package includes an Editor test scaffold under `Tests/Editor`. In Unity, open **Window > General > Test Runner**, select **EditMode**, then run the Knoema tests.
+The package includes an Editor test scaffold under `Tests/Editor`. In Unity, open **Window > General > Test Runner**, select **EditMode**, then run the Luvoire tests.

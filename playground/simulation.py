@@ -1,4 +1,4 @@
-"""Reusable simulation helpers for the Knoema Playground."""
+"""Reusable simulation helpers for the Luvoire Playground."""
 
 from __future__ import annotations
 
@@ -17,23 +17,23 @@ from typing import Any, Literal, cast
 
 import yaml
 
-from knoema.cli import (
+from luvoire.cli import (
     CliAgentConfig,
     CliEventConfig,
     CliPersonalityConfig,
     SimulationRunConfig,
     load_run_config,
 )
-from knoema.cognition import Monologue
-from knoema.game.inventory import Inventory
-from knoema.game.schedule import RoutineEntry
-from knoema.llm import AnthropicClient, CachedLLMClient, LLMCacheStats, LocalClient, OpenAIClient
-from knoema.persona import Persona
-from knoema.planning import HierarchicalPlanner, Task
-from knoema.protocols import LLMClient, Message
-from knoema.relationship import Relationship
-from knoema.simulator import SimulationLogEntry, Simulator
-from knoema.types import (
+from luvoire.cognition import Monologue
+from luvoire.game.inventory import Inventory
+from luvoire.game.schedule import RoutineEntry
+from luvoire.llm import AnthropicClient, CachedLLMClient, LLMCacheStats, LocalClient, OpenAIClient
+from luvoire.persona import Persona
+from luvoire.planning import HierarchicalPlanner, Task
+from luvoire.protocols import LLMClient, Message
+from luvoire.relationship import Relationship
+from luvoire.simulator import SimulationLogEntry, Simulator
+from luvoire.types import (
     ACTION_TYPES,
     GAME_ACTION_TYPES,
     PERSONALITY_NEUTRAL_DEFAULTS,
@@ -3268,7 +3268,7 @@ def _write_download_file(jsonl: str) -> str:
         mode="w",
         encoding="utf-8",
         suffix=".jsonl",
-        prefix="knoema_playground_",
+        prefix="luvoire_playground_",
         delete=False,
     ) as handle:
         handle.write(jsonl)

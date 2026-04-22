@@ -5,5 +5,5 @@ The GCP template targets Cloud Run, Cloud SQL for PostgreSQL, and Memorystore Re
 ```bash
 terraform -chdir=deploy/cloud/gcp/terraform init
 terraform -chdir=deploy/cloud/gcp/terraform validate
-terraform -chdir=deploy/cloud/gcp/terraform plan -var project_id=my-project -var container_image=gcr.io/my-project/knoema-api:0.2.0
+terraform -chdir=deploy/cloud/gcp/terraform plan -var project_id=my-project -var container_image=gcr.io/my-project/luvoire-api:0.3.0
 ```

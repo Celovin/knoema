@@ -6,7 +6,7 @@ Freeze a final research question before running the final study.
 
 ## Task
 
-Write a preregistration-style proposal for a final Knoema experiment.
+Write a preregistration-style proposal for a final Luvoire experiment.
 
 ## Deliverables
 

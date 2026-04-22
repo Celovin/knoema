@@ -12,13 +12,13 @@ from scripts.fetch_status import CommandResult, collect_status, write_status
 
 class FakeHfApi:
     def space_info(self, repo_id: str) -> object:
-        assert repo_id == "celovin/knoema-playground"
+        assert repo_id == "celovin/luvoire-playground"
         return SimpleNamespace(runtime=SimpleNamespace(stage="RUNNING"))
 
 
 def _fake_gh_api(command: list[str], *, environment: object | None = None) -> CommandResult:
     assert command[:2] == ["gh", "api"]
-    if "repos/Celovin/knoema/actions/workflows/deploy-hf-space.yml/runs" in command:
+    if "repos/Celovin/luvoire/actions/workflows/deploy-hf-space.yml/runs" in command:
         payload: dict[str, Any] = {
             "workflow_runs": [
                 {
@@ -31,12 +31,12 @@ def _fake_gh_api(command: list[str], *, environment: object | None = None) -> Co
                     "head_branch": "main",
                     "created_at": "2026-04-22T08:00:00Z",
                     "updated_at": "2026-04-22T08:03:00Z",
-                    "html_url": "https://github.com/Celovin/knoema/actions/runs/2",
+                    "html_url": "https://github.com/Celovin/luvoire/actions/runs/2",
                 }
             ]
         }
         return CommandResult(0, json.dumps(payload), "")
-    assert "repos/Celovin/knoema/actions/runs" in command
+    assert "repos/Celovin/luvoire/actions/runs" in command
     payload = {
         "workflow_runs": [
             {
@@ -49,7 +49,7 @@ def _fake_gh_api(command: list[str], *, environment: object | None = None) -> Co
                 "head_branch": "main",
                 "created_at": "2026-04-22T08:00:00Z",
                 "updated_at": "2026-04-22T08:03:00Z",
-                "html_url": "https://github.com/Celovin/knoema/actions/runs/2",
+                "html_url": "https://github.com/Celovin/luvoire/actions/runs/2",
             },
             {
                 "database_id": 1,
@@ -61,7 +61,7 @@ def _fake_gh_api(command: list[str], *, environment: object | None = None) -> Co
                 "head_branch": "main",
                 "created_at": "2026-04-22T07:00:00Z",
                 "updated_at": "2026-04-22T07:02:00Z",
-                "html_url": "https://github.com/Celovin/knoema/actions/runs/1",
+                "html_url": "https://github.com/Celovin/luvoire/actions/runs/1",
             },
         ]
     }
@@ -77,7 +77,7 @@ def test_fetch_status_schema_with_mocked_hf_and_gh_api() -> None:
 
     assert status["schema_version"] == 1
     assert status["space"] == {
-        "repo_id": "celovin/knoema-playground",
+        "repo_id": "celovin/luvoire-playground",
         "stage": "RUNNING",
     }
     assert status["github_actions"]["last_deploy_time"] == "2026-04-22T08:03:00Z"

@@ -1,6 +1,6 @@
 """Opt-in safety helpers for red-team checks and audit logging."""
 
-from knoema.safety.audit_log import (
+from luvoire.safety.audit_log import (
     COMMERCIAL_AUDIT_EVENT_TYPES,
     AuditEvent,
     AuditLog,
@@ -11,7 +11,7 @@ from knoema.safety.audit_log import (
     validate_audit_record,
     validate_commercial_audit_record,
 )
-from knoema.safety.content_filter import (
+from luvoire.safety.content_filter import (
     ContentFilter,
     FilterDecision,
     SafetyCategory,

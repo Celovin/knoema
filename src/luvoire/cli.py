@@ -1,4 +1,4 @@
-"""Command line interface for Knoema simulation runs."""
+"""Command line interface for Luvoire simulation runs."""
 
 from __future__ import annotations
 
@@ -16,24 +16,24 @@ from typing import Any, cast
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
-from knoema.customer_cli import add_customer_subparser, handle_customer_command
-from knoema.dsl import collect_validation_issues, load_scenario
-from knoema.environment import Environment
-from knoema.game.schedule import RoutineEntry
-from knoema.llm import LocalClient
-from knoema.metrics import score_log
-from knoema.persona import Persona
-from knoema.prompts import PromptLanguage, normalize_prompt_language
-from knoema.reproducibility import VerificationReport, verify_run_fingerprint
-from knoema.simulator import Simulator
-from knoema.telemetry import (
+from luvoire.customer_cli import add_customer_subparser, handle_customer_command
+from luvoire.dsl import collect_validation_issues, load_scenario
+from luvoire.environment import Environment
+from luvoire.game.schedule import RoutineEntry
+from luvoire.llm import LocalClient
+from luvoire.metrics import score_log
+from luvoire.persona import Persona
+from luvoire.prompts import PromptLanguage, normalize_prompt_language
+from luvoire.reproducibility import VerificationReport, verify_run_fingerprint
+from luvoire.simulator import Simulator
+from luvoire.telemetry import (
     NullTelemetryClient,
     TelemetryClient,
     build_cli_properties,
     build_env_telemetry_client,
     telemetry_opt_in_from_env,
 )
-from knoema.types import Personality, WorldEvent
+from luvoire.types import Personality, WorldEvent
 
 PLAYGROUND_SCENARIOS: tuple[dict[str, str], ...] = (
     {"name": "Dorm: two agents", "filename": "dorm_two_agents.yaml"},
@@ -191,7 +191,7 @@ class CliRuntimeConfig(BaseModel):
 
     duration_days: int = Field(default=1, ge=1)
     tick_duration_minutes: int = Field(default=30, ge=1)
-    output_path: Path = Path("runs/knoema_cli.jsonl")
+    output_path: Path = Path("runs/luvoire_cli.jsonl")
     prompt_language: str = "en"
 
 
@@ -199,7 +199,7 @@ CliAgentConfig.model_rebuild()
 
 
 class SimulationRunConfig(BaseModel):
-    """YAML schema for `knoema run config.yaml`."""
+    """YAML schema for `luvoire run config.yaml`."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -294,11 +294,11 @@ def run_config(
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="knoema", description="Knoema Engine CLI.")
+    parser = argparse.ArgumentParser(prog="luvoire", description="Luvoire CLI.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     run_parser = subparsers.add_parser("run", help="Run a simulation from a YAML config.")
-    run_parser.add_argument("config", type=Path, help="Path to a Knoema run YAML config.")
+    run_parser.add_argument("config", type=Path, help="Path to a Luvoire run YAML config.")
     run_parser.add_argument("--output", type=Path, default=None, help="Override JSONL output path.")
     run_parser.add_argument(
         "--dry-run",
@@ -410,9 +410,9 @@ def main(
         if args.json:
             print(json.dumps(report.to_json_dict(), ensure_ascii=False, sort_keys=True))
         elif report.verified:
-            print("Knoema reproducibility certificate verified.")
+            print("Luvoire reproducibility certificate verified.")
         else:
-            print("Knoema reproducibility certificate verification failed:")
+            print("Luvoire reproducibility certificate verification failed:")
             for mismatch in report.mismatches:
                 print(f"- {mismatch}")
         return 0 if report.verified else 1
@@ -554,7 +554,7 @@ def _playground_app_file() -> Path:
 def _load_module_from_path(path: Path) -> ModuleType:
     sys.path.insert(0, str(path.parent.parent))
     sys.path.insert(0, str(path.parent))
-    spec = importlib.util.spec_from_file_location("knoema_playground_app", path)
+    spec = importlib.util.spec_from_file_location("luvoire_playground_app", path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"Could not load module spec for {path}")
     module = importlib.util.module_from_spec(spec)

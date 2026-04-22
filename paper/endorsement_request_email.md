@@ -2,11 +2,11 @@
 
 To: [endorser name] <[endorser email]>
 
-Subject: arXiv cs.MA endorsement request for Knoema Engine preprint
+Subject: arXiv cs.MA endorsement request for Luvoire preprint
 
 Dear [endorser name],
 
-I am preparing to submit a cs.MA preprint titled "Knoema Engine: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation" and would be grateful if you would consider endorsing the submission category.
+I am preparing to submit a cs.MA preprint titled "Luvoire: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation" and would be grateful if you would consider endorsing the submission category.
 
 The paper presents an open, MIT-licensed runtime for persistent social agents with explicit persona, memory, relationship state, emotion state, deterministic logs, benchmark evidence, game-adapter surfaces, and safety-bounded fictional scenario definitions. The work is positioned as agent-based modeling and reproducible simulation infrastructure rather than as a human-behavior prediction claim.
 

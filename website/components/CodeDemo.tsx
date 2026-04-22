@@ -1,4 +1,4 @@
-const code = `from knoema.game import GameSession
+const code = `from luvoire.game import GameSession
 
 session = GameSession(game_id='demo-village')
 npc = session.create_npc(

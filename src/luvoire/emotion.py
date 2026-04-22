@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from knoema.types import Emotion
+from luvoire.types import Emotion
 
 
 def _clamp(value: float, *, minimum: float, maximum: float) -> float:

@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from knoema.cli import CliAgentConfig
-from knoema.decision import build_decision_messages
-from knoema.environment import Environment, EnvironmentContext
-from knoema.game.schedule import RoutineEntry
-from knoema.llm import LocalClient
-from knoema.persona import Persona
-from knoema.relationship import Relationship
-from knoema.simulator import Simulator
-from knoema.types import Emotion, Memory, Personality, WorldEvent
+from luvoire.cli import CliAgentConfig
+from luvoire.decision import build_decision_messages
+from luvoire.environment import Environment, EnvironmentContext
+from luvoire.game.schedule import RoutineEntry
+from luvoire.llm import LocalClient
+from luvoire.persona import Persona
+from luvoire.relationship import Relationship
+from luvoire.simulator import Simulator
+from luvoire.types import Emotion, Memory, Personality, WorldEvent
 
 
 def _shopkeeper_persona() -> Persona:

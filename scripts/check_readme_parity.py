@@ -17,7 +17,7 @@ LOCALES = (
     "README.zh-TW.md",
 )
 RAW_ENGLISH_DRIFT = (
-    "Knoema Bench is the seven-axis public leaderboard",
+    "Luvoire Bench is the seven-axis public leaderboard",
     "1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays",
     "Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout",
     "Opt-in OpenAI TTS voice playback for Playground timeline",
@@ -44,8 +44,8 @@ FEATURES = (
     ),
     Feature(
         key="bench",
-        label="Knoema Bench leaderboard",
-        patterns=(r"Knoema Bench", r"celovin\.github\.io/knoema/bench|bench/submissions/TEMPLATE\.yaml"),
+        label="Luvoire Bench leaderboard",
+        patterns=(r"Luvoire Bench", r"celovin\.github\.io/luvoire/bench|bench/submissions/TEMPLATE\.yaml"),
     ),
     Feature(
         key="city_1k",

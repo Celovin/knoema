@@ -9,8 +9,8 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from knoema.api.server import create_app
-from knoema.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore
+from luvoire.api.server import create_app
+from luvoire.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -49,8 +49,8 @@ def _simulation_payload() -> dict[str, object]:
 
 
 def test_observability_default_has_no_metrics_endpoint(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("KNOEMA_METRICS_ENABLED", raising=False)
-    monkeypatch.delenv("KNOEMA_OTEL_EXPORTER", raising=False)
+    monkeypatch.delenv("LUVOIRE_METRICS_ENABLED", raising=False)
+    monkeypatch.delenv("LUVOIRE_OTEL_EXPORTER", raising=False)
 
     with TestClient(create_app()) as client:
         response = client.get("/metrics")
@@ -61,7 +61,7 @@ def test_observability_default_has_no_metrics_endpoint(monkeypatch: pytest.Monke
 def test_default_server_path_does_not_import_opentelemetry() -> None:
     code = (
         "import sys;"
-        "from knoema.api.server import create_app;"
+        "from luvoire.api.server import create_app;"
         "create_app();"
         "print(any(name.startswith('opentelemetry') for name in sys.modules))"
     )
@@ -77,8 +77,8 @@ def test_default_server_path_does_not_import_opentelemetry() -> None:
 
 def test_metrics_enabled_exposes_prometheus_format(monkeypatch: pytest.MonkeyPatch) -> None:
     pytest.importorskip("prometheus_client")
-    monkeypatch.setenv("KNOEMA_METRICS_ENABLED", "1")
-    monkeypatch.delenv("KNOEMA_OTEL_EXPORTER", raising=False)
+    monkeypatch.setenv("LUVOIRE_METRICS_ENABLED", "1")
+    monkeypatch.delenv("LUVOIRE_OTEL_EXPORTER", raising=False)
 
     with TestClient(create_app()) as client:
         assert client.get("/healthz").status_code == 200
@@ -86,14 +86,14 @@ def test_metrics_enabled_exposes_prometheus_format(monkeypatch: pytest.MonkeyPat
 
     assert response.status_code == 200
     assert "text/plain" in response.headers["content-type"]
-    assert "knoema_requests_total" in response.text
-    assert "knoema_request_duration_seconds_bucket" in response.text
+    assert "luvoire_requests_total" in response.text
+    assert "luvoire_request_duration_seconds_bucket" in response.text
 
 
 def test_metric_labels_hash_tenant_id(monkeypatch: pytest.MonkeyPatch) -> None:
     pytest.importorskip("prometheus_client")
-    monkeypatch.setenv("KNOEMA_METRICS_ENABLED", "1")
-    monkeypatch.delenv("KNOEMA_OTEL_EXPORTER", raising=False)
+    monkeypatch.setenv("LUVOIRE_METRICS_ENABLED", "1")
+    monkeypatch.delenv("LUVOIRE_OTEL_EXPORTER", raising=False)
     tenant_id = "tenant-visible-plaintext"
     manager = APIKeyManager(InMemoryAPIKeyStore())
     _key_id, token = manager.issue(tenant_id, "llm:invoke", tier="pro")
@@ -107,7 +107,7 @@ def test_metric_labels_hash_tenant_id(monkeypatch: pytest.MonkeyPatch) -> None:
         assert response.status_code == 200
         metrics = client.get("/metrics").text
 
-    assert "knoema_billing_tokens_total" in metrics
+    assert "luvoire_billing_tokens_total" in metrics
     assert "tenant_id_hash" in metrics
     assert tenant_id not in metrics
 
@@ -121,7 +121,7 @@ def test_otel_exporter_can_capture_request_span(
 ) -> None:
     from opentelemetry.sdk.trace.export import SpanExporter, SpanExportResult
 
-    from knoema.observability import tracing
+    from luvoire.observability import tracing
 
     class ListSpanExporter(SpanExporter):
         def __init__(self) -> None:
@@ -135,8 +135,8 @@ def test_otel_exporter_can_capture_request_span(
             return None
 
     exporter = ListSpanExporter()
-    monkeypatch.setenv("KNOEMA_OTEL_EXPORTER", "otlp")
-    monkeypatch.delenv("KNOEMA_METRICS_ENABLED", raising=False)
+    monkeypatch.setenv("LUVOIRE_OTEL_EXPORTER", "otlp")
+    monkeypatch.delenv("LUVOIRE_METRICS_ENABLED", raising=False)
     monkeypatch.setattr(tracing, "_build_span_exporter", lambda _exporter: exporter)
 
     with TestClient(create_app()) as client:

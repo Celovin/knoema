@@ -1,6 +1,6 @@
 # Red Team Safety Report
 
-Phase 53 adds deterministic red-team checks for the public Knoema safety boundary. The suite is intentionally local and replayable: it does not call external moderation APIs, and it does not claim to replace provider-side safety systems.
+Phase 53 adds deterministic red-team checks for the public Luvoire safety boundary. The suite is intentionally local and replayable: it does not call external moderation APIs, and it does not claim to replace provider-side safety systems.
 
 ## Attack Vectors
 

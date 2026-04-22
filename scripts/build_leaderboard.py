@@ -1,4 +1,4 @@
-"""Build the Knoema Bench public leaderboard from YAML submissions."""
+"""Build the Luvoire Bench public leaderboard from YAML submissions."""
 
 from __future__ import annotations
 
@@ -17,8 +17,8 @@ BENCH_DIR = ROOT / "bench"
 SUBMISSIONS_DIR = BENCH_DIR / "submissions"
 SCHEMA_PATH = BENCH_DIR / "schema.yaml"
 LEADERBOARD_PATH = ROOT / "docs" / "bench" / "leaderboard.md"
-KNOEMA_SUBMISSION_PATH = SUBMISSIONS_DIR / "knoema-0.2.0.yaml"
-KNOEMA_VERSION = "0.2.0"
+LUVOIRE_SUBMISSION_PATH = SUBMISSIONS_DIR / "luvoire-0.3.0.yaml"
+LUVOIRE_VERSION = "0.3.0"
 
 
 @dataclass(frozen=True)
@@ -45,20 +45,20 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Fail if generated Knoema submission or leaderboard differs from disk.",
+        help="Fail if generated Luvoire submission or leaderboard differs from disk.",
     )
     args = parser.parse_args(argv)
 
     SUBMISSIONS_DIR.mkdir(parents=True, exist_ok=True)
     LEADERBOARD_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-    generated_submission = generate_knoema_submission()
+    generated_submission = generate_luvoire_submission()
     generated_leaderboard = render_leaderboard(load_all_submissions(generated_submission))
 
     if args.check:
         failures: list[str] = []
-        if KNOEMA_SUBMISSION_PATH.read_text(encoding="utf-8") != dump_yaml(generated_submission):
-            failures.append(str(KNOEMA_SUBMISSION_PATH))
+        if LUVOIRE_SUBMISSION_PATH.read_text(encoding="utf-8") != dump_yaml(generated_submission):
+            failures.append(str(LUVOIRE_SUBMISSION_PATH))
         if LEADERBOARD_PATH.read_text(encoding="utf-8") != generated_leaderboard:
             failures.append(str(LEADERBOARD_PATH))
         if failures:
@@ -67,14 +67,14 @@ def main(argv: list[str] | None = None) -> int:
         print("leaderboard artifacts are current")
         return 0
 
-    KNOEMA_SUBMISSION_PATH.write_text(dump_yaml(generated_submission), encoding="utf-8")
+    LUVOIRE_SUBMISSION_PATH.write_text(dump_yaml(generated_submission), encoding="utf-8")
     LEADERBOARD_PATH.write_text(generated_leaderboard, encoding="utf-8")
-    print(f"wrote {KNOEMA_SUBMISSION_PATH}")
+    print(f"wrote {LUVOIRE_SUBMISSION_PATH}")
     print(f"wrote {LEADERBOARD_PATH}")
     return 0
 
 
-def generate_knoema_submission() -> dict[str, Any]:
+def generate_luvoire_submission() -> dict[str, Any]:
     memory = load_json(ROOT / "benchmarks" / "memory_benchmark_integration" / "results" / "summary.json")
     mlmf = load_json(ROOT / "experiments" / "mlmf_retention_benchmark" / "results" / "summary.json")
     tom = load_json(ROOT / "experiments" / "theory_of_mind_ablation" / "results" / "summary.json")
@@ -90,11 +90,11 @@ def generate_knoema_submission() -> dict[str, Any]:
     normalized_latency_score = min(1.0, latency_target_ms / replay_latency["mean_tick_latency_ms"])
 
     return {
-        "framework": "Knoema Engine",
-        "version": KNOEMA_VERSION,
+        "framework": "Luvoire",
+        "version": LUVOIRE_VERSION,
         "date": "2026-04-21",
         "contact": "hello@celovin.com",
-        "repository": "https://github.com/Celovin/knoema",
+        "repository": "https://github.com/Celovin/luvoire",
         "results": {
             "locomo": memory_result(
                 memory_rows["locomo"],
@@ -166,21 +166,21 @@ def memory_result(row: dict[str, Any], *, caveat: str) -> dict[str, Any]:
     }
 
 
-def load_all_submissions(knoema_submission: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+def load_all_submissions(luvoire_submission: dict[str, Any] | None = None) -> list[dict[str, Any]]:
     submissions: list[dict[str, Any]] = []
     for path in sorted(SUBMISSIONS_DIR.glob("*.yaml")):
         if path.name == "TEMPLATE.yaml":
             continue
-        if path == KNOEMA_SUBMISSION_PATH and knoema_submission is not None:
-            data = knoema_submission
+        if path == LUVOIRE_SUBMISSION_PATH and luvoire_submission is not None:
+            data = luvoire_submission
         else:
             data = load_yaml(path)
         validate_submission_data(data, source=path)
         submissions.append(data)
 
-    if KNOEMA_SUBMISSION_PATH not in sorted(SUBMISSIONS_DIR.glob("*.yaml")):
-        data = generate_knoema_submission() if knoema_submission is None else knoema_submission
-        validate_submission_data(data, source=KNOEMA_SUBMISSION_PATH)
+    if LUVOIRE_SUBMISSION_PATH not in sorted(SUBMISSIONS_DIR.glob("*.yaml")):
+        data = generate_luvoire_submission() if luvoire_submission is None else luvoire_submission
+        validate_submission_data(data, source=LUVOIRE_SUBMISSION_PATH)
         submissions.append(data)
 
     return sorted(submissions, key=leaderboard_sort_key)
@@ -188,11 +188,11 @@ def load_all_submissions(knoema_submission: dict[str, Any] | None = None) -> lis
 
 def render_leaderboard(submissions: list[dict[str, Any]]) -> str:
     lines = [
-        "# Knoema Bench Leaderboard",
+        "# Luvoire Bench Leaderboard",
         "",
         "<!-- This file is generated by scripts/build_leaderboard.py. -->",
         "",
-        "Knoema Bench ranks persistent-agent frameworks across seven public axes. "
+        "Luvoire Bench ranks persistent-agent frameworks across seven public axes. "
         "Scores are shown exactly as submitted; average score uses the raw axis score "
         "fields and does not erase caveats.",
         "",

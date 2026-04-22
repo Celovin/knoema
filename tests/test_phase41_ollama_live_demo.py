@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from knoema.demo.ollama_live import (
+from luvoire.demo.ollama_live import (
     DEFAULT_OLLAMA_MODEL,
     DEFAULT_OLLAMA_SEED,
     available_ollama_models,
@@ -38,14 +38,14 @@ def test_phase41_available_ollama_models_reads_tags(monkeypatch: Any) -> None:
         assert timeout == 2.0
         return _FakeResponse({"models": [{"name": DEFAULT_OLLAMA_MODEL}, {"name": "qwen3:latest"}]})
 
-    monkeypatch.setattr("knoema.demo.ollama_live.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("luvoire.demo.ollama_live.request.urlopen", fake_urlopen)
 
     assert available_ollama_models() == [DEFAULT_OLLAMA_MODEL, "qwen3:latest"]
 
 
 def test_phase41_demo_runner_builds_seeded_five_agent_result(monkeypatch: Any) -> None:
     monkeypatch.setattr(
-        "knoema.demo.ollama_live.ensure_ollama_model_available",
+        "luvoire.demo.ollama_live.ensure_ollama_model_available",
         lambda model, base_url="http://localhost:11434", timeout=2.0: None,
     )
 
@@ -65,7 +65,7 @@ def test_phase41_demo_runner_builds_seeded_five_agent_result(monkeypatch: Any) -
             }
         )
 
-    monkeypatch.setattr("knoema.demo.ollama_live.OllamaClient.complete", fake_complete)
+    monkeypatch.setattr("luvoire.demo.ollama_live.OllamaClient.complete", fake_complete)
 
     result = run_live_ollama_demo()
 
@@ -80,7 +80,7 @@ def test_phase41_demo_runner_builds_seeded_five_agent_result(monkeypatch: Any) -
 
 def test_phase41_warmup_uses_live_model(monkeypatch: Any) -> None:
     monkeypatch.setattr(
-        "knoema.demo.ollama_live.ensure_ollama_model_available",
+        "luvoire.demo.ollama_live.ensure_ollama_model_available",
         lambda model, base_url="http://localhost:11434", timeout=2.0: None,
     )
 
@@ -92,7 +92,7 @@ def test_phase41_warmup_uses_live_model(monkeypatch: Any) -> None:
         captured["kwargs"] = kwargs
         return '{"action_type":"observe","target":null,"content":"ready"}'
 
-    monkeypatch.setattr("knoema.demo.ollama_live.OllamaClient.complete", fake_complete)
+    monkeypatch.setattr("luvoire.demo.ollama_live.OllamaClient.complete", fake_complete)
 
     elapsed = warm_live_ollama_demo_model()
 

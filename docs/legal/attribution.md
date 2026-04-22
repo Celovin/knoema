@@ -1,4 +1,4 @@
-# Knoema Attribution Manifest
+# Luvoire Attribution Manifest
 
 > STATUS: DRAFT - LEGAL REVIEW PENDING (do not publish)
 
@@ -12,7 +12,7 @@ This manifest consolidates attribution notices for commercial readiness. It is n
 - Dataset revision: `0381f03a403df78a7998000f8b11705635b654fd`.
 - Required attribution text: Nemotron-Personas-Korea dataset card, authors NVIDIA and Naver Cloud.
 - Project attribution text: Nemotron-Personas-Korea. NVIDIA and Naver Cloud. Hugging Face dataset: https://huggingface.co/datasets/nvidia/Nemotron-Personas-Korea. License: CC BY 4.0.
-- Upstream source categories referenced by the dataset card and Knoema documentation: KOSIS, Korean court data, National Health Insurance Service, Korea Rural Economic Institute, Naver Cloud.
+- Upstream source categories referenced by the dataset card and Luvoire documentation: KOSIS, Korean court data, National Health Insurance Service, Korea Rural Economic Institute, Naver Cloud.
 
 ## CAT-28 Academic Sources
 
@@ -67,5 +67,5 @@ This manifest consolidates attribution notices for commercial readiness. It is n
 
 ## Patent and Trademark Notices
 
-Knoema, Celovin, and related project names may be trademarks of their respective owners. Third-party product names, datasets, model names, and platform names belong to their respective owners. This manifest does not grant patent, trademark, publicity, privacy, or database rights.
+Luvoire, Celovin, and related project names may be trademarks of their respective owners. Third-party product names, datasets, model names, and platform names belong to their respective owners. This manifest does not grant patent, trademark, publicity, privacy, or database rights.
 

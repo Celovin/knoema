@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from knoema.dsl import collect_validation_issues, load_scenario
+from luvoire.dsl import collect_validation_issues, load_scenario
 
 
 def test_phase49_editor_files_exist() -> None:
@@ -34,7 +34,7 @@ def test_phase49_editor_implements_required_surfaces() -> None:
         "YamlPreview",
         "createContext",
         "onDrop",
-        "download=\"knoema_scenario.yaml\"",
+        "download=\"luvoire_scenario.yaml\"",
     ]:
         assert token in source
 

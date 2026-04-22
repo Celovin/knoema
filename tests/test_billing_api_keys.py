@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from knoema.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore, constant_time_equals
+from luvoire.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore, constant_time_equals
 
 
 def test_api_key_issue_verify_revoke_and_hash_only_storage() -> None:
@@ -13,7 +13,7 @@ def test_api_key_issue_verify_revoke_and_hash_only_storage() -> None:
 
     key_id, raw_secret = manager.issue("tenant-a", "llm:invoke")
 
-    assert raw_secret.startswith(f"knoema_{key_id}_")
+    assert raw_secret.startswith(f"luvoire_{key_id}_")
     assert manager.verify(raw_secret) == "tenant-a"
     stored = manager.store.get(key_id)
     assert stored is not None
@@ -36,7 +36,7 @@ def test_api_key_rotation_keeps_old_key_temporarily_valid() -> None:
     assert old_record is not None
     assert old_record.expires_at is not None
     assert old_record.rotated_to_key_id == new_key_id
-    assert new_secret.startswith(f"knoema_{new_key_id}_")
+    assert new_secret.startswith(f"luvoire_{new_key_id}_")
 
 
 def test_constant_time_comparison_function_is_used(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -46,7 +46,7 @@ def test_constant_time_comparison_function_is_used(monkeypatch: pytest.MonkeyPat
         calls.append((left, right))
         return constant_time_equals(left, right)
 
-    monkeypatch.setattr("knoema.billing.api_keys.constant_time_equals", compare)
+    monkeypatch.setattr("luvoire.billing.api_keys.constant_time_equals", compare)
     manager = APIKeyManager(InMemoryAPIKeyStore())
     _key_id, raw_secret = manager.issue("tenant-c", "llm:invoke")
 
@@ -56,7 +56,7 @@ def test_constant_time_comparison_function_is_used(monkeypatch: pytest.MonkeyPat
 
 def test_billing_slot_files_do_not_contain_obvious_raw_secrets() -> None:
     tracked = subprocess.run(
-        ["git", "ls-files", "src/knoema/billing", "tests/test_billing_*.py", "docs/billing.md"],
+        ["git", "ls-files", "src/luvoire/billing", "tests/test_billing_*.py", "docs/billing.md"],
         check=True,
         capture_output=True,
         text=True,

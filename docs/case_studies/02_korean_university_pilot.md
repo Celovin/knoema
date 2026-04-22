@@ -28,7 +28,7 @@ The lab needs one workflow that can satisfy both exploratory research and review
 
 ## Solution Design
 
-Knoema provides a single path from YAML scenario design to replayable simulation output, benchmark evidence, and export-ready documentation.
+Luvoire provides a single path from YAML scenario design to replayable simulation output, benchmark evidence, and export-ready documentation.
 
 ```text
 Research question

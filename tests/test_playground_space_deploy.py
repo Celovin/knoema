@@ -42,7 +42,7 @@ def test_playground_space_deploy_rejects_non_celovin_target_namespace(tmp_path) 
         run_playground_space_deploy(
             run_command=fake_runner,
             repo_root=tmp_path,
-            repo_id="someone-else/knoema-playground",
+            repo_id="someone-else/luvoire-playground",
             dry_run=True,
         )
 
@@ -65,8 +65,8 @@ def test_playground_space_deploy_runs_create_and_upload_commands(tmp_path) -> No
     assert result["status"] == "ok"
     assert result["authenticated_user"] == "celovin"
     assert result["commit_message"] == DEFAULT_COMMIT_MESSAGE
-    assert result["repo_id"] == "celovin/knoema-playground"
-    assert result["space_url"] == "https://huggingface.co/spaces/celovin/knoema-playground"
+    assert result["repo_id"] == "celovin/luvoire-playground"
+    assert result["space_url"] == "https://huggingface.co/spaces/celovin/luvoire-playground"
     assert calls == [
         (["hf", "auth", "whoami"], tmp_path),
         (
@@ -74,7 +74,7 @@ def test_playground_space_deploy_runs_create_and_upload_commands(tmp_path) -> No
                 "hf",
                 "repo",
                 "create",
-                "celovin/knoema-playground",
+                "celovin/luvoire-playground",
                 "--repo-type",
                 "space",
                 "--space_sdk",
@@ -87,7 +87,7 @@ def test_playground_space_deploy_runs_create_and_upload_commands(tmp_path) -> No
             [
                 "hf",
                 "upload",
-                "celovin/knoema-playground",
+                "celovin/luvoire-playground",
                 ".",
                 ".",
                 "--repo-type",
@@ -102,7 +102,7 @@ def test_playground_space_deploy_runs_create_and_upload_commands(tmp_path) -> No
                 sys.executable,
                 str(tmp_path / "scripts" / "warm_space.py"),
                 "--repo-id",
-                "celovin/knoema-playground",
+                "celovin/luvoire-playground",
             ],
             tmp_path,
         ),
@@ -130,7 +130,7 @@ def test_playground_space_deploy_dry_run_skips_repo_mutation(tmp_path) -> None:
 
     assert result["status"] == "dry-run"
     assert calls == [["hf", "auth", "whoami"]]
-    assert "hf repo create celovin/knoema-playground" in result["commands"][0]
+    assert "hf repo create celovin/luvoire-playground" in result["commands"][0]
 
 
 def test_playground_space_deploy_ensure_fresh_install_uses_verified_head(tmp_path) -> None:
@@ -141,7 +141,7 @@ def test_playground_space_deploy_ensure_fresh_install_uses_verified_head(tmp_pat
     requirements = playground_dir / "requirements.txt"
     requirements.write_text(
         f"gradio==5.31.0\n"
-        f"knoema-engine @ git+https://github.com/Celovin/knoema.git@{old_sha}\n",
+        f"luvoire-engine @ git+https://github.com/Celovin/luvoire.git@{old_sha}\n",
         encoding="utf-8",
     )
 
@@ -175,7 +175,7 @@ def test_playground_space_deploy_factory_reboots_when_pyproject_changed(tmp_path
     previous_source_sha = "c" * 40
     requirements_text = (
         "gradio==5.31.0\n"
-        f"knoema-engine @ git+https://github.com/Celovin/knoema.git@{previous_source_sha}\n"
+        f"luvoire-engine @ git+https://github.com/Celovin/luvoire.git@{previous_source_sha}\n"
     )
     (playground_dir / "requirements.txt").write_text(requirements_text, encoding="utf-8")
     (tmp_path / "pyproject.toml").write_text("[project]\nname = \"new\"\n", encoding="utf-8")
@@ -189,12 +189,12 @@ def test_playground_space_deploy_factory_reboots_when_pyproject_changed(tmp_path
             self.restarted = False
 
         def repo_info(self, *, repo_id: str, repo_type: str):
-            assert repo_id == "celovin/knoema-playground"
+            assert repo_id == "celovin/luvoire-playground"
             assert repo_type == "space"
             return FakeRepoInfo()
 
         def restart_space(self, *, repo_id: str, factory_reboot: bool) -> None:
-            assert repo_id == "celovin/knoema-playground"
+            assert repo_id == "celovin/luvoire-playground"
             assert factory_reboot is True
             self.restarted = True
 
@@ -223,4 +223,4 @@ def test_playground_space_deploy_factory_reboots_when_pyproject_changed(tmp_path
 
     assert result["factory_rebooted"] is True
     assert fake_api.restarted is True
-    assert calls[-1][2:] == ["--repo-id", "celovin/knoema-playground"]
+    assert calls[-1][2:] == ["--repo-id", "celovin/luvoire-playground"]

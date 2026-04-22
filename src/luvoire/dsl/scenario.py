@@ -7,12 +7,12 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from knoema.environment import Environment
-from knoema.game.schedule import RoutineEntry
-from knoema.llm import LocalClient
-from knoema.persona import Persona
-from knoema.simulator import Simulator
-from knoema.types import Personality, WorldEvent
+from luvoire.environment import Environment
+from luvoire.game.schedule import RoutineEntry
+from luvoire.llm import LocalClient
+from luvoire.persona import Persona
+from luvoire.simulator import Simulator
+from luvoire.types import Personality, WorldEvent
 
 ScenarioDomain = Literal["game", "public_safety_research", "academic_research"]
 MetricKind = Literal["count", "ratio", "score", "latency"]

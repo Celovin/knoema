@@ -1,9 +1,9 @@
 # Godot GDScript Game SDK
 
-Use `sdk/godot-gdscript/knoema.gd` as a lightweight Godot facade when the full adapter package is unnecessary.
+Use `sdk/godot-gdscript/luvoire.gd` as a lightweight Godot facade when the full adapter package is unnecessary.
 
 ```gdscript
-var session := KnoemaGameSession.new("demo-village")
+var session := LuvoireGameSession.new("demo-village")
 session.create_npc(
     "shopkeeper",
     "Mina",

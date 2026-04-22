@@ -4,12 +4,12 @@ param containerImage string
 param postgresPassword string
 
 resource environment 'Microsoft.App/managedEnvironments@2023-05-01' = {
-  name: 'knoema-env'
+  name: 'luvoire-env'
   location: location
 }
 
 resource api 'Microsoft.App/containerApps@2023-05-01' = {
-  name: 'knoema-api'
+  name: 'luvoire-api'
   location: location
   properties: {
     managedEnvironmentId: environment.id
@@ -39,7 +39,7 @@ resource api 'Microsoft.App/containerApps@2023-05-01' = {
 }
 
 resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2023-06-01-preview' = {
-  name: 'knoema-postgres'
+  name: 'luvoire-postgres'
   location: location
   sku: {
     name: 'Standard_B1ms'
@@ -47,7 +47,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2023-06-01-preview'
   }
   properties: {
     version: '16'
-    administratorLogin: 'knoema'
+    administratorLogin: 'luvoire'
     administratorLoginPassword: postgresPassword
     storage: {
       storageSizeGB: 32

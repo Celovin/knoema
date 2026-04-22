@@ -1,6 +1,6 @@
-# Knoema Bench
+# Luvoire Bench
 
-Knoema Bench is a public seven-axis leaderboard for persistent-agent
+Luvoire Bench is a public seven-axis leaderboard for persistent-agent
 simulation frameworks. It covers long-term memory, multi-layer retention,
 symbolic theory-of-mind checks, hierarchical planning, and latency envelopes.
 

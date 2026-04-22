@@ -7,10 +7,10 @@ from pathlib import Path
 MATRIX_PATH = Path("docs/competitor_matrix.md")
 
 
-def test_phase17_competitor_matrix_exists_and_positions_knoema() -> None:
+def test_phase17_competitor_matrix_exists_and_positions_luvoire() -> None:
     matrix = MATRIX_PATH.read_text(encoding="utf-8")
 
-    assert "Knoema Only" in matrix
+    assert "Luvoire Only" in matrix
     assert "directed relationship graph" in matrix
     assert "persona opt-in theory-of-mind tracking" in matrix
     assert "Korean-capable prompt templates" in matrix

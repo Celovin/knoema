@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.celovin.knoema"
+    namespace = "com.celovin.luvoire"
     compileSdk = 35
 
     defaultConfig {

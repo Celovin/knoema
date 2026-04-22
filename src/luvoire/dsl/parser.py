@@ -6,8 +6,8 @@ from pathlib import Path
 
 import yaml
 
-from knoema.dsl.scenario import Scenario
-from knoema.dsl.validator import validate_scenario
+from luvoire.dsl.scenario import Scenario
+from luvoire.dsl.validator import validate_scenario
 
 
 def load_scenario(path: str | Path, *, validate: bool = True) -> Scenario:

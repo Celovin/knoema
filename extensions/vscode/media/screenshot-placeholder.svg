@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Knoema VS Code extension screenshot placeholder">
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Luvoire VS Code extension screenshot placeholder">
   <rect width="960" height="540" fill="#f8fafc" />
   <rect x="48" y="48" width="864" height="444" rx="8" fill="#10231b" />
-  <text x="82" y="96" font-family="Arial" font-size="28" fill="#c8dc58">Knoema Scenario Tools</text>
+  <text x="82" y="96" font-family="Arial" font-size="28" fill="#c8dc58">Luvoire Scenario Tools</text>
   <text x="82" y="148" font-family="Arial" font-size="20" fill="#e8f5ee">schema_version: "1.0"</text>
   <text x="82" y="184" font-family="Arial" font-size="20" fill="#e8f5ee">scenario_id: dorm_handoff</text>
   <text x="82" y="220" font-family="Arial" font-size="20" fill="#e8f5ee">ethics:</text>

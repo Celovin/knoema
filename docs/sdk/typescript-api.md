@@ -3,7 +3,7 @@
 The TypeScript package is a client-side or Node-compatible facade for game tooling.
 
 ```ts
-import { GameSession } from "@celovin/knoema-game";
+import { GameSession } from "@celovin/luvoire-game";
 
 const session = new GameSession({ gameId: "demo-village" });
 const npc = session.createNPC({

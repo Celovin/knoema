@@ -4,13 +4,13 @@ import json
 import subprocess
 import sys
 
-from knoema.benchmark import BenchmarkConfig, format_markdown_report, run_knoema_benchmark
+from luvoire.benchmark import BenchmarkConfig, format_markdown_report, run_luvoire_benchmark
 
 
 def test_phase14_benchmark_report_records_expected_actions() -> None:
     config = BenchmarkConfig(agent_count=3, duration_days=1, tick_minutes=360, repetitions=1)
 
-    report = run_knoema_benchmark(config)
+    report = run_luvoire_benchmark(config)
 
     assert report.action_count == 12
     assert report.config.expected_action_count == 12
@@ -19,13 +19,13 @@ def test_phase14_benchmark_report_records_expected_actions() -> None:
 
 
 def test_phase14_benchmark_markdown_keeps_external_comparison_slots() -> None:
-    report = run_knoema_benchmark(
+    report = run_luvoire_benchmark(
         BenchmarkConfig(agent_count=2, duration_days=1, tick_minutes=360, repetitions=1)
     )
 
     markdown = format_markdown_report(report)
 
-    assert "| Knoema | measured |" in markdown
+    assert "| Luvoire | measured |" in markdown
     assert "| Concordia | not-measured |" in markdown
     assert "| Mesa | not-measured |" in markdown
 
@@ -59,6 +59,6 @@ def test_phase14_benchmark_script_writes_json_and_markdown(tmp_path) -> None:  #
     payload = json.loads(json_path.read_text(encoding="utf-8"))
     markdown = markdown_path.read_text(encoding="utf-8")
 
-    assert payload["engine"] == "Knoema"
+    assert payload["engine"] == "Luvoire"
     assert payload["summary"]["action_count"] == 8
     assert "Framework Comparison" in markdown

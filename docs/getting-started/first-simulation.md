@@ -5,7 +5,7 @@ This example creates two fictional agents, runs one deterministic simulated day,
 ```python
 from datetime import datetime
 
-from knoema import Environment, LocalClient, Persona, Personality, Simulator
+from luvoire import Environment, LocalClient, Persona, Personality, Simulator
 
 alice = Persona(
     agent_id='alice',

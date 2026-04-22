@@ -8,7 +8,7 @@ tick_duration_minutes: 360
 duration_days: 1
 environment:
   start_time: "2026-03-21T08:00:00"
-  location_path: [Knoema Demo World, Civic Annex, Briefing Room]
+  location_path: [Luvoire Demo World, Civic Annex, Briefing Room]
   conditions:
     drill_scheduled: true
     weather: rainy
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-03-21T10:00:00"
     event_type: drill.route_checkpoint
     participants: [coordinator, observer]
-    location: Knoema Demo World > Civic Annex > Briefing Room
+    location: Luvoire Demo World > Civic Annex > Briefing Room
     description: Observer repeats the route summary and notes one phrasing improvement.
 metrics:
   - name: briefing_alignment

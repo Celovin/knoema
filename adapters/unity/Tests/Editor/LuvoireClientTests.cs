@@ -1,14 +1,14 @@
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Knoema.Unity.Tests
+namespace Luvoire.Unity.Tests
 {
-    public sealed class KnoemaClientTests
+    public sealed class LuvoireClientTests
     {
         [Test]
         public void ConfigDefaultsToLocalhostEndpoint()
         {
-            var config = ScriptableObject.CreateInstance<KnoemaConfig>();
+            var config = ScriptableObject.CreateInstance<LuvoireConfig>();
 
             Assert.That(config.EndpointUrl, Does.Contain("localhost:8000"));
             Assert.That(config.SessionId, Is.EqualTo("unity-demo"));
@@ -18,7 +18,7 @@ namespace Knoema.Unity.Tests
         [Test]
         public void ClientTypeIsAvailableForNpcAgents()
         {
-            var client = new KnoemaClient(null);
+            var client = new LuvoireClient(null);
 
             Assert.That(client, Is.Not.Null);
         }

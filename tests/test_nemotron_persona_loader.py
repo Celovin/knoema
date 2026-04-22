@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from knoema.persona.nemotron_loader import (
+from luvoire.persona.nemotron_loader import (
     EXPECTED_AGENT_ATTRIBUTE_KEYS,
     NemotronPersonaSource,
 )

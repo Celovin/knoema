@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from knoema.metrics import compute_pcs, compute_rcs
+from luvoire.metrics import compute_pcs, compute_rcs
 
 ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = ROOT / "results"

@@ -36,7 +36,7 @@ def test_phase50_paper_integrates_latest_evidence() -> None:
     missing = [phrase for phrase in required_phrases if phrase not in body]
 
     assert missing == []
-    assert body.count("Knoema") >= 20
+    assert body.count("Luvoire") >= 20
     assert "Stanford" in body
     assert "Concordia" in body
     assert "AutoGen" in body
@@ -77,9 +77,9 @@ def test_phase50_papers_with_code_packet_schema() -> None:
     packet = packet_path.read_text(encoding="utf-8")
     data = json.loads(schema_path.read_text(encoding="utf-8"))
 
-    assert data["schema_version"] == "knoema.papers_with_code.packet.v1"
+    assert data["schema_version"] == "luvoire.papers_with_code.packet.v1"
     assert data["paper"]["arxiv_id"] == "ARXIV_ID_PENDING"
-    assert data["paper"]["repository"] == "https://github.com/Celovin/knoema"
+    assert data["paper"]["repository"] == "https://github.com/Celovin/luvoire"
     assert {task["name"] for task in data["tasks"]} == {
         "Multi-agent RL",
         "Agent-based modeling",
@@ -93,7 +93,7 @@ def test_phase50_papers_with_code_packet_schema() -> None:
         "Classic ABM reproductions",
     }
     assert len(data["results"]) >= 8
-    assert all(result["model"].startswith("Knoema") for result in data["results"])
+    assert all(result["model"].startswith("Luvoire") for result in data["results"])
     assert "ARXIV_ID_PENDING" in packet
     assert "mean throughput actions/s" in packet
     assert "safety boundary" in packet.lower()
@@ -105,13 +105,13 @@ def test_phase50_papers_with_code_packet_schema() -> None:
 
 
 def test_phase50_pdf_preview_has_required_page_count() -> None:
-    pdf = Path("paper/knoema_technical_report.pdf")
+    pdf = Path("paper/luvoire_technical_report.pdf")
     reader = PdfReader(pdf)
 
     assert len(reader.pages) >= 30
     assert len(reader.pages) <= 45
     assert reader.metadata is not None
-    assert "Knoema Engine arXiv v2 Technical Report" in str(reader.metadata.title)
+    assert "Luvoire arXiv v2 Technical Report" in str(reader.metadata.title)
 
 
 def test_phase50_docs_surface_packet() -> None:

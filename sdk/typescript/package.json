@@ -1,7 +1,7 @@
 {
-  "name": "@celovin/knoema-game",
+  "name": "@celovin/luvoire-game",
   "version": "0.1.0",
-  "description": "Game NPC SDK facade for Knoema Engine integrations.",
+  "description": "Game NPC SDK facade for Luvoire integrations.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

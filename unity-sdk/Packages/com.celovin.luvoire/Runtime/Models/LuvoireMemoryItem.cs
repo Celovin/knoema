@@ -1,9 +1,9 @@
 using System;
 
-namespace Knoema.UnitySdk.Models
+namespace Luvoire.UnitySdk.Models
 {
     [Serializable]
-    public sealed class KnoemaMemoryItem
+    public sealed class LuvoireMemoryItem
     {
         public string id = "";
         public string agent_id = "";

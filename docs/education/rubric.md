@@ -4,7 +4,7 @@ Use this rubric for the final project and adapt the same weights for major assig
 
 | Area | Weight | Criteria |
 |---|---:|---|
-| Code and scenario implementation | 30% | Valid Scenario DSL, reproducible run scripts, readable configuration, and clear use of Knoema APIs. |
+| Code and scenario implementation | 30% | Valid Scenario DSL, reproducible run scripts, readable configuration, and clear use of Luvoire APIs. |
 | Written report | 40% | Research question, methods, evidence, analysis, limitations, and safety discussion are coherent and defensible. |
 | Presentation | 20% | Demo clarity, explanation of results, response to questions, and visual communication. |
 | Reproducibility | 10% | Run fingerprint, source config, JSONL logs, exported tables, and environment notes are attached. |

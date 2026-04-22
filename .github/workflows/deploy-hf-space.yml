@@ -43,7 +43,7 @@ jobs:
 
           api = HfApi(token=os.environ["HF_TOKEN"])
           api.upload_folder(
-              repo_id="celovin/knoema-playground",
+              repo_id="celovin/luvoire-playground",
               repo_type="space",
               folder_path="playground",
               path_in_repo=".",

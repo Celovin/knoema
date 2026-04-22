@@ -1,15 +1,15 @@
-"""Tenant authentication helpers for the Knoema API server."""
+"""Tenant authentication helpers for the Luvoire API server."""
 
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 from typing import Any
 
 from fastapi import HTTPException, Request, Response, WebSocket, WebSocketException, status
 
-from knoema.billing import api_keys
-from knoema.billing.tiers import ApiKeySource, TierName
+from luvoire.billing import api_keys
+from luvoire.billing.tiers import ApiKeySource, TierName
+from luvoire.config import get_env
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,7 +21,7 @@ class AuthenticatedTenant:
 
 
 def _expected_api_key() -> str | None:
-    value = os.getenv("KNOEMA_API_KEY")
+    value = get_env("LUVOIRE_API_KEY", "KNOEMA_API_KEY")
     if value is None:
         return None
     cleaned = value.strip()
@@ -67,7 +67,7 @@ def require_tenant(request: Request, response: Response) -> AuthenticatedTenant:
     if tenant is None:
         raise _unauthorized()
     request.state.authenticated_tenant = tenant
-    response.headers["X-Knoema-Tenant-Tier"] = tenant.tier
+    response.headers["X-Luvoire-Tenant-Tier"] = tenant.tier
     return tenant
 
 
@@ -79,7 +79,7 @@ def optional_tenant(request: Request, response: Response) -> AuthenticatedTenant
     if tenant is None:
         raise _unauthorized()
     request.state.authenticated_tenant = tenant
-    response.headers["X-Knoema-Tenant-Tier"] = tenant.tier
+    response.headers["X-Luvoire-Tenant-Tier"] = tenant.tier
     return tenant
 
 
@@ -111,7 +111,7 @@ def require_api_key(request: Request) -> None:
 
 
 def require_websocket_api_key(websocket: WebSocket) -> None:
-    """Legacy WebSocket API key guard used when KNOEMA_API_KEY is configured."""
+    """Legacy WebSocket API key guard used when LUVOIRE_API_KEY is configured."""
 
     expected = _expected_api_key()
     if expected is None:

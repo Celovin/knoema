@@ -1,6 +1,6 @@
 # Roadmap
 
-Knoema is an early MVP. The current roadmap keeps three tracks aligned.
+Luvoire is an early MVP. The current roadmap keeps three tracks aligned.
 
 ## Game Track
 

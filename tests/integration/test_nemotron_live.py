@@ -4,13 +4,13 @@ import os
 
 import pytest
 
-from knoema.persona.nemotron_loader import DEFAULT_REPO_ID, NemotronPersonaSource
+from luvoire.persona.nemotron_loader import DEFAULT_REPO_ID, NemotronPersonaSource
 
 pytestmark = pytest.mark.slow
 
 
 @pytest.mark.skipif(
-    os.getenv("KNOEMA_ENABLE_HF_NETWORK") != "1",
+    os.getenv("LUVOIRE_ENABLE_HF_NETWORK") != "1",
     reason="live Hugging Face dataset access is opt-in",
 )
 def test_nemotron_live_streaming_sample_maps_to_agent_attributes() -> None:

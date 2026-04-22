@@ -1,6 +1,6 @@
 """Human evaluation helpers for comparing simulation traces."""
 
-from knoema.evaluation.human import (
+from luvoire.evaluation.human import (
     ComparisonPair,
     EvaluationSession,
     ReliabilityReport,

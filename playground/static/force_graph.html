@@ -55,12 +55,12 @@
 <body>
   <div id="graph-root"></div>
   <div id="graph-status" hidden></div>
-  <!-- KNOEMA_FORCE_GRAPH_BOOTSTRAP -->
+  <!-- LUVOIRE_FORCE_GRAPH_BOOTSTRAP -->
   <script>
     (() => {
       const defaultCdnUrl =
         "https://cdn.jsdelivr.net/npm/3d-force-graph@1.79.0/dist/3d-force-graph.min.js";
-      const boot = window.KNOEMA_FORCE_GRAPH_BOOT || {};
+      const boot = window.LUVOIRE_FORCE_GRAPH_BOOT || {};
       const root = document.getElementById("graph-root");
       const status = document.getElementById("graph-status");
       let graph = null;
@@ -212,9 +212,9 @@
           renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         }
         graph.onEngineStop(() => {
-          if (!graph.__knoemaHasZoomed) {
+          if (!graph.__luvoireHasZoomed) {
             graph.zoomToFit(600, 64);
-            graph.__knoemaHasZoomed = true;
+            graph.__luvoireHasZoomed = true;
           }
         });
         graph.refresh();

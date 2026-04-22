@@ -33,4 +33,4 @@ def test_phase38_localized_readmes_link_back_to_full_english_reference() -> None
 
         assert "[English](README.md)" in text
         assert "pip install -e " in text
-        assert "Knoema Playground" in text
+        assert "Luvoire Playground" in text

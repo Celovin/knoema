@@ -2,7 +2,7 @@
 
 ## Research Question
 
-Do perspective-taking traits and planning depth improve false-belief-consistent behavior in deterministic Knoema social simulations?
+Do perspective-taking traits and planning depth improve false-belief-consistent behavior in deterministic Luvoire social simulations?
 
 ## Hypotheses
 

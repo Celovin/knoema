@@ -1,6 +1,6 @@
 """Community scenario gallery APIs."""
 
-from knoema.community.gallery import (
+from luvoire.community.gallery import (
     CommunityScenario,
     community_gallery_markdown,
     community_scenario_by_id,

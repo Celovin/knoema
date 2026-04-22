@@ -3,14 +3,14 @@ from __future__ import annotations
 from pathlib import Path
 
 
-def test_phase34_godot_tavern_demo_assets_exist_and_reference_knoema_client() -> None:
+def test_phase34_godot_tavern_demo_assets_exist_and_reference_luvoire_client() -> None:
     expected = [
         "adapters/godot/samples/tavern_demo/README.md",
         "adapters/godot/samples/tavern_demo/tavern_demo.tscn",
         "adapters/godot/samples/tavern_demo/scripts/tavern_demo.gd",
         "adapters/godot/samples/tavern_demo/scripts/tavern_player.gd",
         "adapters/godot/samples/tavern_demo/web_build/index.html",
-        "adapters/godot/scripts/knoema_client.gd",
+        "adapters/godot/scripts/luvoire_client.gd",
     ]
 
     missing = [path for path in expected if not Path(path).exists()]
@@ -24,7 +24,7 @@ def test_phase34_godot_tavern_demo_assets_exist_and_reference_knoema_client() ->
     player = Path("adapters/godot/samples/tavern_demo/scripts/tavern_player.gd").read_text(
         encoding="utf-8"
     )
-    client = Path("adapters/godot/scripts/knoema_client.gd").read_text(encoding="utf-8")
+    client = Path("adapters/godot/scripts/luvoire_client.gd").read_text(encoding="utf-8")
     web_build = Path("adapters/godot/samples/tavern_demo/web_build/index.html").read_text(
         encoding="utf-8"
     )
@@ -92,7 +92,7 @@ def test_phase34_docs_and_website_embed_both_browser_demos() -> None:
         Path("docs/adapters/screenshots/unity-tavern-demo.png"),
     ]
 
-    assert "uvicorn knoema.api.server:app" in docs
+    assert "uvicorn luvoire.api.server:app" in docs
     assert "not real Godot or Unity engine exports" in docs
     assert "godot4 --path adapters/godot" in docs
     assert "TavernDemoBuild.BuildWebGL" in docs

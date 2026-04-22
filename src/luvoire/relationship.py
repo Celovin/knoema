@@ -7,7 +7,7 @@ from typing import Literal
 
 import networkx as nx
 
-from knoema.types import Action, AgentID, RelationshipType
+from luvoire.types import Action, AgentID, RelationshipType
 
 InteractionOutcome = Literal["positive", "neutral", "negative"]
 

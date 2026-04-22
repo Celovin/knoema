@@ -1,32 +1,32 @@
 using System;
 using UnityEngine;
 
-namespace Knoema.Unity
+namespace Luvoire.Unity
 {
     public sealed class NPCAgent : MonoBehaviour
     {
-        [SerializeField] private KnoemaConfig config;
+        [SerializeField] private LuvoireConfig config;
         [SerializeField] private string agentId = "guide";
         [SerializeField] [TextArea] private string contextJson = "{\"location\":\"sample scene\"}";
 
-        private KnoemaClient client;
+        private LuvoireClient client;
 
         public string AgentId => string.IsNullOrWhiteSpace(agentId) ? "guide" : agentId;
 
         private void Awake()
         {
-            client = new KnoemaClient(config);
+            client = new LuvoireClient(config);
         }
 
         public void Interact(
             string playerAction,
-            Action<KnoemaResponse> onCompleted,
+            Action<LuvoireResponse> onCompleted,
             Action<string> onError = null
         )
         {
             if (client == null)
             {
-                client = new KnoemaClient(config);
+                client = new LuvoireClient(config);
             }
             StartCoroutine(client.SendAsync(AgentId, playerAction, contextJson, onCompleted, onError));
         }

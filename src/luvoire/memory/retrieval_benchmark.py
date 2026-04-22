@@ -9,8 +9,8 @@ from pathlib import Path
 from statistics import mean
 from tempfile import TemporaryDirectory
 
-from knoema.memory.long_term import SQLiteFaissMemoryStore
-from knoema.types import Memory
+from luvoire.memory.long_term import SQLiteFaissMemoryStore
+from luvoire.types import Memory
 
 
 @dataclass(frozen=True, slots=True)
@@ -86,7 +86,7 @@ def run_memory_benchmark_cases(
     if not 0.0 <= target_recall_at_5 <= 1.0:
         raise ValueError("target_recall_at_5 must be between 0.0 and 1.0")
 
-    with TemporaryDirectory(prefix="knoema-memory-benchmark-") as temp_dir:
+    with TemporaryDirectory(prefix="luvoire-memory-benchmark-") as temp_dir:
         temp_root = Path(temp_dir)
         per_agent_results = tuple(
             _run_case(case, root=temp_root, k=k)

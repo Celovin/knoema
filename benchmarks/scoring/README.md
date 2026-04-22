@@ -8,7 +8,7 @@ Phase 46 computes two heuristic quality metrics from committed JSONL artifacts:
 Run:
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 .venv\Scripts\python benchmarks\scoring\runner.py
 ```
 

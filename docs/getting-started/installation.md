@@ -1,12 +1,12 @@
 # Installation
 
-Knoema targets Python 3.11 or newer.
+Luvoire targets Python 3.11 or newer.
 
 ## Editable Development Install
 
 ```bash
-git clone https://github.com/Celovin/knoema.git
-cd knoema
+git clone https://github.com/Celovin/luvoire.git
+cd luvoire
 pip install -e '.[dev]'
 ```
 

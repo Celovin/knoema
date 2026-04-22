@@ -1,4 +1,4 @@
-"""Build and verify the Knoema arXiv v2 submission bundle.
+"""Build and verify the Luvoire arXiv v2 submission bundle.
 
 The preferred path uses a local TeX engine. If ``pdflatex`` is unavailable,
 the script emits the existing ReportLab preview as the PDF artifact and still
@@ -28,8 +28,8 @@ DIST_ROOT = PROJECT_ROOT / "dist"
 BUILD_ROOT = PROJECT_ROOT / "tmp" / "arxiv_build"
 SOURCE_ROOT = BUILD_ROOT / "source"
 RENDER_ROOT = PROJECT_ROOT / "tmp" / "arxiv_render"
-PDF_OUTPUT = DIST_ROOT / "knoema_arxiv_v2.pdf"
-TARBALL_OUTPUT = DIST_ROOT / "knoema_arxiv_v2.tar.gz"
+PDF_OUTPUT = DIST_ROOT / "luvoire_arxiv_v2.pdf"
+TARBALL_OUTPUT = DIST_ROOT / "luvoire_arxiv_v2.tar.gz"
 MIN_PAGE_COUNT = 12
 
 
@@ -225,7 +225,7 @@ def build_reportlab_preview(output_path: Path) -> None:
 
 def load_build_pdf_module() -> ModuleType:
     module_path = PAPER_ROOT / "build_pdf.py"
-    spec = importlib.util.spec_from_file_location("knoema_arxiv_preview_builder", module_path)
+    spec = importlib.util.spec_from_file_location("luvoire_arxiv_preview_builder", module_path)
     if spec is None or spec.loader is None:
         msg = f"could not load {module_path}"
         raise RuntimeError(msg)

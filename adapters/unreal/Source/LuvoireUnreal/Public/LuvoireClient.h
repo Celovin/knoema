@@ -4,63 +4,63 @@
 #include "HttpFwd.h"
 #include "Templates/Function.h"
 #include "UObject/Object.h"
-#include "KnoemaClient.generated.h"
+#include "LuvoireClient.generated.h"
 
 USTRUCT(BlueprintType)
-struct KNOEMAUNREAL_API FKnoemaSimulationStatus
+struct LUVOIREUNREAL_API FLuvoireSimulationStatus
 {
     GENERATED_BODY()
 
-    UPROPERTY(BlueprintReadOnly, Category = "Knoema")
+    UPROPERTY(BlueprintReadOnly, Category = "Luvoire")
     FString SimulationId;
 
-    UPROPERTY(BlueprintReadOnly, Category = "Knoema")
+    UPROPERTY(BlueprintReadOnly, Category = "Luvoire")
     FString Status = TEXT("idle");
 
-    UPROPERTY(BlueprintReadOnly, Category = "Knoema")
+    UPROPERTY(BlueprintReadOnly, Category = "Luvoire")
     int32 CompletedTicks = 0;
 
-    UPROPERTY(BlueprintReadOnly, Category = "Knoema")
+    UPROPERTY(BlueprintReadOnly, Category = "Luvoire")
     int32 TotalTicks = 0;
 
-    UPROPERTY(BlueprintReadOnly, Category = "Knoema")
+    UPROPERTY(BlueprintReadOnly, Category = "Luvoire")
     FString Error;
 };
 
 UCLASS(BlueprintType)
-class KNOEMAUNREAL_API UKnoemaClient : public UObject
+class LUVOIREUNREAL_API ULuvoireClient : public UObject
 {
     GENERATED_BODY()
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Knoema")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Luvoire")
     FString BaseUrl = TEXT("http://127.0.0.1:8000");
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Knoema")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Luvoire")
     FString ApiKey;
 
-    UPROPERTY(BlueprintReadOnly, Category = "Knoema")
-    FKnoemaSimulationStatus LastStatus;
+    UPROPERTY(BlueprintReadOnly, Category = "Luvoire")
+    FLuvoireSimulationStatus LastStatus;
 
-    UPROPERTY(BlueprintReadOnly, Category = "Knoema")
+    UPROPERTY(BlueprintReadOnly, Category = "Luvoire")
     FString LastRawResponse;
 
-    UPROPERTY(BlueprintReadOnly, Category = "Knoema")
+    UPROPERTY(BlueprintReadOnly, Category = "Luvoire")
     FString LastError;
 
-    UFUNCTION(BlueprintCallable, Category = "Knoema")
+    UFUNCTION(BlueprintCallable, Category = "Luvoire")
     void Configure(const FString& InBaseUrl, const FString& InApiKey);
 
-    UFUNCTION(BlueprintCallable, Category = "Knoema")
+    UFUNCTION(BlueprintCallable, Category = "Luvoire")
     void CreateSimulation(const FString& RequestJson);
 
-    UFUNCTION(BlueprintCallable, Category = "Knoema")
+    UFUNCTION(BlueprintCallable, Category = "Luvoire")
     void PollSimulation(const FString& SimulationId);
 
-    UFUNCTION(BlueprintCallable, Category = "Knoema")
+    UFUNCTION(BlueprintCallable, Category = "Luvoire")
     void InjectEvent(const FString& SimulationId, const FString& EventJson);
 
-    UFUNCTION(BlueprintPure, Category = "Knoema")
+    UFUNCTION(BlueprintPure, Category = "Luvoire")
     bool HasActiveSimulation() const;
 
     const FString& GetActiveSimulationId() const
@@ -68,7 +68,7 @@ public:
         return ActiveSimulationId;
     }
 
-    const FKnoemaSimulationStatus& GetLastStatus() const
+    const FLuvoireSimulationStatus& GetLastStatus() const
     {
         return LastStatus;
     }

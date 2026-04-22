@@ -1,6 +1,6 @@
 # Tavern Demo
 
-Minimal Godot 4 tavern sample for a one-NPC Knoema loop.
+Minimal Godot 4 tavern sample for a one-NPC Luvoire loop.
 
 ## Run in Godot
 
@@ -10,7 +10,7 @@ Minimal Godot 4 tavern sample for a one-NPC Knoema loop.
 4. Move with `W`, `A`, `S`, `D`.
 5. Walk within 64px of Bjorn and type an order.
 
-The sample uses `res://scripts/knoema_client.gd` and defaults to replay-only fallback so it works without a running API server.
+The sample uses `res://scripts/luvoire_client.gd` and defaults to replay-only fallback so it works without a running API server.
 
 ## Browser Build
 

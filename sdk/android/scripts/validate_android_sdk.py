@@ -6,16 +6,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = {
-    "settings.gradle.kts": ["include(\":knoema-mobile\")"],
+    "settings.gradle.kts": ["include(\":luvoire-mobile\")"],
     "build.gradle.kts": ["com.android.library", "kotlin(\"android\")"],
-    "knoema-mobile/build.gradle.kts": ["namespace = \"com.celovin.knoema\"", "compileSdk"],
-    "knoema-mobile/src/main/kotlin/com/celovin/knoema/KnoemaClient.kt": [
-        "class KnoemaClient",
+    "luvoire-mobile/build.gradle.kts": ["namespace = \"com.celovin.luvoire\"", "compileSdk"],
+    "luvoire-mobile/src/main/kotlin/com/celovin/luvoire/LuvoireClient.kt": [
+        "class LuvoireClient",
         "fun restUrl",
         "fun webSocketUrl",
         "fun offlineResponse",
     ],
-    "knoema-mobile/src/main/kotlin/com/celovin/knoema/NPCAgent.kt": [
+    "luvoire-mobile/src/main/kotlin/com/celovin/luvoire/NPCAgent.kt": [
         "class NPCAgent",
         "cachedOrOfflineResponse",
     ],

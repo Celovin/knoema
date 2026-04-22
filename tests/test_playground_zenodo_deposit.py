@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path.cwd() / "src"))
 sys.path.insert(0, str(Path.cwd()))
 
 playground_app = importlib.import_module("playground.app")
-deposit_module = importlib.import_module("knoema.research.deposit")
+deposit_module = importlib.import_module("luvoire.research.deposit")
 
 
 def _walk_components(component: object) -> list[object]:
@@ -49,7 +49,7 @@ def test_subtask51_export_deposit_bundle_writes_local_packet_without_token() -> 
         "Dormitory cooperation study",
         "Celovin",
         "Dataset export for a replay run.",
-        "knoema, simulation",
+        "luvoire, simulation",
         "",
         True,
         False,
@@ -124,7 +124,7 @@ def test_subtask51_submit_zenodo_bundle_uses_deposition_api_flow() -> None:
         title="Dormitory cooperation study",
         creators_text="Celovin",
         description="Dataset export for a replay run.",
-        keywords_text="knoema, simulation",
+        keywords_text="luvoire, simulation",
         summary="Mode: Replay only | Agents: 2",
         jsonl_text='{"tick": 1, "agent_id": "agent_1"}\n',
         preregistration_markdown="## OSF-format pre-registration\n\nSample",

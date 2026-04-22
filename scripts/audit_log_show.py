@@ -8,7 +8,7 @@ from collections.abc import Sequence
 from datetime import datetime
 from pathlib import Path
 
-from knoema.safety.audit_log import AuditLog
+from luvoire.safety.audit_log import AuditLog
 
 
 def build_parser() -> argparse.ArgumentParser:

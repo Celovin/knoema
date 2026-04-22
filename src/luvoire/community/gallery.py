@@ -9,10 +9,10 @@ from dataclasses import dataclass
 from typing import Any, cast
 from urllib import request
 
-from knoema.dsl import loads_scenario
+from luvoire.dsl import loads_scenario
 
 DEFAULT_COMMUNITY_MANIFEST_URL = (
-    "https://raw.githubusercontent.com/Celovin/knoema-scenarios/main/manifest.json"
+    "https://raw.githubusercontent.com/Celovin/luvoire-scenarios/main/manifest.json"
 )
 _CACHE: dict[str, tuple[float, tuple[CommunityScenario, ...]]] = {}
 

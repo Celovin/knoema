@@ -3,7 +3,7 @@
 ## Run Matrix
 
 - Scenarios: 4
-- Approaches: Knoema memory policy and naive full-context LLM baseline
+- Approaches: Luvoire memory policy and naive full-context LLM baseline
 - Model profiles: local-small, local-medium, local-large
 - Total deterministic runs: 24
 
@@ -11,20 +11,20 @@
 
 | Scenario | Approach | Recall@k | Token efficiency | Actions/sec | Branches / 100 turns |
 | --- | --- | ---: | ---: | ---: | ---: |
-| A memory_recall | knoema | 0.789 | 4.662 | 1141.626 | 6.650 |
+| A memory_recall | luvoire | 0.789 | 4.662 | 1141.626 | 6.650 |
 | A memory_recall | naive_llm | 0.500 | 1.000 | 707.620 | 4.947 |
-| B relationship_dynamics | knoema | 0.786 | 4.482 | 1053.809 | 7.838 |
+| B relationship_dynamics | luvoire | 0.786 | 4.482 | 1053.809 | 7.838 |
 | B relationship_dynamics | naive_llm | 0.495 | 1.000 | 631.120 | 5.830 |
-| C narrative_branching | knoema | 0.784 | 4.429 | 1095.961 | 11.400 |
+| C narrative_branching | luvoire | 0.784 | 4.429 | 1095.961 | 11.400 |
 | C narrative_branching | naive_llm | 0.492 | 1.000 | 667.184 | 8.480 |
-| D scalability | knoema | 0.780 | 4.280 | 608.868 | 5.971 |
+| D scalability | luvoire | 0.780 | 4.280 | 608.868 | 5.971 |
 | D scalability | naive_llm | 0.487 | 1.000 | 311.353 | 4.442 |
 
 ## Significance
 
-Composite score compares paired Knoema and naive runs for each scenario or model profile.
+Composite score compares paired Luvoire and naive runs for each scenario or model profile.
 - Paired sign-test p-value: 0.000244
-- Interpretation: deterministic evidence favors the Knoema memory policy across all paired profiles.
+- Interpretation: deterministic evidence favors the Luvoire memory policy across all paired profiles.
 
 ## Metrics
 
@@ -48,8 +48,8 @@ Composite score compares paired Knoema and naive runs for each scenario or model
 
 | Path | Tick latency | Relative to 200 ms ACE target | Evidence |
 | --- | ---: | --- | --- |
-| Knoema Playground replay-only | 5.941 ms | at or under ACE target | Local scripted responder, no network I/O. |
-| Knoema Playground OpenAI mode | 18556.452 ms | 92.8x slower than ACE target | Measured with a live OpenAI Responses API call path; includes network, model, monologue generation, and playground orchestration. |
+| Luvoire Playground replay-only | 5.941 ms | at or under ACE target | Local scripted responder, no network I/O. |
+| Luvoire Playground OpenAI mode | 18556.452 ms | 92.8x slower than ACE target | Measured with a live OpenAI Responses API call path; includes network, model, monologue generation, and playground orchestration. |
 | NVIDIA ACE target envelope | 198.000-200.000 ms | published reference | https://developer.nvidia.com/blog/bring-nvidia-ace-ai-characters-to-games-with-the-new-in-game-inference-sdk; https://developer.nvidia.com/blog/build-lifelike-digital-humans-with-nvidia-ace-now-generally-available/; https://docs.nvidia.com/ace/overview/2025.03.06/ace-release-notes.html |
 | Inworld TTS-1 first audio chunk | 200.000 ms | published reference | https://inworld.ai/blog/introducing-inworld-tts |
 | Inworld TTS-1.5 first audio chunk | 130.000-250.000 ms | published reference | https://inworld.ai/blog/introducing-inworld-tts-1-5 |
@@ -61,9 +61,9 @@ Composite score compares paired Knoema and naive runs for each scenario or model
 - Figure source: results/figures/metropolis_scale.svg
 - 1000-agent source: experiments/1000_agent_city/results/summary.json
 - 1000-agent figure: results/figures/city_1000_scale.svg
-- Theory-of-mind source: deterministic Sally-Anne harness in src/knoema/theory_of_mind.py
+- Theory-of-mind source: deterministic Sally-Anne harness in src/luvoire/theory_of_mind.py
 
-| Metric | Knoema 500-Agent Metropolis | Google DeepMind Concordia | Stanford Generative Agents |
+| Metric | Luvoire 500-Agent Metropolis | Google DeepMind Concordia | Stanford Generative Agents |
 | --- | --- | --- | --- |
 | Comparison status | Measured local deterministic run | External reference only | External reference only |
 | Agent scale | 500 agents x 20 seeds | Not measured in this repo | 25-agent sandbox in paper |

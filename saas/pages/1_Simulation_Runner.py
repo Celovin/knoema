@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from knoema.dsl import load_scenario
+from luvoire.dsl import load_scenario
 
 st.set_page_config(page_title="Simulation Runner", layout="wide")
 st.title("Simulation Runner")

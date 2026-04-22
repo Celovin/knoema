@@ -1,11 +1,11 @@
-# Knoema Dashboard
+# Luvoire Dashboard
 
-Streamlit dashboard for inspecting Knoema simulation JSONL exports.
+Streamlit dashboard for inspecting Luvoire simulation JSONL exports.
 
 ## Run
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 .venv\Scripts\pip install -e ".[dashboard]"
 .venv\Scripts\streamlit run dashboard\app.py
 ```

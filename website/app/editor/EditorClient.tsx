@@ -79,7 +79,7 @@ const templates: EditorState[] = [
     scenarioId: "editor_school_lab",
     title: "School Lab Handoff",
     category: "school",
-    location: "Knoema Demo World > Scenario Editor > School Lab",
+    location: "Luvoire Demo World > Scenario Editor > School Lab",
     selectedAgentId: "mentor_1",
     agents: [
       { ...agentTemplates[0], id: "mentor_1", x: 24, y: 42 },
@@ -98,7 +98,7 @@ const templates: EditorState[] = [
     scenarioId: "editor_workplace_handoff",
     title: "Remote Handoff",
     category: "workplace",
-    location: "Knoema Demo World > Scenario Editor > Remote Team",
+    location: "Luvoire Demo World > Scenario Editor > Remote Team",
     selectedAgentId: "coordinator_1",
     agents: [
       { ...agentTemplates[2], id: "coordinator_1", x: 32, y: 36 },
@@ -117,7 +117,7 @@ const templates: EditorState[] = [
     scenarioId: "editor_community_queue",
     title: "Community Queue Reset",
     category: "community",
-    location: "Knoema Demo World > Scenario Editor > Repair Cafe",
+    location: "Luvoire Demo World > Scenario Editor > Repair Cafe",
     selectedAgentId: "observer_1",
     agents: [
       { ...agentTemplates[1], id: "observer_1", x: 28, y: 52 },
@@ -210,7 +210,7 @@ export function EditorClient() {
       <main className={styles.editorShell}>
         <section className={styles.headerBand}>
           <a className={styles.backLink} href="/">
-            Knoema
+            Luvoire
           </a>
           <div>
             <p className={styles.eyebrow}>Scenario editor</p>
@@ -270,7 +270,7 @@ function AgentPalette() {
             key={template.id}
             onClick={() => dispatch({ type: "add_agent", template, x: 50, y: 50 })}
             onDragStart={(event) => {
-              event.dataTransfer.setData("application/x-knoema-agent", template.id);
+              event.dataTransfer.setData("application/x-luvoire-agent", template.id);
               event.dataTransfer.effectAllowed = "copy";
             }}
             type="button"
@@ -295,7 +295,7 @@ function SceneCanvas({
 
   function handleDrop(event: DragEvent<HTMLDivElement>) {
     event.preventDefault();
-    const templateId = event.dataTransfer.getData("application/x-knoema-agent");
+    const templateId = event.dataTransfer.getData("application/x-luvoire-agent");
     const template = agentTemplates.find((candidate) => candidate.id === templateId);
     if (!template) {
       return;
@@ -471,7 +471,7 @@ function YamlPreview({
           <h2>Export a validated shape.</h2>
         </div>
         <img
-          alt="Knoema benchmark branching figure"
+          alt="Luvoire benchmark branching figure"
           className={styles.evidenceFigure}
           src="/figures/branching.svg"
         />
@@ -483,7 +483,7 @@ function YamlPreview({
         <button data-testid="prepare-export" onClick={onPrepareExport} type="button">
           Prepare YAML export
         </button>
-        <a download="knoema_scenario.yaml" href={downloadHref}>
+        <a download="luvoire_scenario.yaml" href={downloadHref}>
           Download YAML
         </a>
         <span data-testid="export-status">{exportStatus}</span>
@@ -538,7 +538,7 @@ tick_duration_minutes: 720
 duration_days: 1
 environment:
   start_time: "2026-06-01T08:00:00"
-  location_path: [Knoema Demo World, Scenario Editor, ${state.category}]
+  location_path: [Luvoire Demo World, Scenario Editor, ${state.category}]
   conditions:
     editor_export: true
 agents:

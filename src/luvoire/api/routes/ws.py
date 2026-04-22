@@ -6,10 +6,10 @@ import asyncio
 
 from fastapi import APIRouter, WebSocket, WebSocketException, status
 
-from knoema.api.auth import optional_websocket_tenant, require_websocket_api_key
-from knoema.api.rate_limit import enforce_websocket_rate_limit
-from knoema.api.service import SimulationNotFoundError
-from knoema.api.tier_rate_limit import TierRateLimiter
+from luvoire.api.auth import optional_websocket_tenant, require_websocket_api_key
+from luvoire.api.rate_limit import enforce_websocket_rate_limit
+from luvoire.api.service import SimulationNotFoundError
+from luvoire.api.tier_rate_limit import TierRateLimiter
 
 router = APIRouter(tags=["stream"])
 

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from knoema import ContentFilter
-from knoema.dsl import Scenario, validate_scenario
+from luvoire import ContentFilter
+from luvoire.dsl import Scenario, validate_scenario
 
 
 def test_phase53_scenario_abuse_prompts_are_rejected_by_filter() -> None:

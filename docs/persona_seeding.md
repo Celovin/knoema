@@ -2,15 +2,15 @@
 
 ## Overview
 
-Knoema can seed replay agents from Nemotron-Personas-Korea as an optional alternative to the deterministic stub demographics used by the existing 100, 1K, 5K, and 10K replay files. The integration is limited to synthetic demographic seeding for local replay demos.
+Luvoire can seed replay agents from Nemotron-Personas-Korea as an optional alternative to the deterministic stub demographics used by the existing 100, 1K, 5K, and 10K replay files. The integration is limited to synthetic demographic seeding for local replay demos.
 
-The committed fixture at `src/knoema/persona/fixtures/nemotron_sample_512.jsonl` contains 512 rows sampled from `nvidia/Nemotron-Personas-Korea` at revision `0381f03a403df78a7998000f8b11705635b654fd`, filtered to Seoul Gangnam district rows. Tests use this fixture so CI does not need live Hugging Face network access.
+The committed fixture at `src/luvoire/persona/fixtures/nemotron_sample_512.jsonl` contains 512 rows sampled from `nvidia/Nemotron-Personas-Korea` at revision `0381f03a403df78a7998000f8b11705635b654fd`, filtered to Seoul Gangnam district rows. Tests use this fixture so CI does not need live Hugging Face network access.
 
 ## License
 
 License: `cc-by-4.0`
 
-Knoema records the Nemotron-Personas-Korea license in `LICENSE-NEMOTRON.md`. The license gate was run against the canonical Hugging Face dataset repo `nvidia/Nemotron-Personas-Korea` and dataset card revision `0381f03a403df78a7998000f8b11705635b654fd`.
+Luvoire records the Nemotron-Personas-Korea license in `LICENSE-NEMOTRON.md`. The license gate was run against the canonical Hugging Face dataset repo `nvidia/Nemotron-Personas-Korea` and dataset card revision `0381f03a403df78a7998000f8b11705635b654fd`.
 
 ## Citation
 
@@ -47,7 +47,7 @@ python demo/replay/generate_replay.py --scenario 10k --persona-source stub --ver
 ## Scope and Limits
 
 - Nemotron-Personas-Korea is used only for synthetic demographic seeding in local replay artifacts.
-- Knoema does not use Nemotron-Personas-Korea for LLM fine-tuning or downstream model training in this repository.
+- Luvoire does not use Nemotron-Personas-Korea for LLM fine-tuning or downstream model training in this repository.
 - The default replay path remains `--persona-source stub`, preserving the committed 100, 1K, 5K, and 10K baseline msgpack hashes.
 - The loader streams live Hugging Face rows when used without a fixture and never loads the full dataset into memory.
 - Missing fields, including income, map to existing safe defaults instead of invented values.

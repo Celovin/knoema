@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from knoema.dsl import collect_validation_issues, load_scenario
+from luvoire.dsl import collect_validation_issues, load_scenario
 
 
 def _repo_root() -> Path:

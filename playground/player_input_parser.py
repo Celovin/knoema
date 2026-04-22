@@ -1,4 +1,4 @@
-"""Parse free-form player text into Knoema actions."""
+"""Parse free-form player text into Luvoire actions."""
 
 from __future__ import annotations
 

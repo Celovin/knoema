@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Knoema Replay Viewer Self-Test</title>
+  <title>Luvoire Replay Viewer Self-Test</title>
   <style>
     body {
       margin: 0;
@@ -59,7 +59,7 @@
     }
 
     window.addEventListener("message", (event) => {
-      if (event.data?.type !== "knoema-profile-groups") return;
+      if (event.data?.type !== "luvoire-profile-groups") return;
       try {
         assertViewerGroups(event.data);
       } catch (error) {

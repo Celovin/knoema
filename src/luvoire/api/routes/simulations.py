@@ -6,13 +6,13 @@ from typing import Annotated, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 
-from knoema.api.auth import AuthenticatedTenant
-from knoema.api.rate_limit import enforce_rate_limit
-from knoema.api.schemas import CreateSimulationRequest, SimulationStatusResponse
-from knoema.api.service import SimulationNotFoundError, SimulationRecord, SimulationService
-from knoema.api.tier_rate_limit import enforce_tier_rate_limit
-from knoema.api.usage_middleware import record_request_usage
-from knoema.billing.tiers import is_model_allowed
+from luvoire.api.auth import AuthenticatedTenant
+from luvoire.api.rate_limit import enforce_rate_limit
+from luvoire.api.schemas import CreateSimulationRequest, SimulationStatusResponse
+from luvoire.api.service import SimulationNotFoundError, SimulationRecord, SimulationService
+from luvoire.api.tier_rate_limit import enforce_tier_rate_limit
+from luvoire.api.usage_middleware import record_request_usage
+from luvoire.billing.tiers import is_model_allowed
 
 router = APIRouter(prefix="/simulations", tags=["simulations"])
 

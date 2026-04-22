@@ -9,12 +9,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
-from knoema.cli import PLAYGROUND_SCENARIOS
-from knoema.environment import Environment
-from knoema.llm import LocalClient
-from knoema.persona import Persona
-from knoema.simulator import Simulator
-from knoema.types import Personality
+from luvoire.cli import PLAYGROUND_SCENARIOS
+from luvoire.environment import Environment
+from luvoire.llm import LocalClient
+from luvoire.persona import Persona
+from luvoire.simulator import Simulator
+from luvoire.types import Personality
 
 DEFAULT_TICKS = 4
 MAX_TICKS = 12
@@ -38,13 +38,13 @@ class BotRunSummary:
 
 
 def parse_bot_command(text: str) -> BotCommand:
-    """Parse `!knoema run <scenario> [--ticks N]` or slash-command text."""
+    """Parse `!luvoire run <scenario> [--ticks N]` or slash-command text."""
 
     tokens = shlex.split(text.strip())
-    if tokens and tokens[0].lower() in {"!knoema", "/knoema", "knoema"}:
+    if tokens and tokens[0].lower() in {"!luvoire", "/luvoire", "luvoire"}:
         tokens = tokens[1:]
     if not tokens:
-        raise ValueError("usage: !knoema run <scenario> [--ticks N]")
+        raise ValueError("usage: !luvoire run <scenario> [--ticks N]")
     action = tokens[0].lower()
     if action != "run":
         raise ValueError("only the run action is supported")
@@ -75,7 +75,7 @@ def run_scenario_for_bot(scenario: str, ticks: int = DEFAULT_TICKS) -> BotRunSum
     tick_count = _clamp_ticks(ticks)
     environment = Environment(
         start_time=datetime(2026, 4, 21, 9, 0, 0),
-        location_path=("Knoema", "Chat", resolved),
+        location_path=("Luvoire", "Chat", resolved),
         conditions={"channel": "bot", "scenario": resolved},
     )
     agents = _bot_personas()
@@ -113,7 +113,7 @@ def format_discord_embed(summary: BotRunSummary) -> dict[str, Any]:
 
     action_mix = ", ".join(f"{key}: {value}" for key, value in summary.action_counts.items())
     return {
-        "title": f"Knoema run: {summary.scenario}",
+        "title": f"Luvoire run: {summary.scenario}",
         "description": summary.markdown,
         "color": 0x2F855A,
         "fields": [
@@ -131,7 +131,7 @@ def format_slack_blocks(summary: BotRunSummary) -> list[dict[str, Any]]:
     return [
         {
             "type": "header",
-            "text": {"type": "plain_text", "text": f"Knoema run: {summary.scenario}"},
+            "text": {"type": "plain_text", "text": f"Luvoire run: {summary.scenario}"},
         },
         {"type": "section", "text": {"type": "mrkdwn", "text": summary.markdown}},
         {
@@ -175,7 +175,7 @@ def _bot_personas() -> list[Persona]:
             agent_id="mina",
             name="Mina",
             age=24,
-            background="Knoema chat demo agent.",
+            background="Luvoire chat demo agent.",
             personality=Personality(**base),
             values=["clarity", "coordination"],
             goals=["summarize the situation"],
@@ -184,7 +184,7 @@ def _bot_personas() -> list[Persona]:
             agent_id="joon",
             name="Joon",
             age=26,
-            background="Knoema chat demo partner.",
+            background="Luvoire chat demo partner.",
             personality=Personality(**{**base, "extraversion": 0.45, "agreeableness": 0.72}),
             values=["reliability", "care"],
             goals=["respond constructively"],

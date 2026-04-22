@@ -1,14 +1,14 @@
 using System;
 
-namespace Knoema.UnitySdk.Models
+namespace Luvoire.UnitySdk.Models
 {
     [Serializable]
-    public sealed class KnoemaActionResponse
+    public sealed class LuvoireActionResponse
     {
         public string session_id = "unity-demo";
         public string agent_id = "guide";
         public int tick;
         public bool accepted;
-        public KnoemaActionPayload action = new KnoemaActionPayload();
+        public LuvoireActionPayload action = new LuvoireActionPayload();
     }
 }

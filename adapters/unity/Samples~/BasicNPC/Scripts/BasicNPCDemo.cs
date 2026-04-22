@@ -1,8 +1,8 @@
-using Knoema.Unity;
+using Luvoire.Unity;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Knoema.Unity.Samples
+namespace Luvoire.Unity.Samples
 {
     public sealed class BasicNPCDemo : MonoBehaviour
     {
@@ -36,7 +36,7 @@ namespace Knoema.Unity.Samples
             npc.Interact(
                 message,
                 response => Append($"NPC: {response.content}"),
-                error => Append($"Knoema fallback used: {error}")
+                error => Append($"Luvoire fallback used: {error}")
             );
         }
 

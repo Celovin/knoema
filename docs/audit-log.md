@@ -1,6 +1,6 @@
 # Audit Log
 
-Knoema writes commercial audit records as JSONL so customer-provisioning and billing events can be reviewed without querying application state. The log is append-only during normal operation. Administrative cleanup is limited to the documented retention purge.
+Luvoire writes commercial audit records as JSONL so customer-provisioning and billing events can be reviewed without querying application state. The log is append-only during normal operation. Administrative cleanup is limited to the documented retention purge.
 
 ## Event Types
 

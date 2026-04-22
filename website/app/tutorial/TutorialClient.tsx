@@ -18,7 +18,7 @@ type Chapter = {
   image: string;
 };
 
-const storageKey = "knoema.tutorial.progress";
+const storageKey = "luvoire.tutorial.progress";
 
 const chapters: Chapter[] = [
   {
@@ -26,7 +26,7 @@ const chapters: Chapter[] = [
     title: "Your First Agent",
     goal: "Create a persona with one clear value and one reachable goal.",
     steps: ["Name the agent.", "Set one stable value.", "Run one deterministic turn."],
-    code: `from knoema import Persona, Personality
+    code: `from luvoire import Persona, Personality
 
 persona = Persona(
     agent_id="maya",
@@ -57,7 +57,7 @@ print(persona.name)`,
     title: "Memory & Relationships",
     goal: "Attach short memory and relationship state before the next action.",
     steps: ["Write one memory.", "Raise familiarity after a helpful exchange.", "Review the next prompt context."],
-    code: `from knoema import RelationshipGraph, InteractionOutcome
+    code: `from luvoire import RelationshipGraph, InteractionOutcome
 
 graph = RelationshipGraph()
 graph.add_agent("maya")
@@ -106,7 +106,7 @@ ethics:
     title: "Theory of Mind",
     goal: "Run an opt-in false-belief probe without implying human cognition.",
     steps: ["Enable the module.", "Set a visible object move.", "Ask from the agent belief state."],
-    code: `from knoema import TheoryOfMindEngine
+    code: `from luvoire import TheoryOfMindEngine
 
 engine = TheoryOfMindEngine()
 engine.observe_object_location("sally", "marble", "basket")
@@ -126,7 +126,7 @@ print(belief)`,
     title: "Deploy to Production",
     goal: "Choose the smallest production path for the API and dashboard.",
     steps: ["Build the container.", "Pick one cloud template.", "Run the release checklist."],
-    code: `python scripts/pre_release_check.py --version 0.2.0
+    code: `python scripts/pre_release_check.py --version 0.3.0
 python deploy/cloud/validate_templates.py
 docker compose up api dashboard`,
     quiz: {
@@ -196,7 +196,7 @@ export function TutorialClient() {
   return (
     <main className={styles.tutorialShell}>
       <nav className={styles.topNav} aria-label="Tutorial navigation">
-        <a href="/">Knoema</a>
+        <a href="/">Luvoire</a>
         <a href="/docs">Docs</a>
         <a href="/editor">Scenario editor</a>
       </nav>

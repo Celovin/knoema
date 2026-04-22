@@ -8,7 +8,7 @@ tick_duration_minutes: 360
 duration_days: 1
 environment:
   start_time: "2026-09-01T09:00:00"
-  location_path: [Knoema Demo World, Education Lab, Seminar Room A]
+  location_path: [Luvoire Demo World, Education Lab, Seminar Room A]
   conditions:
     class_size: 18
     instructor_present: true
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-09-01T13:00:00"
     event_type: classroom.feedback_checkpoint
     participants: [presenter, reviewer]
-    location: Knoema Demo World > Education Lab > Seminar Room A
+    location: Luvoire Demo World > Education Lab > Seminar Room A
     description: Reviewer summarizes two strengths before suggesting one revision.
 metrics:
   - name: feedback_clarity

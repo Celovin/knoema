@@ -9,7 +9,7 @@ export function Architecture() {
           context, and emotion state feed a decision loop that exports JSONL logs for replay.
         </p>
       </div>
-      <svg aria-label="Knoema architecture diagram" viewBox="0 0 720 420" role="img">
+      <svg aria-label="Luvoire architecture diagram" viewBox="0 0 720 420" role="img">
         <defs>
           <marker id="arrow" markerHeight="8" markerWidth="8" orient="auto" refX="7" refY="4">
             <path d="M0,0 L8,4 L0,8 Z" fill="currentColor" />

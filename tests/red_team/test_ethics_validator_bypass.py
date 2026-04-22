@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from knoema.dsl import Scenario, collect_validation_issues, validate_scenario
+from luvoire.dsl import Scenario, collect_validation_issues, validate_scenario
 
 
 @pytest.mark.parametrize(

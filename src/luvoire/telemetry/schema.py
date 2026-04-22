@@ -19,7 +19,7 @@ def build_cli_properties(
     prompt_language: str | None = None,
 ) -> TelemetryProperties:
     properties: TelemetryProperties = {
-        "library": "knoema-engine",
+        "library": "luvoire-engine",
         "surface": "cli",
         "dry_run": dry_run,
         "json_output": json_output,

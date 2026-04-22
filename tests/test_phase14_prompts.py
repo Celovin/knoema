@@ -5,7 +5,7 @@ from datetime import datetime
 
 import pytest
 
-from knoema import (
+from luvoire import (
     SUPPORTED_PROMPT_LANGUAGES,
     DecisionEngine,
     EnvironmentContext,
@@ -17,9 +17,9 @@ from knoema import (
     normalize_prompt_language,
     render_persona_system_prompt,
 )
-from knoema.decision import build_decision_messages
-from knoema.protocols import Message
-from knoema.types import Emotion, WorldEvent
+from luvoire.decision import build_decision_messages
+from luvoire.protocols import Message
+from luvoire.types import Emotion, WorldEvent
 
 
 def _persona() -> Persona:

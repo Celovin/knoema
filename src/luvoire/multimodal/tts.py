@@ -12,6 +12,8 @@ from io import BytesIO
 from pathlib import Path
 from typing import Any, Final
 
+from luvoire.config import get_env
+
 OPENAI_TTS_VOICES: Final[tuple[str, ...]] = (
     "alloy",
     "echo",
@@ -21,7 +23,7 @@ OPENAI_TTS_VOICES: Final[tuple[str, ...]] = (
     "shimmer",
 )
 OPENAI_TTS_PROVIDERS: Final[tuple[str, ...]] = ("openai", "openai-hd", "offline")
-DEFAULT_TTS_CACHE_DIR: Final[Path] = Path(tempfile.gettempdir()) / "knoema_tts_cache"
+DEFAULT_TTS_CACHE_DIR: Final[Path] = Path(tempfile.gettempdir()) / "luvoire_tts_cache"
 SILENT_WAV_SECONDS: Final[float] = 0.25
 SILENT_WAV_SAMPLE_RATE: Final[int] = 16_000
 
@@ -107,7 +109,7 @@ def synthesize(
 def _resolve_cache_dir(cache_dir: str | Path | None) -> Path:
     if cache_dir is not None:
         return Path(cache_dir)
-    configured = os.environ.get("KNOEMA_TTS_CACHE_DIR", "").strip()
+    configured = (get_env("LUVOIRE_TTS_CACHE_DIR", "KNOEMA_TTS_CACHE_DIR", "") or "").strip()
     if configured:
         return Path(configured)
     return DEFAULT_TTS_CACHE_DIR

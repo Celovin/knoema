@@ -1,7 +1,7 @@
 {
-  "title": "Knoema Engine: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation",
+  "title": "Luvoire: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation",
   "upload_type": "software",
-  "description": "Knoema Engine is an open, MIT-licensed runtime for persistent social agents whose state is inspectable outside of a model prompt. The system combines persona definitions, short-term and long-term memory, directed relationship state, environment context, PAD-style emotion, optional persona-level theory-of-mind tracking, event scheduling, deterministic logs, REST and WebSocket interfaces, game-engine adapters, and optional LLM-backed decisions. This arXiv v2 report consolidates the Phase 30 preprint structure with the Phase 43--46 evidence layer: a persona opt-in Sally-Anne false-belief harness, classic Schelling and Axelrod reproductions, a 500-agent deterministic metropolis run, and Persona Consistency Score and Relationship Coherence Score metrics. Knoema demonstrates a triple-use runtime surface for persistent game NPCs, fictional synthetic replay research, and reproducible academic simulation while keeping each claim tied to seeds, configs, logs, and package tests. The central engineering claim is modest: persistent-agent applications need explicit runtime state, replayable artifacts, adapter contracts, and safety-bounded scenario definitions before they need larger prompts. Public-safety examples are fictional, synthetic, and non-identifying; the system is not designed for prediction, suspect scoring, surveillance, or enforcement automation.",
+  "description": "Luvoire is an open, MIT-licensed runtime for persistent social agents whose state is inspectable outside of a model prompt. The system combines persona definitions, short-term and long-term memory, directed relationship state, environment context, PAD-style emotion, optional persona-level theory-of-mind tracking, event scheduling, deterministic logs, REST and WebSocket interfaces, game-engine adapters, and optional LLM-backed decisions. This arXiv v2 report consolidates the Phase 30 preprint structure with the Phase 43--46 evidence layer: a persona opt-in Sally-Anne false-belief harness, classic Schelling and Axelrod reproductions, a 500-agent deterministic metropolis run, and Persona Consistency Score and Relationship Coherence Score metrics. Luvoire demonstrates a triple-use runtime surface for persistent game NPCs, fictional synthetic replay research, and reproducible academic simulation while keeping each claim tied to seeds, configs, logs, and package tests. The central engineering claim is modest: persistent-agent applications need explicit runtime state, replayable artifacts, adapter contracts, and safety-bounded scenario definitions before they need larger prompts. Public-safety examples are fictional, synthetic, and non-identifying; the system is not designed for prediction, suspect scoring, surveillance, or enforcement automation.",
   "creators": [
     {
       "name": "Celovin",
@@ -11,7 +11,7 @@
   "access_right": "open",
   "license": "mit",
   "publication_date": "2026-04-19",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "keywords": [
     "large language models",
     "multi-agent simulation",
@@ -23,15 +23,15 @@
   ],
   "related_identifiers": [
     {
-      "identifier": "https://github.com/Celovin/knoema",
+      "identifier": "https://github.com/Celovin/luvoire",
       "relation": "isSupplementTo",
       "resource_type": "software"
     },
     {
-      "identifier": "https://github.com/Celovin/knoema/blob/main/paper/main.tex",
+      "identifier": "https://github.com/Celovin/luvoire/blob/main/paper/main.tex",
       "relation": "isDocumentedBy",
       "resource_type": "publication-preprint"
     }
   ],
-  "notes": "Release metadata prepared during Phase 62 for v0.2.0. The v0.2.0 DOI is assigned only after the GitHub release archive is ingested by Zenodo under the Celovin account."
+  "notes": "Release metadata prepared for the Luvoire v0.3.0 rename. A version DOI is assigned only after the GitHub release archive is ingested by Zenodo under the Celovin account."
 }

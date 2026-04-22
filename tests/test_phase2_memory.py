@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from knoema import (
+from luvoire import (
     HashEmbeddingEncoder,
     Memory,
     MemorySearchResult,

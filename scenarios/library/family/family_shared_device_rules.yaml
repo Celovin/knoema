@@ -8,7 +8,7 @@ tick_duration_minutes: 720
 duration_days: 1
 environment:
   start_time: "2026-06-08T09:00:00"
-  location_path: [Knoema Demo World, Scenario Library, Family]
+  location_path: [Luvoire Demo World, Scenario Library, Family]
   conditions:
     mode: deterministic
     category: family
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-06-08T13:00:00"
     event_type: family.device_checkpoint
     participants: [agent_a, agent_b]
-    location: Knoema Demo World > Scenario Library > Family
+    location: Luvoire Demo World > Scenario Library > Family
     description: "The family agrees on a shared tablet schedule."
 metrics:
   - name: rule_fairness

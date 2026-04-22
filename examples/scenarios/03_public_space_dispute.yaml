@@ -8,7 +8,7 @@ tick_duration_minutes: 720
 duration_days: 1
 environment:
   start_time: "2026-05-10T10:00:00"
-  location_path: [Knoema Demo World, Riverside Plaza]
+  location_path: [Luvoire Demo World, Riverside Plaza]
   conditions:
     crowd_level: moderate
     event_type: weekend market
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-05-10T16:00:00"
     event_type: plaza.deescalation_checkpoint
     participants: [vendor, mediator]
-    location: Knoema Demo World > Riverside Plaza
+    location: Luvoire Demo World > Riverside Plaza
     description: Mediator asks each side to restate the shared facts.
 metrics:
   - name: deescalation_milestones

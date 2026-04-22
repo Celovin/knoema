@@ -7,7 +7,7 @@
 | Item | Value |
 | --- | --- |
 | Surface | Narrative game episode with 12 persistent NPCs |
-| Engine target | Godot 4 client with Knoema runtime and dashboard QA |
+| Engine target | Godot 4 client with Luvoire runtime and dashboard QA |
 | Primary problem | Branch explosion and continuity drift across repeat playthroughs |
 | Proposed outcome | Memory-aware NPC interactions with reproducible replay logs |
 | Evaluation window | 6 weeks from prototype to content lock |
@@ -28,11 +28,11 @@ The baseline workflow uses hand-authored dialogue trees, state flags, and scene-
 
 ## Solution Design
 
-Knoema is introduced as a supporting runtime rather than a replacement for authored story logic. Critical story beats remain scripted. Persistent NPC responses, memory recall, and low-stakes social interactions move into Knoema.
+Luvoire is introduced as a supporting runtime rather than a replacement for authored story logic. Critical story beats remain scripted. Persistent NPC responses, memory recall, and low-stakes social interactions move into Luvoire.
 
 ```text
 Story script triggers
-  -> Knoema persona + relationship state
+  -> Luvoire persona + relationship state
   -> local or cloud LLM decision
   -> deterministic JSON action record
   -> Godot presentation layer
@@ -43,7 +43,7 @@ Story script triggers
 
 - 12 named NPCs with seeded persona files and relationship defaults
 - 3 high-traffic locations wired to shared environment context
-- 18 repeatable social beats delegated to Knoema
+- 18 repeatable social beats delegated to Luvoire
 - 1 authored climax path left fully script-driven
 - nightly replay export for narrative QA
 
@@ -60,7 +60,7 @@ Story script triggers
 
 ## Projected Metrics
 
-| Metric | Baseline | Knoema target | Why it matters |
+| Metric | Baseline | Luvoire target | Why it matters |
 | --- | --- | --- | --- |
 | Writer-authored variant lines per side scene | 140 | 85 | More reuse through memory-aware responses |
 | Continuity QA checks per build | 22 | 10 | Replay logs reduce manual verification loops |
@@ -93,4 +93,4 @@ Story script triggers
 
 ## Decision
 
-This case study supports a narrow, realistic integration thesis: Knoema is most valuable when it handles continuity-heavy support interactions while the game keeps authored control over pacing, revelation, and finale structure.
+This case study supports a narrow, realistic integration thesis: Luvoire is most valuable when it handles continuity-heavy support interactions while the game keeps authored control over pacing, revelation, and finale structure.

@@ -1,6 +1,6 @@
 # Configuration
 
-Knoema has two common configuration paths:
+Luvoire has two common configuration paths:
 
 - Python object construction for scripts and notebooks.
 - YAML scenario files for repeatable CLI and DSL workflows.
@@ -9,16 +9,16 @@ Knoema has two common configuration paths:
 
 Use `load_config` when you want package-level settings from a YAML file plus environment overrides.
 
-::: knoema.config.KnoemaConfig
+::: luvoire.config.LuvoireConfig
 
-::: knoema.config.load_config
+::: luvoire.config.load_config
 
 ## Scenario Config
 
 Scenario DSL files define agents, environment, events, duration, and safety metadata in YAML.
 
 ```python
-from knoema.dsl import load_scenario
+from luvoire.dsl import load_scenario
 
 scenario = load_scenario('examples/scenarios/01_shopkeeper_winter_crime.yaml')
 logs = scenario.to_simulator().run(duration_days=scenario.duration_days)

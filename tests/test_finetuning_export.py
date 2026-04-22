@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from knoema.export import (
+from luvoire.export import (
     export_finetuning_jsonl,
     to_anthropic_jsonl,
     to_dpo_pairs,
@@ -64,7 +64,7 @@ def test_batch_aa_anthropic_export_uses_system_plus_messages() -> None:
     records = to_anthropic_jsonl(_sample_jsonl())
 
     assert len(records) == 2
-    assert "Knoema simulation agent" in records[0]["system"]
+    assert "Luvoire simulation agent" in records[0]["system"]
     assert records[0]["messages"][0]["role"] == "user"
     assert records[0]["messages"][1]["role"] == "assistant"
 

@@ -1,4 +1,4 @@
-# Knoema Data Processing Agreement Template
+# Luvoire Data Processing Agreement Template
 
 > STATUS: DRAFT - LEGAL REVIEW PENDING (do not publish)
 
@@ -12,7 +12,7 @@ For self-service account, billing, tax, security, fraud prevention, and legal co
 
 ## 2. Subject Matter and Duration
 
-Celovin processes personal data to provide Knoema services, including account administration, workspace access, hosted simulations, API execution, usage metering, customer support, security monitoring, and enterprise deployment operations. Processing continues for the term of the applicable order form and any retention period required for legal, security, or dispute purposes.
+Celovin processes personal data to provide Luvoire services, including account administration, workspace access, hosted simulations, API execution, usage metering, customer support, security monitoring, and enterprise deployment operations. Processing continues for the term of the applicable order form and any retention period required for legal, security, or dispute purposes.
 
 ## 3. Categories of Data and Data Subjects
 

@@ -13,7 +13,7 @@ playground_app = importlib.import_module("playground.app")
 def test_batch_mm_head_enables_present_mode_query_param() -> None:
     assert "mode\") === \"present\"" in playground_app.APP_HEAD
     assert "present-mode" in playground_app.APP_HEAD
-    assert "knoema-present-hint" in playground_app.APP_HEAD
+    assert "luvoire-present-hint" in playground_app.APP_HEAD
 
 
 def test_batch_mm_present_mode_hides_chrome_and_binds_keyboard() -> None:

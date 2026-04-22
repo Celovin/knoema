@@ -1,21 +1,21 @@
 {
-  "scopeName": "source.knoema-scenario",
+  "scopeName": "source.luvoire-scenario",
   "patterns": [
     {
-      "name": "keyword.control.knoema",
+      "name": "keyword.control.luvoire",
       "match": "^(schema_version|scenario_id|title|domain|description|seed|environment|agents|events|metrics|ethics):"
     },
     {
-      "name": "constant.language.knoema",
+      "name": "constant.language.luvoire",
       "match": "\\b(game|public_safety_research|academic_research|true|false)\\b"
     },
     {
-      "name": "string.quoted.double.knoema",
+      "name": "string.quoted.double.luvoire",
       "begin": "\"",
       "end": "\""
     },
     {
-      "name": "comment.line.number-sign.knoema",
+      "name": "comment.line.number-sign.luvoire",
       "match": "#.*$"
     }
   ]

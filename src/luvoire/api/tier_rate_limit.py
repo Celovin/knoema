@@ -10,10 +10,10 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, Response, status
 
-from knoema.api.auth import AuthenticatedTenant, require_tenant
-from knoema.api.rate_limit import TokenBucket
-from knoema.billing.tiers import TierName
-from knoema.observability.metrics import record_rate_limit_hit
+from luvoire.api.auth import AuthenticatedTenant, require_tenant
+from luvoire.api.rate_limit import TokenBucket
+from luvoire.billing.tiers import TierName
+from luvoire.observability.metrics import record_rate_limit_hit
 
 
 @dataclass(frozen=True, slots=True)
@@ -89,8 +89,8 @@ def enforce_tier_rate_limit(
         limiter = TierRateLimiter()
         request.app.state.tier_rate_limiter = limiter
     result = limiter.consume(tenant)
-    response.headers["X-Knoema-RateLimit-Tier"] = tenant.tier
-    response.headers["X-Knoema-RateLimit-Remaining"] = str(result.remaining)
+    response.headers["X-Luvoire-RateLimit-Tier"] = tenant.tier
+    response.headers["X-Luvoire-RateLimit-Remaining"] = str(result.remaining)
     if not result.allowed:
         record_rate_limit_hit(tenant.tier)
         raise HTTPException(
@@ -98,8 +98,8 @@ def enforce_tier_rate_limit(
             detail="Rate limit exceeded for tenant tier.",
             headers={
                 "Retry-After": str(result.retry_after_seconds),
-                "X-Knoema-RateLimit-Tier": tenant.tier,
-                "X-Knoema-RateLimit-Remaining": str(result.remaining),
+                "X-Luvoire-RateLimit-Tier": tenant.tier,
+                "X-Luvoire-RateLimit-Remaining": str(result.remaining),
             },
         )
     return tenant

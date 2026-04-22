@@ -4,10 +4,10 @@ import json
 import sys
 from pathlib import Path
 
-from knoema.reproducibility import generate_run_fingerprint, verify_run_fingerprint
+from luvoire.reproducibility import generate_run_fingerprint, verify_run_fingerprint
 
 sys.path.insert(0, str(Path.cwd()))
-from scripts import knoema_verify
+from scripts import luvoire_verify
 
 
 def test_batch_u_verify_rejects_tampered_result() -> None:
@@ -31,7 +31,7 @@ def test_batch_u_verify_rejects_tampered_result() -> None:
     assert "output_merkle_root" in tampered_report.mismatches
 
 
-def test_batch_u_knoema_verify_cli_exit_codes(tmp_path: Path) -> None:
+def test_batch_u_luvoire_verify_cli_exit_codes(tmp_path: Path) -> None:
     run_config = {"scenario": "Office team conflict", "seed": 7}
     jsonl = '{"tick":0,"agent_id":"agent_1","action":{"action_type":"speak"}}'
     certificate = generate_run_fingerprint(
@@ -49,5 +49,5 @@ def test_batch_u_knoema_verify_cli_exit_codes(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    assert knoema_verify.main([str(certificate_path), "--result-jsonl", str(result_path)]) == 0
-    assert knoema_verify.main([str(certificate_path), "--result-jsonl", str(tampered_path)]) == 1
+    assert luvoire_verify.main([str(certificate_path), "--result-jsonl", str(result_path)]) == 0
+    assert luvoire_verify.main([str(certificate_path), "--result-jsonl", str(tampered_path)]) == 1

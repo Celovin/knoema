@@ -8,9 +8,9 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from knoema.api.server import create_app
-from knoema.billing.gateway import LLMGateway, UsageMeter
-from knoema.cli import main
+from luvoire.api.server import create_app
+from luvoire.billing.gateway import LLMGateway, UsageMeter
+from luvoire.cli import main
 
 
 class MockLiteLLM:
@@ -23,7 +23,7 @@ class MockLiteLLM:
 
 
 def _extract_token(output: str) -> str:
-    match = re.search(r"Bearer (knoema_[^ ]+)", output)
+    match = re.search(r"Bearer (luvoire_[^ ]+)", output)
     assert match is not None
     return match.group(1)
 
@@ -158,7 +158,7 @@ def test_customer_cli_lifecycle_and_usage_table(
         )
 
     assert api_response.status_code == 200
-    assert api_response.headers["X-Knoema-Tenant-Tier"] == "pro"
+    assert api_response.headers["X-Luvoire-Tenant-Tier"] == "pro"
     assert (
         main(
             [

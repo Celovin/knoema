@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
-from knoema.api.schemas import (
+from luvoire.api.schemas import (
     MemoryItem,
     UnityActionAcceptedResponse,
     UnityActionPayload,
@@ -17,11 +17,11 @@ from knoema.api.schemas import (
     UnityTickRequest,
     UnityTickResponse,
 )
-from knoema.environment import Environment
-from knoema.llm import LocalClient
-from knoema.persona import Persona
-from knoema.simulator import Simulator
-from knoema.types import Action, Personality, WorldEvent
+from luvoire.environment import Environment
+from luvoire.llm import LocalClient
+from luvoire.persona import Persona
+from luvoire.simulator import Simulator
+from luvoire.types import Action, Personality, WorldEvent
 
 
 class UnitySessionNotFoundError(KeyError):
@@ -182,7 +182,7 @@ def _create_record(
         agent_id=agent_id,
         name=_agent_name(agent_id, context),
         age=30,
-        background="Unity-controlled non-player character connected through the Knoema API.",
+        background="Unity-controlled non-player character connected through the Luvoire API.",
         personality=Personality(
             openness=0.5,
             conscientiousness=0.6,

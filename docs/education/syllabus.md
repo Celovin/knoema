@@ -2,7 +2,7 @@
 
 Course title: LLM-Based Multi-Agent Social Simulation
 
-This 12-week kit is designed for upper-level undergraduate or graduate courses in AI systems, computational social science, game AI, HCI, or research methods. Students use Knoema to design scenarios, run reproducible simulations, audit behavior, and present a final study.
+This 12-week kit is designed for upper-level undergraduate or graduate courses in AI systems, computational social science, game AI, HCI, or research methods. Students use Luvoire to design scenarios, run reproducible simulations, audit behavior, and present a final study.
 
 ## Course Outcomes
 
@@ -14,7 +14,7 @@ This 12-week kit is designed for upper-level undergraduate or graduate courses i
 
 ## Week 1 - Scenario Authoring and Local Runs
 
-Students install Knoema, run a two-agent scenario, and edit a safe Scenario DSL file.
+Students install Luvoire, run a two-agent scenario, and edit a safe Scenario DSL file.
 
 Assignment: [Week 01 Scenario Authoring](assignments/week_01_scenario_authoring.md)
 

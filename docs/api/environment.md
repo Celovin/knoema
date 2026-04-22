@@ -2,8 +2,8 @@
 
 Environment objects provide time, location, conditions, and recent events to agent decisions.
 
-::: knoema.environment.EnvironmentContext
+::: luvoire.environment.EnvironmentContext
 
-::: knoema.environment.Environment
+::: luvoire.environment.Environment
 
-::: knoema.types.WorldEvent
+::: luvoire.types.WorldEvent

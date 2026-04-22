@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any
 
-from knoema.protocols import Message
+from luvoire.protocols import Message
 
 
 class AnthropicClient:

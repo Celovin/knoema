@@ -10,7 +10,7 @@ Check mode runs three measurements and compares the best current value to the co
 
 Hardware caveat: Single-thread sequential on Windows 10, i5-class CPU. Throughput on Linux / modern server-class hardware is typically 2-4x higher but not yet published.
 
-Methodology script: [scripts/bench_replay_throughput.py](https://github.com/Celovin/knoema/blob/main/scripts/bench_replay_throughput.py).
+Methodology script: [scripts/bench_replay_throughput.py](https://github.com/Celovin/luvoire/blob/main/scripts/bench_replay_throughput.py).
 
 ## Hardware
 

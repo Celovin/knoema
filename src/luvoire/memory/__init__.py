@@ -1,12 +1,12 @@
 """Memory subsystem exports."""
 
-from knoema.memory.long_term import (
+from luvoire.memory.long_term import (
     HashEmbeddingEncoder,
     MemorySearchResult,
     RetrievalWeights,
     SQLiteFaissMemoryStore,
 )
-from knoema.memory.multi_layer import (
+from luvoire.memory.multi_layer import (
     MEMORY_LAYERS,
     MLMFRetentionBenchmarkResult,
     MultiLayerMemoryRecord,
@@ -14,8 +14,8 @@ from knoema.memory.multi_layer import (
     MultiLayerSearchResult,
     SharedDecayScheduler,
 )
-from knoema.memory.short_term import ShortTermMemoryBuffer
-from knoema.memory.summarizer import MemorySummarizer
+from luvoire.memory.short_term import ShortTermMemoryBuffer
+from luvoire.memory.summarizer import MemorySummarizer
 
 __all__ = [
     "MEMORY_LAYERS",

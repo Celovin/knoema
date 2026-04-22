@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from knoema import ContentFilter
+from luvoire import ContentFilter
 
 
 def test_phase53_harmful_content_requests_are_blocked() -> None:

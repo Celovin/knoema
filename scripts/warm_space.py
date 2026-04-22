@@ -11,7 +11,7 @@ from typing import Protocol
 import requests
 from huggingface_hub import HfApi
 
-DEFAULT_REPO_ID = "celovin/knoema-playground"
+DEFAULT_REPO_ID = "celovin/luvoire-playground"
 DEFAULT_TIMEOUT_SECONDS = 600
 DEFAULT_POLL_INTERVAL_SECONDS = 10
 ERROR_STAGES = {"RUNTIME_ERROR", "BUILD_ERROR"}

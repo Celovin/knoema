@@ -1,28 +1,28 @@
 # MCP Setup
 
-Knoema exposes a stdio Model Context Protocol server for local desktop clients.
+Luvoire exposes a stdio Model Context Protocol server for local desktop clients.
 The server provides deterministic replay tools only by default, so desktop LLMs
 can inspect scenarios without receiving API keys.
 
 ## Install
 
 ```powershell
-pip install "knoema-engine[mcp]"
+pip install "luvoire-engine[mcp]"
 ```
 
 From a source checkout:
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 $env:PYTHONPATH="src"
-.\.venv\Scripts\python.exe scripts\knoema_mcp_serve.py --stdio
+.\.venv\Scripts\python.exe scripts\luvoire_mcp_serve.py --stdio
 ```
 
 If the package is installed outside the repository, point the server at the
 scenario directory:
 
 ```powershell
-$env:KNOEMA_SCENARIO_DIR="C:\Users\admin\Projects\knoema\playground\scenarios"
+$env:LUVOIRE_SCENARIO_DIR="C:\Users\admin\Projects\luvoire\playground\scenarios"
 ```
 
 ## Claude Desktop
@@ -32,15 +32,15 @@ Add this entry to `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "knoema": {
+    "luvoire": {
       "command": "python",
       "args": [
-        "C:\\Users\\admin\\Projects\\knoema\\scripts\\knoema_mcp_serve.py",
+        "C:\\Users\\admin\\Projects\\luvoire\\scripts\\luvoire_mcp_serve.py",
         "--stdio"
       ],
       "env": {
-        "PYTHONPATH": "C:\\Users\\admin\\Projects\\knoema\\src",
-        "KNOEMA_SCENARIO_DIR": "C:\\Users\\admin\\Projects\\knoema\\playground\\scenarios"
+        "PYTHONPATH": "C:\\Users\\admin\\Projects\\luvoire\\src",
+        "LUVOIRE_SCENARIO_DIR": "C:\\Users\\admin\\Projects\\luvoire\\playground\\scenarios"
       }
     }
   }
@@ -50,11 +50,11 @@ Add this entry to `claude_desktop_config.json`:
 ## Claude Code
 
 ```powershell
-claude mcp add knoema -- python C:\Users\admin\Projects\knoema\scripts\knoema_mcp_serve.py --stdio
+claude mcp add luvoire -- python C:\Users\admin\Projects\luvoire\scripts\luvoire_mcp_serve.py --stdio
 ```
 
-Set `PYTHONPATH=C:\Users\admin\Projects\knoema\src` and
-`KNOEMA_SCENARIO_DIR=C:\Users\admin\Projects\knoema\playground\scenarios` in
+Set `PYTHONPATH=C:\Users\admin\Projects\luvoire\src` and
+`LUVOIRE_SCENARIO_DIR=C:\Users\admin\Projects\luvoire\playground\scenarios` in
 the shell that launches Claude Code.
 
 ## Cursor and Cline
@@ -62,7 +62,7 @@ the shell that launches Claude Code.
 Use the same command and environment values as Claude Desktop:
 
 ```text
-python C:\Users\admin\Projects\knoema\scripts\knoema_mcp_serve.py --stdio
+python C:\Users\admin\Projects\luvoire\scripts\luvoire_mcp_serve.py --stdio
 ```
 
 ## Tools

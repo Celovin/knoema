@@ -27,7 +27,7 @@ variable "container_image" {
 }
 
 resource "google_cloud_run_v2_service" "api" {
-  name     = "knoema-api"
+  name     = "luvoire-api"
   location = var.region
 
   template {
@@ -47,7 +47,7 @@ resource "google_cloud_run_v2_service" "api" {
 }
 
 resource "google_sql_database_instance" "postgres" {
-  name             = "knoema-postgres"
+  name             = "luvoire-postgres"
   database_version = "POSTGRES_16"
   region           = var.region
 
@@ -56,13 +56,13 @@ resource "google_sql_database_instance" "postgres" {
   }
 }
 
-resource "google_sql_database" "knoema" {
-  name     = "knoema"
+resource "google_sql_database" "luvoire" {
+  name     = "luvoire"
   instance = google_sql_database_instance.postgres.name
 }
 
 resource "google_redis_instance" "cache" {
-  name           = "knoema-redis"
+  name           = "luvoire-redis"
   tier           = "BASIC"
   memory_size_gb = 1
   region         = var.region

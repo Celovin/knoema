@@ -1,4 +1,4 @@
-"""Deterministic benchmark utilities for Knoema simulation runs."""
+"""Deterministic benchmark utilities for Luvoire simulation runs."""
 
 from __future__ import annotations
 
@@ -10,12 +10,12 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import asdict, dataclass
 from datetime import datetime
 
-from knoema.environment import Environment
-from knoema.llm import LocalClient
-from knoema.persona import Persona
-from knoema.protocols import Message
-from knoema.simulator import Simulator
-from knoema.types import Personality, WorldEvent
+from luvoire.environment import Environment
+from luvoire.llm import LocalClient
+from luvoire.persona import Persona
+from luvoire.protocols import Message
+from luvoire.simulator import Simulator
+from luvoire.types import Personality, WorldEvent
 
 BASE_AGENT_SPECS: tuple[tuple[str, str, int, str, str], ...] = (
     ("mira", "Mira", 34, "Village clinic nurse who checks on elders before lunch.", "clinic"),
@@ -169,13 +169,13 @@ def build_village_personas(agent_count: int) -> list[Persona]:
     return personas
 
 
-def run_knoema_benchmark(config: BenchmarkConfig | None = None) -> BenchmarkReport:
-    """Run the deterministic Knoema village benchmark."""
+def run_luvoire_benchmark(config: BenchmarkConfig | None = None) -> BenchmarkReport:
+    """Run the deterministic Luvoire village benchmark."""
 
     resolved_config = config or BenchmarkConfig()
     runs = [_run_once(resolved_config, repetition) for repetition in range(1, resolved_config.repetitions + 1)]
     return BenchmarkReport(
-        engine="Knoema",
+        engine="Luvoire",
         config=resolved_config,
         runs=runs,
         python_version=platform.python_version(),
@@ -199,7 +199,7 @@ def build_comparison_rows(
             action_count=report.action_count,
             median_wall_time_seconds=report.median_wall_time_seconds,
             actions_per_second=report.median_actions_per_second,
-            notes="Deterministic LocalClient, shared Knoema simulator path.",
+            notes="Deterministic LocalClient, shared Luvoire simulator path.",
         )
     ]
     rows.extend(
@@ -223,7 +223,7 @@ def format_markdown_report(report: BenchmarkReport) -> str:
 
     rows = build_comparison_rows(report)
     lines = [
-        "# Knoema Benchmark Report",
+        "# Luvoire Benchmark Report",
         "",
         f"Scenario: `{report.config.scenario_name}`",
         f"Agents: {report.config.agent_count}",
@@ -336,13 +336,13 @@ def _partner_map(agent_ids: Sequence[str]) -> dict[str, str]:
 def _build_environment(role_by_agent: Mapping[str, str]) -> Environment:
     environment = Environment(
         start_time=datetime(2026, 6, 1, 7, 0),
-        location_path=("Knoema Demo World", "Harbor Village", "Central Square"),
+        location_path=("Luvoire Demo World", "Harbor Village", "Central Square"),
         conditions={"weather": "clear", "festival_day": True, "market_pressure": "moderate"},
     )
     for agent_id, role in role_by_agent.items():
         environment.set_agent_location(
             agent_id,
-            ("Knoema Demo World", "Harbor Village", role.replace("_", " ").title()),
+            ("Luvoire Demo World", "Harbor Village", role.replace("_", " ").title()),
         )
     return environment
 
@@ -352,7 +352,7 @@ def _public_event(agent_ids: Sequence[str]) -> WorldEvent:
         timestamp=datetime(2026, 6, 1, 12, 0),
         event_type="village.announcement",
         participants=list(agent_ids),
-        location="Knoema Demo World > Harbor Village > Central Square",
+        location="Luvoire Demo World > Harbor Village > Central Square",
         description="Noon bell: evening market preparation starts after lunch.",
     )
 
@@ -442,5 +442,5 @@ __all__ = [
     "build_comparison_rows",
     "build_village_personas",
     "format_markdown_report",
-    "run_knoema_benchmark",
+    "run_luvoire_benchmark",
 ]

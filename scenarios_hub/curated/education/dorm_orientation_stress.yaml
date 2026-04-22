@@ -8,7 +8,7 @@ tick_duration_minutes: 360
 duration_days: 1
 environment:
   start_time: "2026-08-25T10:00:00"
-  location_path: [Knoema Demo World, Campus Housing, Orientation Hall]
+  location_path: [Luvoire Demo World, Campus Housing, Orientation Hall]
   conditions:
     move_in_week: true
     crowd_level: busy
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-08-25T14:00:00"
     event_type: housing.support_handoff
     participants: [resident, advisor]
-    location: Knoema Demo World > Campus Housing > Orientation Hall
+    location: Luvoire Demo World > Campus Housing > Orientation Hall
     description: Advisor pauses the queue briefly and gives a two-step check-in plan.
 metrics:
   - name: support_handoff_latency

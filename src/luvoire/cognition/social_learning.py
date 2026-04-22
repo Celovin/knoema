@@ -6,8 +6,8 @@ from dataclasses import dataclass, replace
 from datetime import datetime, timedelta
 from typing import Literal
 
-from knoema.planning import WorldState
-from knoema.types import Action, AgentID
+from luvoire.planning import WorldState
+from luvoire.types import Action, AgentID
 
 ObservationOutcome = Literal["success", "failure", "neutral"]
 

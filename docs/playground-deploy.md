@@ -8,20 +8,20 @@ python scripts/deploy_playground_space.py --ensure-fresh-install --factory-reboo
 
 ## Why the fresh-install pin exists
 
-Hugging Face build caches can reuse a previously resolved git dependency when the dependency line does not change. `--ensure-fresh-install` reads the current repository commit with `git rev-parse HEAD`, verifies it with `git cat-file -e`, and rewrites `playground/requirements.txt` so `knoema-engine` installs from that exact commit during the Space build.
+Hugging Face build caches can reuse a previously resolved git dependency when the dependency line does not change. `--ensure-fresh-install` reads the current repository commit with `git rev-parse HEAD`, verifies it with `git cat-file -e`, and rewrites `playground/requirements.txt` so `luvoire-engine` installs from that exact commit during the Space build.
 
 This removes the manual repin step after source changes that add new modules or dependency metadata.
 
 ## Flags
 
-- `--ensure-fresh-install`: pins the `knoema-engine` git dependency in `playground/requirements.txt` to the verified current HEAD before upload.
+- `--ensure-fresh-install`: pins the `luvoire-engine` git dependency in `playground/requirements.txt` to the verified current HEAD before upload.
 - `--factory-reboot-on-pyproject-change`: compares the outgoing `playground/requirements.txt` and source `pyproject.toml` against the previous Space snapshot/source pin. If either changed, it calls `HfApi().restart_space(..., factory_reboot=True)` after upload.
 - `--dry-run`: validates HF CLI authentication and prints planned commands without uploading, rebooting, or warming the Space.
 
 Every non-dry deploy ends by running:
 
 ```powershell
-python scripts/warm_space.py --repo-id celovin/knoema-playground
+python scripts/warm_space.py --repo-id celovin/luvoire-playground
 ```
 
 ## Warmup behavior

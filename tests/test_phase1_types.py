@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from knoema import Action, Memory, Personality, WorldEvent, load_config
-from knoema.protocols import LLMClient, MemoryRetriever, MemoryWriter, PromptRenderable
-from knoema.types import Emotion
+from luvoire import Action, Memory, Personality, WorldEvent, load_config
+from luvoire.protocols import LLMClient, MemoryRetriever, MemoryWriter, PromptRenderable
+from luvoire.types import Emotion
 
 
 def test_personality_requires_unit_interval_traits() -> None:
@@ -109,7 +109,7 @@ def test_world_event_rejects_blank_participants() -> None:
 
 
 def test_load_config_merges_yaml_with_environment_overrides(tmp_path: Path) -> None:
-    config_path = tmp_path / "knoema.yaml"
+    config_path = tmp_path / "luvoire.yaml"
     config_path.write_text(
         "\n".join(
             [
@@ -127,8 +127,8 @@ def test_load_config_merges_yaml_with_environment_overrides(tmp_path: Path) -> N
     config = load_config(
         config_path,
         environ={
-            "KNOEMA_MEMORY__SHORT_TERM_CAPACITY": "32",
-            "KNOEMA_LOGGING__JSON": "true",
+            "LUVOIRE_MEMORY__SHORT_TERM_CAPACITY": "32",
+            "LUVOIRE_LOGGING__JSON": "true",
         },
     )
 

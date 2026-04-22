@@ -1,6 +1,6 @@
 # Prompt Templates
 
-Knoema prompt templates support four language codes:
+Luvoire prompt templates support four language codes:
 
 | Code | Language | Surface |
 | --- | --- | --- |
@@ -22,7 +22,7 @@ When `Persona.theory_of_mind.enabled` is true and a belief summary is supplied, 
 ## Usage
 
 ```python
-from knoema import DecisionEngine, LocalClient, render_persona_system_prompt
+from luvoire import DecisionEngine, LocalClient, render_persona_system_prompt
 
 prompt = render_persona_system_prompt(persona, language="ko")
 engine = DecisionEngine(LocalClient(), language="ko")
@@ -36,4 +36,4 @@ Accepted aliases include values such as `ko-KR`, `ja-JP`, and `zh-Hans`; interna
 - Keep JSON keys unchanged: `action_type`, `target`, and `content`.
 - Keep theory-of-mind prompt notes opt-in at the persona layer so non-ToM agents do not pay prompt overhead.
 - Translate instructions and headings, not data payloads or adapter contracts.
-- Add new languages through `src/knoema/prompts.py` and cover them with tests before using them in examples.
+- Add new languages through `src/luvoire/prompts.py` and cover them with tests before using them in examples.

@@ -22,7 +22,7 @@ def test_phase27_scripts_include_recording_and_description_blocks() -> None:
         assert "## Recording Setup" in content
         assert "## Script" in content
         assert "## YouTube Description" in content
-        assert "https://github.com/Celovin/knoema" in content
+        assert "https://github.com/Celovin/luvoire" in content
 
 
 def test_phase27_research_script_keeps_safety_boundary() -> None:

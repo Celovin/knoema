@@ -1,13 +1,17 @@
-"""Configuration loading helpers for Knoema."""
+"""Configuration loading helpers for Luvoire."""
 
 from __future__ import annotations
 
+import os
+import warnings
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
+
+_WARNED_LEGACY_ENV_VARS: set[str] = set()
 
 
 class LLMConfig(BaseModel):
@@ -30,7 +34,7 @@ class MemoryConfig(BaseModel):
     retrieval_limit: int = Field(default=5, ge=1)
     recency_bias: float = Field(default=0.3, ge=0.0, le=1.0)
     summarization_interval: int = Field(default=50, ge=1)
-    sqlite_path: str = "var/knoema.sqlite3"
+    sqlite_path: str = "var/luvoire.sqlite3"
 
 
 class RuntimeConfig(BaseModel):
@@ -48,7 +52,7 @@ class LoggingConfig(BaseModel):
     json_output: bool = Field(default=False, alias="json")
 
 
-class KnoemaConfig(BaseModel):
+class LuvoireConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     llm: LLMConfig = Field(default_factory=LLMConfig)
@@ -84,25 +88,64 @@ def _apply_env_overrides(
     *,
     env_prefix: str,
     environ: Mapping[str, str],
+    legacy_env_prefix: str | None = None,
 ) -> dict[str, Any]:
     merged = dict(payload)
-    for key, raw_value in environ.items():
-        if not key.startswith(env_prefix):
+    prefixes = ((legacy_env_prefix, True), (env_prefix, False))
+    for prefix, legacy in prefixes:
+        if prefix is None:
             continue
-        path = key.removeprefix(env_prefix).lower().split("__")
-        normalized_path = [segment.replace("-", "_") for segment in path if segment]
-        if not normalized_path:
-            continue
-        _deep_set(merged, normalized_path, yaml.safe_load(raw_value))
+        for key, raw_value in environ.items():
+            if not key.startswith(prefix):
+                continue
+            if legacy and f"{env_prefix}{key.removeprefix(prefix)}" in environ:
+                continue
+            if legacy:
+                _warn_legacy_env(key, f"{env_prefix}{key.removeprefix(prefix)}")
+            path = key.removeprefix(prefix).lower().split("__")
+            normalized_path = [segment.replace("-", "_") for segment in path if segment]
+            if not normalized_path:
+                continue
+            _deep_set(merged, normalized_path, yaml.safe_load(raw_value))
     return merged
+
+
+def get_env(
+    new_name: str,
+    old_name: str | None = None,
+    default: str | None = None,
+    *,
+    environ: Mapping[str, str] | None = None,
+) -> str | None:
+    env = os.environ if environ is None else environ
+    value = env.get(new_name)
+    if value is not None:
+        return value
+    if old_name is not None:
+        legacy = env.get(old_name)
+        if legacy is not None:
+            _warn_legacy_env(old_name, new_name)
+            return legacy
+    return default
+
+
+def _warn_legacy_env(old_name: str, new_name: str) -> None:
+    if old_name in _WARNED_LEGACY_ENV_VARS:
+        return
+    warnings.warn(
+        f"{old_name} is deprecated; use {new_name}",
+        DeprecationWarning,
+        stacklevel=3,
+    )
+    _WARNED_LEGACY_ENV_VARS.add(old_name)
 
 
 def load_config(
     path: str | Path | None = None,
     *,
-    env_prefix: str = "KNOEMA_",
+    env_prefix: str = "LUVOIRE_",
     environ: Mapping[str, str] | None = None,
-) -> KnoemaConfig:
+) -> LuvoireConfig:
     """Load config from YAML first, then overlay environment variables."""
 
     config_path = Path(path) if path is not None else None
@@ -111,15 +154,17 @@ def load_config(
         payload,
         env_prefix=env_prefix,
         environ=environ or {},
+        legacy_env_prefix="KNOEMA_" if env_prefix == "LUVOIRE_" else None,
     )
-    return KnoemaConfig.model_validate(merged)
+    return LuvoireConfig.model_validate(merged)
 
 
 __all__ = [
-    "KnoemaConfig",
+    "LuvoireConfig",
     "LLMConfig",
     "LoggingConfig",
     "MemoryConfig",
     "RuntimeConfig",
+    "get_env",
     "load_config",
 ]

@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 
 import pytest
 
-from knoema import AuditEvent, AuditLogWriter, validate_audit_record
+from luvoire import AuditEvent, AuditLogWriter, validate_audit_record
 
 
 def test_phase53_audit_log_jsonl_round_trip(tmp_path) -> None:  # type: ignore[no-untyped-def]
@@ -39,6 +39,6 @@ def test_phase53_audit_schema_rejects_missing_or_invalid_fields() -> None:
                 "category": "prompt_injection",
                 "outcome": "ignored",
                 "reason": "bad outcome",
-                "source": "knoema",
+                "source": "luvoire",
             }
         )

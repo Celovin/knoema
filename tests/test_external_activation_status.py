@@ -15,7 +15,7 @@ def test_external_activation_status_reports_current_blockers(tmp_path: Path) -> 
     website_link = website_dir / ".vercel"
     website_link.mkdir()
     (website_link / "project.json").write_text(
-        '{"projectId":"prj_demo","orgId":"team_demo","projectName":"knoema"}',
+        '{"projectId":"prj_demo","orgId":"team_demo","projectName":"luvoire"}',
         encoding="utf-8",
     )
     appdata_auth_dir = tmp_path / "appdata" / "com.vercel.cli" / "Data"
@@ -28,35 +28,35 @@ def test_external_activation_status_reports_current_blockers(tmp_path: Path) -> 
                 "gh",
                 "repo",
                 "view",
-                "Celovin/knoema",
+                "Celovin/luvoire",
                 "--json",
                 "name,visibility,isPrivate,defaultBranchRef,url",
             ]
         ): CommandResult(
             exit_code=0,
             stdout=(
-                '{"name":"knoema","visibility":"PUBLIC","isPrivate":false,'
-                '"defaultBranchRef":{"name":"main"},"url":"https://github.com/Celovin/knoema"}'
+                '{"name":"luvoire","visibility":"PUBLIC","isPrivate":false,'
+                '"defaultBranchRef":{"name":"main"},"url":"https://github.com/Celovin/luvoire"}'
             ),
             stderr="",
         ),
         _command_key(
-            ["gh", "api", "repos/Celovin/knoema/actions/permissions/workflow"]
+            ["gh", "api", "repos/Celovin/luvoire/actions/permissions/workflow"]
         ): CommandResult(
             exit_code=0,
             stdout='{"default_workflow_permissions":"read","can_approve_pull_request_reviews":false}',
             stderr="",
         ),
-        _command_key(["gh", "variable", "list", "--repo", "Celovin/knoema"]): CommandResult(
+        _command_key(["gh", "variable", "list", "--repo", "Celovin/luvoire"]): CommandResult(
             exit_code=0,
             stdout="",
             stderr="",
         ),
         _command_key(
-            ["gh", "release", "list", "--repo", "Celovin/knoema", "--limit", "1"]
+            ["gh", "release", "list", "--repo", "Celovin/luvoire", "--limit", "1"]
         ): CommandResult(
             exit_code=0,
-            stdout="Knoema Engine v0.1.0\tLatest\tv0.1.0\t2026-04-18T00:14:14Z\n",
+            stdout="Luvoire v0.1.0\tLatest\tv0.1.0\t2026-04-18T00:14:14Z\n",
             stderr="",
         ),
         _command_key(["hf", "auth", "whoami"]): CommandResult(
@@ -90,7 +90,7 @@ def test_external_activation_status_reports_current_blockers(tmp_path: Path) -> 
     assert report["deployment"]["vercel"]["website_project_link_exists"] is True
     assert report["deployment"]["vercel"]["auth_file_exists"] is True
     assert report["deployment"]["vercel"]["auth_source"] == "appdata_auth_file"
-    assert report["deployment"]["vercel"]["linked_project_name"] == "knoema"
+    assert report["deployment"]["vercel"]["linked_project_name"] == "luvoire"
     assert report["deployment"]["vercel"]["is_logged_in"] is True
     assert report["github_actions"]["release_please_enabled"] is False
     assert report["suggested_actions"][0].startswith(
@@ -109,7 +109,7 @@ def test_external_activation_status_reports_ready_state_when_all_checks_pass(tmp
     website_link = tmp_path / "website" / ".vercel"
     website_link.mkdir(parents=True)
     (website_link / "project.json").write_text(
-        '{"projectId":"p123","orgId":"team_123","projectName":"knoema"}',
+        '{"projectId":"p123","orgId":"team_123","projectName":"luvoire"}',
         encoding="utf-8",
     )
     auth_dir = tmp_path / "appdata" / "com.vercel.cli" / "Data"
@@ -122,35 +122,35 @@ def test_external_activation_status_reports_ready_state_when_all_checks_pass(tmp
                 "gh",
                 "repo",
                 "view",
-                "Celovin/knoema",
+                "Celovin/luvoire",
                 "--json",
                 "name,visibility,isPrivate,defaultBranchRef,url",
             ]
         ): CommandResult(
             exit_code=0,
             stdout=(
-                '{"name":"knoema","visibility":"PUBLIC","isPrivate":false,'
-                '"defaultBranchRef":{"name":"main"},"url":"https://github.com/Celovin/knoema"}'
+                '{"name":"luvoire","visibility":"PUBLIC","isPrivate":false,'
+                '"defaultBranchRef":{"name":"main"},"url":"https://github.com/Celovin/luvoire"}'
             ),
             stderr="",
         ),
         _command_key(
-            ["gh", "api", "repos/Celovin/knoema/actions/permissions/workflow"]
+            ["gh", "api", "repos/Celovin/luvoire/actions/permissions/workflow"]
         ): CommandResult(
             exit_code=0,
             stdout='{"default_workflow_permissions":"write","can_approve_pull_request_reviews":true}',
             stderr="",
         ),
-        _command_key(["gh", "variable", "list", "--repo", "Celovin/knoema"]): CommandResult(
+        _command_key(["gh", "variable", "list", "--repo", "Celovin/luvoire"]): CommandResult(
             exit_code=0,
             stdout="ENABLE_RELEASE_PLEASE\t1\t2026-04-18T12:00:00Z\n",
             stderr="",
         ),
         _command_key(
-            ["gh", "release", "list", "--repo", "Celovin/knoema", "--limit", "1"]
+            ["gh", "release", "list", "--repo", "Celovin/luvoire", "--limit", "1"]
         ): CommandResult(
             exit_code=0,
-            stdout="Knoema Engine v0.1.0\tLatest\tv0.1.0\t2026-04-18T00:14:14Z\n",
+            stdout="Luvoire v0.1.0\tLatest\tv0.1.0\t2026-04-18T00:14:14Z\n",
             stderr="",
         ),
         _command_key(["hf", "auth", "whoami"]): CommandResult(
@@ -189,7 +189,7 @@ def test_external_activation_status_reports_ready_state_when_all_checks_pass(tmp
     assert report["github_actions"]["release_please_enabled"] is True
     assert report["deployment"]["vercel"]["auth_file_exists"] is True
     assert report["deployment"]["vercel"]["auth_source"] == "appdata_auth_file"
-    assert report["deployment"]["vercel"]["linked_project_name"] == "knoema"
+    assert report["deployment"]["vercel"]["linked_project_name"] == "luvoire"
     assert report["deployment"]["vercel"]["linked_org_id"] == "team_123"
     assert report["deployment"]["vercel"]["is_logged_in"] is True
     assert report["suggested_actions"] == []
@@ -199,7 +199,7 @@ def test_external_activation_status_requires_verified_vercel_login(tmp_path: Pat
     website_link = tmp_path / "website" / ".vercel"
     website_link.mkdir(parents=True)
     (website_link / "project.json").write_text(
-        '{"projectId":"p123","orgId":"team_123","projectName":"knoema"}',
+        '{"projectId":"p123","orgId":"team_123","projectName":"luvoire"}',
         encoding="utf-8",
     )
     auth_dir = tmp_path / "appdata" / "com.vercel.cli" / "Data"
@@ -212,35 +212,35 @@ def test_external_activation_status_requires_verified_vercel_login(tmp_path: Pat
                 "gh",
                 "repo",
                 "view",
-                "Celovin/knoema",
+                "Celovin/luvoire",
                 "--json",
                 "name,visibility,isPrivate,defaultBranchRef,url",
             ]
         ): CommandResult(
             exit_code=0,
             stdout=(
-                '{"name":"knoema","visibility":"PUBLIC","isPrivate":false,'
-                '"defaultBranchRef":{"name":"main"},"url":"https://github.com/Celovin/knoema"}'
+                '{"name":"luvoire","visibility":"PUBLIC","isPrivate":false,'
+                '"defaultBranchRef":{"name":"main"},"url":"https://github.com/Celovin/luvoire"}'
             ),
             stderr="",
         ),
         _command_key(
-            ["gh", "api", "repos/Celovin/knoema/actions/permissions/workflow"]
+            ["gh", "api", "repos/Celovin/luvoire/actions/permissions/workflow"]
         ): CommandResult(
             exit_code=0,
             stdout='{"default_workflow_permissions":"write","can_approve_pull_request_reviews":true}',
             stderr="",
         ),
-        _command_key(["gh", "variable", "list", "--repo", "Celovin/knoema"]): CommandResult(
+        _command_key(["gh", "variable", "list", "--repo", "Celovin/luvoire"]): CommandResult(
             exit_code=0,
             stdout="ENABLE_RELEASE_PLEASE\t1\t2026-04-18T12:00:00Z\n",
             stderr="",
         ),
         _command_key(
-            ["gh", "release", "list", "--repo", "Celovin/knoema", "--limit", "1"]
+            ["gh", "release", "list", "--repo", "Celovin/luvoire", "--limit", "1"]
         ): CommandResult(
             exit_code=0,
-            stdout="Knoema Engine v0.1.0\tLatest\tv0.1.0\t2026-04-18T00:14:14Z\n",
+            stdout="Luvoire v0.1.0\tLatest\tv0.1.0\t2026-04-18T00:14:14Z\n",
             stderr="",
         ),
         _command_key(["hf", "auth", "whoami"]): CommandResult(
@@ -289,35 +289,35 @@ def test_external_activation_status_handles_invalid_project_link_json(tmp_path: 
                 "gh",
                 "repo",
                 "view",
-                "Celovin/knoema",
+                "Celovin/luvoire",
                 "--json",
                 "name,visibility,isPrivate,defaultBranchRef,url",
             ]
         ): CommandResult(
             exit_code=0,
             stdout=(
-                '{"name":"knoema","visibility":"PUBLIC","isPrivate":false,'
-                '"defaultBranchRef":{"name":"main"},"url":"https://github.com/Celovin/knoema"}'
+                '{"name":"luvoire","visibility":"PUBLIC","isPrivate":false,'
+                '"defaultBranchRef":{"name":"main"},"url":"https://github.com/Celovin/luvoire"}'
             ),
             stderr="",
         ),
         _command_key(
-            ["gh", "api", "repos/Celovin/knoema/actions/permissions/workflow"]
+            ["gh", "api", "repos/Celovin/luvoire/actions/permissions/workflow"]
         ): CommandResult(
             exit_code=0,
             stdout='{"default_workflow_permissions":"write","can_approve_pull_request_reviews":true}',
             stderr="",
         ),
-        _command_key(["gh", "variable", "list", "--repo", "Celovin/knoema"]): CommandResult(
+        _command_key(["gh", "variable", "list", "--repo", "Celovin/luvoire"]): CommandResult(
             exit_code=0,
             stdout="ENABLE_RELEASE_PLEASE\t1\t2026-04-18T12:00:00Z\n",
             stderr="",
         ),
         _command_key(
-            ["gh", "release", "list", "--repo", "Celovin/knoema", "--limit", "1"]
+            ["gh", "release", "list", "--repo", "Celovin/luvoire", "--limit", "1"]
         ): CommandResult(
             exit_code=0,
-            stdout="Knoema Engine v0.1.0\tLatest\tv0.1.0\t2026-04-18T00:14:14Z\n",
+            stdout="Luvoire v0.1.0\tLatest\tv0.1.0\t2026-04-18T00:14:14Z\n",
             stderr="",
         ),
         _command_key(["hf", "auth", "whoami"]): CommandResult(

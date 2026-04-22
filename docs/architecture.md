@@ -1,6 +1,6 @@
-# Knoema Engine Architecture
+# Luvoire Architecture
 
-Knoema Engine is a Python runtime for LLM-based multi-agent social simulation. The MVP keeps the core engine small and adapter-friendly: game engines, notebooks, and dashboards consume the same `Action` and JSONL log surface.
+Luvoire is a Python runtime for LLM-based multi-agent social simulation. The MVP keeps the core engine small and adapter-friendly: game engines, notebooks, and dashboards consume the same `Action` and JSONL log surface.
 
 ## Goals
 
@@ -23,7 +23,7 @@ flowchart LR
     User[Researcher or Game Developer] --> Notebook[Jupyter Examples]
     User --> Dashboard[Streamlit Dashboard]
     User --> Game[Godot Adapter]
-    Notebook --> Core[Knoema Core]
+    Notebook --> Core[Luvoire Core]
     Dashboard --> JSONL[Simulation JSONL]
     Game --> Core
     Core --> LLM[LLM Gateway]

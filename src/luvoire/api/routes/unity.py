@@ -6,16 +6,16 @@ from typing import cast
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
-from knoema.api.auth import require_api_key
-from knoema.api.rate_limit import enforce_rate_limit
-from knoema.api.schemas import (
+from luvoire.api.auth import require_api_key
+from luvoire.api.rate_limit import enforce_rate_limit
+from luvoire.api.schemas import (
     UnityActionAcceptedResponse,
     UnityActionRequest,
     UnityMemoryResponse,
     UnityTickRequest,
     UnityTickResponse,
 )
-from knoema.api.unity_service import UnityRuntimeService, UnitySessionNotFoundError
+from luvoire.api.unity_service import UnityRuntimeService, UnitySessionNotFoundError
 
 router = APIRouter(
     tags=["unity"],

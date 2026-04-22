@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from dataclasses import asdict, dataclass
 from typing import Protocol
 
-from knoema.types import AgentID
+from luvoire.types import AgentID
 
 
 @dataclass(frozen=True, slots=True)
@@ -258,8 +258,8 @@ def run_sally_anne_benchmark(
     if not 0.0 <= target_accuracy <= 1.0:
         raise ValueError("target_accuracy must be between 0.0 and 1.0")
 
-    from knoema.persona import Persona
-    from knoema.types import Personality
+    from luvoire.persona import Persona
+    from luvoire.types import Personality
 
     containers = [
         ("basket", "box"),

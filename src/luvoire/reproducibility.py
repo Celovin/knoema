@@ -1,4 +1,4 @@
-"""Auditable reproducibility fingerprints for Knoema runs."""
+"""Auditable reproducibility fingerprints for Luvoire runs."""
 
 from __future__ import annotations
 
@@ -14,10 +14,10 @@ from importlib import metadata as importlib_metadata
 from pathlib import Path
 from typing import Any
 
-SCHEMA_VERSION = "knoema.run_fingerprint.v1"
-EMPTY_MERKLE_ROOT = hashlib.sha256(b"knoema-empty-jsonl").hexdigest()
+SCHEMA_VERSION = "luvoire.run_fingerprint.v1"
+EMPTY_MERKLE_ROOT = hashlib.sha256(b"luvoire-empty-jsonl").hexdigest()
 KEY_DEPENDENCIES = (
-    "knoema-engine",
+    "luvoire-engine",
     "pydantic",
     "PyYAML",
     "networkx",
@@ -169,7 +169,7 @@ def verify_run_fingerprint(
 def verification_guide_markdown(certificate: Mapping[str, Any]) -> str:
     return "\n".join(
         [
-            "# Knoema Reproducibility Certificate",
+            "# Luvoire Reproducibility Certificate",
             "",
             f"- Fingerprint: `{certificate.get('fingerprint', '')}`",
             f"- Input hash: `{certificate.get('input_hash', '')}`",
@@ -179,7 +179,7 @@ def verification_guide_markdown(certificate: Mapping[str, Any]) -> str:
             "## Verify",
             "",
             "```powershell",
-            "python scripts/knoema_verify.py run_fingerprint.json --result-jsonl run.jsonl",
+            "python scripts/luvoire_verify.py run_fingerprint.json --result-jsonl run.jsonl",
             "```",
             "",
             "The verifier recomputes the JSONL Merkle root and fails if any line changes.",
@@ -189,8 +189,8 @@ def verification_guide_markdown(certificate: Mapping[str, Any]) -> str:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="knoema-verify",
-        description="Verify a Knoema reproducibility certificate.",
+        prog="luvoire-verify",
+        description="Verify a Luvoire reproducibility certificate.",
     )
     parser.add_argument("certificate", type=Path, help="Path to run_fingerprint.json.")
     parser.add_argument("--run-config", type=Path, default=None, help="Optional JSON config to hash.")
@@ -205,9 +205,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.json:
         print(json.dumps(report.to_json_dict(), ensure_ascii=False, sort_keys=True))
     elif report.verified:
-        print("Knoema reproducibility certificate verified.")
+        print("Luvoire reproducibility certificate verified.")
     else:
-        print("Knoema reproducibility certificate verification failed:")
+        print("Luvoire reproducibility certificate verification failed:")
         for mismatch in report.mismatches:
             print(f"- {mismatch}")
     return 0 if report.verified else 1
@@ -239,8 +239,8 @@ def _package_version(distribution_name: str) -> str | None:
     try:
         return importlib_metadata.version(distribution_name)
     except importlib_metadata.PackageNotFoundError:
-        if distribution_name == "knoema-engine":
-            module = sys.modules.get("knoema")
+        if distribution_name == "luvoire-engine":
+            module = sys.modules.get("luvoire")
             version = getattr(module, "__version__", None)
             return str(version) if version is not None else None
         return None

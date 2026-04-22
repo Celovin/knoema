@@ -1,9 +1,9 @@
-"""Knoema Engine — LLM-based multi-agent social simulation engine.
+"""Luvoire: deterministic multi-agent simulation engine.
 
 Copyright (c) 2026 Celovin. MIT License.
 """
 
-from knoema.benchmark import (
+from luvoire.benchmark import (
     BenchmarkConfig,
     BenchmarkReport,
     BenchmarkRun,
@@ -11,19 +11,19 @@ from knoema.benchmark import (
     build_comparison_rows,
     build_village_personas,
     format_markdown_report,
-    run_knoema_benchmark,
+    run_luvoire_benchmark,
 )
-from knoema.cognition import (
+from luvoire.cognition import (
     LearnedSkill,
     Monologue,
     MonologueGenerator,
     ObservedBehavior,
     SocialLearner,
 )
-from knoema.community import CommunityScenario, seed_community_scenarios
-from knoema.config import KnoemaConfig, load_config
-from knoema.decision import DecisionEngine, decide
-from knoema.distributed import (
+from luvoire.community import CommunityScenario, seed_community_scenarios
+from luvoire.config import LuvoireConfig, load_config
+from luvoire.decision import DecisionEngine, decide
+from luvoire.distributed import (
     BackendRunSummary,
     DistributedSimulationConfig,
     RayExecutor,
@@ -33,10 +33,10 @@ from knoema.distributed import (
     rebalance_hot_shards,
     shard_agents_by_location,
 )
-from knoema.dsl import Scenario, load_scenario
-from knoema.emotion import EmotionState, EmotionStimulus
-from knoema.environment import Environment, EnvironmentContext
-from knoema.evaluation import (
+from luvoire.dsl import Scenario, load_scenario
+from luvoire.emotion import EmotionState, EmotionStimulus
+from luvoire.environment import Environment, EnvironmentContext
+from luvoire.evaluation import (
     ComparisonPair,
     EvaluationSession,
     ReliabilityReport,
@@ -44,9 +44,9 @@ from knoema.evaluation import (
     compute_inter_rater_reliability,
     fleiss_kappa,
 )
-from knoema.export import export_finetuning_jsonl, to_anthropic_jsonl, to_dpo_pairs, to_openai_jsonl
-from knoema.game import NPC, GameSession, NPCResponse
-from knoema.llm import (
+from luvoire.export import export_finetuning_jsonl, to_anthropic_jsonl, to_dpo_pairs, to_openai_jsonl
+from luvoire.game import NPC, GameSession, NPCResponse
+from luvoire.llm import (
     AnthropicClient,
     CachedLLMClient,
     LlamaCppClient,
@@ -59,7 +59,7 @@ from knoema.llm import (
     OpenAIClient,
     VLLMClient,
 )
-from knoema.memory import (
+from luvoire.memory import (
     HashEmbeddingEncoder,
     MemorySearchResult,
     MemorySummarizer,
@@ -67,25 +67,25 @@ from knoema.memory import (
     ShortTermMemoryBuffer,
     SQLiteFaissMemoryStore,
 )
-from knoema.metrics import compute_pcs, compute_rcs, score_log
-from knoema.persona import Persona
-from knoema.planning import AgentContext, HierarchicalPlanner, Task, WorldState
-from knoema.prompts import (
+from luvoire.metrics import compute_pcs, compute_rcs, score_log
+from luvoire.persona import Persona
+from luvoire.planning import AgentContext, HierarchicalPlanner, Task, WorldState
+from luvoire.prompts import (
     SUPPORTED_PROMPT_LANGUAGES,
     PromptLanguage,
     normalize_prompt_language,
     render_decision_user_prompt,
     render_persona_system_prompt,
 )
-from knoema.protocols import LLMClient, MemoryRetriever, MemoryWriter, PromptRenderable
-from knoema.relationship import InteractionOutcome, Relationship, RelationshipGraph
-from knoema.reproducibility import (
+from luvoire.protocols import LLMClient, MemoryRetriever, MemoryWriter, PromptRenderable
+from luvoire.relationship import InteractionOutcome, Relationship, RelationshipGraph
+from luvoire.reproducibility import (
     VerificationReport,
     generate_run_fingerprint,
     result_merkle_root,
     verify_run_fingerprint,
 )
-from knoema.safety import (
+from luvoire.safety import (
     COMMERCIAL_AUDIT_EVENT_TYPES,
     AuditEvent,
     AuditLog,
@@ -98,9 +98,9 @@ from knoema.safety import (
     validate_audit_record,
     validate_commercial_audit_record,
 )
-from knoema.scaling import CityScaleConfig, CityScaleResult, CityScaleRunner
-from knoema.simulator import SimulationLogEntry, Simulator
-from knoema.telemetry import (
+from luvoire.scaling import CityScaleConfig, CityScaleResult, CityScaleRunner
+from luvoire.simulator import SimulationLogEntry, Simulator
+from luvoire.telemetry import (
     NullTelemetryClient,
     TelemetryClient,
     TelemetryEvent,
@@ -110,7 +110,7 @@ from knoema.telemetry import (
     load_or_create_anonymous_id,
     telemetry_opt_in_from_env,
 )
-from knoema.theory_of_mind import (
+from luvoire.theory_of_mind import (
     SallyAnneBenchmarkResult,
     SallyAnneCaseResult,
     TheoryOfMindContext,
@@ -118,7 +118,7 @@ from knoema.theory_of_mind import (
     TheoryOfMindProfile,
     run_sally_anne_benchmark,
 )
-from knoema.types import (
+from luvoire.types import (
     Action,
     AgentID,
     Emotion,
@@ -129,9 +129,11 @@ from knoema.types import (
     WorldEvent,
 )
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __author__ = "Celovin"
 __license__ = "MIT"
+__pronounces__ = "/lu?.vw??r/"
+__korean_name__ = "猷⑤??꾨Ⅴ"
 
 __all__ = [
     "COMMERCIAL_AUDIT_EVENT_TYPES",
@@ -169,7 +171,7 @@ __all__ = [
     "HashEmbeddingEncoder",
     "HierarchicalPlanner",
     "InteractionOutcome",
-    "KnoemaConfig",
+    "LuvoireConfig",
     "LLMCacheStats",
     "LLMCallRecord",
     "LLMClient",
@@ -225,6 +227,8 @@ __all__ = [
     "WorldEvent",
     "WorldState",
     "__version__",
+    "__pronounces__",
+    "__korean_name__",
     "audit_event_from_record",
     "build_cli_properties",
     "build_comparison_rows",
@@ -248,7 +252,7 @@ __all__ = [
     "render_decision_user_prompt",
     "render_persona_system_prompt",
     "result_merkle_root",
-    "run_knoema_benchmark",
+    "run_luvoire_benchmark",
     "run_sally_anne_benchmark",
     "score_log",
     "seed_community_scenarios",

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 
-from knoema.protocols import Message
+from luvoire.protocols import Message
 
 
 class LocalClient:

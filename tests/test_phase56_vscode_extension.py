@@ -13,13 +13,13 @@ def test_phase56_vscode_extension_files_exist() -> None:
     expected = [
         "package.json",
         "compiled/extension.js",
-        "syntaxes/knoema-scenario.tmLanguage.json",
+        "syntaxes/luvoire-scenario.tmLanguage.json",
         "schemas/scenario.schema.json",
-        "examples/dorm.knoema.yaml",
-        "examples/research.knoema.yaml",
-        "examples/community.knoema.yaml",
+        "examples/dorm.luvoire.yaml",
+        "examples/research.luvoire.yaml",
+        "examples/community.luvoire.yaml",
         "media/screenshot-placeholder.svg",
-        "knoema-scenario-tools-0.2.0.vsix",
+        "luvoire-scenario-tools-0.3.0.vsix",
     ]
 
     for relative_path in expected:
@@ -34,11 +34,11 @@ def test_phase56_vscode_manifest_declares_commands_language_and_schema() -> None
     }
 
     assert {
-        "knoema.validateScenario",
-        "knoema.runScenario",
-        "knoema.previewTimeline",
+        "luvoire.validateScenario",
+        "luvoire.runScenario",
+        "luvoire.previewTimeline",
     } <= commands
-    assert package["contributes"]["languages"][0]["id"] == "knoema-scenario"
+    assert package["contributes"]["languages"][0]["id"] == "luvoire-scenario"
     assert package["contributes"]["jsonValidation"][0]["url"] == "./schemas/scenario.schema.json"
 
 

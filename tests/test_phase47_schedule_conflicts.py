@@ -10,14 +10,14 @@ sys.path.insert(0, str(Path.cwd() / "src"))
 sys.path.insert(0, str(Path.cwd()))
 
 playground_simulation = importlib.import_module("playground.simulation")
-knoema_package = importlib.import_module("knoema")
-game_module = importlib.import_module("knoema.game")
-llm_module = importlib.import_module("knoema.llm")
+luvoire_package = importlib.import_module("luvoire")
+game_module = importlib.import_module("luvoire.game")
+llm_module = importlib.import_module("luvoire.llm")
 
-Environment = knoema_package.Environment
-Persona = knoema_package.Persona
-Personality = knoema_package.Personality
-Simulator = knoema_package.Simulator
+Environment = luvoire_package.Environment
+Persona = luvoire_package.Persona
+Personality = luvoire_package.Personality
+Simulator = luvoire_package.Simulator
 RoutineEntry = game_module.RoutineEntry
 LocalClient = llm_module.LocalClient
 

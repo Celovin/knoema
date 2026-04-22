@@ -10259,17 +10259,17 @@
         {
           "comment": "from pyproject urls: Issues",
           "type": "issue-tracker",
-          "url": "https://github.com/Celovin/knoema/issues"
+          "url": "https://github.com/Celovin/luvoire/issues"
         },
         {
           "comment": "from pyproject urls: Repository",
           "type": "vcs",
-          "url": "https://github.com/Celovin/knoema"
+          "url": "https://github.com/Celovin/luvoire"
         },
         {
           "comment": "from pyproject urls: Homepage",
           "type": "website",
-          "url": "https://github.com/Celovin/knoema"
+          "url": "https://github.com/Celovin/luvoire"
         }
       ],
       "licenses": [
@@ -10280,7 +10280,7 @@
           }
         }
       ],
-      "name": "knoema-engine",
+      "name": "luvoire-engine",
       "type": "library",
       "version": "0.1.0"
     },

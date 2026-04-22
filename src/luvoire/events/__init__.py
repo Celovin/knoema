@@ -1,7 +1,7 @@
 """Event scheduling and dispatch exports."""
 
-from knoema.events.dispatcher import EventDispatcher, EventHandler
-from knoema.events.scheduler import EventScheduler, ScheduledEvent
+from luvoire.events.dispatcher import EventDispatcher, EventHandler
+from luvoire.events.scheduler import EventScheduler, ScheduledEvent
 
 __all__ = [
     "EventDispatcher",

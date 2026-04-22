@@ -2,7 +2,7 @@
 
 ## Scope
 
-Phase 21 documents the reproducibility guarantees currently exercised by the public test suite. The goal is not to claim that every future model provider is deterministic. The guarantee is narrower and operational: when a run uses a fixed config, fixed seed, deterministic local response policy, and canonical JSONL export, Knoema can reproduce the same observable behavior and replay summary.
+Phase 21 documents the reproducibility guarantees currently exercised by the public test suite. The goal is not to claim that every future model provider is deterministic. The guarantee is narrower and operational: when a run uses a fixed config, fixed seed, deterministic local response policy, and canonical JSONL export, Luvoire can reproduce the same observable behavior and replay summary.
 
 ## Method
 
@@ -35,7 +35,7 @@ The full suite also passes with the reproducibility tests enabled:
 
 - Fixed deterministic local policy produces stable exported JSONL logs.
 - Fixed deterministic local policy produces stable canonical short-term memory payloads.
-- Config serialization preserves the scenario contract used by `knoema run`.
+- Config serialization preserves the scenario contract used by `luvoire run`.
 - Replay summaries can be restored from JSONL without the original simulator object.
 - Public artifacts can be scanned for entity separation and encoding issues independently of ignored private planning files.
 

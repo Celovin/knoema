@@ -1,4 +1,4 @@
-"""OpenTelemetry tracing setup for opt-in Knoema observability."""
+"""OpenTelemetry tracing setup for opt-in Luvoire observability."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ def setup_tracing(exporter: str | None, *, app: object | None = None) -> bool:
     if exporter is None or exporter == "":
         return False
     if exporter != "otlp":
-        raise ValueError("KNOEMA_OTEL_EXPORTER must be unset or 'otlp'")
+        raise ValueError("LUVOIRE_OTEL_EXPORTER must be unset or 'otlp'")
 
     try:
         trace = import_module("opentelemetry.trace")
@@ -25,13 +25,13 @@ def setup_tracing(exporter: str | None, *, app: object | None = None) -> bool:
         trace_sdk_module = import_module("opentelemetry.sdk.trace")
         export_module = import_module("opentelemetry.sdk.trace.export")
     except ImportError as exc:  # pragma: no cover - depends on optional install
-        raise RuntimeError("Install knoema-engine[observability] to enable OpenTelemetry tracing.") from exc
+        raise RuntimeError("Install luvoire-engine[observability] to enable OpenTelemetry tracing.") from exc
 
-    resource = resources_module.Resource.create({"service.name": "knoema-engine"})
+    resource = resources_module.Resource.create({"service.name": "luvoire-engine"})
     provider = trace_sdk_module.TracerProvider(resource=resource)
     provider.add_span_processor(export_module.SimpleSpanProcessor(_build_span_exporter(exporter)))
     trace.set_tracer_provider(provider)
-    _set_tracer(trace.get_tracer("knoema"))
+    _set_tracer(trace.get_tracer("luvoire"))
     if app is not None:
         fastapi_module.FastAPIInstrumentor.instrument_app(app)
     return True

@@ -6,7 +6,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field, replace
 from typing import Literal
 
-from knoema.types import AgentID
+from luvoire.types import AgentID
 
 TaskStatus = Literal["pending", "active", "completed", "failed"]
 

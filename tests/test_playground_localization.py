@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path.cwd()))
 
 playground_app = importlib.import_module("playground.app")
 playground_simulation = importlib.import_module("playground.simulation")
-deposit_module = importlib.import_module("knoema.research.deposit")
+deposit_module = importlib.import_module("luvoire.research.deposit")
 
 
 def test_subtask65_korean_labels_do_not_reuse_english_user_facing_copy() -> None:

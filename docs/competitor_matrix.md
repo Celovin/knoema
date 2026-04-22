@@ -2,15 +2,15 @@
 
 Last reviewed: 2026-04-19
 
-This matrix compares Knoema Engine with academic generative-agent systems, agent orchestration frameworks, game NPC platforms, and traditional agent-based modeling tools. The intent is positioning, not a vendor benchmark. Items marked as `partial` mean the capability can be built or approximated but is not a first-class public surface in the referenced project.
+This matrix compares Luvoire with academic generative-agent systems, agent orchestration frameworks, game NPC platforms, and traditional agent-based modeling tools. The intent is positioning, not a vendor benchmark. Items marked as `partial` mean the capability can be built or approximated but is not a first-class public surface in the referenced project.
 
 ## Summary
 
-**Knoema Only:** among the compared tools, Knoema is the only public repo in this matrix that combines an MIT license, LLM-native social simulation, persistent memory, a directed relationship graph, persona opt-in theory-of-mind tracking, JSONL replay logs, Korean-capable prompt templates, and both Godot plus Unity adapter scaffolds.
+**Luvoire Only:** among the compared tools, Luvoire is the only public repo in this matrix that combines an MIT license, LLM-native social simulation, persistent memory, a directed relationship graph, persona opt-in theory-of-mind tracking, JSONL replay logs, Korean-capable prompt templates, and both Godot plus Unity adapter scaffolds.
 
 | Project / Product | Category | LLM-native | Game engine integration | Persistent memory and relationships | Theory of mind surface | Relationship graph model | Reproducible experiment surface | Korean first-class support | License / access | Deployment shape |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Knoema Engine | Open-source engine | Yes | Godot and Unity scaffolds | Yes | Yes, persona opt-in symbolic belief tracker with deterministic Sally-Anne harness | Yes, directed trust/familiarity graph | Yes, YAML config, deterministic local client, JSONL logs | Yes, prompt templates include Korean | MIT | Local Python, notebooks, dashboard, adapters, Playground-ready |
+| Luvoire | Open-source engine | Yes | Godot and Unity scaffolds | Yes | Yes, persona opt-in symbolic belief tracker with deterministic Sally-Anne harness | Yes, directed trust/familiarity graph | Yes, YAML config, deterministic local client, JSONL logs | Yes, prompt templates include Korean | MIT | Local Python, notebooks, dashboard, adapters, Playground-ready |
 | Stanford Generative Agents | Academic prototype | Yes | No packaged game SDK | Yes, memory stream and reflection architecture | Partial, public materials describe memory and reflection but do not expose an opt-in ToM API or Sally-Anne score | Partial, emergent social behavior rather than standalone graph API | Partial, paper and demo code | No | MIT code repository | Local research prototype |
 | Google DeepMind Concordia | Academic / research library | Yes | No packaged Unity/Godot SDK | Yes, component-based generative agents | Partial, public materials describe grounded agent reasoning but do not expose an opt-in ToM API or Sally-Anne score | Partial, mediated by game-master style components | Partial, scenario code and PyPI package | No | Apache-2.0 | Local Python package |
 | Microsoft AutoGen | Agent orchestration framework | Yes | No game SDK | Partial, application-defined | No first-class social-belief surface | No first-class social relationship graph | Partial, app-dependent | No | MIT code, CC-BY docs | Python packages and app framework |
@@ -32,7 +32,7 @@ This matrix compares Knoema Engine with academic generative-agent systems, agent
 
 ## Sources
 
-- Knoema Engine repository: <https://github.com/Celovin/knoema>
+- Luvoire repository: <https://github.com/Celovin/luvoire>
 - Stanford Generative Agents paper: <https://arxiv.org/abs/2304.03442>
 - Stanford generative agents code repository: <https://github.com/joonspk-research/genagents>
 - Google DeepMind Concordia repository: <https://github.com/google-deepmind/concordia>

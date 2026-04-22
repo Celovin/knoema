@@ -1,10 +1,10 @@
 # Research Positioning
 
-Knoema Engine sits between classical agent-based modeling and LLM-driven generative agents. The MVP demonstrates one shared engine across three domains: game NPCs, fictional public-safety replay research, and academic social simulation.
+Luvoire sits between classical agent-based modeling and LLM-driven generative agents. The MVP demonstrates one shared engine across three domains: game NPCs, fictional public-safety replay research, and academic social simulation.
 
 ## Related Work
 
-| Area | Representative Work | Knoema Position |
+| Area | Representative Work | Luvoire Position |
 | --- | --- | --- |
 | Generative agents | Park et al., "Generative Agents: Interactive Simulacra of Human Behavior" | Uses persistent memory and social context, but keeps a smaller engine-oriented API. |
 | Agent-based modeling | Mesa, AnyLogic | Adds LLM-backed decision generation and language-rich memory. |
@@ -39,7 +39,7 @@ The CLI runs deterministic local simulations from versionable YAML configs. It i
 
 ### 7. Semantic-Temporal Memory Retrieval
 
-The long-term memory store now exposes scored retrieval diagnostics. FAISS produces semantic candidates, then Knoema reranks them with configurable semantic, temporal, and importance weights. This keeps the default list-of-memory API simple while giving researchers visibility into why a memory was selected.
+The long-term memory store now exposes scored retrieval diagnostics. FAISS produces semantic candidates, then Luvoire reranks them with configurable semantic, temporal, and importance weights. This keeps the default list-of-memory API simple while giving researchers visibility into why a memory was selected.
 
 ### 8. Realtime Dashboard Playback
 

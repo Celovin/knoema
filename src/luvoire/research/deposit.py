@@ -61,9 +61,9 @@ def build_zenodo_metadata(
 
     return {
         "metadata": {
-            "title": title.strip() or "Knoema playground run dataset",
+            "title": title.strip() or "Luvoire playground run dataset",
             "upload_type": "dataset",
-            "description": description.strip() or "Knoema playground run export.",
+            "description": description.strip() or "Luvoire playground run export.",
             "creators": parse_creators(creators_text),
             "keywords": parse_keywords(keywords_text),
             "prereserve_doi": True,
@@ -85,14 +85,14 @@ def build_arxiv_packet(
 
     creators = parse_creators(creators_text)
     return {
-        "schema_version": "knoema.arxiv.deposit.v1",
-        "title": title.strip() or "Knoema playground run dataset",
+        "schema_version": "luvoire.arxiv.deposit.v1",
+        "title": title.strip() or "Luvoire playground run dataset",
         "authors": [creator["name"] for creator in creators],
         "affiliations": [creator.get("affiliation", "") for creator in creators],
-        "abstract": description.strip() or "Knoema playground run export.",
+        "abstract": description.strip() or "Luvoire playground run export.",
         "categories": ["cs.AI", "cs.MA"],
         "keywords": parse_keywords(keywords_text),
-        "comments": "Companion dataset packet generated from the Knoema playground.",
+        "comments": "Companion dataset packet generated from the Luvoire playground.",
         "summary": summary.strip(),
     }
 
@@ -122,13 +122,13 @@ def write_deposit_bundle(
         summary=summary,
         keywords_text=keywords_text,
     )
-    bundle_path = Path(tempfile.gettempdir()) / f"knoema_zenodo_deposit_{uuid.uuid4().hex}.zip"
+    bundle_path = Path(tempfile.gettempdir()) / f"luvoire_zenodo_deposit_{uuid.uuid4().hex}.zip"
     with zipfile.ZipFile(bundle_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr(
             "README.md",
             "\n".join(
                 [
-                    "# Knoema deposit bundle",
+                    "# Luvoire deposit bundle",
                     "",
                     "This archive contains the run log, the current pre-registration draft,",
                     "a Zenodo metadata payload, and an arXiv companion packet.",

@@ -2,17 +2,17 @@ const applications = [
   {
     title: "Games",
     body: "Give NPCs stable memory, relationship context, and deterministic response contracts before connecting model providers.",
-    link: "https://github.com/Celovin/knoema/blob/main/docs/sdk/integration_patterns.md",
+    link: "https://github.com/Celovin/luvoire/blob/main/docs/sdk/integration_patterns.md",
   },
   {
     title: "Fictional Replay Research",
     body: "Run synthetic, non-identifying scenarios for prevention-oriented analysis without suspect scoring or prediction claims.",
-    link: "https://github.com/Celovin/knoema/blob/main/docs/dsl/tutorial.md",
+    link: "https://github.com/Celovin/luvoire/blob/main/docs/dsl/tutorial.md",
   },
   {
     title: "Academic Simulation",
     body: "Keep seeds, config, logs, benchmarks, and citations close enough for reproducible inspection.",
-    link: "https://github.com/Celovin/knoema/blob/main/docs/reports/reproducibility.md",
+    link: "https://github.com/Celovin/luvoire/blob/main/docs/reports/reproducibility.md",
   },
 ];
 

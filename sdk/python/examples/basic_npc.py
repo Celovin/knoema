@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from knoema.game import GameSession
+from luvoire.game import GameSession
 
 ROOT = Path(__file__).resolve().parent
 

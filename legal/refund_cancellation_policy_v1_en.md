@@ -1,12 +1,12 @@
-# Knoema Refund and Cancellation Policy v1
+# Luvoire Refund and Cancellation Policy v1
 
 > STATUS: DRAFT - LEGAL REVIEW PENDING (do not publish)
 
-This policy is a draft for Knoema commercial subscriptions and metered services. It must be reviewed against Korean e-commerce law, unfair terms rules, payment processor contracts, and B2B order form mechanics before publication.
+This policy is a draft for Luvoire commercial subscriptions and metered services. It must be reviewed against Korean e-commerce law, unfair terms rules, payment processor contracts, and B2B order form mechanics before publication.
 
 ## 1. Scope
 
-This policy applies to paid Knoema subscriptions, metered usage, and enterprise contracts unless an order form or separate signed agreement states otherwise. It does not apply to open-source code, free demos, Customer's own LLM provider charges, or third-party provider fees.
+This policy applies to paid Luvoire subscriptions, metered usage, and enterprise contracts unless an order form or separate signed agreement states otherwise. It does not apply to open-source code, free demos, Customer's own LLM provider charges, or third-party provider fees.
 
 ## 2. Unused Refund Within 7 Days
 

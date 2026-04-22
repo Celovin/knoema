@@ -6,9 +6,9 @@ import FoundationNetworking
 public struct NPCAgent: Sendable {
     public let agentId: String
     public let displayName: String
-    public let client: KnoemaClient
+    public let client: LuvoireClient
 
-    public init(agentId: String, displayName: String, client: KnoemaClient) {
+    public init(agentId: String, displayName: String, client: LuvoireClient) {
         self.agentId = agentId
         self.displayName = displayName
         self.client = client

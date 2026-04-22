@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from knoema import (
+from luvoire import (
     Action,
     EmotionState,
     EmotionStimulus,
@@ -14,7 +14,7 @@ from knoema import (
     Relationship,
     RelationshipGraph,
 )
-from knoema.types import Emotion, WorldEvent
+from luvoire.types import Emotion, WorldEvent
 
 
 def _action(target: str | None = "bob") -> Action:

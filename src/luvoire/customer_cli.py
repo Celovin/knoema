@@ -1,4 +1,4 @@
-"""Customer onboarding commands for the Knoema CLI."""
+"""Customer onboarding commands for the Luvoire CLI."""
 
 from __future__ import annotations
 
@@ -9,9 +9,9 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, cast
 
-from knoema.billing.tenant_registry import TenantRegistry
-from knoema.billing.tiers import TierName
-from knoema.safety.audit_log import AuditLog
+from luvoire.billing.tenant_registry import TenantRegistry
+from luvoire.billing.tiers import TierName
+from luvoire.safety.audit_log import AuditLog
 
 VALID_TIERS: set[str] = {"free", "pro", "team", "enterprise"}
 

@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from knoema import (
+from luvoire import (
     AgentContext,
     Environment,
     HierarchicalPlanner,
@@ -16,8 +16,8 @@ from knoema import (
     Simulator,
     WorldState,
 )
-from knoema.decision import build_decision_messages
-from knoema.types import Emotion
+from luvoire.decision import build_decision_messages
+from luvoire.types import Emotion
 
 
 def _persona(*, planning: bool = False) -> Persona:

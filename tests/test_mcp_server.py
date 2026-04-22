@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import json
 
-from knoema_mcp.server import KnoemaMcpService, handle_jsonrpc_line
+from luvoire_mcp.server import LuvoireMcpService, handle_jsonrpc_line
 
 
-def test_batch_o_mcp_lists_five_knoema_tools() -> None:
-    service = KnoemaMcpService()
+def test_batch_o_mcp_lists_five_luvoire_tools() -> None:
+    service = LuvoireMcpService()
     payload = service.list_tools()
     tool_names = {tool["name"] for tool in payload["tools"]}
 
@@ -22,7 +22,7 @@ def test_batch_o_mcp_lists_five_knoema_tools() -> None:
 
 
 def test_batch_o_mcp_tools_run_replay_and_report() -> None:
-    service = KnoemaMcpService()
+    service = LuvoireMcpService()
 
     scenarios = service.list_scenarios()
     assert scenarios["count"] == 30
@@ -40,12 +40,12 @@ def test_batch_o_mcp_tools_run_replay_and_report() -> None:
     assert traits["traits"]["openness"] == 0.74
 
     report = service.generate_report(run_id=str(run["run_id"]))
-    assert "# Knoema MCP Run Report: Dorm: two agents" in report["markdown"]
+    assert "# Luvoire MCP Run Report: Dorm: two agents" in report["markdown"]
     assert "Actions: 4" in report["markdown"]
 
 
 def test_batch_o_mcp_suggests_scenarios_from_description() -> None:
-    service = KnoemaMcpService()
+    service = LuvoireMcpService()
     payload = service.suggest_scenario(description="students coordinate chores in a dorm kitchen")
 
     assert payload["suggestions"][0]["name"] == "Dorm: two agents"
@@ -53,7 +53,7 @@ def test_batch_o_mcp_suggests_scenarios_from_description() -> None:
 
 
 def test_batch_o_jsonrpc_initialize_and_tool_call_schema() -> None:
-    service = KnoemaMcpService()
+    service = LuvoireMcpService()
     initialize = handle_jsonrpc_line(
         service,
         json.dumps(

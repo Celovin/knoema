@@ -45,7 +45,7 @@ def test_phase20_raw_matrix_has_twenty_four_runs() -> None:
 
     assert len(rows) == 24
     assert {row["scenario_id"] for row in rows} == {"A", "B", "C", "D"}
-    assert {row["approach"] for row in rows} == {"knoema", "naive_llm"}
+    assert {row["approach"] for row in rows} == {"luvoire", "naive_llm"}
     assert {row["model_profile"] for row in rows} == {
         "local-large",
         "local-medium",
@@ -66,7 +66,7 @@ def test_phase20_summary_records_statistics_and_baseline_discipline() -> None:
     assert "Tick Latency Comparison" in summary
     assert "NVIDIA ACE citations" in summary
     assert "Inworld citations" in summary
-    assert "Knoema 500-Agent Metropolis" in summary
+    assert "Luvoire 500-Agent Metropolis" in summary
     assert "results/figures/metropolis_scale.svg" in summary
     assert "Sally-Anne reproduction" in summary
     assert "Theory-of-mind source" in summary

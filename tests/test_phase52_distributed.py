@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from knoema import (
+from luvoire import (
     DistributedSimulationConfig,
     RayExecutor,
     detect_hot_shards,

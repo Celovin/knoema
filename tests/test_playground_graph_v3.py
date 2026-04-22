@@ -30,10 +30,10 @@ def test_relationship_graph_html_uses_iframe_srcdoc_for_non_empty_rows() -> None
         theme_mode="dark",
     )
 
-    assert 'data-knoema-force-graph="1"' in html
-    assert 'data-knoema-payload="' in html
+    assert 'data-luvoire-force-graph="1"' in html
+    assert 'data-luvoire-payload="' in html
     assert "srcdoc=" in html
-    assert "KNOEMA_FORCE_GRAPH_BOOT" in html
+    assert "LUVOIRE_FORCE_GRAPH_BOOT" in html
     assert "3d-force-graph.min.js" in html
 
 

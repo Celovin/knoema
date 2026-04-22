@@ -6,9 +6,9 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from knoema import Personality, RelationshipGraph, RetrievalWeights
-from knoema.emotion import EmotionState, EmotionStimulus
-from knoema.types import Action, Emotion
+from luvoire import Personality, RelationshipGraph, RetrievalWeights
+from luvoire.emotion import EmotionState, EmotionStimulus
+from luvoire.types import Action, Emotion
 
 _UNIT_FLOATS = st.floats(min_value=0.0, max_value=1.0, allow_nan=False, allow_infinity=False)
 _PAD_VALENCE = st.floats(min_value=-1.0, max_value=1.0, allow_nan=False, allow_infinity=False)

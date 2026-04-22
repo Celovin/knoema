@@ -8,7 +8,7 @@ tick_duration_minutes: 720
 duration_days: 1
 environment:
   start_time: "2026-06-11T09:00:00"
-  location_path: [Knoema Demo World, Scenario Library, School]
+  location_path: [Luvoire Demo World, Scenario Library, School]
   conditions:
     mode: deterministic
     category: school
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-06-11T13:00:00"
     event_type: presentation.dryrun_checkpoint
     participants: [agent_a, agent_b]
-    location: Knoema Demo World > Scenario Library > School
+    location: Luvoire Demo World > Scenario Library > School
     description: "The group agrees on transitions between sections."
 metrics:
   - name: transition_clarity

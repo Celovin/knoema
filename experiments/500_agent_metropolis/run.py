@@ -13,10 +13,10 @@ from typing import Any
 
 import yaml
 
-from knoema.environment import Environment
-from knoema.persona import Persona
-from knoema.simulator import SimulationLogEntry, Simulator
-from knoema.types import Action, Personality, WorldEvent
+from luvoire.environment import Environment
+from luvoire.persona import Persona
+from luvoire.simulator import SimulationLogEntry, Simulator
+from luvoire.types import Action, Personality, WorldEvent
 
 EXPERIMENT_ROOT = Path(__file__).resolve().parent
 REPO_ROOT = EXPERIMENT_ROOT.parents[1]
@@ -213,7 +213,7 @@ def _build_simulator(config: Mapping[str, Any], seed: int) -> tuple[Simulator, d
         )
         environment.set_agent_location(
             agent_id,
-            ("Knoema Demo World", "Seoul Metropolis", district, "Transit Spine"),
+            ("Luvoire Demo World", "Seoul Metropolis", district, "Transit Spine"),
         )
     simulator = Simulator(
         agents=personas,
@@ -251,7 +251,7 @@ def _schedule_tick_event(simulator: Simulator, tick: int, seed: int) -> None:
             timestamp=simulator.environment.current_time,
             event_type="metropolis.tick_window",
             participants=[],
-            location="Knoema Demo World > Seoul Metropolis > Transit Spine",
+            location="Luvoire Demo World > Seoul Metropolis > Transit Spine",
             description=f"Rush-hour window {tick + 1} for seed {seed} opens across the network.",
         )
     )
@@ -283,7 +283,7 @@ def _planned_action(
         action_type=action_type,
         target=target,
         content=content,
-        location=f"Knoema Demo World > Seoul Metropolis > {district} > Transit Spine",
+        location=f"Luvoire Demo World > Seoul Metropolis > {district} > Transit Spine",
     )
 
 

@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from knoema import (
+from luvoire import (
     Action,
     Environment,
     LocalClient,
@@ -15,7 +15,7 @@ from knoema import (
     Simulator,
     SocialLearner,
 )
-from knoema.planning import WorldState
+from luvoire.planning import WorldState
 
 
 def _persona(agent_id: str, *, social_learning: bool = False) -> Persona:

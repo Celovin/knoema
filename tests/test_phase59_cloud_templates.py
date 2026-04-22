@@ -12,7 +12,7 @@ def test_phase59_cloud_template_files_exist() -> None:
         "deploy/cloud/validate_templates.py",
         "deploy/cloud/aws/README.md",
         "deploy/cloud/aws/terraform/main.tf",
-        "deploy/cloud/aws/cloudformation/knoema-stack.yaml",
+        "deploy/cloud/aws/cloudformation/luvoire-stack.yaml",
         "deploy/cloud/gcp/README.md",
         "deploy/cloud/gcp/terraform/main.tf",
         "deploy/cloud/azure/README.md",
@@ -41,7 +41,7 @@ def test_phase59_static_validator_passes_for_required_resources() -> None:
 
 def test_phase59_aws_templates_cover_runtime_database_cache_and_load_balancer() -> None:
     terraform = Path("deploy/cloud/aws/terraform/main.tf").read_text(encoding="utf-8")
-    cloudformation = Path("deploy/cloud/aws/cloudformation/knoema-stack.yaml").read_text(
+    cloudformation = Path("deploy/cloud/aws/cloudformation/luvoire-stack.yaml").read_text(
         encoding="utf-8"
     )
 

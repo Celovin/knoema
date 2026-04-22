@@ -11,8 +11,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.mark.skipif(
-    os.environ.get("KNOEMA_SKIP_PERF_TESTS") == "1",
-    reason="KNOEMA_SKIP_PERF_TESTS=1 disables replay throughput checks.",
+    os.environ.get("LUVOIRE_SKIP_PERF_TESTS") == "1"
+    or os.environ.get("KNOEMA_SKIP_PERF_TESTS") == "1",
+    reason="LUVOIRE_SKIP_PERF_TESTS=1 disables replay throughput checks.",
 )
 def test_replay_throughput_benchmark_matches_committed_baseline() -> None:
     subprocess.run(

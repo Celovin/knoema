@@ -3,7 +3,7 @@ from __future__ import annotations
 import wave
 from io import BytesIO
 
-from knoema.multimodal.tts import OPENAI_TTS_VOICES, VoiceProfile, synthesize
+from luvoire.multimodal.tts import OPENAI_TTS_VOICES, VoiceProfile, synthesize
 
 
 class _FakeSpeech:

@@ -2,6 +2,6 @@
 
 The simulator coordinates ticks, scheduled events, decisions, state updates, and JSONL export.
 
-::: knoema.simulator.SimulationLogEntry
+::: luvoire.simulator.SimulationLogEntry
 
-::: knoema.simulator.Simulator
+::: luvoire.simulator.Simulator

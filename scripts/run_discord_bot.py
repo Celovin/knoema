@@ -1,6 +1,6 @@
-"""Run the Knoema Discord bot."""
+"""Run the Luvoire Discord bot."""
 
-from knoema_bots.discord import main
+from luvoire_bots.discord import main
 
 if __name__ == "__main__":
     raise SystemExit(main())

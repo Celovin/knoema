@@ -3,7 +3,7 @@
 The Python facade is intended for game servers or tooling scripts that want a stable high-level NPC API.
 
 ```python
-from knoema.game import GameSession
+from luvoire.game import GameSession
 
 session = GameSession(game_id="demo-village")
 npc = session.create_npc(
@@ -25,4 +25,4 @@ print(response.text)
 
 The Phase 24 facade is local and deterministic by default. Provider-backed calls can be added behind the same surface later.
 
-The repository-level `sdk.python.knoema_game` module is kept as a compatibility import for examples that vendor the SDK folder directly.
+The repository-level `sdk.python.luvoire_game` module is kept as a compatibility import for examples that vendor the SDK folder directly.

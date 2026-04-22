@@ -8,7 +8,7 @@ tick_duration_minutes: 360
 duration_days: 1
 environment:
   start_time: "2026-02-14T17:00:00"
-  location_path: [Knoema Demo World, Support Center, Intake Desk]
+  location_path: [Luvoire Demo World, Support Center, Intake Desk]
   conditions:
     shift_overlap: true
     callback_queue: moderate
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-02-14T20:00:00"
     event_type: hotline.handoff_checkpoint
     participants: [operator, supervisor]
-    location: Knoema Demo World > Support Center > Intake Desk
+    location: Luvoire Demo World > Support Center > Intake Desk
     description: Supervisor confirms the handoff note uses clear, non-speculative language.
 metrics:
   - name: handoff_completeness

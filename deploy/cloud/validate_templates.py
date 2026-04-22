@@ -14,7 +14,7 @@ EXPECTED = {
         "aws_db_instance",
         "aws_elasticache_cluster",
     ],
-    "aws/cloudformation/knoema-stack.yaml": [
+    "aws/cloudformation/luvoire-stack.yaml": [
         "AWS::ECS::Cluster",
         "AWS::ECS::Service",
         "AWS::ElasticLoadBalancingV2::LoadBalancer",

@@ -6,7 +6,7 @@ import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from knoema.memory.multi_layer import (
+from luvoire.memory.multi_layer import (
     MEMORY_LAYERS,
     MultiLayerMemoryRecord,
     MultiLayerMemoryStore,

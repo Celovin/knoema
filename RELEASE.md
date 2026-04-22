@@ -1,21 +1,21 @@
 # Release Playbook
 
-This playbook prepares Knoema Engine releases with tag-gated publishing.
+This playbook prepares Luvoire releases with tag-gated publishing.
 
 ## Local Build
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 .venv\Scripts\pip install -e ".[release]"
 .venv\Scripts\python -m build
 .venv\Scripts\twine check dist\*
 ```
 
-## v0.2.0 Release Dry Run
+## v0.3.0 Release Dry Run
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
-.venv\Scripts\python scripts\release_dry_run.py --version 0.2.0
+cd C:\Users\admin\Projects\luvoire
+.venv\Scripts\python scripts\release_dry_run.py --version 0.3.0
 ```
 
 The dry run copies the git-visible working tree to a temporary directory, patches the version only in that copy, builds distributions, and runs `twine check`.
@@ -23,11 +23,11 @@ The dry run copies the git-visible working tree to a temporary directory, patche
 ## Install Smoke Test
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 py -3 -m venv tmp\wheel-smoke
 tmp\wheel-smoke\Scripts\python -m pip install --upgrade pip
-tmp\wheel-smoke\Scripts\python -m pip install --no-deps dist\knoema_engine-0.2.0-py3-none-any.whl
-tmp\wheel-smoke\Scripts\python -c "from importlib.metadata import version; print(version('knoema-engine'))"
+tmp\wheel-smoke\Scripts\python -m pip install --no-deps dist\luvoire_engine-0.3.0-py3-none-any.whl
+tmp\wheel-smoke\Scripts\python -c "from importlib.metadata import version; print(version('luvoire-engine'))"
 ```
 
 Use `--no-deps` for the metadata smoke test when you only need to verify the wheel installs. Full runtime imports require the declared package dependencies.
@@ -35,9 +35,9 @@ Use `--no-deps` for the metadata smoke test when you only need to verify the whe
 ## Docker Smoke Test
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
-docker build -t knoema-engine:0.2.0 .
-docker run --rm knoema-engine:0.2.0
+cd C:\Users\admin\Projects\luvoire
+docker build -t luvoire-engine:0.3.0 .
+docker run --rm luvoire-engine:0.3.0
 ```
 
 ## GitHub Release
@@ -45,8 +45,8 @@ docker run --rm knoema-engine:0.2.0
 Release Please opens version and changelog pull requests from conventional commits on `main`. The tag workflow at `.github\workflows\release.yml` runs when a version tag is pushed.
 
 ```powershell
-git tag v0.2.0
-git push origin v0.2.0
+git tag v0.3.0
+git push origin v0.3.0
 ```
 
 It builds wheel/sdist artifacts, runs `twine check`, uploads workflow artifacts, creates a GitHub Release for the tag, and then starts PyPI Trusted Publishing.
@@ -57,12 +57,12 @@ PyPI publishing is tag-gated and uses GitHub OIDC. No PyPI token should be store
 
 Before pushing a release tag that should publish to PyPI:
 
-1. Create the `knoema-engine` PyPI project under the Celovin account.
-2. Configure PyPI Trusted Publisher for `Celovin/knoema`, workflow `release.yml`, and environment `pypi`.
+1. Create the `luvoire-engine` PyPI project under the Celovin account.
+2. Configure PyPI Trusted Publisher for `Celovin/luvoire`, workflow `release.yml`, and environment `pypi`.
 3. Configure the GitHub `pypi` environment with production approval rules.
-4. Run the `0.2.0` dry run and confirm CI is green.
-5. Confirm `CHANGELOG.md`, `CITATION.cff`, `.zenodo.json`, `.release-please-manifest.json`, and all README current-version sections point at `0.2.0`.
-6. Push tag `v0.2.0` after local pytest, Ruff, mypy, and release dry-run checks pass.
+4. Run the `0.3.0` dry run and confirm CI is green.
+5. Confirm `CHANGELOG.md`, `CITATION.cff`, `.zenodo.json`, `.release-please-manifest.json`, and all README current-version sections point at `0.3.0`.
+6. Push tag `v0.3.0` after local pytest, Ruff, mypy, and release dry-run checks pass.
 
 Manual fallback after explicit approval:
 

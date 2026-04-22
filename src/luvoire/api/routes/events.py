@@ -6,10 +6,10 @@ from typing import Annotated, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
-from knoema.api.auth import AuthenticatedTenant
-from knoema.api.schemas import ApiEventConfig, InjectedEventResponse
-from knoema.api.service import SimulationNotFoundError, SimulationService, SimulationStateError
-from knoema.api.tier_rate_limit import enforce_tier_rate_limit
+from luvoire.api.auth import AuthenticatedTenant
+from luvoire.api.schemas import ApiEventConfig, InjectedEventResponse
+from luvoire.api.service import SimulationNotFoundError, SimulationService, SimulationStateError
+from luvoire.api.tier_rate_limit import enforce_tier_rate_limit
 
 router = APIRouter(prefix="/simulations", tags=["events"])
 

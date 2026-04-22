@@ -1,6 +1,6 @@
 """Deterministic city-scale simulation helpers."""
 
-from knoema.scaling.city_scale import (
+from luvoire.scaling.city_scale import (
     CityAgentState,
     CityScaleConfig,
     CityScaleResult,

@@ -1,4 +1,4 @@
-"""Natural-language scenario synthesis for Knoema run configs."""
+"""Natural-language scenario synthesis for Luvoire run configs."""
 
 from __future__ import annotations
 
@@ -11,8 +11,8 @@ from typing import Any, Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from knoema.cli import CliPersonalityConfig, SimulationRunConfig
-from knoema.types import PERSONALITY_NEUTRAL_DEFAULTS
+from luvoire.cli import CliPersonalityConfig, SimulationRunConfig
+from luvoire.types import PERSONALITY_NEUTRAL_DEFAULTS
 
 MAX_SYNTHETIC_AGENTS = 8
 DEFAULT_SYNTHETIC_AGENTS = 3
@@ -63,7 +63,7 @@ def synthesize_scenario(
     *,
     llm_response: str | None = None,
 ) -> dict[str, Any]:
-    """Synthesize a validated Knoema run config from natural language.
+    """Synthesize a validated Luvoire run config from natural language.
 
     `llm_response` accepts a JSON structured-output payload with the
     `SynthesizedScenario` shape. When it is omitted, a deterministic local

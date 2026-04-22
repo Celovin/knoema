@@ -6,9 +6,9 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
-from knoema import Environment, Persona, Personality, Simulator
-from knoema.cognition import MonologueGenerator
-from knoema.environment import EnvironmentContext
+from luvoire import Environment, Persona, Personality, Simulator
+from luvoire.cognition import MonologueGenerator
+from luvoire.environment import EnvironmentContext
 
 sys.path.insert(0, str(Path.cwd() / "src"))
 sys.path.insert(0, str(Path.cwd()))
@@ -32,7 +32,7 @@ def _agent(agent_id: str, *, conscientiousness: float = 0.6) -> Persona:
 def _environment() -> Environment:
     return Environment(
         start_time=datetime(2026, 4, 19, 10, 0),
-        location_path=("Knoema Demo World", "Seoul", "Dormitory"),
+        location_path=("Luvoire Demo World", "Seoul", "Dormitory"),
         conditions={"weather": "clear"},
     )
 
@@ -48,7 +48,7 @@ def test_phase17_monologue_generator_replay_mode_references_dominant_trait() -> 
     context = EnvironmentContext(
         agent_id="alice",
         timestamp=datetime(2026, 4, 19, 10, 0),
-        location_path=("Knoema Demo World", "Seoul", "Dormitory"),
+        location_path=("Luvoire Demo World", "Seoul", "Dormitory"),
         conditions={"weather": "clear"},
     )
 

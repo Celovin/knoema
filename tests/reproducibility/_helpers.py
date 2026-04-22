@@ -5,12 +5,12 @@ import json
 from collections.abc import Sequence
 from datetime import datetime
 
-from knoema.environment import Environment
-from knoema.llm import LocalClient
-from knoema.persona import Persona
-from knoema.protocols import Message
-from knoema.simulator import SimulationLogEntry, Simulator
-from knoema.types import Personality, WorldEvent
+from luvoire.environment import Environment
+from luvoire.llm import LocalClient
+from luvoire.persona import Persona
+from luvoire.protocols import Message
+from luvoire.simulator import SimulationLogEntry, Simulator
+from luvoire.types import Personality, WorldEvent
 
 AGENT_IDS = ("alice", "bob", "cara")
 
@@ -18,14 +18,14 @@ AGENT_IDS = ("alice", "bob", "cara")
 def build_seeded_simulator(seed: int = 20260418) -> Simulator:
     environment = Environment(
         start_time=datetime(2026, 6, 1, 9, 0),
-        location_path=("Knoema Demo World", "Reproducibility Lab", "Common Room"),
+        location_path=("Luvoire Demo World", "Reproducibility Lab", "Common Room"),
         conditions={"seed": seed, "weather": "clear"},
     )
     personas = [_persona(agent_id, index, seed) for index, agent_id in enumerate(AGENT_IDS)]
     for agent in personas:
         environment.set_agent_location(
             agent.agent_id,
-            ("Knoema Demo World", "Reproducibility Lab", agent.name),
+            ("Luvoire Demo World", "Reproducibility Lab", agent.name),
         )
     simulator = Simulator(
         agents=personas,
@@ -38,7 +38,7 @@ def build_seeded_simulator(seed: int = 20260418) -> Simulator:
             timestamp=datetime(2026, 6, 1, 15, 0),
             event_type="lab.checkpoint",
             participants=list(AGENT_IDS),
-            location="Knoema Demo World > Reproducibility Lab > Common Room",
+            location="Luvoire Demo World > Reproducibility Lab > Common Room",
             description=f"Seed {seed} checkpoint.",
         )
     )

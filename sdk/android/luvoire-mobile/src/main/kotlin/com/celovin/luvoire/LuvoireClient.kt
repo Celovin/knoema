@@ -1,4 +1,4 @@
-package com.celovin.knoema
+package com.celovin.luvoire
 
 data class NPCActionResponse(
     val agentId: String,
@@ -14,7 +14,7 @@ data class AgentSnapshot(
     val summary: String,
 )
 
-class KnoemaClient(
+class LuvoireClient(
     private val baseUrl: String,
     private val token: String? = null,
 ) {

@@ -1,2 +1,2 @@
-"""Browser playground helpers for Knoema Engine."""
+"""Browser playground helpers for Luvoire."""
 

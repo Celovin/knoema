@@ -1,6 +1,6 @@
 \section{Architecture}
 
-Knoema Engine separates state, decision generation, and adapters. The core package exposes dataclasses for \texttt{Personality}, \texttt{Emotion}, \texttt{Memory}, \texttt{Action}, and \texttt{WorldEvent}. Higher-level modules compose these types into personas, memory stores, social relationships, environment context, emotion state, and a simulation loop.
+Luvoire separates state, decision generation, and adapters. The core package exposes dataclasses for \texttt{Personality}, \texttt{Emotion}, \texttt{Memory}, \texttt{Action}, and \texttt{WorldEvent}. Higher-level modules compose these types into personas, memory stores, social relationships, environment context, emotion state, and a simulation loop.
 
 \begin{figure}[h]
 \centering
@@ -16,7 +16,7 @@ $\downarrow$\\
 $\downarrow$\\
 \texttt{Simulator -> JSONL -> Notebooks, Dashboard, Godot Adapter}
 \end{minipage}}
-\caption{Knoema MVP data flow.}
+\caption{Luvoire MVP data flow.}
 \end{figure}
 
 \subsection{Agent State}

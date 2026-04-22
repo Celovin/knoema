@@ -29,7 +29,7 @@ class FakeApi:
         self.calls = 0
 
     def space_info(self, repo_id: str) -> SpaceInfo:
-        assert repo_id == "celovin/knoema-playground"
+        assert repo_id == "celovin/luvoire-playground"
         index = min(self.calls, len(self.stages) - 1)
         self.calls += 1
         return SpaceInfo(runtime=Runtime(stage=self.stages[index]))
@@ -53,7 +53,7 @@ def test_warm_space_polls_until_running_and_hits_root_url() -> None:
     assert result.stage == "RUNNING"
     assert result.http_status == 200
     assert result.transition_history == ("BUILDING", "APP_STARTING", "RUNNING")
-    assert requested_urls == ["https://huggingface.co/spaces/celovin/knoema-playground"]
+    assert requested_urls == ["https://huggingface.co/spaces/celovin/luvoire-playground"]
 
 
 @pytest.mark.parametrize("terminal_stage", ["RUNTIME_ERROR", "BUILD_ERROR"])
@@ -78,7 +78,7 @@ def test_warm_space_prints_last_logs_for_error_terminal_states(terminal_stage: s
     assert terminal_stage in message
     assert "line 10" in message
     assert "line 9" not in message
-    assert requested_urls == ["https://huggingface.co/api/spaces/celovin/knoema-playground/logs/run"]
+    assert requested_urls == ["https://huggingface.co/api/spaces/celovin/luvoire-playground/logs/run"]
 
 
 def test_warm_space_timeout_reports_last_stage_and_transition_history() -> None:

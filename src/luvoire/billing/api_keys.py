@@ -8,8 +8,8 @@ from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
 from hashlib import sha256
 
-from knoema.billing.tiers import ApiKeySource, TierName
-from knoema.safety.audit_log import CommercialAuditLogger, NoOpAuditLog
+from luvoire.billing.tiers import ApiKeySource, TierName
+from luvoire.safety.audit_log import CommercialAuditLogger, NoOpAuditLog
 
 
 @dataclass(frozen=True, slots=True)
@@ -178,7 +178,7 @@ class APIKeyManager:
 
 
 _DEFAULT_MANAGER = APIKeyManager()
-_DUMMY_SECRET_HASH = sha256(b"knoema-invalid-secret").hexdigest()
+_DUMMY_SECRET_HASH = sha256(b"luvoire-invalid-secret").hexdigest()
 
 
 def default_manager() -> APIKeyManager:
@@ -254,14 +254,14 @@ def _new_raw_secret() -> str:
 
 
 def _format_token(key_id: str, raw_secret: str) -> str:
-    return f"knoema_{key_id}_{raw_secret}"
+    return f"luvoire_{key_id}_{raw_secret}"
 
 
 def _parse_token(token: str) -> tuple[str, str] | None:
-    if not token.startswith("knoema_"):
+    if not token.startswith("luvoire_"):
         return None
     parts = token.split("_", 2)
-    if len(parts) != 3 or parts[0] != "knoema" or not parts[1] or not parts[2]:
+    if len(parts) != 3 or parts[0] != "luvoire" or not parts[1] or not parts[2]:
         return None
     return parts[1], parts[2]
 

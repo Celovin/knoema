@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from knoema import load_config
-from knoema.cli import load_run_config
+from luvoire import load_config
+from luvoire.cli import load_run_config
 
 
 @pytest.mark.parametrize(
@@ -22,7 +22,7 @@ def test_phase33_core_config_fuzz_cases_reject_invalid_payloads(
     tmp_path: Path,
     payload: str,
 ) -> None:
-    config_path = tmp_path / "knoema.yaml"
+    config_path = tmp_path / "luvoire.yaml"
     config_path.write_text(payload, encoding="utf-8")
 
     with pytest.raises((ValueError, ValidationError)):

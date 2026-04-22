@@ -1,1 +1,1 @@
-"""Streamlit dashboard helpers for Knoema simulation logs."""
+"""Streamlit dashboard helpers for Luvoire simulation logs."""

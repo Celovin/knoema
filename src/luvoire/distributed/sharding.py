@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass
 
-from knoema.types import AgentID
+from luvoire.types import AgentID
 
 
 @dataclass(frozen=True, slots=True)

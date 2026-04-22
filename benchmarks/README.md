@@ -1,11 +1,11 @@
 # Benchmarks
 
-This directory contains deterministic benchmark helpers for Knoema Engine.
+This directory contains deterministic benchmark helpers for Luvoire.
 
-The default benchmark runs a local 10-agent village simulation with no network access, no API keys, and no external framework dependency. It measures the Knoema simulator path and emits JSON plus Markdown reports.
+The default benchmark runs a local 10-agent village simulation with no network access, no API keys, and no external framework dependency. It measures the Luvoire simulator path and emits JSON plus Markdown reports.
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 python benchmarks\run_benchmark.py `
   --agents 10 `
   --duration-days 1 `

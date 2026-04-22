@@ -1,40 +1,40 @@
-"""FastAPI application for the Knoema runtime."""
+"""FastAPI application for the Luvoire runtime."""
 
 from __future__ import annotations
 
 import logging
-import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from knoema.api.rate_limit import RateLimiter
-from knoema.api.routes import agents, events, simulations, unity, ws
-from knoema.api.schemas import HealthResponse
-from knoema.api.service import SimulationService
-from knoema.api.tier_rate_limit import TierRateLimiter
-from knoema.api.unity_service import UnityRuntimeService
-from knoema.api.usage_middleware import UsageMeteringMiddleware
-from knoema.billing.api_keys import APIKeyManager
-from knoema.billing.gateway import UsageMeter
-from knoema.billing.tenant_registry import TenantRegistry
-from knoema.observability.metrics import setup_metrics
-from knoema.observability.tracing import setup_tracing
+from luvoire.api.rate_limit import RateLimiter
+from luvoire.api.routes import agents, events, simulations, unity, ws
+from luvoire.api.schemas import HealthResponse
+from luvoire.api.service import SimulationService
+from luvoire.api.tier_rate_limit import TierRateLimiter
+from luvoire.api.unity_service import UnityRuntimeService
+from luvoire.api.usage_middleware import UsageMeteringMiddleware
+from luvoire.billing.api_keys import APIKeyManager
+from luvoire.billing.gateway import UsageMeter
+from luvoire.billing.tenant_registry import TenantRegistry
+from luvoire.config import get_env
+from luvoire.observability.metrics import setup_metrics
+from luvoire.observability.tracing import setup_tracing
 
 LOGGER = logging.getLogger(__name__)
 
 
-def _optional_env(name: str) -> str | None:
-    value = os.getenv(name)
+def _optional_env(name: str, old_name: str | None = None) -> str | None:
+    value = get_env(name, old_name)
     if value is None:
         return None
     cleaned = value.strip()
     return cleaned or None
 
 
-def _env_flag(name: str) -> bool:
-    return (_optional_env(name) or "").lower() in {"1", "true", "yes", "on"}
+def _env_flag(name: str, old_name: str | None = None) -> bool:
+    return (_optional_env(name, old_name) or "").lower() in {"1", "true", "yes", "on"}
 
 
 def create_app(
@@ -52,8 +52,8 @@ def create_app(
     tenant_keys = api_key_manager or TenantRegistry().key_manager()
     meter = usage_meter or UsageMeter()
     tenant_limiter = tier_rate_limiter or TierRateLimiter()
-    otel_exporter = _optional_env("KNOEMA_OTEL_EXPORTER")
-    metrics_enabled = _env_flag("KNOEMA_METRICS_ENABLED")
+    otel_exporter = _optional_env("LUVOIRE_OTEL_EXPORTER", "KNOEMA_OTEL_EXPORTER")
+    metrics_enabled = _env_flag("LUVOIRE_METRICS_ENABLED", "KNOEMA_METRICS_ENABLED")
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
@@ -68,10 +68,10 @@ def create_app(
             "otel_exporter": otel_exporter or "none",
         }
         LOGGER.info(
-            "knoema_observability_startup",
+            "luvoire_observability_startup",
             extra={
-                "knoema_metrics_enabled": metrics_enabled,
-                "knoema_otel_exporter": otel_exporter or "none",
+                "luvoire_metrics_enabled": metrics_enabled,
+                "luvoire_otel_exporter": otel_exporter or "none",
             },
         )
         try:
@@ -81,9 +81,9 @@ def create_app(
             unity_service.shutdown()
 
     app = FastAPI(
-        title="Knoema Engine API",
-        version="0.2.0",
-        description="REST and WebSocket surface for Knoema simulations.",
+        title="Luvoire API",
+        version="0.3.0",
+        description="REST and WebSocket surface for Luvoire simulations.",
         lifespan=lifespan,
     )
     app.add_middleware(UsageMeteringMiddleware)

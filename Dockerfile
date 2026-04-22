@@ -21,4 +21,4 @@ RUN python -m pip install --upgrade pip \
 
 EXPOSE 7860
 
-CMD ["knoema", "playground", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["luvoire", "playground", "--host", "0.0.0.0", "--port", "7860"]

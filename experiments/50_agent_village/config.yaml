@@ -5,7 +5,7 @@ tick_duration_minutes: 240
 prompt_language: en
 environment:
   start_time: "2026-06-01T07:00:00"
-  location_path: ["Knoema Demo World", "Harbor Village", "Central Square"]
+  location_path: ["Luvoire Demo World", "Harbor Village", "Central Square"]
   conditions:
     weather: clear
     season: early summer

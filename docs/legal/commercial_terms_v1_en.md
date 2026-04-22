@@ -1,12 +1,12 @@
-# Knoema Commercial Terms of Service v1
+# Luvoire Commercial Terms of Service v1
 
 > STATUS: DRAFT - LEGAL REVIEW PENDING (do not publish)
 
-This document is a first draft for Knoema commercial service terms. It must be reviewed by Korean counsel and any relevant local counsel before publication, customer signature, or paid service launch.
+This document is a first draft for Luvoire commercial service terms. It must be reviewed by Korean counsel and any relevant local counsel before publication, customer signature, or paid service launch.
 
 ## 1. Definitions
 
-- 'Service' means the Knoema engine, hosted demos, APIs, SDKs, documentation, metered billing features, and enterprise deployments.
+- 'Service' means the Luvoire engine, hosted demos, APIs, SDKs, documentation, metered billing features, and enterprise deployments.
 - 'Customer' means the individual, company, institution, or other entity that registers for the Service or signs an order form, statement of work, or agreement.
 - 'Workspace' means the administrative unit that connects projects, simulations, API keys, users, and usage records.
 - 'Customer Data' means prompts, scenarios, configurations, API metadata, payment metadata, account information, and other materials submitted to the Service by or for Customer.
@@ -40,7 +40,7 @@ Customer must not use the Service to:
 - Support military, weapons, surveillance, targeting, crowd-control, cyberattack, harmful automation, or real-world harm use cases.
 - Generate, request, or distribute Tier 3 or Tier 4 criminal archetypes, or create crime simulations tied to modern real events or living persons.
 - Submit prompts or scenarios that facilitate graphic violence, self-harm, harassment, personal data abuse, credential theft, malware, weapon construction, or unlawful conduct.
-- Directly redistribute the original Nemotron-Personas-Korea dataset to build a product or service that competes with Knoema. Legitimate derivative use within CC BY 4.0 is not prohibited.
+- Directly redistribute the original Nemotron-Personas-Korea dataset to build a product or service that competes with Luvoire. Legitimate derivative use within CC BY 4.0 is not prohibited.
 - Bypass or interfere with security, usage metering, billing, access controls, rate limits, or safety filters.
 
 ## 6. AI Outputs and Accuracy

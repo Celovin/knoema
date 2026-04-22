@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from knoema.memory.external_benchmark_integration import (
+from luvoire.memory.external_benchmark_integration import (
     write_external_memory_benchmark_summary,
 )
 

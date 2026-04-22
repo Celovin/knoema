@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from knoema.community import seed_community_scenarios
-from knoema.dsl import collect_validation_issues, loads_scenario
+from luvoire.community import seed_community_scenarios
+from luvoire.dsl import collect_validation_issues, loads_scenario
 
 
 def test_batch_r_seed_community_scenarios_are_valid_dsl() -> None:
@@ -23,6 +23,6 @@ def test_batch_r_gallery_docs_and_templates_exist() -> None:
     )
 
     assert "manifest.json" in docs
-    assert "knoema-scenarios" in docs
+    assert "luvoire-scenarios" in docs
     assert "Scenario ID" in issue_template
-    assert "knoema validate scenarios --json" in workflow
+    assert "luvoire validate scenarios --json" in workflow

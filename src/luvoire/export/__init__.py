@@ -1,6 +1,6 @@
 """Dataset export helpers for downstream model training."""
 
-from knoema.export.finetuning import (
+from luvoire.export.finetuning import (
     FineTuningFormat,
     export_finetuning_jsonl,
     parse_run_log,

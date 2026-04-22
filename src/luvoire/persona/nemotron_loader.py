@@ -95,7 +95,7 @@ class NemotronPersonaSource:
         return repeated
 
     def to_agent_attributes(self, persona: Mapping[str, Any]) -> dict[str, Any]:
-        """Map a Nemotron row into Knoema replay demographics."""
+        """Map a Nemotron row into Luvoire replay demographics."""
 
         age = _coerce_age(persona.get("age"))
         region = _region(persona)

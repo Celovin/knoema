@@ -1,5 +1,5 @@
-"""FastAPI server exports for Knoema Engine."""
+"""FastAPI server exports for Luvoire."""
 
-from knoema.api.server import app, create_app
+from luvoire.api.server import app, create_app
 
 __all__ = ["app", "create_app"]

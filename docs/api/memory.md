@@ -1,17 +1,17 @@
 # Memory API
 
-Knoema separates short-term memory buffers from persistent long-term retrieval.
+Luvoire separates short-term memory buffers from persistent long-term retrieval.
 
-::: knoema.memory.short_term.ShortTermMemoryBuffer
+::: luvoire.memory.short_term.ShortTermMemoryBuffer
 
-::: knoema.memory.long_term.HashEmbeddingEncoder
+::: luvoire.memory.long_term.HashEmbeddingEncoder
 
-::: knoema.memory.long_term.RetrievalWeights
+::: luvoire.memory.long_term.RetrievalWeights
 
-::: knoema.memory.long_term.MemorySearchResult
+::: luvoire.memory.long_term.MemorySearchResult
 
-::: knoema.memory.long_term.SQLiteFaissMemoryStore
+::: luvoire.memory.long_term.SQLiteFaissMemoryStore
 
-::: knoema.memory.summarizer.MemorySummarizer
+::: luvoire.memory.summarizer.MemorySummarizer
 
-::: knoema.types.Memory
+::: luvoire.types.Memory

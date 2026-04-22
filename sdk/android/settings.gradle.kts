@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "knoema-android-sdk"
-include(":knoema-mobile")
+rootProject.name = "luvoire-android-sdk"
+include(":luvoire-mobile")

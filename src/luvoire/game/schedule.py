@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
 
-from knoema.types import ActionType
+from luvoire.types import ActionType
 
 
 def _validate_hour(name: str, value: int) -> int:

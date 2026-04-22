@@ -4,10 +4,10 @@ import time
 
 from fastapi.testclient import TestClient
 
-from knoema.api.rate_limit import RateLimiter
-from knoema.api.server import create_app
-from knoema.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore
-from knoema.billing.tiers import TierName
+from luvoire.api.rate_limit import RateLimiter
+from luvoire.api.server import create_app
+from luvoire.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore
+from luvoire.billing.tiers import TierName
 
 
 def _simulation_payload(*, stream_delay_seconds: float = 0.0) -> dict[str, object]:

@@ -7,8 +7,8 @@ const repoRoot = dirname(dirname(root));
 const demoDir = join(root, "demo");
 const websiteWasmDir = join(repoRoot, "website", "public", "wasm");
 const websiteDemoDir = join(websiteWasmDir, "demo");
-const source = join(root, "src", "knoema-core.ts");
-const target = join(demoDir, "knoema-core.js");
+const source = join(root, "src", "luvoire-core.ts");
+const target = join(demoDir, "luvoire-core.js");
 const pages = ["2-agent.html", "5-agent.html", "sally-anne.html"];
 
 await mkdir(demoDir, { recursive: true });
@@ -19,7 +19,7 @@ for (const page of pages) {
   await copyFile(join(root, page), join(demoDir, page));
   await copyFile(join(root, page), join(websiteDemoDir, page));
 }
-await copyFile(target, join(websiteDemoDir, "knoema-core.js"));
+await copyFile(target, join(websiteDemoDir, "luvoire-core.js"));
 
 const payload = await readFile(target);
 if (payload.byteLength > 500_000) {
@@ -30,8 +30,8 @@ await writeFile(
   join(demoDir, "manifest.json"),
   `${JSON.stringify(
     {
-      name: "Knoema Browser Runtime Demo",
-      bundle: "knoema-core.js",
+      name: "Luvoire Browser Runtime Demo",
+      bundle: "luvoire-core.js",
       bundle_bytes: payload.byteLength,
       pages,
     },

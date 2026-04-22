@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from knoema.reproducibility import (
+from luvoire.reproducibility import (
     EMPTY_MERKLE_ROOT,
     canonical_sha256,
     generate_run_fingerprint,
@@ -38,7 +38,7 @@ def test_batch_u_reproducibility_certificate_is_stable_for_same_inputs() -> None
     assert first["input_hash"] == canonical_sha256(run_config)
     assert first["output_merkle_root"] == result_merkle_root(jsonl)
     assert first["output_merkle_root"] != EMPTY_MERKLE_ROOT
-    assert first["schema_version"] == "knoema.run_fingerprint.v1"
+    assert first["schema_version"] == "luvoire.run_fingerprint.v1"
 
 
 def test_batch_u_verification_guide_names_cli_and_merkle_root() -> None:
@@ -50,5 +50,5 @@ def test_batch_u_verification_guide_names_cli_and_merkle_root() -> None:
 
     guide = verification_guide_markdown(certificate)
 
-    assert "knoema_verify.py" in guide
+    assert "luvoire_verify.py" in guide
     assert str(certificate["output_merkle_root"]) in guide

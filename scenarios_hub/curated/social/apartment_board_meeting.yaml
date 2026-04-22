@@ -8,7 +8,7 @@ tick_duration_minutes: 360
 duration_days: 1
 environment:
   start_time: "2026-07-14T19:00:00"
-  location_path: [Knoema Demo World, Harbor Apartments, Common Room]
+  location_path: [Luvoire Demo World, Harbor Apartments, Common Room]
   conditions:
     agenda_items: 3
     translation_support: true
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-07-14T20:30:00"
     event_type: meeting.followup_checkpoint
     participants: [chair, resident]
-    location: Knoema Demo World > Harbor Apartments > Common Room
+    location: Luvoire Demo World > Harbor Apartments > Common Room
     description: Chair restates the next action owner and follow-up date before closing.
 metrics:
   - name: agenda_completion

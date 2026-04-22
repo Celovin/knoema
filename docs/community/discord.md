@@ -18,6 +18,6 @@ Use the community only for synthetic, reproducible, and non-sensitive examples.
 
 1. Use fictional, synthetic, or fully consented data.
 2. Do not post real sensitive case details.
-3. Do not frame Knoema as prediction, surveillance, profiling, or suspect scoring.
+3. Do not frame Luvoire as prediction, surveillance, profiling, or suspect scoring.
 4. Do not paste secrets.
 5. Keep demos reproducible.

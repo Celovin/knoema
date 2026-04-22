@@ -1,4 +1,4 @@
-"""Slack bot entry point for Knoema."""
+"""Slack bot entry point for Luvoire."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import os
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from knoema_bots.core import format_slack_blocks, parse_bot_command, run_scenario_for_bot
+from luvoire_bots.core import format_slack_blocks, parse_bot_command, run_scenario_for_bot
 
 
 def build_blocks_for_command(command_text: str) -> list[dict[str, Any]]:
@@ -18,7 +18,7 @@ def build_blocks_for_command(command_text: str) -> list[dict[str, Any]]:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Run the Knoema Slack bot.")
+    parser = argparse.ArgumentParser(description="Run the Luvoire Slack bot.")
     parser.add_argument("--bot-token", default=os.environ.get("SLACK_BOT_TOKEN", ""))
     parser.add_argument("--app-token", default=os.environ.get("SLACK_APP_TOKEN", ""))
     args = parser.parse_args(list(argv) if argv is not None else None)
@@ -29,11 +29,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     socket_mode = importlib.import_module("slack_bolt.adapter.socket_mode")
     app = slack_bolt.App(token=args.bot_token)
 
-    @app.command("/knoema")  # type: ignore[untyped-decorator]
-    def knoema_command(ack: Any, respond: Any, command: Mapping[str, Any]) -> None:
+    @app.command("/luvoire")  # type: ignore[untyped-decorator]
+    def luvoire_command(ack: Any, respond: Any, command: Mapping[str, Any]) -> None:
         ack()
         text = str(command.get("text", "")).strip()
-        respond(blocks=build_blocks_for_command(f"knoema {text}"))
+        respond(blocks=build_blocks_for_command(f"luvoire {text}"))
 
     socket_mode.SocketModeHandler(app, args.app_token).start()
     return 0

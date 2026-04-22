@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from knoema import ContentFilter
+from luvoire import ContentFilter
 
 
 def test_phase53_synthetic_pii_is_blocked_without_leaking_payloads() -> None:

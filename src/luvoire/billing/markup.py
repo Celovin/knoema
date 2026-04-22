@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from knoema.billing.tiers import TierName
+from luvoire.billing.tiers import TierName
 
 TIER_MARKUPS: dict[TierName, Decimal] = {
     "free": Decimal("0"),

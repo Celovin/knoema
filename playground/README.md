@@ -1,5 +1,5 @@
 ---
-title: Knoema Playground
+title: Luvoire Playground
 emoji: 🧠
 colorFrom: blue
 colorTo: green
@@ -11,9 +11,9 @@ license: mit
 python_version: "3.12"
 ---
 
-# Knoema Playground
+# Luvoire Playground
 
-Interactive browser demo for Knoema Engine, a multi-agent social simulation engine for games,
+Interactive browser demo for Luvoire, a multi-agent social simulation engine for games,
 public-safety research, and academic experiments.
 
 ## What It Does
@@ -35,7 +35,7 @@ write keys to disk or store them in module-level state.
 ## Local Run
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 .venv\Scripts\pip install -r playground\requirements.txt
 .venv\Scripts\python playground\app.py
 ```
@@ -45,7 +45,7 @@ cd C:\Users\admin\Projects\knoema
 Preferred command:
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 .venv\Scripts\python scripts\deploy_playground_space.py
 ```
 
@@ -54,7 +54,7 @@ and uploads the contents of `playground/`.
 
 Manual fallback:
 
-1. Create a new public Space named `celovin/knoema-playground`.
+1. Create a new public Space named `celovin/luvoire-playground`.
 2. Select the Gradio SDK.
 3. Upload the contents of this `playground/` directory.
 4. Wait for the Space build to install `requirements.txt`.
@@ -63,7 +63,7 @@ Manual fallback:
 Target URL:
 
 ```text
-https://huggingface.co/spaces/celovin/knoema-playground
+https://huggingface.co/spaces/celovin/luvoire-playground
 ```
 
 ## No-Key Demo Path

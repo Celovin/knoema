@@ -15,12 +15,12 @@ from typing import Any
 
 import yaml
 
-from knoema.environment import Environment
-from knoema.llm import LocalClient
-from knoema.persona import Persona
-from knoema.protocols import Message
-from knoema.simulator import SimulationLogEntry, Simulator
-from knoema.types import Personality, WorldEvent
+from luvoire.environment import Environment
+from luvoire.llm import LocalClient
+from luvoire.persona import Persona
+from luvoire.protocols import Message
+from luvoire.simulator import SimulationLogEntry, Simulator
+from luvoire.types import Personality, WorldEvent
 
 EXPERIMENT_ROOT = Path(__file__).resolve().parent
 REPO_ROOT = EXPERIMENT_ROOT.parents[1]
@@ -300,7 +300,7 @@ def _build_simulator(config: Mapping[str, Any]) -> Simulator:
     for agent in roster:
         environment.set_agent_location(
             str(agent["agent_id"]),
-            ("Knoema Demo World", "Harbor Village", str(agent["role"]).title()),
+            ("Luvoire Demo World", "Harbor Village", str(agent["role"]).title()),
         )
     personas = [_persona(agent, index, int(config["seed"])) for index, agent in enumerate(roster)]
     agent_ids = [persona.agent_id for persona in personas]
@@ -373,7 +373,7 @@ def _schedule_events(simulator: Simulator, config: Mapping[str, Any], agent_ids:
                     timestamp=timestamp,
                     event_type=event_type,
                     participants=list(agent_ids),
-                    location="Knoema Demo World > Harbor Village > Central Square",
+                    location="Luvoire Demo World > Harbor Village > Central Square",
                     description=description,
                 )
             )

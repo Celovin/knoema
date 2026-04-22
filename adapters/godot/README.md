@@ -1,6 +1,6 @@
-# Knoema Godot Adapter
+# Luvoire Godot Adapter
 
-Minimal Godot 4.2+ adapter scaffold for testing a single NPC chat loop against Knoema.
+Minimal Godot 4.2+ adapter scaffold for testing a single NPC chat loop against Luvoire.
 
 ## Run
 
@@ -10,7 +10,7 @@ Minimal Godot 4.2+ adapter scaffold for testing a single NPC chat loop against K
 4. Press Run.
 5. Type a message and press `Send`.
 
-By default the demo uses a local deterministic fallback response, so it runs without a Python server. To call a Knoema HTTP server later, set `endpoint_url` in `scripts/knoema_client.gd`.
+By default the demo uses a local deterministic fallback response, so it runs without a Python server. To call a Luvoire HTTP server later, set `endpoint_url` in `scripts/luvoire_client.gd`.
 
 ## Real engine run and export
 
@@ -35,8 +35,8 @@ godot4 --headless --path adapters/godot --export-release Web build/godot-tavern/
 - `samples/tavern_demo/tavern_demo.tscn`: 2D tavern sample with proximity-triggered dialog.
 - `samples/tavern_demo/web_build/index.html`: browser mirror of the tavern loop.
 - `scripts/npc.gd`: UI controller for player input and NPC output.
-- `scripts/knoema_client.gd`: HTTP/fallback client wrapper.
-- `addons/knoema/plugin.cfg`: editor plugin registration.
+- `scripts/luvoire_client.gd`: HTTP/fallback client wrapper.
+- `addons/luvoire/plugin.cfg`: editor plugin registration.
 
 ## Protocol Draft
 

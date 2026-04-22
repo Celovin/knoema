@@ -1,12 +1,12 @@
-# Knoema Security Posture v1
+# Luvoire Security Posture v1
 
 > STATUS: DRAFT - LEGAL REVIEW PENDING (do not publish)
 
-This customer-facing security posture is a draft. It describes intended commercial controls for Knoema and must be reviewed against the deployed production environment before being shared as a security representation.
+This customer-facing security posture is a draft. It describes intended commercial controls for Luvoire and must be reviewed against the deployed production environment before being shared as a security representation.
 
 ## 1. Scope
 
-Knoema is a persistent-agent simulation and synthetic replay platform. The commercial service includes APIs, hosted demos, billing metering, workspace administration, and enterprise deployment options. Security controls are designed around synthetic simulation workloads, usage metering, prompt routing, and customer-managed scenarios.
+Luvoire is a persistent-agent simulation and synthetic replay platform. The commercial service includes APIs, hosted demos, billing metering, workspace administration, and enterprise deployment options. Security controls are designed around synthetic simulation workloads, usage metering, prompt routing, and customer-managed scenarios.
 
 This document is not a SOC 2 report, ISO certification, penetration-test attestation, or external audit report. External audit is pending and any customer security questionnaire must be answered against the actual deployment in place at the time of review.
 
@@ -24,7 +24,7 @@ This document is not a SOC 2 report, ISO certification, penetration-test attesta
 
 ## 3. Encryption
 
-Knoema targets TLS 1.3 for data in transit where supported by the hosting stack and payment or model providers. Managed storage for production deployments should use AES-256 or cloud-provider equivalent encryption at rest. Backups should inherit the same encryption posture as the managed storage service.
+Luvoire targets TLS 1.3 for data in transit where supported by the hosting stack and payment or model providers. Managed storage for production deployments should use AES-256 or cloud-provider equivalent encryption at rest. Backups should inherit the same encryption posture as the managed storage service.
 
 Customer BYO provider keys are not written to default usage logs. API key management stores only SHA-256 hashes of issued tenant keys. Webhook payloads are signed with HMAC-SHA256 using tenant or endpoint secrets.
 
@@ -50,7 +50,7 @@ Incident notifications should describe known facts, affected services, mitigatio
 
 ## 8. Subprocessors and Third Parties
 
-Knoema may rely on the following third parties depending on customer configuration:
+Luvoire may rely on the following third parties depending on customer configuration:
 
 - Hugging Face Hub for model, dataset, and hosting workflows.
 - OpenAI and other LLM providers for model inference.
@@ -67,5 +67,5 @@ The repository uses automated tests, type checking, linting, attribution checks,
 
 ## 10. Customer Responsibilities
 
-Customers are responsible for lawful input data, user access review, BYO provider key protection, workspace role hygiene, local exports, downstream disclosure of outputs, and independent validation before high-impact use. Knoema must not be used for real-person profiling, operational law-enforcement targeting, surveillance, weapons, or other prohibited uses described in the commercial terms.
+Customers are responsible for lawful input data, user access review, BYO provider key protection, workspace role hygiene, local exports, downstream disclosure of outputs, and independent validation before high-impact use. Luvoire must not be used for real-person profiling, operational law-enforcement targeting, surveillance, weapons, or other prohibited uses described in the commercial terms.
 

@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import json
 
-from knoema_bots.core import parse_bot_command, run_scenario_for_bot
+from luvoire_bots.core import parse_bot_command, run_scenario_for_bot
 
 
 def test_batch_nn_parse_bot_command_supports_ticks_and_quotes() -> None:
-    command = parse_bot_command('!knoema run "Dorm: two agents" --ticks 6')
+    command = parse_bot_command('!luvoire run "Dorm: two agents" --ticks 6')
 
     assert command.action == "run"
     assert command.scenario == "Dorm: two agents"

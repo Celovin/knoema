@@ -1,4 +1,4 @@
-"""Multimodal helpers for Knoema simulations."""
+"""Multimodal helpers for Luvoire simulations."""
 
 from .tts import OPENAI_TTS_VOICES, VoiceProfile, synthesize
 

@@ -73,7 +73,7 @@ coverage.xml
 *.pem
 credentials.json
 
-# Knoema runtime artifacts
+# Luvoire runtime artifacts
 logs/
 runs/
 tmp/
@@ -82,7 +82,7 @@ tmp/
 *.sqlite3
 .faiss/
 checkpoints/
-*.knoema
+*.luvoire
 
 # Godot
 .godot/
@@ -99,7 +99,7 @@ website/test-results/
 website/playwright-report/
 
 # Swift Package Manager
-sdk/ios/KnoemaMobile/.build/
+sdk/ios/LuvoireMobile/.build/
 
 # Documentation builds
 site/

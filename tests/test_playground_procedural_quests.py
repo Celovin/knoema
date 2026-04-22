@@ -11,12 +11,12 @@ sys.path.insert(0, str(Path.cwd()))
 
 playground_simulation = importlib.import_module("playground.simulation")
 quest_generation = importlib.import_module("playground.quest_generation")
-knoema_package = importlib.import_module("knoema")
-game_module = importlib.import_module("knoema.game")
+luvoire_package = importlib.import_module("luvoire")
+game_module = importlib.import_module("luvoire.game")
 
-Environment = knoema_package.Environment
-Persona = knoema_package.Persona
-Personality = knoema_package.Personality
+Environment = luvoire_package.Environment
+Persona = luvoire_package.Persona
+Personality = luvoire_package.Personality
 Inventory = game_module.Inventory
 
 

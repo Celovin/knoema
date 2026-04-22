@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from knoema.dsl.scenario import Scenario
+from luvoire.dsl.scenario import Scenario
 
 DISALLOWED_PURPOSE_PHRASES = (
     "predict crime",

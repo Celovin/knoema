@@ -117,7 +117,7 @@ def citation_bundle(*, title: str, author: str = "Celovin", year: int = 2026) ->
             f"  author = {{{author}}},",
             f"  title = {{{title}}},",
             f"  year = {{{year}}},",
-            "  url = {https://github.com/Celovin/knoema}",
+            "  url = {https://github.com/Celovin/luvoire}",
             "}",
         ]
     )

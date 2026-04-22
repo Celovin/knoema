@@ -1,6 +1,6 @@
 {
-  "name": "Knoema.Runtime",
-  "rootNamespace": "Knoema.Unity",
+  "name": "Luvoire.Runtime",
+  "rootNamespace": "Luvoire.Unity",
   "references": [],
   "includePlatforms": [],
   "excludePlatforms": [],

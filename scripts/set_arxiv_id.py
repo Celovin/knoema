@@ -1,6 +1,6 @@
 """Replace ARXIV_ID_PENDING with a confirmed arXiv identifier across all metadata.
 
-After arXiv accepts the Knoema paper and assigns an identifier, run:
+After arXiv accepts the Luvoire paper and assigns an identifier, run:
 
     python scripts/set_arxiv_id.py 2604.12345
 

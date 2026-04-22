@@ -1,12 +1,12 @@
 # Billing and Metering
 
-Knoema uses a tiered LLM cost model:
+Luvoire uses a tiered LLM cost model:
 
 | Tier | Credential source | Monthly output-token cap | Concurrent requests | Billing model |
 | --- | --- | ---: | ---: | --- |
-| Free | Customer BYO key | 100,000 | 1 | Usage counts only; no Knoema-side variable charge |
-| Pro | Knoema pass-through key | 2,000,000 | 4 | Provider cost plus 30% markup |
-| Team | Knoema pass-through key | 10,000,000 | 16 | Provider cost plus 30% markup with workspace sharing |
+| Free | Customer BYO key | 100,000 | 1 | Usage counts only; no Luvoire-side variable charge |
+| Pro | Luvoire pass-through key | 2,000,000 | 4 | Provider cost plus 30% markup |
+| Team | Luvoire pass-through key | 10,000,000 | 16 | Provider cost plus 30% markup with workspace sharing |
 | Enterprise | Dedicated endpoint | Contract-specific | 64 default | Flat contract; token counts kept for analytics |
 
 The gateway records prompt and completion hashes, token counts, provider cost, billed cost, and latency for every call. It never writes raw prompts, completions, or customer API keys to the usage spool.
@@ -32,9 +32,9 @@ UsageMeter -> var/billing/usage_YYYYMMDD.jsonl
 StripeUsageAdapter -> Stripe usage record when STRIPE_TEST_SECRET_KEY and STRIPE_SUBSCRIPTION_ITEM_ID are set
 ```
 
-Free calls require a customer-supplied provider key. The raw key is accepted for that one request, passed to the provider client, and discarded. Knoema records token counts and hashes only.
+Free calls require a customer-supplied provider key. The raw key is accepted for that one request, passed to the provider client, and discarded. Luvoire records token counts and hashes only.
 
-Pro and Team calls use Knoema's provider key from the runtime environment. The base provider cost is calculated as a `decimal.Decimal`, then billed with a 30% markup. Currency math does not use floats.
+Pro and Team calls use Luvoire's provider key from the runtime environment. The base provider cost is calculated as a `decimal.Decimal`, then billed with a 30% markup. Currency math does not use floats.
 
 Enterprise calls route to a customer-assigned endpoint. The variable usage record is zero-cost because enterprise billing is handled by contract, but analytics still record token counts and hashes.
 
@@ -51,7 +51,7 @@ Customer BYO keys:
 - do not appear in JSONL spool rows;
 - do not appear in webhook payloads.
 
-Knoema provider keys:
+Luvoire provider keys:
 
 - are read from environment variables at runtime;
 - are not committed to the repository;
@@ -67,7 +67,7 @@ Tenant API keys:
 
 ## Webhook Events
 
-Customer webhooks are signed with `X-Knoema-Signature: sha256=<hex>`. The signature is an HMAC-SHA256 digest over the canonical JSON payload.
+Customer webhooks are signed with `X-Luvoire-Signature: sha256=<hex>`. The signature is an HMAC-SHA256 digest over the canonical JSON payload.
 
 Supported events:
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The FBI disorganized archetype is a no-person reference profile derived from the same behavioral-science tradition as the organized profile. In the historical typology, disorganization is associated with opportunistic action, poor planning, local familiarity without structured search, chaotic post-event behavior, and weak evidence management. For the Knoema replay, it must be represented without graphic detail and without implying that mental illness, poverty, social awkwardness, or neurodivergence predicts violence. The strongest finding for this educational use is actually a limitation: the organized/disorganized split is contested, and disorganized features may be too rare or too mixed to support a clean category. The replay should therefore present the profile as a disputed teaching construct, useful for discussing typology problems.
+The FBI disorganized archetype is a no-person reference profile derived from the same behavioral-science tradition as the organized profile. In the historical typology, disorganization is associated with opportunistic action, poor planning, local familiarity without structured search, chaotic post-event behavior, and weak evidence management. For the Luvoire replay, it must be represented without graphic detail and without implying that mental illness, poverty, social awkwardness, or neurodivergence predicts violence. The strongest finding for this educational use is actually a limitation: the organized/disorganized split is contested, and disorganized features may be too rare or too mixed to support a clean category. The replay should therefore present the profile as a disputed teaching construct, useful for discussing typology problems.
 
 ## Primary sources
 

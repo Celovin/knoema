@@ -36,7 +36,7 @@ jobs:
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: knoema-engine-distributions
+          name: luvoire-engine-distributions
           path: dist/*
 
       - name: Create GitHub Release
@@ -45,8 +45,8 @@ jobs:
         run: |
           gh release create "${GITHUB_REF_NAME}" dist/* \
             --repo "${GITHUB_REPOSITORY}" \
-            --title "Knoema Engine ${GITHUB_REF_NAME}" \
-            --notes "Knoema Engine ${GITHUB_REF_NAME} distribution artifacts."
+            --title "Luvoire ${GITHUB_REF_NAME}" \
+            --notes "Luvoire ${GITHUB_REF_NAME} distribution artifacts."
 
   publish-pypi:
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
       - name: Download distribution artifacts
         uses: actions/download-artifact@v8
         with:
-          name: knoema-engine-distributions
+          name: luvoire-engine-distributions
           path: dist/
 
       - name: Publish distributions to PyPI

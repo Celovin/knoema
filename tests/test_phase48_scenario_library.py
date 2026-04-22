@@ -7,7 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from knoema.dsl import collect_validation_issues, load_scenario
+from luvoire.dsl import collect_validation_issues, load_scenario
 
 LIBRARY_ROOT = Path("scenarios/library")
 EXPECTED_CATEGORIES = [
@@ -67,7 +67,7 @@ def test_phase48_cli_validate_accepts_library_directory() -> None:
         [
             sys.executable,
             "-m",
-            "knoema.cli",
+            "luvoire.cli",
             "validate",
             str(LIBRARY_ROOT),
             "--json",

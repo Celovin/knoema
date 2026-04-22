@@ -1,4 +1,4 @@
-"""In-memory simulation management for the Knoema API server."""
+"""In-memory simulation management for the Luvoire API server."""
 
 from __future__ import annotations
 
@@ -8,10 +8,10 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
-from knoema.api.schemas import ApiEventConfig, CreateSimulationRequest, SimulationStatus
-from knoema.llm import LocalClient
-from knoema.simulator import Simulator
-from knoema.types import WorldEvent
+from luvoire.api.schemas import ApiEventConfig, CreateSimulationRequest, SimulationStatus
+from luvoire.llm import LocalClient
+from luvoire.simulator import Simulator
+from luvoire.types import WorldEvent
 
 
 class SimulationNotFoundError(KeyError):
@@ -86,7 +86,7 @@ class SimulationService:
             target=self._run_record,
             args=(record, request.runtime.export_path),
             daemon=True,
-            name=f"knoema-sim-{simulation_id}",
+            name=f"luvoire-sim-{simulation_id}",
         )
         record.worker = worker
         with self._lock:

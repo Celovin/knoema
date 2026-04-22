@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 POSTS = [
-    "01-why-knoema-korean-indie-games.md",
+    "01-why-luvoire-korean-indie-games.md",
     "02-llm-npc-memory-principles.md",
     "03-godot-integration-step-by-step.md",
     "04-academic-research-reproducibility.md",
@@ -29,8 +29,8 @@ def test_phase26_posts_include_public_links_and_safety_language() -> None:
     for name in POSTS:
         content = Path("docs/blog/ko", name).read_text(encoding="utf-8")
 
-        assert "https://github.com/Celovin/knoema" in content
-        assert "https://huggingface.co/spaces/celovin/knoema-playground" in content or name in {
+        assert "https://github.com/Celovin/luvoire" in content
+        assert "https://huggingface.co/spaces/celovin/luvoire-playground" in content or name in {
             "03-godot-integration-step-by-step.md",
             "04-academic-research-reproducibility.md",
             "05-crime-simulation-ethics-and-guards.md",

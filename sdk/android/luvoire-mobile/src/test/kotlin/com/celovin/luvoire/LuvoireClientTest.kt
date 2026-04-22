@@ -1,13 +1,13 @@
-package com.celovin.knoema
+package com.celovin.luvoire
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class KnoemaClientTest {
+class LuvoireClientTest {
     @Test
     fun buildsRestAndWebSocketUrls() {
-        val client = KnoemaClient("https://api.example.test", "demo")
+        val client = LuvoireClient("https://api.example.test", "demo")
 
         assertEquals("https://api.example.test/agents/alice", client.restUrl("/agents/alice"))
         assertEquals("wss://api.example.test/ws/simulations/demo", client.webSocketUrl("/ws/simulations/demo"))
@@ -16,7 +16,7 @@ class KnoemaClientTest {
 
     @Test
     fun npcAgentCachesOfflineResponse() {
-        val client = KnoemaClient("http://localhost:8000")
+        val client = LuvoireClient("http://localhost:8000")
         val agent = NPCAgent("alice", "Alice", client)
 
         val first = agent.cachedOrOfflineResponse("hello")

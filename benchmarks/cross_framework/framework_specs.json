@@ -1,6 +1,6 @@
 [
   {
-    "framework": "Knoema",
+    "framework": "Luvoire",
     "kind": "persistent social simulation",
     "license": "MIT",
     "code_lines_to_configure": 34,

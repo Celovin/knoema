@@ -7,7 +7,7 @@
 | Item | Value |
 | --- | --- |
 | Surface | Korean indie studio adding persistent social NPC behavior |
-| Engine target | Unity or Godot game loop with Knoema SDK facade |
+| Engine target | Unity or Godot game loop with Luvoire SDK facade |
 | Primary problem | Static dialogue trees create content bottlenecks and low replay variety |
 | Proposed outcome | Memory-aware NPC layer with controlled integration cost |
 | Adoption window | 10-week evaluation from prototype to vertical slice |
@@ -30,12 +30,12 @@ The team wants:
 
 ## Solution Design
 
-Knoema enters as an SDK-layer augmentation around existing quest systems. The studio keeps authored quest state, but delegates ambient social behavior, memory recall, and low-risk side conversations to Knoema.
+Luvoire enters as an SDK-layer augmentation around existing quest systems. The studio keeps authored quest state, but delegates ambient social behavior, memory recall, and low-risk side conversations to Luvoire.
 
 ```text
 Quest state + world events
   -> SDK facade
-  -> Knoema persona and relationship state
+  -> Luvoire persona and relationship state
   -> local or hosted inference
   -> game response payload
   -> replay and dashboard QA
@@ -44,7 +44,7 @@ Quest state + world events
 ### Adoption Scope
 
 - 20 recurring NPCs with shared town-hub memory
-- 6 quest-adjacent side conversations delegated to Knoema
+- 6 quest-adjacent side conversations delegated to Luvoire
 - 1 live vertical-slice scene with deterministic QA fallback
 - Python and TypeScript tooling for content iteration
 - Unity or Godot adapter chosen by the studio's engine branch
@@ -93,4 +93,4 @@ Quest state + world events
 
 ## Decision
 
-For indie teams, Knoema is strongest as a replayable social-behavior layer that sits beside existing quest logic. The adoption path becomes credible when integration is incremental, fallback is deterministic, and success is measured against authoring speed plus replay value, not hype.
+For indie teams, Luvoire is strongest as a replayable social-behavior layer that sits beside existing quest logic. The adoption path becomes credible when integration is incremental, fallback is deterministic, and success is measured against authoring speed plus replay value, not hype.

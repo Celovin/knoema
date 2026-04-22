@@ -55,24 +55,24 @@ def test_phase57_summary_table_has_six_frameworks_and_required_columns() -> None
     ]:
         assert column in summary_md
 
-    for framework in ["Knoema", "AutoGen", "CrewAI", "LangGraph", "Mesa", "NetLogo"]:
+    for framework in ["Luvoire", "AutoGen", "CrewAI", "LangGraph", "Mesa", "NetLogo"]:
         assert f"| {framework} |" in summary_md
 
 
-def test_phase57_knoema_rank_and_code_line_acceptance() -> None:
+def test_phase57_luvoire_rank_and_code_line_acceptance() -> None:
     summary = json.loads((ROOT / "results/summary.json").read_text(encoding="utf-8"))
     rows = {row["framework"]: row for row in summary["rows"]}
 
-    assert rows["Knoema"]["persona_consistency_score"] == max(
+    assert rows["Luvoire"]["persona_consistency_score"] == max(
         row["persona_consistency_score"] for row in summary["rows"]
     )
-    assert rows["Knoema"]["reproducibility_score"] == max(
+    assert rows["Luvoire"]["reproducibility_score"] == max(
         row["reproducibility_score"] for row in summary["rows"]
     )
-    assert rows["Knoema"]["code_lines_to_configure"] <= (
+    assert rows["Luvoire"]["code_lines_to_configure"] <= (
         rows["AutoGen"]["code_lines_to_configure"] * 0.5
     )
-    assert rows["Knoema"]["code_lines_to_configure"] <= (
+    assert rows["Luvoire"]["code_lines_to_configure"] <= (
         rows["CrewAI"]["code_lines_to_configure"] * 0.5
     )
 

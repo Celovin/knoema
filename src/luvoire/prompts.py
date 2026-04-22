@@ -1,4 +1,4 @@
-"""Multilingual prompt templates for Knoema agents and decisions."""
+"""Multilingual prompt templates for Luvoire agents and decisions."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ from collections.abc import Mapping, Sequence
 from datetime import datetime
 from typing import Any, Literal, Protocol
 
-from knoema.relationship import Relationship
-from knoema.types import (
+from luvoire.relationship import Relationship
+from luvoire.types import (
     PERSONALITY_NEUTRAL_DEFAULTS,
     AgentID,
     Emotion,
@@ -228,7 +228,7 @@ class DecisionPromptEnvironment(Protocol):
 
 
 def normalize_prompt_language(language: str | PromptLanguage) -> PromptLanguage:
-    """Normalize language aliases to Knoema's prompt language codes."""
+    """Normalize language aliases to Luvoire's prompt language codes."""
 
     normalized = str(language).strip().lower().replace("_", "-")
     try:

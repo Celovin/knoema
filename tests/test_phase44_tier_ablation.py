@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from knoema.theory_of_mind import run_sally_anne_tier_ablation
+from luvoire.theory_of_mind import run_sally_anne_tier_ablation
 
 
 def test_phase44_sally_anne_tier_ablation_reports_material_tiers() -> None:

@@ -6,28 +6,28 @@ from typing import Any
 
 from fastapi.testclient import TestClient
 
-from knoema.api.server import create_app
+from luvoire.api.server import create_app
 
-UNITY_PACKAGE = Path("unity-sdk/Packages/com.celovin.knoema")
+UNITY_PACKAGE = Path("unity-sdk/Packages/com.celovin.luvoire")
 
 
 def test_unity_sdk_package_json_is_upm_compatible() -> None:
     package = json.loads((UNITY_PACKAGE / "package.json").read_text(encoding="utf-8"))
 
-    assert package["name"] == "com.celovin.knoema"
-    assert package["version"] == "0.2.0"
+    assert package["name"] == "com.celovin.luvoire"
+    assert package["version"] == "0.3.0"
     assert package["unity"] == "2022.3"
     assert package["samples"][0]["path"] == "Samples~/BasicNPC"
-    assert (UNITY_PACKAGE / "Runtime/KnoemaClient.cs").exists()
-    assert (UNITY_PACKAGE / "Runtime/KnoemaNPC.cs").exists()
-    assert (UNITY_PACKAGE / "Runtime/Models/KnoemaTickRequest.cs").exists()
-    assert (UNITY_PACKAGE / "Editor/KnoemaSettingsWindow.cs").exists()
+    assert (UNITY_PACKAGE / "Runtime/LuvoireClient.cs").exists()
+    assert (UNITY_PACKAGE / "Runtime/LuvoireNPC.cs").exists()
+    assert (UNITY_PACKAGE / "Runtime/Models/LuvoireTickRequest.cs").exists()
+    assert (UNITY_PACKAGE / "Editor/LuvoireSettingsWindow.cs").exists()
     assert (UNITY_PACKAGE / "Samples~/BasicNPC/BasicNPC.scene.yaml").exists()
 
 
 def test_unity_sdk_client_documents_exact_tick_payload_fields() -> None:
-    client = (UNITY_PACKAGE / "Runtime/KnoemaClient.cs").read_text(encoding="utf-8")
-    tick_request = (UNITY_PACKAGE / "Runtime/Models/KnoemaTickRequest.cs").read_text(
+    client = (UNITY_PACKAGE / "Runtime/LuvoireClient.cs").read_text(encoding="utf-8")
+    tick_request = (UNITY_PACKAGE / "Runtime/Models/LuvoireTickRequest.cs").read_text(
         encoding="utf-8"
     )
     readme = Path("unity-sdk/README.md").read_text(encoding="utf-8")
@@ -41,7 +41,7 @@ def test_unity_sdk_client_documents_exact_tick_payload_fields() -> None:
 
 
 def test_unity_sdk_fastapi_contract_tick_memory_and_action(monkeypatch: Any) -> None:
-    monkeypatch.delenv("KNOEMA_API_KEY", raising=False)
+    monkeypatch.delenv("LUVOIRE_API_KEY", raising=False)
     with TestClient(create_app()) as client:
         tick_response = client.post(
             "/simulate/tick",
@@ -90,7 +90,7 @@ def test_unity_sdk_fastapi_contract_tick_memory_and_action(monkeypatch: Any) -> 
 
 
 def test_unity_sdk_api_openapi_lists_contract_paths(monkeypatch: Any) -> None:
-    monkeypatch.delenv("KNOEMA_API_KEY", raising=False)
+    monkeypatch.delenv("LUVOIRE_API_KEY", raising=False)
     with TestClient(create_app()) as client:
         response = client.get("/openapi.json")
 

@@ -1,6 +1,6 @@
-# Knoema Engine Docs
+# Luvoire Docs
 
-Knoema Engine is an MIT-licensed runtime for persistent agents with memory, relationships, environment context, emotion, events, deterministic logs, and optional LLM-backed decisions.
+Luvoire is an MIT-licensed runtime for persistent agents with memory, relationships, environment context, emotion, events, deterministic logs, and optional LLM-backed decisions.
 
 Use these docs when you need an implementation-oriented path through the repo:
 
@@ -13,8 +13,8 @@ Use these docs when you need an implementation-oriented path through the repo:
 
 | Surface | Entry Point |
 | --- | --- |
-| Core runtime | `src/knoema` |
-| CLI | `knoema run examples/cli_dorm.yaml --json` |
+| Core runtime | `src/luvoire` |
+| CLI | `luvoire run examples/cli_dorm.yaml --json` |
 | Scenario DSL | `docs/dsl/tutorial.md` |
 | Playground | `playground/app.py` |
 | Game SDK | `docs/sdk/integration_patterns.md` |
@@ -23,7 +23,7 @@ Use these docs when you need an implementation-oriented path through the repo:
 
 ## Safety Boundary
 
-Public-safety examples in this repository are fictional, synthetic, and non-identifying. Knoema is not a prediction, suspect scoring, surveillance, or enforcement automation system.
+Public-safety examples in this repository are fictional, synthetic, and non-identifying. Luvoire is not a prediction, suspect scoring, surveillance, or enforcement automation system.
 
 ## Quick Links
 

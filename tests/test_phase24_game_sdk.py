@@ -5,14 +5,14 @@ from pathlib import Path
 
 import pytest
 
-from knoema.game import GameSession
+from luvoire.game import GameSession
 from sdk.python import GameSession as CompatGameSession
-from sdk.python.knoema_game import GameSession as LegacyGameSession
+from sdk.python.luvoire_game import GameSession as LegacyGameSession
 
 
 def test_phase24_sdk_files_exist() -> None:
     expected = [
-        "sdk/python/knoema_game.py",
+        "sdk/python/luvoire_game.py",
         "sdk/__init__.py",
         "sdk/python/__init__.py",
         "sdk/python/examples/basic_npc.py",
@@ -22,13 +22,13 @@ def test_phase24_sdk_files_exist() -> None:
         "sdk/typescript/tsconfig.json",
         "sdk/typescript/src/index.ts",
         "sdk/typescript/examples/basic-npc.ts",
-        "sdk/godot-gdscript/knoema.gd",
+        "sdk/godot-gdscript/luvoire.gd",
         "sdk/godot-gdscript/examples/basic_npc.gd",
         "docs/sdk/python-api.md",
         "docs/sdk/typescript-api.md",
         "docs/sdk/godot-api.md",
         "docs/sdk/integration_patterns.md",
-        "src/knoema/game.py",
+        "src/luvoire/game.py",
     ]
 
     missing = [path for path in expected if not Path(path).exists()]
@@ -96,7 +96,7 @@ def test_phase24_typescript_package_declares_public_api() -> None:
     tsconfig = json.loads(Path("sdk/typescript/tsconfig.json").read_text(encoding="utf-8"))
     source = Path("sdk/typescript/src/index.ts").read_text(encoding="utf-8")
 
-    assert package["name"] == "@celovin/knoema-game"
+    assert package["name"] == "@celovin/luvoire-game"
     assert package["scripts"]["check"] == "tsc --project tsconfig.json --noEmit"
     assert tsconfig["compilerOptions"]["strict"] is True
     assert tsconfig["compilerOptions"]["target"] == "ES2020"
@@ -109,9 +109,9 @@ def test_phase24_typescript_package_declares_public_api() -> None:
 
 
 def test_phase24_godot_facade_matches_response_contract() -> None:
-    source = Path("sdk/godot-gdscript/knoema.gd").read_text(encoding="utf-8")
+    source = Path("sdk/godot-gdscript/luvoire.gd").read_text(encoding="utf-8")
 
-    assert "class_name KnoemaGameSession" in source
+    assert "class_name LuvoireGameSession" in source
     assert "func create_npc" in source
     assert "func interact" in source
     assert '"branch_flags"' in source

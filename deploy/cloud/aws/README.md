@@ -7,13 +7,13 @@ The AWS template targets ECS Fargate behind an Application Load Balancer with RD
 ```bash
 terraform -chdir=deploy/cloud/aws/terraform init
 terraform -chdir=deploy/cloud/aws/terraform validate
-terraform -chdir=deploy/cloud/aws/terraform plan -var container_image=example/knoema-api:0.2.0
+terraform -chdir=deploy/cloud/aws/terraform plan -var container_image=example/luvoire-api:0.3.0
 ```
 
 ## CloudFormation
 
 ```bash
-aws cloudformation validate-template --template-body file://deploy/cloud/aws/cloudformation/knoema-stack.yaml
+aws cloudformation validate-template --template-body file://deploy/cloud/aws/cloudformation/luvoire-stack.yaml
 ```
 
 ## Required Inputs

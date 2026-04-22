@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 
-from knoema import (
+from luvoire import (
     EnvironmentContext,
     Memory,
     Persona,
@@ -15,9 +15,9 @@ from knoema import (
     TheoryOfMindProfile,
     render_persona_system_prompt,
 )
-from knoema.decision import build_decision_messages
-from knoema.theory_of_mind import run_sally_anne_benchmark
-from knoema.types import Emotion
+from luvoire.decision import build_decision_messages
+from luvoire.theory_of_mind import run_sally_anne_benchmark
+from luvoire.types import Emotion
 
 
 def _reasoner() -> Persona:

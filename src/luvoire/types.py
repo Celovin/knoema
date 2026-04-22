@@ -1,4 +1,4 @@
-"""Core domain types shared across the Knoema runtime."""
+"""Core domain types shared across the Luvoire runtime."""
 
 from __future__ import annotations
 

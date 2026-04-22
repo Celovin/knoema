@@ -7,7 +7,7 @@ from datetime import datetime
 
 import pytest
 
-from knoema import (
+from luvoire import (
     DecisionEngine,
     EnvironmentContext,
     LLMGateway,
@@ -17,9 +17,9 @@ from knoema import (
     Personality,
     Relationship,
 )
-from knoema.decision import build_decision_messages, parse_action_response
-from knoema.protocols import Message
-from knoema.types import Emotion, WorldEvent
+from luvoire.decision import build_decision_messages, parse_action_response
+from luvoire.protocols import Message
+from luvoire.types import Emotion, WorldEvent
 
 
 class StaticClient:

@@ -8,7 +8,7 @@ tick_duration_minutes: 720
 duration_days: 1
 environment:
   start_time: "2026-06-01T08:00:00"
-  location_path: [Knoema Demo World, Scenario Editor, school]
+  location_path: [Luvoire Demo World, Scenario Editor, school]
   conditions:
     editor_export: true
 agents:
@@ -42,7 +42,7 @@ events:
   - timestamp: "2026-06-01T09:00:00"
     event_type: editor.lab_station_opens
     participants: [mentor_1, newcomer_1]
-    location: "Knoema Demo World > Scenario Editor > School Lab"
+    location: "Luvoire Demo World > Scenario Editor > School Lab"
     description: "The mentor explains the first measurement and checks readiness."
 metrics:
   - name: editor_review_score

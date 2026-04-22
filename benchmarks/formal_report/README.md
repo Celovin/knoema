@@ -7,7 +7,7 @@ The bundle uses deterministic local metrics only. It does not call external LLM 
 ## Run
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 .venv\Scripts\python benchmarks\formal_report\runner.py
 ```
 

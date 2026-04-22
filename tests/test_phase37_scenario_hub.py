@@ -6,7 +6,7 @@ from pathlib import Path
 
 import yaml
 
-from knoema.dsl import collect_validation_issues, load_scenario
+from luvoire.dsl import collect_validation_issues, load_scenario
 
 
 def test_phase37_hub_files_exist() -> None:

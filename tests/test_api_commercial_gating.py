@@ -8,13 +8,13 @@ import pytest
 from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
 
-from knoema.api.auth import AuthenticatedTenant
-from knoema.api.server import create_app
-from knoema.api.tier_rate_limit import TierRateLimiter, enforce_tier_rate_limit
-from knoema.billing import api_keys
-from knoema.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore
-from knoema.billing.gateway import UsageMeter
-from knoema.billing.tiers import TierName
+from luvoire.api.auth import AuthenticatedTenant
+from luvoire.api.server import create_app
+from luvoire.api.tier_rate_limit import TierRateLimiter, enforce_tier_rate_limit
+from luvoire.billing import api_keys
+from luvoire.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore
+from luvoire.billing.gateway import UsageMeter
+from luvoire.billing.tiers import TierName
 
 
 def _simulation_payload() -> dict[str, object]:
@@ -71,7 +71,7 @@ def test_api_commercial_valid_pro_tier_sets_response_header() -> None:
         response = client.post("/simulations/run", json=_simulation_payload(), headers=headers)
 
     assert response.status_code == 200
-    assert response.headers["X-Knoema-Tenant-Tier"] == "pro"
+    assert response.headers["X-Luvoire-Tenant-Tier"] == "pro"
     assert response.json()["simulation_id"]
 
 
@@ -106,8 +106,8 @@ def test_api_commercial_rate_limit_returns_retry_headers() -> None:
     assert [response.status_code for response in responses[:240]] == [200] * 240
     assert responses[240].status_code == 429
     assert responses[240].headers["Retry-After"]
-    assert responses[240].headers["X-Knoema-RateLimit-Tier"] == "pro"
-    assert responses[240].headers["X-Knoema-RateLimit-Remaining"] == "0"
+    assert responses[240].headers["X-Luvoire-RateLimit-Tier"] == "pro"
+    assert responses[240].headers["X-Luvoire-RateLimit-Remaining"] == "0"
 
 
 def test_api_commercial_usage_middleware_writes_one_jsonl_line(tmp_path: Path) -> None:
@@ -162,7 +162,7 @@ def test_api_commercial_invalid_token_still_uses_constant_time_compare(
         response = client.post(
             "/simulations/run",
             json=_simulation_payload(),
-            headers={"Authorization": "Bearer knoema_missing_bad-secret"},
+            headers={"Authorization": "Bearer luvoire_missing_bad-secret"},
         )
 
     assert response.status_code == 401

@@ -1,5 +1,5 @@
 $schema: https://json-schema.org/draft/2020-12/schema
-title: Knoema replay archetype profile
+title: Luvoire replay archetype profile
 type: object
 required:
   - archetype_id

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import knoema
+import luvoire
 
 
 def test_version_is_string() -> None:
-    assert isinstance(knoema.__version__, str)
-    assert knoema.__version__.count(".") >= 1
+    assert isinstance(luvoire.__version__, str)
+    assert luvoire.__version__.count(".") >= 1

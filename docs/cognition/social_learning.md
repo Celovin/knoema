@@ -10,7 +10,7 @@ The implementation follows a compact Bandura-style loop:
 - Motivation: increase imitation likelihood when observed outcomes are successful.
 
 ```python
-from knoema import Persona
+from luvoire import Persona
 
 learner = Persona(..., social_learning=True)
 ```

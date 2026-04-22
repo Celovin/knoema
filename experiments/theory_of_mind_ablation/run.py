@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from knoema.theory_of_mind import run_sally_anne_tier_ablation
+from luvoire.theory_of_mind import run_sally_anne_tier_ablation
 
 ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = ROOT / "results"

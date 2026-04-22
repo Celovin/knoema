@@ -1,22 +1,22 @@
-# Knoema Engine
+# Luvoire
 
 > LLM-based multi-agent social simulation engine for games, public safety research, and academic simulation.
 
-[![CI](https://github.com/Celovin/knoema/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/knoema/actions/workflows/ci.yml)
+[![CI](https://github.com/Celovin/luvoire/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/luvoire/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/knoema-playground)
+[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/luvoire-playground)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19643409.svg)](https://doi.org/10.5281/zenodo.19643409)
 [![arXiv: pending](https://img.shields.io/badge/arXiv-ARXIV_ID_PENDING-b31b1b.svg)](paper/main.tex)
 [![Papers with Code: submission packet](https://img.shields.io/badge/Papers%20with%20Code-submission%20packet-blue)](docs/research/papers_with_code_submission.md)
 
 ## Current version
 
-0.2.0
+0.3.0
 
-## Knoema Bench
+## Luvoire Bench
 
-Knoema Bench publishes a seven-axis public leaderboard for long-term memory, multi-layer retention, theory-of-mind, hierarchical planning, and real-time latency. See the live page at [https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/) or start from the [submission template](bench/submissions/TEMPLATE.yaml).
+Luvoire Bench publishes a seven-axis public leaderboard for long-term memory, multi-layer retention, theory-of-mind, hierarchical planning, and real-time latency. See the live page at [https://celovin.github.io/luvoire/bench/](https://celovin.github.io/luvoire/bench/) or start from the [submission template](bench/submissions/TEMPLATE.yaml).
 
 ## Languages
 
@@ -24,7 +24,7 @@ Knoema Bench publishes a seven-axis public leaderboard for long-term memory, mul
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) |
 
-Knoema Engine is an early MVP for modeling persistent agents with memory, relationships, emotions, environment context, and LLM-backed decisions. The same runtime can support narrative NPCs, fictional public-safety replay research, and reproducible agent-based social simulation.
+Luvoire is an early MVP for modeling persistent agents with memory, relationships, emotions, environment context, and LLM-backed decisions. The same runtime can support narrative NPCs, fictional public-safety replay research, and reproducible agent-based social simulation.
 
 All public-safety examples in this repository are fictional, synthetic, and non-identifying. They are replay and research demos, not crime prediction or suspect scoring tools.
 
@@ -51,7 +51,7 @@ All public-safety examples in this repository are fictional, synthetic, and non-
 - LLM gateway with Anthropic, OpenAI, and deterministic local clients
 - Prompt templates for English, Korean, Japanese, and Chinese runs
 - Simulation runner with scheduled events and JSONL export
-- `knoema run` CLI for YAML-driven local simulations
+- `luvoire run` CLI for YAML-driven local simulations
 - Scenario DSL v1 for validated YAML scenarios and ethics guardrails
 - Opt-in red-team content filter and append-only safety audit log helpers
 - Jupyter notebooks for MVP demo tracks and a 10-agent village scale-up
@@ -90,7 +90,7 @@ pip install -e ".[dashboard]"
 ```python
 from datetime import datetime
 
-from knoema import Environment, LocalClient, Persona, Personality, Simulator
+from luvoire import Environment, LocalClient, Persona, Personality, Simulator
 
 alice = Persona(
     agent_id="alice",
@@ -155,7 +155,7 @@ Run notebooks top-to-bottom after installing `.[dev]`.
 
 ## Playground
 
-Try the browser demo at [Knoema Playground](https://huggingface.co/spaces/celovin/knoema-playground).
+Try the browser demo at [Luvoire Playground](https://huggingface.co/spaces/celovin/luvoire-playground).
 
 The Playground includes three prebuilt scenarios, a deterministic replay-only mode that needs no API key, optional OpenAI or Anthropic runs with a user-supplied per-session API key, a timeline view, an interactive relationship graph, and JSONL log download.
 
@@ -195,7 +195,7 @@ The scenario editor is available at `/editor` and supports drag-and-drop agents,
 
 ```bash
 pip install -e ".[api]"
-uvicorn knoema.api.server:app --host 127.0.0.1 --port 8000
+uvicorn luvoire.api.server:app --host 127.0.0.1 --port 8000
 ```
 
 The API server provides REST routes for simulation lifecycle management, agent inspection, event injection, and a WebSocket log stream for live tick delivery.
@@ -247,7 +247,7 @@ The research dashboard includes six pages for simulation runs, A/B comparison, m
 python benchmarks/run_benchmark.py --json-output runs/benchmark.json --markdown-output runs/benchmark.md
 ```
 
-The benchmark report records measured Knoema throughput and transparent `not-measured` comparison slots for Concordia and Mesa. See [benchmarks/README.md](benchmarks/README.md) for comparison discipline.
+The benchmark report records measured Luvoire throughput and transparent `not-measured` comparison slots for Concordia and Mesa. See [benchmarks/README.md](benchmarks/README.md) for comparison discipline.
 
 Phase 19 scale experiment:
 
@@ -282,7 +282,7 @@ See [Scoring Benchmarks](benchmarks/scoring/README.md).
 
 ## Reproducibility Guarantees
 
-Knoema deterministic local runs can be replayed from fixed config, seed, and JSONL artifacts. The Phase 21 test suite covers repeated same-seed runs, seed propagation, YAML config round-trip, and JSONL replay summaries.
+Luvoire deterministic local runs can be replayed from fixed config, seed, and JSONL artifacts. The Phase 21 test suite covers repeated same-seed runs, seed propagation, YAML config round-trip, and JSONL replay summaries.
 
 See [Reproducibility Report](docs/reports/reproducibility.md).
 
@@ -291,7 +291,7 @@ See [Reproducibility Report](docs/reports/reproducibility.md).
 `SQLiteFaissMemoryStore.retrieve(...)` keeps the simple list-of-memory API. Use `retrieve_with_scores(...)` when you need semantic score, temporal score, importance score, and final reranking score for analysis:
 
 ```python
-from knoema import RetrievalWeights
+from luvoire import RetrievalWeights
 
 results = store.retrieve_with_scores(
     "shared study routine",
@@ -303,18 +303,18 @@ results = store.retrieve_with_scores(
 ## CLI
 
 ```bash
-knoema run examples/cli_dorm.yaml --json
-knoema score experiments/50_agent_village/results/sim_log.jsonl
+luvoire run examples/cli_dorm.yaml --json
+luvoire score experiments/50_agent_village/results/sim_log.jsonl
 ```
 
-`knoema score` emits JSON summaries for Persona Consistency Score (PCS) and Relationship Coherence Score (RCS) from a committed JSONL log.
+`luvoire score` emits JSON summaries for Persona Consistency Score (PCS) and Relationship Coherence Score (RCS) from a committed JSONL log.
 
 See [CLI](docs/cli.md) for the YAML config shape, output path rules, dry-run validation, and scoring mode.
 
 ## Scenario DSL
 
 ```python
-from knoema.dsl import load_scenario
+from luvoire.dsl import load_scenario
 
 scenario = load_scenario("examples/scenarios/01_shopkeeper_winter_crime.yaml")
 logs = scenario.to_simulator().run(duration_days=scenario.duration_days)
@@ -325,17 +325,17 @@ See [DSL Tutorial](docs/dsl/tutorial.md), [DSL Reference](docs/dsl/reference.md)
 The Phase 48 marketplace library includes 50 fictional Scenario DSL examples across school, workplace, family, community, and social-experiment categories:
 
 ```bash
-knoema validate scenarios/library --json
+luvoire validate scenarios/library --json
 ```
 
 See [Scenario Library](scenarios/library/INDEX.md).
 
 ## Game SDK
 
-Knoema includes deterministic NPC SDK facades for installed Python packages, TypeScript tooling, and direct Godot GDScript prototypes.
+Luvoire includes deterministic NPC SDK facades for installed Python packages, TypeScript tooling, and direct Godot GDScript prototypes.
 
 ```python
-from knoema.game import GameSession
+from luvoire.game import GameSession
 
 session = GameSession(game_id="demo-village")
 npc = session.create_npc(
@@ -381,7 +381,7 @@ godot4 --headless --path adapters/godot --export-release Web build/godot-tavern/
 Install the Unity adapter with Package Manager:
 
 ```text
-https://github.com/Celovin/knoema.git?path=adapters/unity
+https://github.com/Celovin/luvoire.git?path=adapters/unity
 ```
 
 See [adapters/unity/README.md](adapters/unity/README.md) for the Unity 2022.3 LTS package scaffold, HTTP/local fallback client, `NPCAgent` component, and Basic NPC sample.
@@ -402,7 +402,7 @@ For a real WebGL build, add a small Editor build method in the host project and 
 
 ## Unreal Integration
 
-Copy [adapters/unreal](adapters/unreal) into either your project `Plugins` folder or the UE 5.3 engine `Marketplace` plugins folder, then enable the `Knoema Unreal` plugin in the editor.
+Copy [adapters/unreal](adapters/unreal) into either your project `Plugins` folder or the UE 5.3 engine `Marketplace` plugins folder, then enable the `Luvoire Unreal` plugin in the editor.
 
 See [adapters/unreal/README.md](adapters/unreal/README.md) for the UE5 source plugin scaffold, REST API client, `NPCAgentComponent`, and `BP_BasicNPC` placeholder flow.
 
@@ -452,15 +452,15 @@ Detailed notes:
 - [Privacy](docs/PRIVACY.md)
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
-- [Local vs Cloud LLM Fallback Notes](src/knoema/llm/local/benchmarks/local_vs_cloud.md)
+- [Local vs Cloud LLM Fallback Notes](src/luvoire/llm/local/benchmarks/local_vs_cloud.md)
 - [Tutorial Blog Draft](docs/tutorial_blog.md)
-- [Korean Technical Blog Drafts](docs/blog/ko/01-why-knoema-korean-indie-games.md)
+- [Korean Technical Blog Drafts](docs/blog/ko/01-why-luvoire-korean-indie-games.md)
 - [Discord Community Launch Kit](docs/discord_community.md)
 - [Demo Video Scripts](docs/videos/shotlist.md)
 - [YouTube Tutorial Scripts](docs/videos/tutorials/01_getting_started_10min.md)
 - [Hugging Face Playground Guide](playground/README.md)
 - [Website App](website/app/page.tsx)
-- [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/knoema_technical_report.pdf)
+- [Technical Report Draft](paper/main.tex) and [PDF Preview](paper/luvoire_technical_report.pdf)
 - [arXiv v2 Preprint Source](paper/main.tex), [Appendix](paper/appendix.tex), and [80+ References](paper/references.bib)
 - [Papers with Code Submission Packet](docs/research/papers_with_code_submission.md) and [machine-readable packet](docs/research/papers_with_code_submission.json)
 - [Academic Indexing Packet](docs/research/academic-indexing.md), [Citation Metadata](CITATION.cff), and [Zenodo Metadata](.zenodo.json)
@@ -485,7 +485,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Release Prep
 
-Local package and Docker release checks are documented in [RELEASE.md](RELEASE.md). CI and release automation are documented in [CI and Release Automation](docs/ci-release-automation.md). The repository includes Release Please version PRs and a tag-triggered GitHub Release workflow with PyPI Trusted Publishing gated by the `pypi` environment. Use `python scripts/external_activation_status.py` before external activation steps to confirm release and deployment blockers plus suggested next actions in one JSON snapshot, `python scripts/deploy_playground_space.py` once Hugging Face auth is ready, or `python scripts/pre_release_check.py --version 0.2.0` to combine activation status with a local release dry run.
+Local package and Docker release checks are documented in [RELEASE.md](RELEASE.md). CI and release automation are documented in [CI and Release Automation](docs/ci-release-automation.md). The repository includes Release Please version PRs and a tag-triggered GitHub Release workflow with PyPI Trusted Publishing gated by the `pypi` environment. Use `python scripts/external_activation_status.py` before external activation steps to confirm release and deployment blockers plus suggested next actions in one JSON snapshot, `python scripts/deploy_playground_space.py` once Hugging Face auth is ready, or `python scripts/pre_release_check.py --version 0.3.0` to combine activation status with a local release dry run.
 
 ## License
 

@@ -1,6 +1,6 @@
 {
-  "name": "Knoema Browser Runtime Demo",
-  "bundle": "knoema-core.js",
+  "name": "Luvoire Browser Runtime Demo",
+  "bundle": "luvoire-core.js",
   "bundle_bytes": 3350,
   "pages": [
     "2-agent.html",

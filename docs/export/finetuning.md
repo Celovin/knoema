@@ -1,12 +1,12 @@
 # Fine-tuning Dataset Export
 
-Knoema run logs can be converted into chat fine-tuning records for OpenAI-style JSONL, Anthropic-style JSONL, or DPO preference pairs.
+Luvoire run logs can be converted into chat fine-tuning records for OpenAI-style JSONL, Anthropic-style JSONL, or DPO preference pairs.
 
 ## Python API
 
 ```python
 from pathlib import Path
-from knoema.export import export_finetuning_jsonl, to_openai_jsonl
+from luvoire.export import export_finetuning_jsonl, to_openai_jsonl
 
 jsonl_text = Path("runs/demo.jsonl").read_text(encoding="utf-8")
 records = to_openai_jsonl(jsonl_text)

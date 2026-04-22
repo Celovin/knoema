@@ -15,7 +15,7 @@ concurrency:
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
-  PRE_COMMIT_HOME: /tmp/knoema-pre-commit-cache
+  PRE_COMMIT_HOME: /tmp/luvoire-pre-commit-cache
 
 jobs:
   quality:
@@ -33,7 +33,7 @@ jobs:
       - name: Cache pre-commit hooks
         uses: actions/cache@v5
         with:
-          path: /tmp/knoema-pre-commit-cache
+          path: /tmp/luvoire-pre-commit-cache
           key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pre-commit-
@@ -70,4 +70,4 @@ jobs:
         run: pytest --cov-fail-under=90
 
       - name: Release dry run
-        run: python scripts/release_dry_run.py --version 0.2.0
+        run: python scripts/release_dry_run.py --version 0.3.0

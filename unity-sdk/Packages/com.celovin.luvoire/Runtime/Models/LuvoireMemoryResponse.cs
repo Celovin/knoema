@@ -1,12 +1,12 @@
 using System;
 
-namespace Knoema.UnitySdk.Models
+namespace Luvoire.UnitySdk.Models
 {
     [Serializable]
-    public sealed class KnoemaMemoryResponse
+    public sealed class LuvoireMemoryResponse
     {
         public string session_id = "unity-demo";
         public string agent_id = "guide";
-        public KnoemaMemoryItem[] memories = Array.Empty<KnoemaMemoryItem>();
+        public LuvoireMemoryItem[] memories = Array.Empty<LuvoireMemoryItem>();
     }
 }

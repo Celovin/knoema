@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from knoema import ContentFilter
+from luvoire import ContentFilter
 
 
 def test_phase53_prompt_injection_block_rate_is_at_least_eighty_five_percent() -> None:

@@ -1,4 +1,4 @@
-"""Build a deterministic CycloneDX 1.5 SBOM for Knoema."""
+"""Build a deterministic CycloneDX 1.5 SBOM for Luvoire."""
 
 from __future__ import annotations
 

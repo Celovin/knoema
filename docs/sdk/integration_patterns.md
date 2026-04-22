@@ -10,9 +10,9 @@ Use the deterministic local facade during prototyping. This makes demos testable
 
 ## Engine Adapters
 
-- Python: use `knoema.game` for installed packages or `sdk/python/knoema_game.py` when vendoring the SDK folder directly.
+- Python: use `luvoire.game` for installed packages or `sdk/python/luvoire_game.py` when vendoring the SDK folder directly.
 - TypeScript: use `sdk/typescript/src/index.ts` for web or Electron tooling.
-- Godot: use `sdk/godot-gdscript/knoema.gd` for direct GDScript experiments.
+- Godot: use `sdk/godot-gdscript/luvoire.gd` for direct GDScript experiments.
 
 ## Response Contract
 

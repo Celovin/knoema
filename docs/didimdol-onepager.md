@@ -20,4 +20,4 @@ The script keeps `arXiv:<pending>` until the user has an assigned arXiv identifi
 
 ## HF Space URL
 
-The QR code encodes `https://huggingface.co/spaces/celovin/knoema-playground`. If the demo is re-hosted, update `HF_SPACE_URL` in `scripts/build_grant_summary.py` and rebuild.
+The QR code encodes `https://huggingface.co/spaces/celovin/luvoire-playground`. If the demo is re-hosted, update `HF_SPACE_URL` in `scripts/build_grant_summary.py` and rebuild.

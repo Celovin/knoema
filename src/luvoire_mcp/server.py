@@ -1,8 +1,8 @@
-"""Stdio Model Context Protocol server for Knoema.
+"""Stdio Model Context Protocol server for Luvoire.
 
 The server implements the JSON-RPC MCP lifecycle used by desktop clients:
 `initialize`, `tools/list`, and `tools/call`. It intentionally runs local
-deterministic replay by default so Claude Desktop or Cursor can inspect Knoema
+deterministic replay by default so Claude Desktop or Cursor can inspect Luvoire
 without sending secrets or live model calls through the tool layer.
 """
 
@@ -19,10 +19,10 @@ from importlib import metadata as importlib_metadata
 from pathlib import Path
 from typing import Any, TextIO, TypeAlias
 
-from knoema.cli import SimulationRunConfig, load_run_config
-from knoema.llm import LocalClient
-from knoema.protocols import Message
-from knoema.simulator import SimulationLogEntry, Simulator
+from luvoire.cli import SimulationRunConfig, load_run_config
+from luvoire.llm import LocalClient
+from luvoire.protocols import Message
+from luvoire.simulator import SimulationLogEntry, Simulator
 
 JsonObject: TypeAlias = dict[str, Any]
 JsonRpcId: TypeAlias = str | int | None
@@ -95,7 +95,7 @@ class McpProtocolError(Exception):
         self.message = message
 
 
-class KnoemaMcpService:
+class LuvoireMcpService:
     """Tool implementation behind the stdio MCP JSON-RPC surface."""
 
     def __init__(self, *, scenario_dir: Path | None = None) -> None:
@@ -119,7 +119,7 @@ class KnoemaMcpService:
             "protocolVersion": protocol_version,
             "capabilities": {"tools": {"listChanged": False}},
             "serverInfo": {
-                "name": "knoema-engine",
+                "name": "luvoire-engine",
                 "version": _package_version(),
             },
         }
@@ -160,7 +160,7 @@ class KnoemaMcpService:
                 "content": [{"type": "text", "text": str(exc)}],
                 "isError": True,
             }
-        raise McpProtocolError(-32602, f"Unknown Knoema tool: {name}")
+        raise McpProtocolError(-32602, f"Unknown Luvoire tool: {name}")
 
     def list_scenarios(self) -> JsonObject:
         summaries: list[JsonObject] = []
@@ -200,7 +200,7 @@ class KnoemaMcpService:
             logs = tuple(simulator.run_ticks(clamped_ticks))
         finally:
             simulator.close()
-        run_id = f"knoema-{uuid.uuid4().hex[:12]}"
+        run_id = f"luvoire-{uuid.uuid4().hex[:12]}"
         stored = StoredRun(
             run_id=run_id,
             scenario_name=self._record_for(name).name,
@@ -246,7 +246,7 @@ class KnoemaMcpService:
         action_counts = Counter(entry.action.action_type for entry in stored.logs)
         agent_counts = Counter(entry.agent_id for entry in stored.logs)
         lines = [
-            f"# Knoema MCP Run Report: {stored.scenario_name}",
+            f"# Luvoire MCP Run Report: {stored.scenario_name}",
             "",
             f"- Run ID: `{stored.run_id}`",
             f"- Provider: `{stored.provider}`",
@@ -376,11 +376,11 @@ class KnoemaMcpService:
 
 def serve_stdio(
     *,
-    service: KnoemaMcpService | None = None,
+    service: LuvoireMcpService | None = None,
     stdin: TextIO | None = None,
     stdout: TextIO | None = None,
 ) -> int:
-    resolved_service = service or KnoemaMcpService()
+    resolved_service = service or LuvoireMcpService()
     input_stream = stdin or sys.stdin
     output_stream = stdout or sys.stdout
     for line in input_stream:
@@ -395,7 +395,7 @@ def serve_stdio(
     return 0
 
 
-def handle_jsonrpc_line(service: KnoemaMcpService, line: str) -> JsonObject | None:
+def handle_jsonrpc_line(service: LuvoireMcpService, line: str) -> JsonObject | None:
     try:
         request = json.loads(line)
         if not isinstance(request, dict):
@@ -412,12 +412,12 @@ def handle_jsonrpc_line(service: KnoemaMcpService, line: str) -> JsonObject | No
 def main(argv: Sequence[str] | None = None) -> int:
     args = list(argv) if argv is not None else sys.argv[1:]
     if args and args != ["--stdio"]:
-        print("usage: knoema-mcp [--stdio]", file=sys.stderr)
+        print("usage: luvoire-mcp [--stdio]", file=sys.stderr)
         return 2
     return serve_stdio()
 
 
-def _dispatch_request(service: KnoemaMcpService, request: JsonObject) -> JsonObject | None:
+def _dispatch_request(service: LuvoireMcpService, request: JsonObject) -> JsonObject | None:
     if request.get("jsonrpc") != "2.0":
         raise McpProtocolError(-32600, "JSON-RPC version must be 2.0")
     request_id = _request_id(request)
@@ -452,7 +452,7 @@ def _tool_descriptors() -> Iterable[JsonObject]:
     return (
         {
             "name": "list_scenarios",
-            "description": "List the 30 built-in Knoema Playground scenarios.",
+            "description": "List the 30 built-in Luvoire Playground scenarios.",
             "inputSchema": {"type": "object", "properties": {}, "additionalProperties": False},
         },
         {
@@ -504,7 +504,7 @@ def _tool_descriptors() -> Iterable[JsonObject]:
         },
         {
             "name": "suggest_scenario",
-            "description": "Suggest built-in Knoema scenarios from a natural-language description.",
+            "description": "Suggest built-in Luvoire scenarios from a natural-language description.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -606,7 +606,7 @@ def _env_scenario_dir() -> Path | None:
     # `os.environ` is avoided at import time to keep tests free to monkeypatch.
     import os
 
-    value = os.environ.get("KNOEMA_SCENARIO_DIR")
+    value = os.environ.get("LUVOIRE_SCENARIO_DIR")
     if not value:
         return None
     return Path(value)
@@ -614,9 +614,9 @@ def _env_scenario_dir() -> Path | None:
 
 def _package_version() -> str:
     try:
-        return importlib_metadata.version("knoema-engine")
+        return importlib_metadata.version("luvoire-engine")
     except importlib_metadata.PackageNotFoundError:
-        return "0.2.0"
+        return "0.3.0"
 
 
 def _simulator_from_config(config: SimulationRunConfig) -> Simulator:
@@ -642,7 +642,7 @@ def _simulator_from_config(config: SimulationRunConfig) -> Simulator:
 
 
 __all__ = [
-    "KnoemaMcpService",
+    "LuvoireMcpService",
     "handle_jsonrpc_line",
     "main",
     "serve_stdio",

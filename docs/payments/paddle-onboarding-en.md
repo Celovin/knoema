@@ -41,13 +41,13 @@ Prepare these before starting Paddle verification:
 - Ownership breakdown if using a company and any owner holds more than 25%.
 - Bank account proof for payouts.
 - Production website URL with product description, pricing, terms, privacy policy, refund policy, support email, and prohibited-use language.
-- Demo or screenshots explaining the Knoema product if domain review asks for clarification.
+- Demo or screenshots explaining the Luvoire product if domain review asks for clarification.
 
 Paddle's business identification docs say government business registration documents should preferably be PDF files. They also say utility bills, accounting documents, and tax identification documents alone are not acceptable as business registration proof.
 
 ## 5. API Keys, Client Tokens, and Webhooks
 
-Knoema environment variable naming:
+Luvoire environment variable naming:
 
 ```text
 PADDLE_API_KEY=

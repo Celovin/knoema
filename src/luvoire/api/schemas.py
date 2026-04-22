@@ -1,4 +1,4 @@
-"""Pydantic schemas for the Knoema API server."""
+"""Pydantic schemas for the Luvoire API server."""
 
 from __future__ import annotations
 
@@ -8,10 +8,10 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from knoema.environment import Environment
-from knoema.persona import Persona
-from knoema.theory_of_mind import TheoryOfMindProfile
-from knoema.types import Memory, Personality, WorldEvent
+from luvoire.environment import Environment
+from luvoire.persona import Persona
+from luvoire.theory_of_mind import TheoryOfMindProfile
+from luvoire.types import Memory, Personality, WorldEvent
 
 SimulationStatus = Literal["queued", "running", "completed", "failed", "cancelled"]
 

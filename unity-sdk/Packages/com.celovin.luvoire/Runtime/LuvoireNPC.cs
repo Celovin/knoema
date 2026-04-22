@@ -1,10 +1,10 @@
 using System;
-using Knoema.UnitySdk.Models;
+using Luvoire.UnitySdk.Models;
 using UnityEngine;
 
-namespace Knoema.UnitySdk
+namespace Luvoire.UnitySdk
 {
-    public sealed class KnoemaNPC : MonoBehaviour
+    public sealed class LuvoireNPC : MonoBehaviour
     {
         [SerializeField] private string baseUrl = "http://localhost:8000";
         [SerializeField] private string bearerToken = "";
@@ -12,24 +12,24 @@ namespace Knoema.UnitySdk
         [SerializeField] private string agentId = "guide";
         [SerializeField] [TextArea] private string contextJson = "{\"location\":\"Demo Village > Plaza\"}";
 
-        private KnoemaClient client;
+        private LuvoireClient client;
 
         public string SessionId => string.IsNullOrWhiteSpace(sessionId) ? "unity-demo" : sessionId;
         public string AgentId => string.IsNullOrWhiteSpace(agentId) ? "guide" : agentId;
 
         private void Awake()
         {
-            client = new KnoemaClient(baseUrl, bearerToken);
+            client = new LuvoireClient(baseUrl, bearerToken);
         }
 
         public void Tick(
             string playerAction,
-            Action<KnoemaTickResponse> onCompleted,
+            Action<LuvoireTickResponse> onCompleted,
             Action<string> onError = null
         )
         {
             EnsureClient();
-            var request = new KnoemaTickRequest
+            var request = new LuvoireTickRequest
             {
                 session_id = SessionId,
                 agent_id = AgentId,
@@ -40,7 +40,7 @@ namespace Knoema.UnitySdk
         }
 
         public void GetMemory(
-            Action<KnoemaMemoryResponse> onCompleted,
+            Action<LuvoireMemoryResponse> onCompleted,
             Action<string> onError = null
         )
         {
@@ -52,7 +52,7 @@ namespace Knoema.UnitySdk
         {
             if (client == null)
             {
-                client = new KnoemaClient(baseUrl, bearerToken);
+                client = new LuvoireClient(baseUrl, bearerToken);
             }
         }
     }

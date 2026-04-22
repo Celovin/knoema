@@ -8,13 +8,13 @@ on:
     branches: [main]
     paths:
       - "demo/replay/**"
-      - "src/knoema/replay*"
+      - "src/luvoire/replay*"
       - "scripts/bench_replay_throughput.py"
       - "docs/benchmarks/replay-perf.json"
   pull_request:
     paths:
       - "demo/replay/**"
-      - "src/knoema/replay*"
+      - "src/luvoire/replay*"
       - "scripts/bench_replay_throughput.py"
 
 permissions:

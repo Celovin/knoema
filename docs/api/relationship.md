@@ -2,8 +2,8 @@
 
 Relationship state tracks directed familiarity, trust, and interaction weight between agents.
 
-::: knoema.relationship.InteractionOutcome
+::: luvoire.relationship.InteractionOutcome
 
-::: knoema.relationship.Relationship
+::: luvoire.relationship.Relationship
 
-::: knoema.relationship.RelationshipGraph
+::: luvoire.relationship.RelationshipGraph

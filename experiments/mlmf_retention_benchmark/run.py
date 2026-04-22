@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from knoema.memory.multi_layer import write_mlmf_retention_benchmark_summary
+from luvoire.memory.multi_layer import write_mlmf_retention_benchmark_summary
 
 SUMMARY_PATH = Path("experiments/mlmf_retention_benchmark/results/summary.json")
 

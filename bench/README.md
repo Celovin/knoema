@@ -1,13 +1,13 @@
-# Knoema Bench
+# Luvoire Bench
 
-Knoema Bench is a public leaderboard format for persistent-agent simulation
-frameworks. It turns the current Knoema evidence bundle into a repeatable
+Luvoire Bench is a public leaderboard format for persistent-agent simulation
+frameworks. It turns the current Luvoire evidence bundle into a repeatable
 submission schema so external frameworks can submit comparable rows without
 inventing unmeasured claims.
 
 ## Axes
 
-| Axis ID | Axis | Primary Meaning | Current Knoema Source |
+| Axis ID | Axis | Primary Meaning | Current Luvoire Source |
 | --- | --- | --- | --- |
 | `locomo` | LoCoMo | Long-term conversational memory retention proxy | `benchmarks/memory_benchmark_integration/results/summary.json` |
 | `memoryagentbench` | MemoryAgentBench | EventQA and fact-consolidation memory proxy | `benchmarks/memory_benchmark_integration/results/summary.json` |

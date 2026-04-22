@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections import deque
 from collections.abc import Iterable, Iterator
 
-from knoema.types import Memory
+from luvoire.types import Memory
 
 
 class ShortTermMemoryBuffer:

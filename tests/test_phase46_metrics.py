@@ -7,7 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from knoema.metrics import compute_pcs, compute_rcs, score_log
+from luvoire.metrics import compute_pcs, compute_rcs, score_log
 
 SCORING_ROOT = Path("benchmarks/scoring")
 
@@ -112,7 +112,7 @@ def test_phase46_cli_outputs_json_for_score_command() -> None:
         [
             sys.executable,
             "-m",
-            "knoema.cli",
+            "luvoire.cli",
             "score",
             "experiments/50_agent_village/results/sim_log.jsonl",
         ],

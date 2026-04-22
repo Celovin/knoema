@@ -24,7 +24,7 @@ MO rules must be declarative and abstract: create legitimacy cue, request attent
 
 ### Signature elements
 
-No signature behavior should be encoded. Fraud may involve repeated scripts or styles, but reproducing them would create misuse risk. The profile should instead include a "policy teaching" signature: the agent visibly fails when a guardian node, verification cue, or peer check is present. This lets evaluators see how Knoema can model prevention interventions without teaching fraud.
+No signature behavior should be encoded. Fraud may involve repeated scripts or styles, but reproducing them would create misuse risk. The profile should instead include a "policy teaching" signature: the agent visibly fails when a guardian node, verification cue, or peer check is present. This lets evaluators see how Luvoire can model prevention interventions without teaching fraud.
 
 ### Geographic behavior
 

@@ -1,6 +1,6 @@
 # Cross-Framework Benchmark
 
-The Phase 57 benchmark positions Knoema against five adjacent frameworks:
+The Phase 57 benchmark positions Luvoire against five adjacent frameworks:
 AutoGen, CrewAI, LangGraph, Mesa, and NetLogo.
 
 The common scenario is a 5-agent dormitory run over 7 days. The benchmark records:
@@ -12,6 +12,6 @@ The common scenario is a 5-agent dormitory run over 7 days. The benchmark record
 - Code lines needed to configure the scenario.
 - License posture.
 
-Knoema ranks first on Persona Consistency Score and reproducibility in the committed deterministic envelope. Its configuration is also less than half the line count of the AutoGen and CrewAI rows.
+Luvoire ranks first on Persona Consistency Score and reproducibility in the committed deterministic envelope. Its configuration is also less than half the line count of the AutoGen and CrewAI rows.
 
 See `benchmarks/cross_framework/results/summary.md` for the committed table and `benchmarks/cross_framework/run_comparison.py` for the reproducible generator.

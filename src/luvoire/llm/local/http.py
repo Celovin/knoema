@@ -7,7 +7,7 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 from urllib import error, request
 
-from knoema.protocols import Message
+from luvoire.protocols import Message
 
 
 class LocalLLMError(RuntimeError):

@@ -5,9 +5,9 @@ from __future__ import annotations
 import json
 from datetime import datetime
 
-from knoema import Environment, Persona, Personality, Simulator
-from knoema.events import EventDispatcher, EventScheduler
-from knoema.types import WorldEvent
+from luvoire import Environment, Persona, Personality, Simulator
+from luvoire.events import EventDispatcher, EventScheduler
+from luvoire.types import WorldEvent
 
 
 def _agent(agent_id: str) -> Persona:

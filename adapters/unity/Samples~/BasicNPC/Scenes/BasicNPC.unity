@@ -37,7 +37,7 @@ GameObject:
   m_Component:
   - component: {fileID: 100001}
   m_Layer: 0
-  m_Name: Knoema Basic NPC Placeholder
+  m_Name: Luvoire Basic NPC Placeholder
   m_TagString: Untagged
   m_IsActive: 1
 --- !u!4 &100001

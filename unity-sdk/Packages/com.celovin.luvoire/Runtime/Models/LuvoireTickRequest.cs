@@ -1,9 +1,9 @@
 using System;
 
-namespace Knoema.UnitySdk.Models
+namespace Luvoire.UnitySdk.Models
 {
     [Serializable]
-    public sealed class KnoemaTickRequest
+    public sealed class LuvoireTickRequest
     {
         public string session_id = "unity-demo";
         public string agent_id = "guide";

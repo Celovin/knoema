@@ -1,9 +1,9 @@
-package com.celovin.knoema
+package com.celovin.luvoire
 
 class NPCAgent(
     private val agentId: String,
     private val displayName: String,
-    private val client: KnoemaClient,
+    private val client: LuvoireClient,
 ) {
     fun endpoint(): String {
         return client.restUrl("/agents/$agentId")

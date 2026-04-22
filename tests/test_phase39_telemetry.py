@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from knoema.cli import main
-from knoema.telemetry import (
+from luvoire.cli import main
+from luvoire.telemetry import (
     NullTelemetryClient,
     TelemetryClient,
     TelemetrySettings,
@@ -64,8 +64,8 @@ def test_phase39_env_opt_in_creates_anonymous_uuid_only(tmp_path: Path) -> None:
 
     client = build_env_telemetry_client(
         env={
-            "KNOEMA_TELEMETRY": "1",
-            "KNOEMA_TELEMETRY_ENDPOINT": "https://telemetry.invalid/capture",
+            "LUVOIRE_TELEMETRY": "1",
+            "LUVOIRE_TELEMETRY_ENDPOINT": "https://telemetry.invalid/capture",
         },
         transport=transport,
         id_path=id_path,
@@ -119,6 +119,6 @@ def test_phase39_privacy_doc_describes_opt_in_contract() -> None:
     privacy = Path("docs/PRIVACY.md").read_text(encoding="utf-8")
 
     assert "Telemetry is off by default." in privacy
-    assert "KNOEMA_TELEMETRY=1" in privacy
+    assert "LUVOIRE_TELEMETRY=1" in privacy
     assert "anonymous UUID" in privacy
     assert "Prompt content" in privacy

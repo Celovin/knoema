@@ -236,7 +236,7 @@ def render_status_page(
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Knoema Status</title>
+  <title>Luvoire Status</title>
   <style>
     :root {{
       color-scheme: light;
@@ -303,7 +303,7 @@ def render_status_page(
 </head>
 <body>
   <main>
-    <h1>Knoema Status</h1>
+    <h1>Luvoire Status</h1>
     <p class="muted">Last updated {html.escape(generated_at)}. Last deploy time: {html.escape(deploy_time)}.</p>
     <div class="badges" aria-label="Status badges">
       {badges}
@@ -349,7 +349,7 @@ def build_status_page(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build the static Knoema status page.")
+    parser = argparse.ArgumentParser(description="Build the static Luvoire status page.")
     parser.add_argument("--status", type=Path, default=DEFAULT_STATUS_PATH)
     parser.add_argument("--history", type=Path, default=DEFAULT_HISTORY_PATH)
     parser.add_argument("--uptime", type=Path, default=DEFAULT_UPTIME_PATH)

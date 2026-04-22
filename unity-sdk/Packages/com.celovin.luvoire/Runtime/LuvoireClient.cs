@@ -1,25 +1,25 @@
 using System;
 using System.Collections;
 using System.Text;
-using Knoema.UnitySdk.Models;
+using Luvoire.UnitySdk.Models;
 using UnityEngine.Networking;
 
-namespace Knoema.UnitySdk
+namespace Luvoire.UnitySdk
 {
-    public sealed class KnoemaClient
+    public sealed class LuvoireClient
     {
         private readonly string baseUrl;
         private readonly string bearerToken;
 
-        public KnoemaClient(string baseUrl = "http://localhost:8000", string bearerToken = "")
+        public LuvoireClient(string baseUrl = "http://localhost:8000", string bearerToken = "")
         {
             this.baseUrl = string.IsNullOrWhiteSpace(baseUrl) ? "http://localhost:8000" : baseUrl.TrimEnd('/');
             this.bearerToken = bearerToken ?? "";
         }
 
         public IEnumerator TickAsync(
-            KnoemaTickRequest request,
-            Action<KnoemaTickResponse> onCompleted,
+            LuvoireTickRequest request,
+            Action<LuvoireTickResponse> onCompleted,
             Action<string> onError = null
         )
         {
@@ -27,7 +27,7 @@ namespace Knoema.UnitySdk
                 "POST",
                 "/simulate/tick",
                 request,
-                text => onCompleted?.Invoke(UnityEngine.JsonUtility.FromJson<KnoemaTickResponse>(text)),
+                text => onCompleted?.Invoke(UnityEngine.JsonUtility.FromJson<LuvoireTickResponse>(text)),
                 onError
             );
         }
@@ -35,7 +35,7 @@ namespace Knoema.UnitySdk
         public IEnumerator GetMemoryAsync(
             string sessionId,
             string agentId,
-            Action<KnoemaMemoryResponse> onCompleted,
+            Action<LuvoireMemoryResponse> onCompleted,
             Action<string> onError = null
         )
         {
@@ -45,15 +45,15 @@ namespace Knoema.UnitySdk
                 "GET",
                 $"/agent/{safeAgent}/memory?session_id={safeSession}",
                 null,
-                text => onCompleted?.Invoke(UnityEngine.JsonUtility.FromJson<KnoemaMemoryResponse>(text)),
+                text => onCompleted?.Invoke(UnityEngine.JsonUtility.FromJson<LuvoireMemoryResponse>(text)),
                 onError
             );
         }
 
         public IEnumerator PostActionAsync(
             string agentId,
-            KnoemaActionRequest request,
-            Action<KnoemaActionResponse> onCompleted,
+            LuvoireActionRequest request,
+            Action<LuvoireActionResponse> onCompleted,
             Action<string> onError = null
         )
         {
@@ -62,7 +62,7 @@ namespace Knoema.UnitySdk
                 "POST",
                 $"/agent/{safeAgent}/action",
                 request,
-                text => onCompleted?.Invoke(UnityEngine.JsonUtility.FromJson<KnoemaActionResponse>(text)),
+                text => onCompleted?.Invoke(UnityEngine.JsonUtility.FromJson<LuvoireActionResponse>(text)),
                 onError
             );
         }
@@ -96,7 +96,7 @@ namespace Knoema.UnitySdk
             if (HasRequestError(http))
             {
                 var message = string.IsNullOrWhiteSpace(http.error) ? http.downloadHandler.text : http.error;
-                onError?.Invoke(string.IsNullOrWhiteSpace(message) ? "Knoema request failed." : message);
+                onError?.Invoke(string.IsNullOrWhiteSpace(message) ? "Luvoire request failed." : message);
                 yield break;
             }
 

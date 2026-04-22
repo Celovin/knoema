@@ -6,8 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from knoema.metrics.persona_consistency import compute_pcs
-from knoema.metrics.relationship_coherence import compute_rcs
+from luvoire.metrics.persona_consistency import compute_pcs
+from luvoire.metrics.relationship_coherence import compute_rcs
 
 
 def score_log(log_path: str | Path) -> dict[str, Any]:

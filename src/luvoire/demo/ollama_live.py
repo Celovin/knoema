@@ -10,13 +10,13 @@ from datetime import datetime, timedelta
 from time import perf_counter
 from urllib import error, request
 
-from knoema.decision import parse_action_response
-from knoema.environment import Environment
-from knoema.llm import LocalLLMError, OllamaClient
-from knoema.persona import Persona
-from knoema.protocols import Message
-from knoema.simulator import SimulationLogEntry, Simulator
-from knoema.types import Action, Personality, WorldEvent
+from luvoire.decision import parse_action_response
+from luvoire.environment import Environment
+from luvoire.llm import LocalLLMError, OllamaClient
+from luvoire.persona import Persona
+from luvoire.protocols import Message
+from luvoire.simulator import SimulationLogEntry, Simulator
+from luvoire.types import Action, Personality, WorldEvent
 
 DEFAULT_OLLAMA_MODEL = "llama3.1:8b"
 DEFAULT_OLLAMA_SEED = 20260419
@@ -116,14 +116,14 @@ def run_live_ollama_demo(
 
     environment = Environment(
         start_time=datetime(2026, 4, 19, 20, 0),
-        location_path=("Knoema Demo World", "Seoul", "Mapo", "Rooftop Studio"),
+        location_path=("Luvoire Demo World", "Seoul", "Mapo", "Rooftop Studio"),
         conditions={"weather": "clear", "session": "live-demo"},
     )
     personas = _build_personas(seed)
     for persona in personas:
         environment.set_agent_location(
             persona.agent_id,
-            ("Knoema Demo World", "Seoul", "Mapo", "Rooftop Studio", "Table Read"),
+            ("Luvoire Demo World", "Seoul", "Mapo", "Rooftop Studio", "Table Read"),
         )
     simulator = Simulator(
         agents=personas,
@@ -207,7 +207,7 @@ def _schedule_demo_event(simulator: Simulator) -> None:
             timestamp=start + timedelta(minutes=10),
             event_type="demo.table_read",
             participants=[agent.agent_id for agent in simulator.agents],
-            location="Knoema Demo World > Seoul > Mapo > Rooftop Studio > Table Read",
+            location="Luvoire Demo World > Seoul > Mapo > Rooftop Studio > Table Read",
             description="The host asks the five-agent cast to align on one risky moment before recording.",
         )
     )
@@ -241,7 +241,7 @@ def _generate_live_action(
         response,
         agent_id=persona.agent_id,
         timestamp=environment.current_time,
-        location="Knoema Demo World > Seoul > Mapo > Rooftop Studio > Table Read",
+        location="Luvoire Demo World > Seoul > Mapo > Rooftop Studio > Table Read",
     )
     resolved_target = action.target
     if resolved_target not in set(agent_ids) - {persona.agent_id}:

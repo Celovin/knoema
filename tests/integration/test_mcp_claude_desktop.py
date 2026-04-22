@@ -23,9 +23,9 @@ def _send(process: subprocess.Popen[str], payload: dict[str, Any]) -> dict[str, 
 def test_batch_o_stdio_server_handles_claude_desktop_mcp_lifecycle() -> None:
     env = os.environ.copy()
     env["PYTHONPATH"] = "src"
-    env["KNOEMA_SCENARIO_DIR"] = str(Path("playground/scenarios").resolve())
+    env["LUVOIRE_SCENARIO_DIR"] = str(Path("playground/scenarios").resolve())
     process = subprocess.Popen(
-        [sys.executable, "scripts/knoema_mcp_serve.py", "--stdio"],
+        [sys.executable, "scripts/luvoire_mcp_serve.py", "--stdio"],
         cwd=Path.cwd(),
         env=env,
         stdin=subprocess.PIPE,
@@ -47,7 +47,7 @@ def test_batch_o_stdio_server_handles_claude_desktop_mcp_lifecycle() -> None:
                 },
             },
         )
-        assert initialize["result"]["serverInfo"]["name"] == "knoema-engine"
+        assert initialize["result"]["serverInfo"]["name"] == "luvoire-engine"
 
         tools = _send(process, {"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
         names = {tool["name"] for tool in tools["result"]["tools"]}

@@ -13,8 +13,8 @@ from time import sleep
 from typing import Protocol
 from urllib import request
 
-from knoema.observability.metrics import record_webhook_dispatch
-from knoema.safety.audit_log import CommercialAuditLogger, NoOpAuditLog
+from luvoire.observability.metrics import record_webhook_dispatch
+from luvoire.safety.audit_log import CommercialAuditLogger, NoOpAuditLog
 
 WebhookEvent = str
 HttpPoster = Callable[[str, bytes, Mapping[str, str], float], int]
@@ -114,7 +114,7 @@ class WebhookDispatcher:
         )
         headers = {
             "Content-Type": "application/json",
-            "X-Knoema-Signature": sign_payload(self.secret, body),
+            "X-Luvoire-Signature": sign_payload(self.secret, body),
         }
         attempts = 0
         last_status: int | None = None

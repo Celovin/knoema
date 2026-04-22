@@ -1,8 +1,8 @@
 const links = [
-  ["GitHub", "https://github.com/Celovin/knoema"],
-  ["Playground", "https://huggingface.co/spaces/celovin/knoema-playground"],
-  ["Formal Report", "https://github.com/Celovin/knoema/blob/main/benchmarks/formal_report/report.pdf"],
-  ["Discord Kit", "https://github.com/Celovin/knoema/blob/main/docs/discord_community.md"],
+  ["GitHub", "https://github.com/Celovin/luvoire"],
+  ["Playground", "https://huggingface.co/spaces/celovin/luvoire-playground"],
+  ["Formal Report", "https://github.com/Celovin/luvoire/blob/main/benchmarks/formal_report/report.pdf"],
+  ["Discord Kit", "https://github.com/Celovin/luvoire/blob/main/docs/discord_community.md"],
 ];
 
 export function CTA() {

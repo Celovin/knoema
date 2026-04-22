@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from statistics import mean
 from typing import Literal
 
-from knoema.types import PERSONALITY_NEUTRAL_DEFAULTS
+from luvoire.types import PERSONALITY_NEUTRAL_DEFAULTS
 
 HexacoDomain = Literal[
     "honesty_humility",

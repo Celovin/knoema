@@ -1,6 +1,6 @@
 """Planning modules for goal-directed agents."""
 
-from knoema.planning.hierarchical import (
+from luvoire.planning.hierarchical import (
     AgentContext,
     HierarchicalPlanner,
     Task,

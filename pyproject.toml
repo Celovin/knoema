@@ -3,14 +3,15 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "knoema-engine"
-version = "0.2.0"
-description = "LLM-based multi-agent social simulation engine for games, public safety, and academic research."
+name = "luvoire-engine"
+version = "0.3.0"
+description = "Luvoire: deterministic multi-agent simulation engine with replay, memory stack, and persona library."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
 authors = [{ name = "Celovin", email = "hello@celovin.com" }]
 keywords = [
+    "luvoire",
     "llm",
     "multi-agent",
     "simulation",
@@ -129,19 +130,19 @@ bots = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Celovin/knoema"
-Repository = "https://github.com/Celovin/knoema"
-Issues = "https://github.com/Celovin/knoema/issues"
+Homepage = "https://github.com/Celovin/luvoire"
+Repository = "https://github.com/Celovin/luvoire"
+Issues = "https://github.com/Celovin/luvoire/issues"
 
 [project.scripts]
-knoema = "knoema.cli:main"
-knoema-verify = "knoema.reproducibility:main"
-knoema-mcp = "knoema_mcp.server:main"
-knoema-discord-bot = "knoema_bots.discord:main"
-knoema-slack-bot = "knoema_bots.slack:main"
+luvoire = "luvoire.cli:main"
+luvoire-verify = "luvoire.reproducibility:main"
+luvoire-mcp = "luvoire_mcp.server:main"
+luvoire-discord-bot = "luvoire_bots.discord:main"
+luvoire-slack-bot = "luvoire_bots.slack:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/knoema", "src/knoema_mcp", "src/knoema_bots"]
+packages = ["src/luvoire", "src/luvoire_mcp", "src/luvoire_bots", "src/luvoire", "src/luvoire_compat"]
 
 [tool.ruff]
 line-length = 100
@@ -175,11 +176,11 @@ disallow_untyped_defs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-addopts = "-v --cov=knoema --cov-report=term-missing"
+addopts = "-v --cov=luvoire --cov-report=term-missing"
 markers = [
     "slow: opt-in tests that require live external services or large downloads",
 ]
 
 [tool.coverage.run]
-source = ["src/knoema"]
+source = ["src/luvoire"]
 omit = ["tests/*"]

@@ -1,4 +1,4 @@
-"""Run the Knoema deterministic simulation benchmark."""
+"""Run the Luvoire deterministic simulation benchmark."""
 
 from __future__ import annotations
 
@@ -6,11 +6,11 @@ import argparse
 import json
 from pathlib import Path
 
-from knoema.benchmark import BenchmarkConfig, format_markdown_report, run_knoema_benchmark
+from luvoire.benchmark import BenchmarkConfig, format_markdown_report, run_luvoire_benchmark
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run the Knoema village benchmark.")
+    parser = argparse.ArgumentParser(description="Run the Luvoire village benchmark.")
     parser.add_argument("--agents", type=int, default=10, help="Number of simulated agents.")
     parser.add_argument("--duration-days", type=int, default=1, help="Simulation duration in days.")
     parser.add_argument("--tick-minutes", type=int, default=60, help="Minutes per simulation tick.")
@@ -39,7 +39,7 @@ def main() -> None:
         repetitions=args.repetitions,
         scenario_name=f"village-{args.agents}-agents-{args.tick_minutes}m",
     )
-    report = run_knoema_benchmark(config)
+    report = run_luvoire_benchmark(config)
     json_text = json.dumps(report.to_json_dict(), indent=2)
     markdown_text = format_markdown_report(report)
 

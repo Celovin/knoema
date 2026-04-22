@@ -2,10 +2,10 @@
   "packages": {
     ".": {
       "release-type": "python",
-      "package-name": "knoema-engine",
+      "package-name": "luvoire-engine",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
-        "src/knoema/__init__.py"
+        "src/luvoire/__init__.py"
       ]
     }
   }

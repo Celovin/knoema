@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path.cwd()))
 
 playground_app = importlib.import_module("playground.app")
 playground_simulation = importlib.import_module("playground.simulation")
-research_statistics = importlib.import_module("knoema.research.statistics")
+research_statistics = importlib.import_module("luvoire.research.statistics")
 
 
 def test_subtask36_batch_jsonl_emits_seed_tick_rows() -> None:

@@ -1,4 +1,4 @@
-"""Knoema Streamlit dashboard."""
+"""Luvoire Streamlit dashboard."""
 
 from __future__ import annotations
 
@@ -29,8 +29,8 @@ SAMPLE_LOG = Path(__file__).with_name("sample_simulation.jsonl")
 
 
 def main() -> None:
-    st.set_page_config(page_title="Knoema Dashboard", layout="wide")
-    st.title("Knoema Dashboard")
+    st.set_page_config(page_title="Luvoire Dashboard", layout="wide")
+    st.title("Luvoire Dashboard")
 
     records = _load_records()
     rows = normalize_log_records(records) if records else []

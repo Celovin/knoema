@@ -6,11 +6,11 @@ from pathlib import Path
 
 import yaml
 
-import knoema
-from knoema.api.server import create_app
+import luvoire
+from luvoire.api.server import create_app
 
-RELEASE_VERSION = "0.2.0"
-RELEASE_TAG = "v0.2.0"
+RELEASE_VERSION = "0.3.0"
+RELEASE_TAG = "v0.3.0"
 
 
 def test_phase62_package_and_metadata_versions_are_synchronized() -> None:
@@ -20,7 +20,7 @@ def test_phase62_package_and_metadata_versions_are_synchronized() -> None:
     manifest = json.loads(Path(".release-please-manifest.json").read_text(encoding="utf-8"))
 
     assert pyproject["project"]["version"] == RELEASE_VERSION
-    assert knoema.__version__ == RELEASE_VERSION
+    assert luvoire.__version__ == RELEASE_VERSION
     assert create_app().version == RELEASE_VERSION
     assert citation["version"] == RELEASE_VERSION
     assert zenodo["version"] == RELEASE_VERSION
@@ -54,5 +54,5 @@ def test_phase62_release_docs_surface_current_version_and_doi() -> None:
     assert f"git tag {RELEASE_TAG}" in release
     assert f"Release | `{RELEASE_TAG}`" in indexing
     assert "v0.2.0 DOI | Wired: `10.5281/zenodo.19645166`" in indexing
-    assert r"\textbf{Software version:} \knoemaversion" in paper
-    assert r"\newcommand{\knoemaversion}{0.2.0}" in paper
+    assert r"\textbf{Software version:} \luvoireversion" in paper
+    assert r"\newcommand{\luvoireversion}{0.3.0}" in paper

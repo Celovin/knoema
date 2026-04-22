@@ -43,7 +43,7 @@ def test_subtask13_hint_renders_above_run_button_and_updates_with_language() -> 
         index
         for index, child in enumerate(app.children)
         if type(child).__name__ == "Markdown"
-        and "knoema-hint" in (getattr(child, "elem_classes", None) or [])
+        and "luvoire-hint" in (getattr(child, "elem_classes", None) or [])
     )
     run_button_index = next(
         index

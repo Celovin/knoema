@@ -1,5 +1,5 @@
 extends RefCounted
-class_name KnoemaGameSession
+class_name LuvoireGameSession
 
 var game_id: String
 var provider: String = "local"

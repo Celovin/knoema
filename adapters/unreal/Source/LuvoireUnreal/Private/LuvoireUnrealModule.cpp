@@ -1,7 +1,7 @@
 #include "Modules/ModuleManager.h"
 
-class FKnoemaUnrealModule : public IModuleInterface
+class FLuvoireUnrealModule : public IModuleInterface
 {
 };
 
-IMPLEMENT_MODULE(FKnoemaUnrealModule, KnoemaUnreal)
+IMPLEMENT_MODULE(FLuvoireUnrealModule, LuvoireUnreal)

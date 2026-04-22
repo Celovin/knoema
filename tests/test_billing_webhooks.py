@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from knoema.billing.webhooks import (
+from luvoire.billing.webhooks import (
     WebhookDispatcher,
     canonical_payload,
     sign_payload,
@@ -45,7 +45,7 @@ def test_webhook_retry_behavior_with_mocked_http() -> None:
     assert result.attempts == 3
     assert sleeps == [1.0, 4.0]
     assert all(call[3] == 5.0 for call in calls)
-    assert calls[0][2]["X-Knoema-Signature"].startswith("sha256=")
+    assert calls[0][2]["X-Luvoire-Signature"].startswith("sha256=")
 
 
 def test_dispatch_is_queue_based_and_non_blocking() -> None:

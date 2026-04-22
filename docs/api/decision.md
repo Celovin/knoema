@@ -2,8 +2,8 @@
 
 The decision layer turns persona, memory, relationship, environment, emotion, and optional theory-of-mind context into an action.
 
-::: knoema.decision.DecisionEngine
+::: luvoire.decision.DecisionEngine
 
-::: knoema.decision.decide
+::: luvoire.decision.decide
 
-::: knoema.types.Action
+::: luvoire.types.Action

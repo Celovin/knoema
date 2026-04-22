@@ -6,7 +6,7 @@ scene:
       components:
         - type: Transform
           position: [0, 0, 0]
-        - type: KnoemaNPC
+        - type: LuvoireNPC
           base_url: http://localhost:8000
           session_id: unity-demo
           agent_id: guide

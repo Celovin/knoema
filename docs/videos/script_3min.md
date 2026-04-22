@@ -6,7 +6,7 @@ Goal: professor meeting walkthrough focused on research credibility and visible 
 
 | Time | Screen | Narration |
 | --- | --- | --- |
-| 0:00-0:15 | README top and badges | Knoema is a public MIT-licensed engine for LLM-based multi-agent social simulation. It is not a prediction or profiling tool; the public-safety examples are fictional replay research demos. |
+| 0:00-0:15 | README top and badges | Luvoire is a public MIT-licensed engine for LLM-based multi-agent social simulation. It is not a prediction or profiling tool; the public-safety examples are fictional replay research demos. |
 | 0:15-0:35 | Architecture diagram | The runtime combines persona, short-term memory, long-term retrieval, relationship graph, environment context, emotion state, and LLM decisions. |
 | 0:35-1:05 | Playground, replay-only Dorm scenario | The browser demo runs without an API key. Select Dorm: two agents, keep defaults, and run a short deterministic replay. |
 | 1:05-1:30 | Timeline and JSONL output | Every simulation step is exported as JSONL, so a reviewer can replay, audit, or analyze the run instead of relying on a screenshot. |
@@ -19,9 +19,9 @@ Goal: professor meeting walkthrough focused on research credibility and visible 
 ## Demo Commands
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 .venv\Scripts\python -m pytest
-knoema run examples\cli_dorm.yaml --json
+luvoire run examples\cli_dorm.yaml --json
 ```
 
 ## Capture Notes

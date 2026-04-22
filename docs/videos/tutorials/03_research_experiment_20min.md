@@ -25,7 +25,7 @@ Scenario DSL과 CLI를 사용해 synthetic scenario를 실행하고, JSONL log, 
 Screen: `docs/dsl/tutorial.md`.
 
 Narration:
-이번 영상은 public-safety style scenario를 다루지만, 실제 개인이나 실제 사건을 입력하지 않습니다. Knoema의 DSL은 fictional, synthetic, non-identifying replay를 위한 도구입니다. 사람을 점수화하거나 미래 사건을 단정하는 용도가 아닙니다.
+이번 영상은 public-safety style scenario를 다루지만, 실제 개인이나 실제 사건을 입력하지 않습니다. Luvoire의 DSL은 fictional, synthetic, non-identifying replay를 위한 도구입니다. 사람을 점수화하거나 미래 사건을 단정하는 용도가 아닙니다.
 
 ### 01:10 - 04:30 Scenario DSL Structure
 
@@ -44,8 +44,8 @@ Screen: Terminal.
 Commands:
 
 ```bash
-knoema run examples/scenarios/01_shopkeeper_winter_crime.yaml --dry-run
-knoema run examples/scenarios/01_shopkeeper_winter_crime.yaml --output runs/research_demo.jsonl --json
+luvoire run examples/scenarios/01_shopkeeper_winter_crime.yaml --dry-run
+luvoire run examples/scenarios/01_shopkeeper_winter_crime.yaml --output runs/research_demo.jsonl --json
 ```
 
 Narration:
@@ -63,7 +63,7 @@ dashboard에서 agent별 행동, relationship edges, playback window를 확인�
 Screen: `tests/reproducibility/`.
 
 Narration:
-Knoema는 same-seed deterministic runs, seed propagation, config serialization, JSONL replay를 테스트합니다. 연구용 demo는 실행 결과보다 재실행 조건이 더 중요합니다.
+Luvoire는 same-seed deterministic runs, seed propagation, config serialization, JSONL replay를 테스트합니다. 연구용 demo는 실행 결과보다 재실행 조건이 더 중요합니다.
 
 Commands:
 
@@ -90,15 +90,15 @@ Narration:
 Screen: Reproducibility report.
 
 Narration:
-Knoema의 연구 흐름은 간단합니다. synthetic scenario를 쓰고, guardrail을 확인하고, seed와 config를 고정하고, JSONL과 report를 함께 남깁니다.
+Luvoire의 연구 흐름은 간단합니다. synthetic scenario를 쓰고, guardrail을 확인하고, seed와 config를 고정하고, JSONL과 report를 함께 남깁니다.
 
 ## YouTube Description
 
-Knoema Scenario DSL과 CLI로 재현 가능한 연구 실험을 만드는 20분 튜토리얼입니다. synthetic replay, guardrail, JSONL log, dashboard inspection, reproducibility tests, benchmark report를 한 흐름으로 다룹니다.
+Luvoire Scenario DSL과 CLI로 재현 가능한 연구 실험을 만드는 20분 튜토리얼입니다. synthetic replay, guardrail, JSONL log, dashboard inspection, reproducibility tests, benchmark report를 한 흐름으로 다룹니다.
 
 Links:
-- GitHub: https://github.com/Celovin/knoema
-- Scenario DSL tutorial: https://github.com/Celovin/knoema/blob/main/docs/dsl/tutorial.md
-- Reproducibility report: https://github.com/Celovin/knoema/blob/main/docs/reports/reproducibility.md
-- Formal benchmark report: https://github.com/Celovin/knoema/blob/main/benchmarks/formal_report/report.pdf
+- GitHub: https://github.com/Celovin/luvoire
+- Scenario DSL tutorial: https://github.com/Celovin/luvoire/blob/main/docs/dsl/tutorial.md
+- Reproducibility report: https://github.com/Celovin/luvoire/blob/main/docs/reports/reproducibility.md
+- Formal benchmark report: https://github.com/Celovin/luvoire/blob/main/benchmarks/formal_report/report.pdf
 

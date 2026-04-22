@@ -1,34 +1,34 @@
 # Unity SDK
 
-The preview Unity SDK packages a small HTTP client, one `KnoemaNPC` component, DTO models, and an
+The preview Unity SDK packages a small HTTP client, one `LuvoireNPC` component, DTO models, and an
 Editor settings window. It is designed for Unity 2022.3 LTS and the FastAPI runtime exposed by
-`knoema.api.server`.
+`luvoire.api.server`.
 
 ## Install
 
 Install from Unity Package Manager with a Git URL:
 
 ```text
-https://github.com/Celovin/knoema.git?path=unity-sdk/Packages/com.celovin.knoema
+https://github.com/Celovin/luvoire.git?path=unity-sdk/Packages/com.celovin.luvoire
 ```
 
-For a manual install, copy `unity-sdk/Packages/com.celovin.knoema` into the host game's `Packages`
+For a manual install, copy `unity-sdk/Packages/com.celovin.luvoire` into the host game's `Packages`
 directory.
 
 ## Start The Runtime
 
 ```bash
 pip install -e ".[api]"
-uvicorn knoema.api.server:app --host 127.0.0.1 --port 8000
+uvicorn luvoire.api.server:app --host 127.0.0.1 --port 8000
 ```
 
-Set `KNOEMA_API_KEY` only when you want bearer-token protection. If it is set, pass the same token to
-`KnoemaClient` or the `KnoemaNPC` component.
+Set `LUVOIRE_API_KEY` only when you want bearer-token protection. If it is set, pass the same token to
+`LuvoireClient` or the `LuvoireNPC` component.
 
 ## Minimum Scene
 
 1. Add a GameObject named `Guide`.
-2. Attach `KnoemaNPC`.
+2. Attach `LuvoireNPC`.
 3. Set `Base URL` to `http://localhost:8000`.
 4. Set `Session ID` to `unity-demo`.
 5. Set `Agent ID` to `guide`.
@@ -39,7 +39,7 @@ can validate the sample without a Unity editor.
 
 ## HTTP Contract
 
-`KnoemaClient.TickAsync(...)` sends:
+`LuvoireClient.TickAsync(...)` sends:
 
 ```json
 {

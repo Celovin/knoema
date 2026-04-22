@@ -6,9 +6,9 @@ from typing import cast
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
-from knoema.api.rate_limit import enforce_rate_limit
-from knoema.api.schemas import AgentListResponse, AgentSummary, MemoryItem, MemoryListResponse
-from knoema.api.service import SimulationNotFoundError, SimulationService
+from luvoire.api.rate_limit import enforce_rate_limit
+from luvoire.api.schemas import AgentListResponse, AgentSummary, MemoryItem, MemoryListResponse
+from luvoire.api.service import SimulationNotFoundError, SimulationService
 
 router = APIRouter(
     prefix="/simulations",

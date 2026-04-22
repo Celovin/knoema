@@ -27,6 +27,6 @@ func _send_message(text: String) -> void:
 		return
 	input.text = ""
 	history.append_text("\n[b]Player:[/b] %s" % clean_text)
-	var response: String = await KnoemaClient.ask(npc_agent_id, clean_text)
+	var response: String = await LuvoireClient.ask(npc_agent_id, clean_text)
 	npc_line.text = "School Nurse: %s" % response
 	history.append_text("\n[b]School Nurse:[/b] %s" % response)

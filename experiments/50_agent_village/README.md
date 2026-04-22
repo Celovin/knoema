@@ -1,11 +1,11 @@
 # 50-Agent Village Experiment
 
-Phase 19 scales the Knoema demo from small notebooks to a deterministic 50-agent, one-week village run.
+Phase 19 scales the Luvoire demo from small notebooks to a deterministic 50-agent, one-week village run.
 
 ## Run
 
 ```powershell
-cd C:\Users\admin\Projects\knoema
+cd C:\Users\admin\Projects\luvoire
 .venv\Scripts\python experiments\50_agent_village\run.py
 ```
 

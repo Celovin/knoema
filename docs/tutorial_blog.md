@@ -1,10 +1,10 @@
-# Build a Persistent-Agent Simulation with Knoema
+# Build a Persistent-Agent Simulation with Luvoire
 
-This is a publish-ready tutorial draft for Medium and velog cross-posting. It uses only fictional, synthetic examples and commands that work from a local Knoema checkout.
+This is a publish-ready tutorial draft for Medium and velog cross-posting. It uses only fictional, synthetic examples and commands that work from a local Luvoire checkout.
 
 ## Why This Exists
 
-Most LLM agent demos stop at one conversation. Knoema focuses on longer-running social simulations where agents keep memory, relationships, emotion state, and environmental context across ticks.
+Most LLM agent demos stop at one conversation. Luvoire focuses on longer-running social simulations where agents keep memory, relationships, emotion state, and environmental context across ticks.
 
 The MVP is intentionally small:
 
@@ -17,8 +17,8 @@ The MVP is intentionally small:
 ## 1. Install From Source
 
 ```bash
-git clone https://github.com/Celovin/knoema.git
-cd knoema
+git clone https://github.com/Celovin/luvoire.git
+cd luvoire
 python -m venv .venv
 .venv/Scripts/pip install -e ".[dev,dashboard]"
 ```
@@ -27,10 +27,10 @@ On macOS or Linux, use `.venv/bin/pip` instead of `.venv/Scripts/pip`.
 
 ## 2. Run a YAML Simulation
 
-Knoema ships with a deterministic dormitory scenario:
+Luvoire ships with a deterministic dormitory scenario:
 
 ```bash
-knoema run examples/cli_dorm.yaml --output runs/cli_dorm.jsonl --json
+luvoire run examples/cli_dorm.yaml --output runs/cli_dorm.jsonl --json
 ```
 
 The CLI validates the config, creates two fictional agents, runs a one-day simulation, and writes JSONL logs. It uses a local deterministic client by default, so no API key is required.
@@ -38,7 +38,7 @@ The CLI validates the config, creates two fictional agents, runs a one-day simul
 Use `--dry-run` before handing a scenario to another researcher or developer:
 
 ```bash
-knoema run examples/cli_dorm.yaml --dry-run --json
+luvoire run examples/cli_dorm.yaml --dry-run --json
 ```
 
 ## 3. Inspect Logs in the Dashboard
@@ -66,7 +66,7 @@ results = store.retrieve("shared study routine", k=5)
 For analysis, use scored retrieval:
 
 ```python
-from knoema import RetrievalWeights
+from luvoire import RetrievalWeights
 
 scored = store.retrieve_with_scores(
     "shared study routine",
@@ -85,7 +85,7 @@ This keeps production code simple while exposing why a memory was selected durin
 The decision prompt layer supports English, Korean, Japanese, and Chinese while keeping the action JSON schema stable.
 
 ```python
-from knoema import DecisionEngine, LocalClient
+from luvoire import DecisionEngine, LocalClient
 
 engine = DecisionEngine(
     LocalClient(lambda messages: '{"action_type": "observe", "target": null, "content": "notes the routine."}'),
@@ -123,7 +123,7 @@ Keep outputs in `runs/`, `logs/`, or `tmp/`; those paths are ignored by git.
 
 ## Links
 
-- Repository: `https://github.com/Celovin/knoema`
+- Repository: `https://github.com/Celovin/luvoire`
 - CLI docs: `docs/cli.md`
 - Prompt docs: `docs/prompts.md`
 - Dashboard docs: `dashboard/README.md`

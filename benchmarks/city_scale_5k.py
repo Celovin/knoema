@@ -8,7 +8,7 @@ import json
 import statistics
 from pathlib import Path
 
-from knoema.scaling import CityScaleConfig, CityScaleRunner
+from luvoire.scaling import CityScaleConfig, CityScaleRunner
 
 REPORT_PATH = Path("benchmarks/city_scale_5k_report.md")
 
@@ -100,7 +100,7 @@ def _summary_payload(
         },
         "comparison": [
             {
-                "framework": "Knoema",
+                "framework": "Luvoire",
                 "status": "measured",
                 "agents": args.agents,
                 "ticks": args.ticks,

@@ -5,9 +5,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Game Demos | Knoema Engine",
+  title: "Game Demos | Luvoire",
   description:
-    "Embedded Godot and Unity tavern demos for a replay-only Knoema NPC interaction loop.",
+    "Embedded Godot and Unity tavern demos for a replay-only Luvoire NPC interaction loop.",
   alternates: {
     canonical: "/game-demos",
   },

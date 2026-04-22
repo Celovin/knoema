@@ -11,9 +11,9 @@ from typing import Any
 import msgpack  # type: ignore[import-untyped]
 import yaml
 
-from knoema.persona.nemotron_loader import NemotronPersonaSource
-from knoema.scaling import CityScaleConfig, CityScaleRunner
-from knoema.scaling.city_scale import replay_timestamp
+from luvoire.persona.nemotron_loader import NemotronPersonaSource
+from luvoire.scaling import CityScaleConfig, CityScaleRunner
+from luvoire.scaling.city_scale import replay_timestamp
 
 REPLAY_DIR = Path(__file__).resolve().parent
 NEMOTRON_REPO_ID = "nvidia/Nemotron-Personas-Korea"
@@ -21,7 +21,7 @@ NEMOTRON_DATASET_REVISION = "0381f03a403df78a7998000f8b11705635b654fd"
 NEMOTRON_FIXTURE_PATH = (
     Path(__file__).resolve().parents[2]
     / "src"
-    / "knoema"
+    / "luvoire"
     / "persona"
     / "fixtures"
     / "nemotron_sample_512.jsonl"

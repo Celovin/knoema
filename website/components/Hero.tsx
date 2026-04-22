@@ -16,7 +16,7 @@ export function Hero() {
         src="/og-image.png"
       />
       <nav className="site-nav" aria-label="Primary navigation">
-        <Link href="/">Knoema</Link>
+        <Link href="/">Luvoire</Link>
         <div>
           <Link href="/docs">Docs</Link>
           <Link href="/research">Research</Link>
@@ -32,8 +32,8 @@ export function Hero() {
           the same memory, relationship, and event runtime.
         </p>
         <div className="hero-actions" aria-label="Primary actions">
-          <a href="https://github.com/Celovin/knoema">GitHub</a>
-          <a href="https://huggingface.co/spaces/celovin/knoema-playground">Playground</a>
+          <a href="https://github.com/Celovin/luvoire">GitHub</a>
+          <a href="https://huggingface.co/spaces/celovin/luvoire-playground">Playground</a>
         </div>
         <ul className="proof-list" aria-label="Project proof points">
           {proofItems.map((item) => (

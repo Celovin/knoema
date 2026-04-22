@@ -1,8 +1,8 @@
-using Knoema.Unity;
+using Luvoire.Unity;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Knoema.Unity.Samples
+namespace Luvoire.Unity.Samples
 {
     public sealed class TavernDemo : MonoBehaviour
     {

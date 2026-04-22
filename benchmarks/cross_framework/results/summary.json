@@ -3,7 +3,7 @@
   "row_count": 6,
   "rows": [
     {
-      "framework": "Knoema",
+      "framework": "Luvoire",
       "kind": "persistent social simulation",
       "license": "MIT",
       "code_lines_to_configure": 34,
@@ -64,9 +64,9 @@
     }
   ],
   "acceptance": {
-    "knoema_first_in_persona_consistency": true,
-    "knoema_first_in_reproducibility": true,
-    "knoema_code_lines_at_most_half_autogen": true,
-    "knoema_code_lines_at_most_half_crewai": true
+    "luvoire_first_in_persona_consistency": true,
+    "luvoire_first_in_reproducibility": true,
+    "luvoire_code_lines_at_most_half_autogen": true,
+    "luvoire_code_lines_at_most_half_crewai": true
   }
 }

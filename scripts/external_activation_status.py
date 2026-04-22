@@ -13,9 +13,9 @@ from typing import Any, Protocol
 
 GITHUB_OWNER = "Celovin"
 HF_NAMESPACE = "celovin"
-REPO = "knoema"
+REPO = "luvoire"
 FULL_REPO = f"{GITHUB_OWNER}/{REPO}"
-TARGET_SPACE = f"{HF_NAMESPACE}/knoema-playground"
+TARGET_SPACE = f"{HF_NAMESPACE}/luvoire-playground"
 HF_ENV_TOKEN_NAMES = ("HF_TOKEN", "HUGGINGFACE_HUB_TOKEN", "HUGGING_FACE_HUB_TOKEN")
 VERCEL_APPDATA_AUTH_PATH = Path("com.vercel.cli") / "Data" / "auth.json"
 
@@ -346,7 +346,7 @@ def collect_external_activation_status(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Report current external activation readiness for Knoema."
+        description="Report current external activation readiness for Luvoire."
     )
     parser.add_argument(
         "--fail-on-blockers",

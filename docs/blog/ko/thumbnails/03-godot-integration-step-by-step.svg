@@ -5,6 +5,6 @@
   <path d="M550 314h100" stroke="#a83225" stroke-width="14" />
   <path d="M636 280l42 34-42 34z" fill="#a83225" />
   <text x="310" y="300" fill="#c8dc58" font-family="Georgia, serif" font-size="84" font-weight="800" text-anchor="middle">Godot</text>
-  <text x="890" y="300" fill="#0c6b4d" font-family="Georgia, serif" font-size="84" font-weight="800" text-anchor="middle">Knoema</text>
+  <text x="890" y="300" fill="#0c6b4d" font-family="Georgia, serif" font-size="84" font-weight="800" text-anchor="middle">Luvoire</text>
   <text x="600" y="565" fill="#10231b" font-family="Segoe UI, sans-serif" font-size="34" font-weight="700" text-anchor="middle">NPC response contracts without engine lock-in</text>
 </svg>

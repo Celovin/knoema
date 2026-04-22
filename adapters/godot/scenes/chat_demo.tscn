@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://knoema_chat_demo"]
+[gd_scene load_steps=2 format=3 uid="uid://luvoire_chat_demo"]
 
 [ext_resource type="Script" path="res://scripts/npc.gd" id="1_npc"]
 
@@ -27,7 +27,7 @@ theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Panel/Layout"]
 layout_mode = 2
-text = "Knoema NPC Chat Demo"
+text = "Luvoire NPC Chat Demo"
 
 [node name="NpcLine" type="Label" parent="Panel/Layout"]
 unique_name_in_owner = true

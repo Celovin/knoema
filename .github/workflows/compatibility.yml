@@ -48,7 +48,7 @@ jobs:
           python -m pip install -e ".[dev]"
 
       - name: Import smoke
-        run: python -c "import knoema; print(knoema.__version__)"
+        run: python -c "import luvoire; print(luvoire.__version__)"
 
       - name: Cross-platform smoke tests
         run: pytest tests/test_version.py tests/test_phase1_types.py --no-cov -q

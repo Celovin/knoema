@@ -3,7 +3,7 @@ from __future__ import annotations
 from decimal import Decimal
 from pathlib import Path
 
-from knoema.billing.gateway import LLMGateway, UsageMeter
+from luvoire.billing.gateway import LLMGateway, UsageMeter
 
 
 class MockLiteLLM:
@@ -19,7 +19,7 @@ class MockLiteLLM:
         }
 
 
-def test_byo_key_records_zero_knoema_side_cost(tmp_path: Path) -> None:
+def test_byo_key_records_zero_luvoire_side_cost(tmp_path: Path) -> None:
     client = MockLiteLLM()
     gateway = LLMGateway(UsageMeter(tmp_path), completion_client=client)
 

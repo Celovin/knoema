@@ -11,26 +11,26 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Literal
 
-from knoema.cognition import Monologue, MonologueGenerator, SocialLearner
-from knoema.decision import DecisionEngine
-from knoema.emotion import EmotionState
-from knoema.environment import Environment, EnvironmentContext
-from knoema.events import EventDispatcher, EventScheduler
-from knoema.game import (
+from luvoire.cognition import Monologue, MonologueGenerator, SocialLearner
+from luvoire.decision import DecisionEngine
+from luvoire.emotion import EmotionState
+from luvoire.environment import Environment, EnvironmentContext
+from luvoire.events import EventDispatcher, EventScheduler
+from luvoire.game import (
     RoutineEntry,
     active_routine_entry,
     apply_faction_action,
     apply_inventory_action,
 )
-from knoema.llm import LocalClient
-from knoema.memory import ShortTermMemoryBuffer, SQLiteFaissMemoryStore
-from knoema.persona import Persona
-from knoema.planning import AgentContext, HierarchicalPlanner, Task, WorldState
-from knoema.prompts import PromptLanguage, normalize_prompt_language
-from knoema.protocols import LLMClient
-from knoema.relationship import Relationship, RelationshipGraph
-from knoema.theory_of_mind import TheoryOfMindEngine
-from knoema.types import Action, Emotion, Memory, WorldEvent
+from luvoire.llm import LocalClient
+from luvoire.memory import ShortTermMemoryBuffer, SQLiteFaissMemoryStore
+from luvoire.persona import Persona
+from luvoire.planning import AgentContext, HierarchicalPlanner, Task, WorldState
+from luvoire.prompts import PromptLanguage, normalize_prompt_language
+from luvoire.protocols import LLMClient
+from luvoire.relationship import Relationship, RelationshipGraph
+from luvoire.theory_of_mind import TheoryOfMindEngine
+from luvoire.types import Action, Emotion, Memory, WorldEvent
 
 
 @dataclass(slots=True)

@@ -7,12 +7,12 @@ from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from knoema.memory.retrieval_benchmark import (
+from luvoire.memory.retrieval_benchmark import (
     MemoryBenchmarkCase,
     MemoryBenchmarkQuery,
     run_memory_benchmark_cases,
 )
-from knoema.types import Memory
+from luvoire.types import Memory
 
 
 @dataclass(frozen=True, slots=True)

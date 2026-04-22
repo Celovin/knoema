@@ -1,11 +1,11 @@
 """Distributed execution helpers for large deterministic simulations."""
 
-from knoema.distributed.ray_executor import (
+from luvoire.distributed.ray_executor import (
     BackendRunSummary,
     DistributedSimulationConfig,
     RayExecutor,
 )
-from knoema.distributed.sharding import (
+from luvoire.distributed.sharding import (
     Shard,
     ShardPlan,
     detect_hot_shards,

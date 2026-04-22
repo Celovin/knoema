@@ -4,12 +4,12 @@ Phase 51 adds an opt-in hierarchical task network surface for agents that need m
 
 ## Background
 
-Hierarchical Task Network planning decomposes a high-level goal into smaller tasks that can be selected, completed, or replanned. Knoema follows the practical HTN shape associated with Erol, Hendler, and Nau's 1994 work, but keeps the first implementation deterministic and inspectable rather than provider-generated.
+Hierarchical Task Network planning decomposes a high-level goal into smaller tasks that can be selected, completed, or replanned. Luvoire follows the practical HTN shape associated with Erol, Hendler, and Nau's 1994 work, but keeps the first implementation deterministic and inspectable rather than provider-generated.
 
 ## API
 
 ```python
-from knoema import AgentContext, HierarchicalPlanner, WorldState
+from luvoire import AgentContext, HierarchicalPlanner, WorldState
 
 planner = HierarchicalPlanner(default_depth=3)
 tasks = planner.decompose(
@@ -28,7 +28,7 @@ if next_task is not None:
 ## Persona Opt-in
 
 ```python
-from knoema import Persona, Personality
+from luvoire import Persona, Personality
 
 persona = Persona(
     agent_id="researcher",

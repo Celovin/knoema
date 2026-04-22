@@ -11,7 +11,7 @@ from fastapi import FastAPI, Request
 from starlette.middleware.base import RequestResponseEndpoint
 from starlette.responses import Response
 
-from knoema.billing.tiers import TierName
+from luvoire.billing.tiers import TierName
 
 
 @dataclass(slots=True)
@@ -37,37 +37,37 @@ def setup_metrics(app: FastAPI, *, enabled: bool) -> bool:
     state = MetricsState(
         registry=registry,
         requests_total=prometheus.Counter(
-            "knoema_requests_total",
-            "HTTP requests served by the Knoema API.",
+            "luvoire_requests_total",
+            "HTTP requests served by the Luvoire API.",
             ("route", "method", "status", "tier"),
             registry=registry,
         ),
         request_duration=prometheus.Histogram(
-            "knoema_request_duration_seconds",
+            "luvoire_request_duration_seconds",
             "HTTP request duration in seconds.",
             ("route",),
             registry=registry,
         ),
         billing_tokens=prometheus.Counter(
-            "knoema_billing_tokens_total",
+            "luvoire_billing_tokens_total",
             "Billing token usage by hashed tenant, direction, and tier.",
             ("tenant_id_hash", "direction", "tier"),
             registry=registry,
         ),
         webhook_dispatch_total=prometheus.Counter(
-            "knoema_webhook_dispatch_total",
+            "luvoire_webhook_dispatch_total",
             "Webhook dispatch attempts by status.",
             ("status",),
             registry=registry,
         ),
         rate_limit_hits=prometheus.Counter(
-            "knoema_rate_limit_hits_total",
+            "luvoire_rate_limit_hits_total",
             "Tenant tier rate-limit hits.",
             ("tier",),
             registry=registry,
         ),
     )
-    app.state.knoema_metrics = state
+    app.state.luvoire_metrics = state
     _set_active_metrics(state)
 
     @app.middleware("http")
@@ -167,7 +167,7 @@ def _prometheus_client() -> Any:
     try:
         import prometheus_client
     except ImportError as exc:  # pragma: no cover - depends on optional install
-        raise RuntimeError("Install knoema-engine[observability] to enable Prometheus metrics.") from exc
+        raise RuntimeError("Install luvoire-engine[observability] to enable Prometheus metrics.") from exc
     return prometheus_client
 
 

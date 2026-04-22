@@ -8,9 +8,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
 
-from knoema.billing.api_keys import APIKeyManager, APIKeyRecord, InMemoryAPIKeyStore
-from knoema.billing.tiers import ApiKeySource, TierName
-from knoema.safety.audit_log import CommercialAuditLogger
+from luvoire.billing.api_keys import APIKeyManager, APIKeyRecord, InMemoryAPIKeyStore
+from luvoire.billing.tiers import ApiKeySource, TierName
+from luvoire.safety.audit_log import CommercialAuditLogger
 
 
 class TenantRegistry:

@@ -11,7 +11,7 @@ def test_dockerfile_runs_playground_cli() -> None:
     assert "FROM python:3.12-slim" in dockerfile
     assert "COPY playground ./playground" in dockerfile
     assert "EXPOSE 7860" in dockerfile
-    assert 'CMD ["knoema", "playground", "--host", "0.0.0.0", "--port", "7860"]' in dockerfile
+    assert 'CMD ["luvoire", "playground", "--host", "0.0.0.0", "--port", "7860"]' in dockerfile
 
 
 def test_docker_compose_exposes_persistent_playground() -> None:
@@ -28,8 +28,8 @@ def test_self_hosted_docs_are_in_nav() -> None:
     docs = Path("docs/deploy/self-hosted.md").read_text(encoding="utf-8")
     mkdocs = Path("mkdocs.yml").read_text(encoding="utf-8")
 
-    assert "knoema run" in docs
-    assert "knoema list-scenarios" in docs
-    assert "knoema verify" in docs
+    assert "luvoire run" in docs
+    assert "luvoire list-scenarios" in docs
+    assert "luvoire verify" in docs
     assert "docker compose up --build" in docs
     assert "deploy/self-hosted.md" in mkdocs

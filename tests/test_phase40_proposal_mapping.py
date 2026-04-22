@@ -32,7 +32,7 @@ def test_phase40_proposal_mapping_covers_required_proposal_lanes() -> None:
 def test_phase40_proposal_mapping_references_files_and_tests() -> None:
     mapping = Path("docs/research/proposal_mapping.md").read_text(encoding="utf-8")
 
-    assert "src/knoema/memory/multi_layer.py" in mapping
+    assert "src/luvoire/memory/multi_layer.py" in mapping
     assert "playground/app.py" in mapping
     assert "tests/test_playground_advanced_research_gate.py" in mapping
     assert "tests/test_phase43_theory_of_mind.py" in mapping

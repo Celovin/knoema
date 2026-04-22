@@ -18,7 +18,7 @@ def _walk_components(component: object) -> list[object]:
 
 
 def test_subtask28_tutorial_declares_eight_steps_per_language() -> None:
-    assert playground_app.TUTORIAL_STORAGE_KEY == "knoema_tutorial_completed"
+    assert playground_app.TUTORIAL_STORAGE_KEY == "luvoire_tutorial_completed"
     assert len(playground_app.TUTORIAL_STEPS["ko"]) == 8
     assert len(playground_app.TUTORIAL_STEPS["en"]) == 8
     assert playground_app.TUTORIAL_STEPS["ko"][0]["selector"] == "#scenario-dropdown"

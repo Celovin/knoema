@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from knoema.scenario_synthesis import ScenarioSynthesisError, synthesize_scenario
+from luvoire.scenario_synthesis import ScenarioSynthesisError, synthesize_scenario
 
 
 def test_batch_v_rejects_invalid_trait_values_from_llm_response() -> None:

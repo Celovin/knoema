@@ -5,8 +5,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any
 
-from knoema.llm.local.http import normalize_messages, numeric_option, openai_chat_content, post_json
-from knoema.protocols import Message
+from luvoire.llm.local.http import normalize_messages, numeric_option, openai_chat_content, post_json
+from luvoire.protocols import Message
 
 
 class VLLMClient:

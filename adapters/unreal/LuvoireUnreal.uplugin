@@ -1,18 +1,18 @@
 {
   "FileVersion": 3,
   "Version": 1,
-  "VersionName": "0.2.0",
-  "FriendlyName": "Knoema Unreal",
-  "Description": "Unreal Engine 5 plugin scaffold for connecting actors to the Knoema REST API.",
+  "VersionName": "0.3.0",
+  "FriendlyName": "Luvoire Unreal",
+  "Description": "Unreal Engine 5 plugin scaffold for connecting actors to the Luvoire REST API.",
   "Category": "Artificial Intelligence",
   "CreatedBy": "Celovin",
-  "CreatedByURL": "https://github.com/Celovin/knoema",
-  "DocsURL": "https://github.com/Celovin/knoema/tree/main/adapters/unreal",
+  "CreatedByURL": "https://github.com/Celovin/luvoire",
+  "DocsURL": "https://github.com/Celovin/luvoire/tree/main/adapters/unreal",
   "CanContainContent": true,
   "Installed": false,
   "Modules": [
     {
-      "Name": "KnoemaUnreal",
+      "Name": "LuvoireUnreal",
       "Type": "Runtime",
       "LoadingPhase": "Default"
     }

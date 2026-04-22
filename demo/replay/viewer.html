@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Knoema Offline City Replay</title>
+  <title>Luvoire Offline City Replay</title>
   <style>
     :root {
       color-scheme: light;
@@ -263,7 +263,7 @@
   <div class="shell">
     <header>
       <div>
-        <h1>Knoema Offline City Replay</h1>
+        <h1>Luvoire Offline City Replay</h1>
         <div class="meta">Deterministic Gangnam-style grid, local msgpack playback, no network dependency.</div>
       </div>
       <div class="status" id="status">Loading replay...</div>
@@ -567,7 +567,7 @@
         count: group.querySelectorAll("option").length
       }));
       window.parent.postMessage({
-        type: "knoema-profile-groups",
+        type: "luvoire-profile-groups",
         groups,
         total: groups.reduce((sum, group) => sum + group.count, 0),
         hasSeparator: Boolean(el.profile.querySelector(":scope > option[disabled]"))
@@ -727,7 +727,7 @@
       const blob = new Blob([rows.join("\n") + "\n"], { type: "text/csv" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = `knoema_${state.replay.metadata.agent_count}_agent_trajectory.csv`;
+      link.download = `luvoire_${state.replay.metadata.agent_count}_agent_trajectory.csv`;
       link.click();
       URL.revokeObjectURL(link.href);
     }
@@ -748,7 +748,7 @@
     }
 
     function profileEthicsAckKey(profile) {
-      return Number(profile.tier) === 5 ? "knoema_personality_ethics_ack" : "knoema_archetype_ethics_ack";
+      return Number(profile.tier) === 5 ? "luvoire_personality_ethics_ack" : "luvoire_archetype_ethics_ack";
     }
 
     function expandFrames(replay) {

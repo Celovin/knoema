@@ -1,10 +1,10 @@
 {
-  "schema_version": "knoema.papers_with_code.packet.v1",
+  "schema_version": "luvoire.papers_with_code.packet.v1",
   "paper": {
-    "title": "Knoema Engine: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation",
+    "title": "Luvoire: An Open Runtime for Persistent NPCs, Synthetic Replay Research, and Reproducible Agent Simulation",
     "arxiv_id": "ARXIV_ID_PENDING",
     "doi": "10.5281/zenodo.19643409",
-    "repository": "https://github.com/Celovin/knoema",
+    "repository": "https://github.com/Celovin/luvoire",
     "license": "MIT",
     "framework": "Python",
     "contact": "hello@celovin.com"
@@ -45,7 +45,7 @@
     },
     {
       "name": "Sally-Anne benchmark",
-      "path": "src/knoema/theory_of_mind.py",
+      "path": "src/luvoire/theory_of_mind.py",
       "synthetic": true,
       "metrics": {
         "cases": 20,
@@ -76,7 +76,7 @@
     {
       "task": "Social simulation",
       "dataset": "500-agent metropolis logs",
-      "model": "Knoema deterministic local runtime",
+      "model": "Luvoire deterministic local runtime",
       "metric": "mean_throughput_actions_per_second",
       "value": 1657.527,
       "higher_is_better": true,
@@ -85,7 +85,7 @@
     {
       "task": "Social simulation",
       "dataset": "500-agent metropolis logs",
-      "model": "Knoema deterministic local runtime",
+      "model": "Luvoire deterministic local runtime",
       "metric": "mean_p95_latency_ms",
       "value": 65.055,
       "higher_is_better": false,
@@ -94,7 +94,7 @@
     {
       "task": "Theory of mind",
       "dataset": "Sally-Anne benchmark",
-      "model": "Knoema persona opt-in ToM",
+      "model": "Luvoire persona opt-in ToM",
       "metric": "success_rate",
       "value": 1.0,
       "higher_is_better": true,
@@ -103,7 +103,7 @@
     {
       "task": "Agent-based modeling",
       "dataset": "Classic ABM reproductions",
-      "model": "Knoema deterministic local runtime",
+      "model": "Luvoire deterministic local runtime",
       "metric": "schelling_threshold_0_3_index",
       "value": 0.548,
       "higher_is_better": null,
@@ -112,7 +112,7 @@
     {
       "task": "Agent-based modeling",
       "dataset": "Classic ABM reproductions",
-      "model": "Knoema deterministic local runtime",
+      "model": "Luvoire deterministic local runtime",
       "metric": "schelling_threshold_0_7_index",
       "value": 0.942,
       "higher_is_better": null,
@@ -121,7 +121,7 @@
     {
       "task": "Multi-agent RL",
       "dataset": "Classic ABM reproductions",
-      "model": "Knoema deterministic local runtime",
+      "model": "Luvoire deterministic local runtime",
       "metric": "axelrod_tit_for_tat_rank",
       "value": 1,
       "higher_is_better": false,
@@ -130,7 +130,7 @@
     {
       "task": "Social simulation",
       "dataset": "50-agent village log",
-      "model": "Knoema scoring utilities",
+      "model": "Luvoire scoring utilities",
       "metric": "persona_consistency_score_average",
       "value": 0.948,
       "higher_is_better": true,
@@ -139,7 +139,7 @@
     {
       "task": "Social simulation",
       "dataset": "500-agent metropolis representative log",
-      "model": "Knoema scoring utilities",
+      "model": "Luvoire scoring utilities",
       "metric": "relationship_coherence_score_average",
       "value": 0.76,
       "higher_is_better": true,

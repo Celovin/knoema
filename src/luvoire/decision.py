@@ -7,14 +7,14 @@ from collections.abc import Mapping, Sequence
 from datetime import datetime
 from typing import Any
 
-from knoema.environment import EnvironmentContext
-from knoema.persona import Persona
-from knoema.planning import Task
-from knoema.prompts import PromptLanguage, normalize_prompt_language, render_decision_user_prompt
-from knoema.protocols import LLMClient, Message
-from knoema.relationship import Relationship
-from knoema.theory_of_mind import TheoryOfMindContext
-from knoema.types import Action, AgentID, Emotion, Memory, WorldEvent
+from luvoire.environment import EnvironmentContext
+from luvoire.persona import Persona
+from luvoire.planning import Task
+from luvoire.prompts import PromptLanguage, normalize_prompt_language, render_decision_user_prompt
+from luvoire.protocols import LLMClient, Message
+from luvoire.relationship import Relationship
+from luvoire.theory_of_mind import TheoryOfMindContext
+from luvoire.types import Action, AgentID, Emotion, Memory, WorldEvent
 
 
 class DecisionEngine:

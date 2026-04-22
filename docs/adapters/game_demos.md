@@ -1,6 +1,6 @@
 # Game Demos
 
-Knoema ships two public tavern demo paths for engine-facing review:
+Luvoire ships two public tavern demo paths for engine-facing review:
 
 1. `adapters/godot/samples/tavern_demo/tavern_demo.tscn`
 2. `adapters/unity/Samples~/TavernDemo/Scenes/TavernDemo.unity`
@@ -17,7 +17,7 @@ The two `web_build/index.html` mirrors are DOM simulations for adapter review. T
 ## Run the API server
 
 ```bash
-uvicorn knoema.api.server:app --host 127.0.0.1 --port 8000
+uvicorn luvoire.api.server:app --host 127.0.0.1 --port 8000
 ```
 
 The demos still work without the server because the adapters keep deterministic fallback enabled.
@@ -31,7 +31,7 @@ The demos still work without the server because the adapters keep deterministic 
 5. Walk within 64px of Bjorn.
 6. Type a message and press `Send`.
 
-The sample script uses `res://scripts/knoema_client.gd`, injects tavern context JSON, and mirrors the same loop in `adapters/godot/samples/tavern_demo/web_build/index.html`.
+The sample script uses `res://scripts/luvoire_client.gd`, injects tavern context JSON, and mirrors the same loop in `adapters/godot/samples/tavern_demo/web_build/index.html`.
 
 Open the real Godot project with:
 
@@ -50,7 +50,7 @@ godot4 --headless --path adapters/godot --export-release Web build/godot-tavern/
 ## Unity tavern demo
 
 1. Open the Unity 2022.3 LTS editor.
-2. Import `Samples~/TavernDemo` from the `com.celovin.knoema` package.
+2. Import `Samples~/TavernDemo` from the `com.celovin.luvoire` package.
 3. Open `Samples~/TavernDemo/Scenes/TavernDemo.unity`.
 4. Press Play.
 5. Move with `W`, `A`, `S`, `D`.

@@ -28,12 +28,12 @@ jobs:
         run: python scripts/build_leaderboard.py
       - name: Commit rebuilt leaderboard
         run: |
-          if git diff --quiet -- bench/submissions/knoema-0.2.0.yaml docs/bench/leaderboard.md; then
+          if git diff --quiet -- bench/submissions/luvoire-0.3.0.yaml docs/bench/leaderboard.md; then
             echo "leaderboard is current"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add bench/submissions/knoema-0.2.0.yaml docs/bench/leaderboard.md
+          git add bench/submissions/luvoire-0.3.0.yaml docs/bench/leaderboard.md
           git commit -m "docs(bench): rebuild leaderboard"
           git push

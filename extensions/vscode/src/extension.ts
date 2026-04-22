@@ -1,28 +1,28 @@
 function activate(context) {
   const vscode = require("vscode");
   context.subscriptions.push(
-    vscode.commands.registerCommand("knoema.validateScenario", () => {
+    vscode.commands.registerCommand("luvoire.validateScenario", () => {
       const editor = vscode.window.activeTextEditor;
       const text = editor ? editor.document.getText() : "";
       const result = validateScenarioText(text);
       const message = result.valid
-        ? `Knoema scenario looks valid (${result.checks.length} checks).`
-        : `Knoema scenario has ${result.issues.length} issue(s): ${result.issues.join("; ")}`;
+        ? `Luvoire scenario looks valid (${result.checks.length} checks).`
+        : `Luvoire scenario has ${result.issues.length} issue(s): ${result.issues.join("; ")}`;
       vscode.window.showInformationMessage(message);
     }),
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand("knoema.runScenario", () => {
+    vscode.commands.registerCommand("luvoire.runScenario", () => {
       vscode.window.showInformationMessage(
-        "Run `knoema run <scenario.yaml>` in a terminal to execute this scenario.",
+        "Run `luvoire run <scenario.yaml>` in a terminal to execute this scenario.",
       );
     }),
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand("knoema.previewTimeline", () => {
+    vscode.commands.registerCommand("luvoire.previewTimeline", () => {
       const panel = vscode.window.createWebviewPanel(
-        "knoemaTimeline",
-        "Knoema Timeline Preview",
+        "luvoireTimeline",
+        "Luvoire Timeline Preview",
         vscode.ViewColumn.Beside,
         {},
       );
@@ -70,7 +70,7 @@ function renderTimelinePreview(text) {
   return `<!doctype html>
 <html>
   <body>
-    <h1>Knoema Timeline Preview</h1>
+    <h1>Luvoire Timeline Preview</h1>
     <ol>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>
   </body>
 </html>`;

@@ -7,8 +7,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from knoema.environment import Environment
-from knoema.persona import Persona
+from luvoire.environment import Environment
+from luvoire.persona import Persona
 
 
 @dataclass(frozen=True, slots=True)

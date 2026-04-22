@@ -1,12 +1,12 @@
-# Contributing to Knoema Engine
+# Contributing to Luvoire
 
-Thanks for your interest in Knoema. This is an early-stage project under active R&D. Contributions of all sizes are welcome: bug reports, docs fixes, example notebooks, and feature PRs.
+Thanks for your interest in Luvoire. This is an early-stage project under active R&D. Contributions of all sizes are welcome: bug reports, docs fixes, example notebooks, and feature PRs.
 
 ## Development Setup
 
 ```bash
-git clone https://github.com/Celovin/knoema.git
-cd knoema
+git clone https://github.com/Celovin/luvoire.git
+cd luvoire
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"

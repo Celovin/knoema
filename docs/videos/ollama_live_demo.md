@@ -6,7 +6,7 @@ Note: as of April 19, 2026, the official Ollama library lists `llama3.3` as a 70
 
 ## Recording Setup
 
-- Working directory: `C:\Users\admin\Projects\knoema`
+- Working directory: `C:\Users\admin\Projects\luvoire`
 - Ollama server: `ollama serve`
 - Required model: `ollama pull llama3.1:8b`
 - Notebook: `examples/05_live_ollama_demo.ipynb`
@@ -33,4 +33,4 @@ Note: as of April 19, 2026, the official Ollama library lists `llama3.3` as a 70
 
 - If the model is missing, pull it before recording and rerun the environment check cell.
 - If the live run exceeds 30 seconds, lower local load, close other GPU-heavy apps, and rerun the notebook kernel from the top.
-- If Ollama is reachable but the model name differs locally, set `KNOEMA_OLLAMA_LIVE_MODEL` before launching Jupyter and keep the notebook output visible.
+- If Ollama is reachable but the model name differs locally, set `LUVOIRE_OLLAMA_LIVE_MODEL` before launching Jupyter and keep the notebook output visible.

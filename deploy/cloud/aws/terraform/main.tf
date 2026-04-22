@@ -23,7 +23,7 @@ variable "container_image" {
 
 variable "db_username" {
   type    = string
-  default = "knoema"
+  default = "luvoire"
 }
 
 variable "db_password" {
@@ -31,42 +31,42 @@ variable "db_password" {
   sensitive = true
 }
 
-resource "aws_vpc" "knoema" {
+resource "aws_vpc" "luvoire" {
   cidr_block           = "10.42.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
 }
 
 resource "aws_subnet" "public_a" {
-  vpc_id            = aws_vpc.knoema.id
+  vpc_id            = aws_vpc.luvoire.id
   cidr_block        = "10.42.1.0/24"
   availability_zone = "${var.region}a"
 }
 
 resource "aws_subnet" "public_b" {
-  vpc_id            = aws_vpc.knoema.id
+  vpc_id            = aws_vpc.luvoire.id
   cidr_block        = "10.42.2.0/24"
   availability_zone = "${var.region}b"
 }
 
 resource "aws_security_group" "api" {
-  name   = "knoema-api"
-  vpc_id = aws_vpc.knoema.id
+  name   = "luvoire-api"
+  vpc_id = aws_vpc.luvoire.id
 }
 
 resource "aws_lb" "api" {
-  name               = "knoema-api"
+  name               = "luvoire-api"
   load_balancer_type = "application"
   security_groups    = [aws_security_group.api.id]
   subnets            = [aws_subnet.public_a.id, aws_subnet.public_b.id]
 }
 
-resource "aws_ecs_cluster" "knoema" {
-  name = "knoema"
+resource "aws_ecs_cluster" "luvoire" {
+  name = "luvoire"
 }
 
 resource "aws_ecs_task_definition" "api" {
-  family                   = "knoema-api"
+  family                   = "luvoire-api"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 512
@@ -82,8 +82,8 @@ resource "aws_ecs_task_definition" "api" {
 }
 
 resource "aws_ecs_service" "api" {
-  name            = "knoema-api"
-  cluster         = aws_ecs_cluster.knoema.id
+  name            = "luvoire-api"
+  cluster         = aws_ecs_cluster.luvoire.id
   task_definition = aws_ecs_task_definition.api.arn
   desired_count   = 2
   launch_type     = "FARGATE"
@@ -95,13 +95,13 @@ resource "aws_ecs_service" "api" {
 }
 
 resource "aws_db_subnet_group" "postgres" {
-  name       = "knoema-postgres"
+  name       = "luvoire-postgres"
   subnet_ids = [aws_subnet.public_a.id, aws_subnet.public_b.id]
 }
 
 resource "aws_db_instance" "postgres" {
   allocated_storage      = 20
-  db_name                = "knoema"
+  db_name                = "luvoire"
   engine                 = "postgres"
   engine_version         = "16"
   instance_class         = "db.t4g.micro"
@@ -114,12 +114,12 @@ resource "aws_db_instance" "postgres" {
 }
 
 resource "aws_elasticache_subnet_group" "redis" {
-  name       = "knoema-redis"
+  name       = "luvoire-redis"
   subnet_ids = [aws_subnet.public_a.id, aws_subnet.public_b.id]
 }
 
 resource "aws_elasticache_cluster" "redis" {
-  cluster_id           = "knoema-redis"
+  cluster_id           = "luvoire-redis"
   engine               = "redis"
   node_type            = "cache.t4g.micro"
   num_cache_nodes      = 1

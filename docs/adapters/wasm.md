@@ -10,7 +10,7 @@ npm --prefix adapters\wasm test
 npm --prefix adapters\wasm run e2e
 ```
 
-The build writes `adapters/wasm/demo/knoema-core.js` and checks that the bundle stays under 500 KB. The current runtime covers:
+The build writes `adapters/wasm/demo/luvoire-core.js` and checks that the bundle stays under 500 KB. The current runtime covers:
 
 - `Persona`
 - `Environment`
@@ -25,4 +25,4 @@ The build writes `adapters/wasm/demo/knoema-core.js` and checks that the bundle 
 - `adapters/wasm/demo/5-agent.html`
 - `adapters/wasm/demo/sally-anne.html`
 
-The pages are static and can be served from GitHub Pages at a path such as `https://celovin.github.io/knoema/wasm/` after repository Pages configuration.
+The pages are static and can be served from GitHub Pages at a path such as `https://celovin.github.io/luvoire/wasm/` after repository Pages configuration.

@@ -42,7 +42,7 @@ def transcribe_player_audio(
     if model_path is None:
         return "", _voice_status(language, "No whisper.cpp model was found.")
 
-    output_dir = Path(tempfile.mkdtemp(prefix="knoema_whisper_"))
+    output_dir = Path(tempfile.mkdtemp(prefix="luvoire_whisper_"))
     output_prefix = output_dir / "transcript"
     command = [
         executable,
@@ -85,7 +85,7 @@ def _synthesize_with_pyttsx3(text: str, *, language: str) -> tuple[str | None, s
     except ImportError:
         return None, _voice_status(language, "pyttsx3 is unavailable on this machine.")
 
-    fd, output_name = tempfile.mkstemp(prefix="knoema_tts_", suffix=".wav")
+    fd, output_name = tempfile.mkstemp(prefix="luvoire_tts_", suffix=".wav")
     Path(output_name).unlink(missing_ok=True)
     os.close(fd)
     output_path = Path(output_name)
@@ -103,7 +103,7 @@ def _synthesize_with_edge_tts(text: str, *, language: str) -> tuple[str | None, 
     except ImportError:
         return None, _voice_status(language, "Edge TTS is unavailable on this machine.")
 
-    fd, output_name = tempfile.mkstemp(prefix="knoema_edge_", suffix=".mp3")
+    fd, output_name = tempfile.mkstemp(prefix="luvoire_edge_", suffix=".mp3")
     Path(output_name).unlink(missing_ok=True)
     os.close(fd)
     output_path = Path(output_name)

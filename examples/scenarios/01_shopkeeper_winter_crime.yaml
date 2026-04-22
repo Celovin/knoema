@@ -8,7 +8,7 @@ tick_duration_minutes: 720
 duration_days: 1
 environment:
   start_time: "2026-01-12T08:00:00"
-  location_path: [Knoema Demo World, Winter Market, Corner Shop]
+  location_path: [Luvoire Demo World, Winter Market, Corner Shop]
   conditions:
     weather: snow
     visibility: low
@@ -43,7 +43,7 @@ events:
   - timestamp: "2026-01-12T20:00:00"
     event_type: shop.replay_checkpoint
     participants: [shopkeeper, neighbor]
-    location: Knoema Demo World > Winter Market > Corner Shop
+    location: Luvoire Demo World > Winter Market > Corner Shop
     description: Fictional closing-time checkpoint for replay consistency.
 metrics:
   - name: milestone_coverage

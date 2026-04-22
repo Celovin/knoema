@@ -1,20 +1,20 @@
-# Knoema Engine
+# Luvoire
 
 > 게임, 공공안전 연구, 학술 시뮬레이션을 위한 LLM 기반 다중 에이전트 사회 시뮬레이션 엔진.
 
-[![CI](https://github.com/Celovin/knoema/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/knoema/actions/workflows/ci.yml)
+[![CI](https://github.com/Celovin/luvoire/actions/workflows/ci.yml/badge.svg)](https://github.com/Celovin/luvoire/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/knoema-playground)
+[![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/celovin/luvoire-playground)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19643409.svg)](https://doi.org/10.5281/zenodo.19643409)
 
 ## Current version
 
-0.2.0
+0.3.0
 
-## Knoema Bench
+## Luvoire Bench
 
-Knoema Bench 공개 리더보드는 7개 축의 지속형 에이전트 프레임워크 결과를 정리합니다. 라이브 페이지: [https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/). 제출 템플릿: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml).
+Luvoire Bench 공개 리더보드는 7개 축의 지속형 에이전트 프레임워크 결과를 정리합니다. 라이브 페이지: [https://celovin.github.io/luvoire/bench/](https://celovin.github.io/luvoire/bench/). 제출 템플릿: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml).
 
 ## 언어
 
@@ -22,7 +22,7 @@ Knoema Bench 공개 리더보드는 7개 축의 지속형 에이전트 프레임
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) |
 
-Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정을 가진 지속형 에이전트를 모델링하는 초기 MVP입니다. 하나의 런타임으로 게임 NPC, 완전 가상 공공안전 리플레이 연구, 재현 가능한 에이전트 기반 사회 시뮬레이션을 지원합니다.
+Luvoire은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정을 가진 지속형 에이전트를 모델링하는 초기 MVP입니다. 하나의 런타임으로 게임 NPC, 완전 가상 공공안전 리플레이 연구, 재현 가능한 에이전트 기반 사회 시뮬레이션을 지원합니다.
 
 이 저장소의 공공안전 예제는 모두 가상, 합성, 비식별 데이터입니다. 범죄 예측, 용의자 점수화, 실무 판단 자동화 도구가 아닙니다.
 
@@ -44,7 +44,7 @@ Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정�
 - Anthropic, OpenAI, deterministic local client를 묶는 LLM gateway
 - 영어, 한국어, 일본어, 중국어 실행을 위한 prompt template
 - scheduled event와 JSONL export를 지원하는 simulation runner
-- YAML 기반 로컬 시뮬레이션을 실행하는 `knoema run` CLI
+- YAML 기반 로컬 시뮬레이션을 실행하는 `luvoire run` CLI
 - MVP 데모 트랙과 10명 마을 확장 실험을 보여주는 Jupyter 노트북
 - JSON과 Markdown 리포트를 생성하는 deterministic benchmark script
 - 도시 규모 1K 벤치마크, 오프라인 msgpack 리플레이 뷰어, CAT-28 티어 5 성격 프로필 기반 교육용 오버레이
@@ -114,20 +114,20 @@ python benchmarks/formal_report/runner.py
 
 ## Reproducibility Guarantees
 
-Knoema deterministic local run은 fixed config, seed, JSONL artifact로 replay할 수 있습니다. Phase 21 테스트는 same-seed 반복 실행, seed propagation, YAML config round-trip, JSONL replay summary를 검증합니다.
+Luvoire deterministic local run은 fixed config, seed, JSONL artifact로 replay할 수 있습니다. Phase 21 테스트는 same-seed 반복 실행, seed propagation, YAML config round-trip, JSONL replay summary를 검증합니다.
 
 자세한 내용은 [Reproducibility Report](docs/reports/reproducibility.md)를 참고하세요.
 
 자세한 내용은 [Formal Benchmark Report](benchmarks/formal_report/README.md)와 [Formal Report PDF](benchmarks/formal_report/report.pdf)를 참고하세요.
 
-벤치마크 리포트는 Knoema 처리량을 실제 측정하고, Concordia와 Mesa는 별도 외부 실행이 필요하다는 `not-measured` 비교 슬롯으로 표시합니다. 자세한 기준은 [benchmarks/README.md](benchmarks/README.md)에 정리했습니다.
+벤치마크 리포트는 Luvoire 처리량을 실제 측정하고, Concordia와 Mesa는 별도 외부 실행이 필요하다는 `not-measured` 비교 슬롯으로 표시합니다. 자세한 기준은 [benchmarks/README.md](benchmarks/README.md)에 정리했습니다.
 
 ## 메모리 검색
 
 `SQLiteFaissMemoryStore.retrieve(...)`는 단순한 memory list API를 유지합니다. 분석용 점수가 필요하면 `retrieve_with_scores(...)`로 semantic score, temporal score, importance score, final reranking score를 함께 확인할 수 있습니다.
 
 ```python
-from knoema import RetrievalWeights
+from luvoire import RetrievalWeights
 
 results = store.retrieve_with_scores(
     'shared study routine',
@@ -139,13 +139,13 @@ results = store.retrieve_with_scores(
 ## CLI
 
 ```bash
-knoema run examples/cli_dorm.yaml --json
+luvoire run examples/cli_dorm.yaml --json
 ```
 
 ## Scenario DSL
 
 ```python
-from knoema.dsl import load_scenario
+from luvoire.dsl import load_scenario
 
 scenario = load_scenario('examples/scenarios/01_shopkeeper_winter_crime.yaml')
 logs = scenario.to_simulator().run(duration_days=scenario.duration_days)
@@ -157,10 +157,10 @@ YAML 설정 형식, 출력 경로 규칙, dry-run 검증은 [CLI](docs/cli.md)�
 
 ## Game SDK
 
-Knoema는 설치형 Python 패키지, TypeScript 도구, Godot GDScript 프로토타입에서 사용할 수 있는 deterministic NPC SDK facade를 제공합니다.
+Luvoire는 설치형 Python 패키지, TypeScript 도구, Godot GDScript 프로토타입에서 사용할 수 있는 deterministic NPC SDK facade를 제공합니다.
 
 ```python
-from knoema.game import GameSession
+from luvoire.game import GameSession
 
 session = GameSession(game_id='demo-village')
 npc = session.create_npc(
@@ -186,7 +186,7 @@ Godot 4 스캐폴드, HTTP/local fallback client, 데모 씬 구조는 [adapters
 Unity Package Manager에서 다음 Git URL로 설치할 수 있습니다.
 
 ```text
-https://github.com/Celovin/knoema.git?path=adapters/unity
+https://github.com/Celovin/luvoire.git?path=adapters/unity
 ```
 
 Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 컴포넌트, Basic NPC 샘플은 [adapters/unity/README.md](adapters/unity/README.md)를 참고하세요.
@@ -213,12 +213,12 @@ Unity 2022.3 LTS 패키지 스캐폴드, HTTP/local fallback client, `NPCAgent` 
 - [CLI](docs/cli.md)
 - [Prompt Templates](docs/prompts.md)
 - [튜토리얼 블로그 초안](docs/tutorial_blog.md)
-- [한국어 기술 블로그 초안](docs/blog/ko/01-why-knoema-korean-indie-games.md)
+- [한국어 기술 블로그 초안](docs/blog/ko/01-why-luvoire-korean-indie-games.md)
 - [Discord 커뮤니티 런치 키트](docs/discord_community.md)
 - [Demo Video Scripts](docs/videos/shotlist.md)
 - [YouTube 튜토리얼 스크립트](docs/videos/tutorials/01_getting_started_10min.md)
 - [Website App](website/app/page.tsx)
-- [기술 리포트 LaTeX 초안](paper/main.tex), [PDF 프리뷰](paper/knoema_technical_report.pdf)
+- [기술 리포트 LaTeX 초안](paper/main.tex), [PDF 프리뷰](paper/luvoire_technical_report.pdf)
 - [Papers with Code 제출 패킷](docs/research/papers_with_code_submission.md), [JSON 패킷](docs/research/papers_with_code_submission.json)
 
 ## 개발
@@ -235,7 +235,7 @@ mypy src
 
 ## Playground
 
-[Knoema Playground](https://huggingface.co/spaces/celovin/knoema-playground)에서 브라우저 기반 데모를 실행할 수 있습니다. API 키가 없는 사용자는 replay-only 모드로 3개 기본 시나리오를 확인할 수 있고, OpenAI 또는 Anthropic 키를 입력하면 현재 세션에서만 live LLM 실행을 사용할 수 있습니다.
+[Luvoire Playground](https://huggingface.co/spaces/celovin/luvoire-playground)에서 브라우저 기반 데모를 실행할 수 있습니다. API 키가 없는 사용자는 replay-only 모드로 3개 기본 시나리오를 확인할 수 있고, OpenAI 또는 Anthropic 키를 입력하면 현재 세션에서만 live LLM 실행을 사용할 수 있습니다.
 
 ```bash
 pip install -r playground/requirements.txt

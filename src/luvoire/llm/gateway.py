@@ -9,7 +9,7 @@ from hashlib import sha256
 from threading import Event, Lock
 from time import perf_counter
 
-from knoema.protocols import LLMClient, Message
+from luvoire.protocols import LLMClient, Message
 
 
 @dataclass(slots=True)

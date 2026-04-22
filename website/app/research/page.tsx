@@ -2,26 +2,26 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Research | Knoema Engine",
+  title: "Research | Luvoire",
   description:
-    "Reproducible benchmark inputs, deterministic logs, summary tables, and reports for Knoema Engine.",
+    "Reproducible benchmark inputs, deterministic logs, summary tables, and reports for Luvoire.",
   alternates: {
     canonical: "/research",
   },
 };
 
 const reports = [
-  ["50-Agent Benchmark", "https://github.com/Celovin/knoema/blob/main/docs/reports/50_agent_benchmark.pdf"],
-  ["Formal Benchmark Report", "https://github.com/Celovin/knoema/blob/main/benchmarks/formal_report/report.pdf"],
-  ["Reproducibility Report", "https://github.com/Celovin/knoema/blob/main/docs/reports/reproducibility.md"],
-  ["Technical Report Draft", "https://github.com/Celovin/knoema/blob/main/paper/knoema_technical_report.pdf"],
+  ["50-Agent Benchmark", "https://github.com/Celovin/luvoire/blob/main/docs/reports/50_agent_benchmark.pdf"],
+  ["Formal Benchmark Report", "https://github.com/Celovin/luvoire/blob/main/benchmarks/formal_report/report.pdf"],
+  ["Reproducibility Report", "https://github.com/Celovin/luvoire/blob/main/docs/reports/reproducibility.md"],
+  ["Technical Report Draft", "https://github.com/Celovin/luvoire/blob/main/paper/luvoire_technical_report.pdf"],
 ];
 
 export default function ResearchPage() {
   return (
     <main className="subpage research-page">
       <Link className="back-link" href="/">
-        Knoema Engine
+        Luvoire
       </Link>
       <h1>Reproducible Agent Simulation Evidence</h1>
       <p>

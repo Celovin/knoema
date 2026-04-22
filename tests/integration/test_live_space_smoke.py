@@ -9,17 +9,17 @@ from typing import Final
 import pytest
 from playwright.sync_api import Page, expect, sync_playwright
 
-LIVE_SPACE_URL: Final[str] = "https://huggingface.co/spaces/celovin/knoema-playground"
+LIVE_SPACE_URL: Final[str] = "https://huggingface.co/spaces/celovin/luvoire-playground"
 SPACE_IFRAME_SELECTOR: Final[str] = "iframe[aria-label='Space app']"
 SCREENSHOT_DIR = Path("artifacts")
-EXPECT_FORCE_GRAPH = os.environ.get("KNOEMA_EXPECT_FORCE_GRAPH") == "1"
-EXPECT_CROSS_MODEL = os.environ.get("KNOEMA_EXPECT_CROSS_MODEL") == "1"
-EXPECT_FAIRNESS_AUDIT = os.environ.get("KNOEMA_EXPECT_FAIRNESS_AUDIT") == "1"
-EXPECT_PREREG_TEMPLATE = os.environ.get("KNOEMA_EXPECT_PREREG_TEMPLATE") == "1"
-EXPECT_SCENARIO_SYNTHESIS = os.environ.get("KNOEMA_EXPECT_SCENARIO_SYNTHESIS") == "1"
-EXPECT_FINETUNING_EXPORT = os.environ.get("KNOEMA_EXPECT_FINETUNING_EXPORT") == "1"
-EXPECT_COMMUNITY_GALLERY = os.environ.get("KNOEMA_EXPECT_COMMUNITY_GALLERY") == "1"
-EXPECT_VOICE_PANEL = os.environ.get("KNOEMA_EXPECT_VOICE_PANEL") == "1"
+EXPECT_FORCE_GRAPH = os.environ.get("LUVOIRE_EXPECT_FORCE_GRAPH") == "1"
+EXPECT_CROSS_MODEL = os.environ.get("LUVOIRE_EXPECT_CROSS_MODEL") == "1"
+EXPECT_FAIRNESS_AUDIT = os.environ.get("LUVOIRE_EXPECT_FAIRNESS_AUDIT") == "1"
+EXPECT_PREREG_TEMPLATE = os.environ.get("LUVOIRE_EXPECT_PREREG_TEMPLATE") == "1"
+EXPECT_SCENARIO_SYNTHESIS = os.environ.get("LUVOIRE_EXPECT_SCENARIO_SYNTHESIS") == "1"
+EXPECT_FINETUNING_EXPORT = os.environ.get("LUVOIRE_EXPECT_FINETUNING_EXPORT") == "1"
+EXPECT_COMMUNITY_GALLERY = os.environ.get("LUVOIRE_EXPECT_COMMUNITY_GALLERY") == "1"
+EXPECT_VOICE_PANEL = os.environ.get("LUVOIRE_EXPECT_VOICE_PANEL") == "1"
 
 
 def _set_slider_value(page: Page, *, elem_id: str, value: int) -> None:
