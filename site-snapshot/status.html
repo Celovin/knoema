@@ -12,7 +12,9 @@
       --muted: #657168;
       --line: #d2dacd;
       --ok: #1f7a50;
+      --amber: #b7791f;
       --warn: #c8664f;
+      --gray: #717a72;
       --teal: #1d7b83;
       --white: #fffefa;
     }
@@ -46,6 +48,11 @@
     .badge b { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; }
     .badge.ok { border-color: color-mix(in srgb, var(--ok), var(--line)); color: var(--ok); }
     .badge.warn { border-color: color-mix(in srgb, var(--warn), var(--line)); color: var(--warn); }
+    .sla { display: inline-block; padding: 4px 8px; border: 1px solid var(--line); font-size: 0.78rem; }
+    .sla.green { color: var(--ok); border-color: var(--ok); }
+    .sla.amber { color: var(--amber); border-color: var(--amber); }
+    .sla.red { color: var(--warn); border-color: var(--warn); }
+    .sla.gray { color: var(--gray); border-color: var(--line); }
     section { margin-top: 30px; }
     .history { display: flex; align-items: end; gap: 4px; min-height: 44px; }
     .bar { display: inline-block; width: 18px; height: 34px; background: var(--ok); }
@@ -70,6 +77,12 @@
 <span class="badge warn"><b>CI</b>in_progress</span>
 <span class="badge ok"><b>Replay artifacts</b>5 verified</span>
     </div>
+    <section>
+      <h2>Rolling uptime</h2>
+      <table class="uptime"><thead><tr><th>Component</th><th>7d</th><th>30d</th><th>90d</th><th>30d SLA badge</th></tr></thead><tbody><tr><td>HF Space</td><td><span class="muted">insufficient data</span></td><td><span class="muted">insufficient data</span></td><td><span class="muted">insufficient data</span></td><td><span class="sla gray">insufficient data</span></td></tr>
+<tr><td>CI</td><td><span class="muted">insufficient data</span></td><td><span class="muted">insufficient data</span></td><td><span class="muted">insufficient data</span></td><td><span class="sla gray">insufficient data</span></td></tr>
+<tr><td>Replay artifacts</td><td><span class="muted">insufficient data</span></td><td><span class="muted">insufficient data</span></td><td><span class="muted">insufficient data</span></td><td><span class="sla gray">insufficient data</span></td></tr></tbody></table>
+    </section>
     <section>
       <h2>30-day history</h2>
       <div class="history" aria-label="30-day historical status bar">

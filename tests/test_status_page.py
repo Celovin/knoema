@@ -6,6 +6,7 @@ from types import SimpleNamespace
 from typing import Any
 
 from scripts.build_status_page import build_status_page
+from scripts.compute_uptime import write_uptime
 from scripts.fetch_status import CommandResult, collect_status, write_status
 
 
@@ -94,13 +95,23 @@ def test_status_page_builds_badges_and_history(tmp_path: Path) -> None:
     )
     status_path = tmp_path / "status.json"
     history_path = tmp_path / "status-history.jsonl"
+    uptime_path = tmp_path / "uptime.json"
     output_path = tmp_path / "status.html"
 
     write_status(status, status_path)
     build_status_page(
         status_path=status_path,
         history_path=history_path,
+        uptime_path=uptime_path,
         output_path=output_path,
+    )
+    write_uptime(history_path, uptime_path)
+    build_status_page(
+        status_path=status_path,
+        history_path=history_path,
+        uptime_path=uptime_path,
+        output_path=output_path,
+        append=False,
     )
 
     html = output_path.read_text(encoding="utf-8")
@@ -110,6 +121,9 @@ def test_status_page_builds_badges_and_history(tmp_path: Path) -> None:
     assert "RUNNING" in html
     assert "CI" in html
     assert "Replay artifacts" in html
+    assert "Rolling uptime" in html
+    assert "insufficient data" in html
     assert "30-day history" in html
     assert "Last updated 2026-04-22T09:00:00Z" in html
     assert '"space_stage": "RUNNING"' in history
+    assert len(history.splitlines()) == 1

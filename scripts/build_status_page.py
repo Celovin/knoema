@@ -10,6 +10,7 @@ from typing import Any
 
 DEFAULT_STATUS_PATH = Path("site-snapshot/status.json")
 DEFAULT_HISTORY_PATH = Path("site-snapshot/status-history.jsonl")
+DEFAULT_UPTIME_PATH = Path("site-snapshot/uptime.json")
 DEFAULT_OUTPUT_PATH = Path("site-snapshot/status.html")
 
 
@@ -47,9 +48,13 @@ def append_history(
 ) -> list[dict[str, Any]]:
     history_path.parent.mkdir(parents=True, exist_ok=True)
     entry = _history_entry(status)
+    history = load_history(history_path)
+    if history and history[-1] == entry:
+        return history
     with history_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n")
-    return load_history(history_path)
+    history.append(entry)
+    return history
 
 
 def load_history(history_path: Path = DEFAULT_HISTORY_PATH) -> list[dict[str, Any]]:
@@ -85,6 +90,76 @@ def _badge(label: str, value: str, state: str) -> str:
     safe_value = html.escape(value)
     safe_state = html.escape(state.lower())
     return f'<span class="badge {safe_state}"><b>{safe_label}</b>{safe_value}</span>'
+
+
+def sla_badge_class(window: Mapping[str, Any]) -> str:
+    if bool(window.get("insufficient_data")):
+        return "gray"
+    percent = float(window.get("uptime_percent") or 0.0)
+    if percent >= 99.9:
+        return "green"
+    if percent >= 99.5:
+        return "amber"
+    return "red"
+
+
+def _sla_badge(window: Mapping[str, Any]) -> str:
+    badge_class = sla_badge_class(window)
+    label = {
+        "green": ">= 99.9%",
+        "amber": ">= 99.5%",
+        "red": "< 99.5%",
+        "gray": "insufficient data",
+    }[badge_class]
+    return f'<span class="sla {badge_class}">{html.escape(label)}</span>'
+
+
+def _uptime_cell(window: Mapping[str, Any]) -> str:
+    if bool(window.get("insufficient_data")):
+        return '<span class="muted">insufficient data</span>'
+    return f"{float(window['uptime_percent']):.3f}%"
+
+
+def _uptime_table(uptime: Mapping[str, Any] | None) -> str:
+    if not uptime:
+        return '<p class="muted">No uptime calculations yet.</p>'
+    components = uptime.get("components")
+    if not isinstance(components, dict) or not components:
+        return '<p class="muted">No uptime calculations yet.</p>'
+    rows = []
+    for key in ("space", "ci", "replay_artifacts"):
+        component = components.get(key)
+        if not isinstance(component, dict):
+            continue
+        windows = component.get("windows")
+        if not isinstance(windows, dict):
+            continue
+        window_7 = _mapping(windows.get("7d"))
+        window_30 = _mapping(windows.get("30d"))
+        window_90 = _mapping(windows.get("90d"))
+        rows.append(
+            "<tr>"
+            f"<td>{html.escape(str(component.get('label') or key))}</td>"
+            f"<td>{_uptime_cell(window_7)}</td>"
+            f"<td>{_uptime_cell(window_30)}</td>"
+            f"<td>{_uptime_cell(window_90)}</td>"
+            f"<td>{_sla_badge(window_30)}</td>"
+            "</tr>"
+        )
+    if not rows:
+        return '<p class="muted">No uptime calculations yet.</p>'
+    return (
+        '<table class="uptime"><thead><tr><th>Component</th><th>7d</th><th>30d</th>'
+        "<th>90d</th><th>30d SLA badge</th></tr></thead><tbody>"
+        + "\n".join(rows)
+        + "</tbody></table>"
+    )
+
+
+def _mapping(value: object) -> Mapping[str, Any]:
+    if isinstance(value, dict):
+        return value
+    return {"insufficient_data": True}
 
 
 def _history_bar(history: list[dict[str, Any]]) -> str:
@@ -129,7 +204,11 @@ def _run_rows(status: Mapping[str, Any]) -> str:
     return "\n".join(rows)
 
 
-def render_status_page(status: Mapping[str, Any], history: list[dict[str, Any]]) -> str:
+def render_status_page(
+    status: Mapping[str, Any],
+    history: list[dict[str, Any]],
+    uptime: Mapping[str, Any] | None = None,
+) -> str:
     generated_at = str(status.get("generated_at") or "")
     now = _parse_timestamp(generated_at) if generated_at else datetime.now(UTC)
     history = _history_window(history, now=now)
@@ -166,7 +245,9 @@ def render_status_page(status: Mapping[str, Any], history: list[dict[str, Any]])
       --muted: #657168;
       --line: #d2dacd;
       --ok: #1f7a50;
+      --amber: #b7791f;
       --warn: #c8664f;
+      --gray: #717a72;
       --teal: #1d7b83;
       --white: #fffefa;
     }}
@@ -200,6 +281,11 @@ def render_status_page(status: Mapping[str, Any], history: list[dict[str, Any]])
     .badge b {{ color: var(--muted); font-size: 0.78rem; text-transform: uppercase; }}
     .badge.ok {{ border-color: color-mix(in srgb, var(--ok), var(--line)); color: var(--ok); }}
     .badge.warn {{ border-color: color-mix(in srgb, var(--warn), var(--line)); color: var(--warn); }}
+    .sla {{ display: inline-block; padding: 4px 8px; border: 1px solid var(--line); font-size: 0.78rem; }}
+    .sla.green {{ color: var(--ok); border-color: var(--ok); }}
+    .sla.amber {{ color: var(--amber); border-color: var(--amber); }}
+    .sla.red {{ color: var(--warn); border-color: var(--warn); }}
+    .sla.gray {{ color: var(--gray); border-color: var(--line); }}
     section {{ margin-top: 30px; }}
     .history {{ display: flex; align-items: end; gap: 4px; min-height: 44px; }}
     .bar {{ display: inline-block; width: 18px; height: 34px; background: var(--ok); }}
@@ -222,6 +308,10 @@ def render_status_page(status: Mapping[str, Any], history: list[dict[str, Any]])
     <div class="badges" aria-label="Status badges">
       {badges}
     </div>
+    <section>
+      <h2>Rolling uptime</h2>
+      {_uptime_table(uptime)}
+    </section>
     <section>
       <h2>30-day history</h2>
       <div class="history" aria-label="30-day historical status bar">
@@ -248,24 +338,35 @@ def build_status_page(
     status_path: Path = DEFAULT_STATUS_PATH,
     output_path: Path = DEFAULT_OUTPUT_PATH,
     history_path: Path = DEFAULT_HISTORY_PATH,
+    uptime_path: Path = DEFAULT_UPTIME_PATH,
+    append: bool = True,
 ) -> None:
     status = json.loads(status_path.read_text(encoding="utf-8"))
-    history = append_history(status, history_path)
+    history = append_history(status, history_path) if append else load_history(history_path)
+    uptime = json.loads(uptime_path.read_text(encoding="utf-8")) if uptime_path.exists() else None
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(render_status_page(status, history), encoding="utf-8")
+    output_path.write_text(render_status_page(status, history, uptime), encoding="utf-8")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build the static Knoema status page.")
     parser.add_argument("--status", type=Path, default=DEFAULT_STATUS_PATH)
     parser.add_argument("--history", type=Path, default=DEFAULT_HISTORY_PATH)
+    parser.add_argument("--uptime", type=Path, default=DEFAULT_UPTIME_PATH)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_PATH)
+    parser.add_argument(
+        "--no-append",
+        action="store_true",
+        help="Render with the existing history without appending the current status.",
+    )
     args = parser.parse_args()
 
     build_status_page(
         status_path=args.status,
         history_path=args.history,
+        uptime_path=args.uptime,
         output_path=args.output,
+        append=not args.no_append,
     )
     print(f"wrote {args.output}")
 
