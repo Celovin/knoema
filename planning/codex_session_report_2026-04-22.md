@@ -38,3 +38,9 @@
 - Slot C commit: 0effae4b76d5474bf4a9d69dbc433b5eb90edfdb. Follow-up hard-rule fix commit: 07018b202be47eb9f04fdfce6292a403c0bebbaf. Acceptance proof: Korean and English Didimdol PDFs are one page, deterministic, source-cited, and forbidden-scan clean; generator no longer stores tracked forbidden-token literals.
 - Slot D commit: 113492ace0dcdf4fcf21f82e694449429a8b7d9c. Acceptance proof: README locale parity checker exits 0 locally and is enforced by `.github/workflows/readme-parity.yml`.
 - Final gate after Slot D follow-up fix: pytest 614 passed, 2 skipped, 5 warnings in 126.39s; Ruff `All checks passed!`; Mypy `Success: no issues found in 98 source files`; encoding guard 3 passed; Gradio compatibility OK; Plotly enum safety 4 passed; slot-surface forbidden text scan 0 matches; PDF extracted-text forbidden scan 0 matches.
+
+## Sequential Slot A - 5K Replay Extension (2026-04-22)
+
+- Commit: 6f3ac76ae03337d9e1b3e99fdc9d35163692a24a
+- Acceptance proof: benchmark deterministic JSONL SHA256 `78a71d9504d602e810043cf3eb6c2b5730865a89cf600b6ed77eb490893ba9e3`; benchmark output hash `923f55541e1f5e079c2c5e9af58693048d6079ae25a7c07b49dec037248deb26`; 5K msgpack size 4,779,728 bytes; viewer 5K load time 0.293s via file:// + Load files fallback; 20x replay final-tick wall-clock 1.761s; existing 100-agent and 1K msgpack SHA256 values matched `demo/replay/SHA256SUMS.json`.
+- Gate results: pytest 619 passed, 2 skipped, 5 warnings; ruff clean; mypy clean; encoding guard 3 passed; Gradio compatibility pass; Plotly enum safety 4 passed; forbidden-entity scan 0 matches; `python demo/replay/generate_replay.py --scenario 5k --verify-existing` passed; `git push origin main` succeeded.
