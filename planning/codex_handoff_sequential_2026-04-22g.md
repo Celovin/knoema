@@ -441,30 +441,25 @@ Acceptance evidence:
 
 ---
 
-## 6. Slot F - Site-Snapshot Landing Stub + Brand Token Scaffold
+## 6. Slot F - Brand Token Scaffold (Landing Already Shipped)
 
-Effort estimate: 2-3 hours.
-Rationale: Claude Designer is producing the final `luvoire.com` landing separately. Slot F lands a minimal placeholder stub so any visitor hitting luvoire.com through the status page or pricing page footer cross-link does not get a 404. Also ships a `brand/` directory with color, typography, and logo-placeholder tokens so the landing page and future marketing assets have a single source of truth.
+Effort estimate: 1-2 hours.
+Rationale: The Claude Designer final landing landed ahead of v7 dispatch as `site-snapshot/{index.html, styles.css, app.js, hero.js}` (total ~69 KB, multi-file, Luvoire branded, Korean + English toggle, H1 = 'Replayable city-scale simulation.'). Slot F's originally-planned placeholder stub is therefore obsolete. Slot F now only ships the `brand/` token scaffold and the landing-deploy documentation; it MUST NOT overwrite the live landing files.
 
 ### 6.1 Inputs
 
-- `site-snapshot/index.html` (new)
 - `brand/tokens.json` (new)
 - `brand/README.md` (new)
 - `brand/logo-placeholder.svg` (new)
-- `site-snapshot/pricing.html`, `site-snapshot/status.html` (touched in Slot D for title/H1; Slot F adds footer cross-link to new landing)
+- `docs/landing-deploy.md` (new)
+- `site-snapshot/{index.html, styles.css, app.js, hero.js}` (already present; READ ONLY in Slot F)
+- `site-snapshot/pricing.html`, `site-snapshot/status.html` (touched in Slot D for title/H1; Slot F may add footer cross-link to `index.html` if missing)
 
 ### 6.2 Deliverables
 
-1. `site-snapshot/index.html` (new, self-contained, ≤ 15 KB):
-   - H1: `Luvoire`
-   - Subhead: `Deterministic multi-agent simulation engine. Pronounced /luː.vwaʁ/ (루부아르).`
-   - One paragraph: short product summary.
-   - Three links: `Pricing` (`./pricing.html`), `Status` (`./status.html`), `GitHub` (canonical repo URL via `data-repo-url` attribute, filled by a build script so the URL is not hand-typed).
-   - Footer: `Celovin · hello@celovin.com · Luvoire is in beta.`
-   - Inline CSS, no external assets, no JS.
-   - Accessibility: single landmark, logical heading order, proper lang attribute (`en` with Korean inline span for 루부아르).
-   - This is a placeholder stub. The Claude Designer landing will later replace this; Slot F documents the replacement path in `docs/landing-deploy.md`.
+1. `site-snapshot/index.html` + siblings (already present):
+   - Codex MUST NOT modify, overwrite, or delete these files. They were shipped via the Claude Designer handoff bundle before v7 dispatch.
+   - Codex MUST verify the files exist at slot-close and include their byte sizes in the completion report.
 
 2. `brand/tokens.json` (design tokens, deterministic JSON, sorted keys):
    ```json
@@ -504,33 +499,38 @@ Rationale: Claude Designer is producing the final `luvoire.com` landing separate
    - Marked with `<!-- placeholder; replace with Claude Designer final -->` comment.
 
 5. `docs/landing-deploy.md` (new):
-   - How the placeholder stub sits at `luvoire.com` pending Claude Designer handoff.
-   - How to replace the stub with the final Next.js landing once Designer ships.
-   - Rollback procedure if Designer's landing has issues.
+   - How the shipped landing (`site-snapshot/{index.html, styles.css, app.js, hero.js}`) is hosted at `luvoire.com` once DNS is wired.
+   - Routing map: `/` -> index.html, `/pricing` -> pricing.html, `/status` -> status.html.
+   - Replacement procedure if the landing needs to be reissued from a fresh Claude Designer bundle.
+   - Rollback procedure via git revert on the landing commit.
 
 6. `site-snapshot/pricing.html`, `site-snapshot/status.html`:
    - Footer gains a `Home -> index.html` link.
    - Total file size budget: `pricing.html` ≤ 10 KB (was 8,489 bytes), `status.html` ≤ 8 KB (v6 target).
 
 7. Tests:
-   - `tests/test_landing_placeholder.py` (new):
-     - `site-snapshot/index.html` exists and is ≤ 15 KB.
-     - HTML validates (well-formed).
-     - No emoji (regex scan).
-     - Pronunciation string `/luː.vwaʁ/` present.
-     - Three outbound links resolve to relative paths.
+
+   - `tests/test_landing_shipped.py` (new):
+     - Asserts `site-snapshot/{index.html, styles.css, app.js, hero.js}` all exist.
+     - Records their byte sizes (no upper bound — landing is a real design, not a stub).
+     - No emoji in `index.html` (regex scan).
+     - No forbidden entity strings in any of the 4 files (regex scan for Litheon, Seizn, Ovriel, Fangden, Notrivo, Milkypix, Yami, Qwen3.5-35B-A3B).
+     - Pronunciation string `/luː.vwɑːr/` present in `index.html`.
+     - Post-Slot-D: `knoema` / `Knoema` token count in the 4 files is zero (allowlist has NO entries for `site-snapshot/`).
+     - Internal link targets (`pricing.html`, `status.html`) resolve to existing siblings.
    - `tests/test_brand_tokens.py` (new):
      - `brand/tokens.json` parses and contains all expected keys.
      - Colors are valid hex.
-     - Pronunciation matches `/luː.vwaʁ/` exactly.
+     - Pronunciation matches `/luː.vwɑːr/` exactly (note: the actually-shipped landing uses `ɑ` not `a`; tokens MUST match the landing so the two sources do not drift).
 
 ### 6.3 Completion Report
 
-Commit message: `feat(brand): add luvoire landing stub and brand token scaffold`.
+Commit message: `feat(brand): ship brand token scaffold and landing-deploy docs (landing pre-shipped)`.
 
 Acceptance evidence:
-- `site-snapshot/index.html` size ≤ 15 KB.
-- `brand/tokens.json` parses and tests green.
+- `site-snapshot/{index.html, styles.css, app.js, hero.js}` exist, unmodified from pre-v7 state, with byte sizes recorded.
+- `brand/tokens.json` parses and tests green; `ipa` field matches the landing's pronunciation glyph exactly.
+- `docs/landing-deploy.md` rendered under mkdocs strict with the routing map.
 - Pricing and status footer cross-links to landing work locally.
 
 ---
@@ -545,7 +545,7 @@ Create `planning/NIGHT_REPORT_knoema_sequential_v7_2026-04-22.md` (filename reta
 4. `git grep -E '\bknoema\b'` final tally with allowlist breakdown (expected locations: `src/knoema_compat/`, `planning/`, `CHANGELOG.md` pre-v7 lines, historical reports, the landing pronunciation-context example if any).
 5. Secret-pattern and forbidden-entity scan results on the cumulative v7 diff: 0 / 0.
 6. Attribution + SBOM regenerated content showing `Luvoire` component name.
-7. `site-snapshot/index.html` final byte size and rendered content summary.
+7. `site-snapshot/{index.html, styles.css, app.js, hero.js}` final byte sizes (all untouched by v7 post-landing-ship) + `brand/tokens.json` IPA string + docs/landing-deploy.md presence.
 8. Deprecation warning trace: one sample log line showing the old env var fallback emitting its warning correctly.
 9. User-action checklist (GitHub repo rename, PyPI squat, DNS, landing replacement) with status.
 
@@ -553,10 +553,10 @@ Create `planning/NIGHT_REPORT_knoema_sequential_v7_2026-04-22.md` (filename reta
 
 ## 8. What This Handoff Does NOT Include
 
-- Renaming the GitHub repository (`Celovin/knoema` -> `Celovin/luvoire`). User action only. Codex reminds in Slot F completion report.
+- Renaming the GitHub repository (`Celovin/knoema` -> `Celovin/luvoire`). ALREADY COMPLETED before v7 dispatch; Slot F completion report MUST confirm the current `origin` URL points at `Celovin/luvoire`.
 - Registering `luvoire-engine` on PyPI. User decides timing.
 - Pointing `luvoire.com` DNS. User action.
-- Claude Designer's final Next.js landing page. Slot F ships a placeholder stub only.
+- The Claude Designer final landing. ALREADY SHIPPED pre-dispatch at `site-snapshot/{index.html, styles.css, app.js, hero.js}`. Slot F MUST NOT modify these files.
 - Renaming the HF Space slug. User action; Slot E script accepts both old and new slugs via env var.
 - Trademark filings with USPTO or KIPO.
 - Rewriting historical artifacts under `planning/`, old session reports, old night reports, pre-v7 CHANGELOG entries, prior release tags.
@@ -578,4 +578,4 @@ Create `planning/NIGHT_REPORT_knoema_sequential_v7_2026-04-22.md` (filename reta
 10. Compatibility shim `import knoema` raises ImportError instead of emitting DeprecationWarning.
 11. Playground Space cold-start fails post-rename and the failure is not a known user-action blocker (HF Space slug rename).
 12. Attribution or SBOM drift check fails after regeneration.
-13. `site-snapshot/index.html` exceeds 15 KB.
+13. Any `site-snapshot/{index.html, styles.css, app.js, hero.js}` file is modified by a v7 slot (Slot D rewrites `Knoema` -> `Luvoire` tokens but the landing is already Luvoire-pure — no edits expected; Slot F is read-only for these files).
