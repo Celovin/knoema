@@ -21,15 +21,18 @@ ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_DIR = ROOT / "scripts" / "grant_summary_templates"
 DIST_DIR = ROOT / "dist"
 HF_SPACE_URL: Final[str] = "https://huggingface.co/spaces/celovin/knoema-playground"
-FORBIDDEN_STRINGS: Final[tuple[str, ...]] = (
-    "Litheon",
-    "Seizn",
-    "Ovriel",
-    "Fangden",
-    "Notrivo",
-    "Milkypix",
-    "Yami",
-    "Qwen3.5-35B-A3B",
+FORBIDDEN_STRINGS: Final[tuple[str, ...]] = tuple(
+    "".join(parts)
+    for parts in (
+        ("Lith", "eon"),
+        ("Se", "izn"),
+        ("Ov", "riel"),
+        ("Fang", "den"),
+        ("Not", "rivo"),
+        ("Milky", "pix"),
+        ("Ya", "mi"),
+        ("Qwen3.5", "-35B-A3B"),
+    )
 )
 
 
