@@ -2,20 +2,16 @@
 
 from __future__ import annotations
 
-from typing import cast
+from typing import Annotated, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
-from knoema.api.auth import require_api_key
-from knoema.api.rate_limit import enforce_rate_limit
+from knoema.api.auth import AuthenticatedTenant
 from knoema.api.schemas import ApiEventConfig, InjectedEventResponse
 from knoema.api.service import SimulationNotFoundError, SimulationService, SimulationStateError
+from knoema.api.tier_rate_limit import enforce_tier_rate_limit
 
-router = APIRouter(
-    prefix="/simulations",
-    tags=["events"],
-    dependencies=[Depends(require_api_key), Depends(enforce_rate_limit)],
-)
+router = APIRouter(prefix="/simulations", tags=["events"])
 
 
 def _service_from_request(request: Request) -> SimulationService:
@@ -27,7 +23,9 @@ def inject_event(
     simulation_id: str,
     event_request: ApiEventConfig,
     request: Request,
+    tenant: Annotated[AuthenticatedTenant, Depends(enforce_tier_rate_limit)],
 ) -> InjectedEventResponse:
+    _ = tenant
     service = _service_from_request(request)
     try:
         record = service.get(simulation_id)

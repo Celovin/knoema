@@ -13,7 +13,7 @@ def test_api_key_issue_verify_revoke_and_hash_only_storage() -> None:
 
     key_id, raw_secret = manager.issue("tenant-a", "llm:invoke")
 
-    assert raw_secret.startswith("knm_")
+    assert raw_secret.startswith(f"knoema_{key_id}_")
     assert manager.verify(raw_secret) == "tenant-a"
     stored = manager.store.get(key_id)
     assert stored is not None
@@ -36,6 +36,7 @@ def test_api_key_rotation_keeps_old_key_temporarily_valid() -> None:
     assert old_record is not None
     assert old_record.expires_at is not None
     assert old_record.rotated_to_key_id == new_key_id
+    assert new_secret.startswith(f"knoema_{new_key_id}_")
 
 
 def test_constant_time_comparison_function_is_used(monkeypatch: pytest.MonkeyPatch) -> None:

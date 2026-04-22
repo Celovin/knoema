@@ -6,6 +6,8 @@ from fastapi.testclient import TestClient
 
 from knoema.api.rate_limit import RateLimiter
 from knoema.api.server import create_app
+from knoema.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore
+from knoema.billing.tiers import TierName
 
 
 def _simulation_payload(*, stream_delay_seconds: float = 0.0) -> dict[str, object]:
@@ -44,6 +46,12 @@ def _simulation_payload(*, stream_delay_seconds: float = 0.0) -> dict[str, objec
     }
 
 
+def _app_and_headers(tier: TierName = "pro") -> tuple[object, dict[str, str]]:
+    manager = APIKeyManager(InMemoryAPIKeyStore())
+    _key_id, token = manager.issue("tenant-api-test", "llm:invoke", tier=tier)
+    return create_app(api_key_manager=manager), {"Authorization": f"Bearer {token}"}
+
+
 def _wait_for_completion(client: TestClient, simulation_id: str) -> dict[str, object]:
     for _ in range(200):
         response = client.get(f"/simulations/{simulation_id}")
@@ -72,8 +80,9 @@ def test_api_openapi_lists_simulation_routes() -> None:
 
 
 def test_api_create_simulation_returns_status_payload() -> None:
-    with TestClient(create_app()) as client:
-        response = client.post("/simulations", json=_simulation_payload())
+    app, headers = _app_and_headers()
+    with TestClient(app) as client:
+        response = client.post("/simulations", json=_simulation_payload(), headers=headers)
     assert response.status_code == 201
     payload = response.json()
     assert payload["simulation_id"]
@@ -82,18 +91,21 @@ def test_api_create_simulation_returns_status_payload() -> None:
 
 
 def test_api_simulation_status_reaches_completed_state() -> None:
-    with TestClient(create_app()) as client:
-        created = client.post("/simulations", json=_simulation_payload()).json()
+    app, headers = _app_and_headers()
+    with TestClient(app) as client:
+        created = client.post("/simulations", json=_simulation_payload(), headers=headers).json()
         payload = _wait_for_completion(client, created["simulation_id"])
     assert payload["status"] == "completed"
     assert payload["completed_ticks"] == payload["total_ticks"]
 
 
 def test_api_websocket_stream_emits_logs_and_terminal_status() -> None:
-    with TestClient(create_app()) as client:
+    app, headers = _app_and_headers()
+    with TestClient(app) as client:
         created = client.post(
             "/simulations",
             json=_simulation_payload(stream_delay_seconds=0.005),
+            headers=headers,
         ).json()
         simulation_id = created["simulation_id"]
         log_messages = 0
@@ -110,8 +122,9 @@ def test_api_websocket_stream_emits_logs_and_terminal_status() -> None:
 
 
 def test_api_agents_endpoint_lists_agent_snapshots() -> None:
-    with TestClient(create_app()) as client:
-        created = client.post("/simulations", json=_simulation_payload()).json()
+    app, headers = _app_and_headers()
+    with TestClient(app) as client:
+        created = client.post("/simulations", json=_simulation_payload(), headers=headers).json()
         _wait_for_completion(client, created["simulation_id"])
         response = client.get(f"/simulations/{created['simulation_id']}/agents")
     assert response.status_code == 200
@@ -121,8 +134,9 @@ def test_api_agents_endpoint_lists_agent_snapshots() -> None:
 
 
 def test_api_agent_memory_endpoint_returns_recent_memories() -> None:
-    with TestClient(create_app()) as client:
-        created = client.post("/simulations", json=_simulation_payload()).json()
+    app, headers = _app_and_headers()
+    with TestClient(app) as client:
+        created = client.post("/simulations", json=_simulation_payload(), headers=headers).json()
         _wait_for_completion(client, created["simulation_id"])
         response = client.get(f"/simulations/{created['simulation_id']}/agents/agent-0/memory")
     assert response.status_code == 200
@@ -132,10 +146,12 @@ def test_api_agent_memory_endpoint_returns_recent_memories() -> None:
 
 
 def test_api_event_injection_schedules_new_event() -> None:
-    with TestClient(create_app()) as client:
+    app, headers = _app_and_headers()
+    with TestClient(app) as client:
         created = client.post(
             "/simulations",
             json=_simulation_payload(stream_delay_seconds=0.01),
+            headers=headers,
         ).json()
         response = client.post(
             f"/simulations/{created['simulation_id']}/events",
@@ -144,16 +160,19 @@ def test_api_event_injection_schedules_new_event() -> None:
                 "participants": ["agent-0"],
                 "description": "A moderator posts a short notice.",
             },
+            headers=headers,
         )
     assert response.status_code == 200
     assert response.json()["scheduled_events"] >= 1
 
 
 def test_api_delete_removes_simulation() -> None:
-    with TestClient(create_app()) as client:
+    app, headers = _app_and_headers()
+    with TestClient(app) as client:
         created = client.post(
             "/simulations",
             json=_simulation_payload(stream_delay_seconds=0.01),
+            headers=headers,
         ).json()
         deleted = client.delete(f"/simulations/{created['simulation_id']}")
         missing = client.get(f"/simulations/{created['simulation_id']}")
@@ -161,14 +180,14 @@ def test_api_delete_removes_simulation() -> None:
     assert missing.status_code == 404
 
 
-def test_api_requires_bearer_token_when_env_key_is_present(monkeypatch) -> None:
-    monkeypatch.setenv("KNOEMA_API_KEY", "secret-token")
-    with TestClient(create_app()) as client:
+def test_api_requires_tenant_bearer_token_for_writes() -> None:
+    app, headers = _app_and_headers()
+    with TestClient(app) as client:
         missing = client.post("/simulations", json=_simulation_payload())
         ok = client.post(
             "/simulations",
             json=_simulation_payload(),
-            headers={"Authorization": "Bearer secret-token"},
+            headers=headers,
         )
     assert missing.status_code == 401
     assert ok.status_code == 201

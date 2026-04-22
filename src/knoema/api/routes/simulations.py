@@ -2,20 +2,19 @@
 
 from __future__ import annotations
 
-from typing import cast
+from typing import Annotated, cast
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 
-from knoema.api.auth import require_api_key
+from knoema.api.auth import AuthenticatedTenant
 from knoema.api.rate_limit import enforce_rate_limit
 from knoema.api.schemas import CreateSimulationRequest, SimulationStatusResponse
 from knoema.api.service import SimulationNotFoundError, SimulationRecord, SimulationService
+from knoema.api.tier_rate_limit import enforce_tier_rate_limit
+from knoema.api.usage_middleware import record_request_usage
+from knoema.billing.tiers import is_model_allowed
 
-router = APIRouter(
-    prefix="/simulations",
-    tags=["simulations"],
-    dependencies=[Depends(require_api_key), Depends(enforce_rate_limit)],
-)
+router = APIRouter(prefix="/simulations", tags=["simulations"])
 
 
 def _service_from_request(request: Request) -> SimulationService:
@@ -36,14 +35,55 @@ def _status_response(record: SimulationRecord) -> SimulationStatusResponse:
     )
 
 
-@router.post("", response_model=SimulationStatusResponse, status_code=status.HTTP_201_CREATED)
-def create_simulation(request_body: CreateSimulationRequest, request: Request) -> SimulationStatusResponse:
+def _ensure_model_allowed(tenant: AuthenticatedTenant, model: str) -> None:
+    if is_model_allowed(tenant.tier, model):
+        return
+    raise HTTPException(
+        status_code=status.HTTP_402_PAYMENT_REQUIRED,
+        detail=f"Upgrade tier to use model '{model}'.",
+    )
+
+
+def _create_simulation_response(
+    request_body: CreateSimulationRequest,
+    request: Request,
+    tenant: AuthenticatedTenant,
+    model: str,
+) -> SimulationStatusResponse:
+    _ensure_model_allowed(tenant, model)
     service = _service_from_request(request)
     record = service.create(request_body)
+    record_request_usage(
+        request,
+        model=model,
+        input_tokens=len(request_body.agents),
+        output_tokens=record.total_ticks,
+        cost_usd="0",
+    )
     return _status_response(record)
 
 
-@router.get("/{simulation_id}", response_model=SimulationStatusResponse)
+@router.post("", response_model=SimulationStatusResponse, status_code=status.HTTP_201_CREATED)
+def create_simulation(
+    request_body: CreateSimulationRequest,
+    request: Request,
+    tenant: Annotated[AuthenticatedTenant, Depends(enforce_tier_rate_limit)],
+    model: str = Query(default="gpt-5.4-mini"),
+) -> SimulationStatusResponse:
+    return _create_simulation_response(request_body, request, tenant, model)
+
+
+@router.post("/run", response_model=SimulationStatusResponse)
+def run_simulation(
+    request_body: CreateSimulationRequest,
+    request: Request,
+    tenant: Annotated[AuthenticatedTenant, Depends(enforce_tier_rate_limit)],
+    model: str = Query(default="gpt-5.4-mini"),
+) -> SimulationStatusResponse:
+    return _create_simulation_response(request_body, request, tenant, model)
+
+
+@router.get("/{simulation_id}", response_model=SimulationStatusResponse, dependencies=[Depends(enforce_rate_limit)])
 def get_simulation(simulation_id: str, request: Request) -> SimulationStatusResponse:
     service = _service_from_request(request)
     try:
@@ -53,7 +93,7 @@ def get_simulation(simulation_id: str, request: Request) -> SimulationStatusResp
     return _status_response(record)
 
 
-@router.delete("/{simulation_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{simulation_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(enforce_rate_limit)])
 def delete_simulation(simulation_id: str, request: Request) -> Response:
     service = _service_from_request(request)
     try:

@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import asyncio
 
-from fastapi import APIRouter, WebSocket, status
+from fastapi import APIRouter, WebSocket, WebSocketException, status
 
-from knoema.api.auth import require_websocket_api_key
+from knoema.api.auth import optional_websocket_tenant, require_websocket_api_key
 from knoema.api.rate_limit import enforce_websocket_rate_limit
 from knoema.api.service import SimulationNotFoundError
+from knoema.api.tier_rate_limit import TierRateLimiter
 
 router = APIRouter(tags=["stream"])
 
@@ -16,7 +17,19 @@ router = APIRouter(tags=["stream"])
 @router.websocket("/simulations/{simulation_id}/stream")
 async def stream_simulation(simulation_id: str, websocket: WebSocket) -> None:
     require_websocket_api_key(websocket)
-    enforce_websocket_rate_limit(websocket)
+    tenant = optional_websocket_tenant(websocket)
+    if tenant is None:
+        enforce_websocket_rate_limit(websocket)
+    else:
+        limiter = getattr(websocket.app.state, "tier_rate_limiter", None)
+        if limiter is None:
+            limiter = TierRateLimiter()
+            websocket.app.state.tier_rate_limiter = limiter
+        if not limiter.consume(tenant).allowed:
+            raise WebSocketException(
+                code=status.WS_1008_POLICY_VIOLATION,
+                reason="Tenant rate limit exceeded.",
+            )
     await websocket.accept()
     service = websocket.app.state.simulation_service
     cursor = 0

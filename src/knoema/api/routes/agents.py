@@ -6,7 +6,6 @@ from typing import cast
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
-from knoema.api.auth import require_api_key
 from knoema.api.rate_limit import enforce_rate_limit
 from knoema.api.schemas import AgentListResponse, AgentSummary, MemoryItem, MemoryListResponse
 from knoema.api.service import SimulationNotFoundError, SimulationService
@@ -14,7 +13,7 @@ from knoema.api.service import SimulationNotFoundError, SimulationService
 router = APIRouter(
     prefix="/simulations",
     tags=["agents"],
-    dependencies=[Depends(require_api_key), Depends(enforce_rate_limit)],
+    dependencies=[Depends(enforce_rate_limit)],
 )
 
 

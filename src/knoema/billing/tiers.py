@@ -27,14 +27,14 @@ TIER_LIMITS: dict[TierName, TierLimit] = {
     "pro": {
         "monthly_output_token_cap": 2_000_000,
         "concurrent_request_cap": 4,
-        "allowed_models": ("gpt-5.4-mini", "gpt-4.1-mini", "claude-3-7-sonnet-latest"),
+        "allowed_models": ("gpt-5.4-mini", "gpt-4.1-mini", "gpt-4o", "claude-3-7-sonnet-latest"),
         "api_key_sources": ("pass_through",),
         "metering_model": "metered-pass-through-with-markup",
     },
     "team": {
         "monthly_output_token_cap": 10_000_000,
         "concurrent_request_cap": 16,
-        "allowed_models": ("gpt-5.4-mini", "gpt-5.4", "gpt-4.1-mini", "claude-3-7-sonnet-latest"),
+        "allowed_models": ("gpt-5.4-mini", "gpt-5.4", "gpt-4.1-mini", "gpt-4o", "claude-3-7-sonnet-latest"),
         "api_key_sources": ("pass_through",),
         "metering_model": "workspace-metered-pass-through-with-markup",
     },
