@@ -1,0 +1,2801 @@
+%PDF-1.4
+%“Œ‹ž ReportLab Generated PDF document (opensource)
+1 0 obj
+<<
+/F1 2 0 R /F2 3 0 R /F3 4 0 R
+>>
+endobj
+2 0 obj
+<<
+/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
+>>
+endobj
+3 0 obj
+<<
+/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
+>>
+endobj
+4 0 obj
+<<
+/BaseFont /Times-Roman /Encoding /WinAnsiEncoding /Name /F3 /Subtype /Type1 /Type /Font
+>>
+endobj
+5 0 obj
+<<
+/Contents 9 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 8 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+6 0 obj
+<<
+/PageMode /UseNone /Pages 8 0 R /Type /Catalog
+>>
+endobj
+7 0 obj
+<<
+/Author (Celovin) /CreationDate (D:19700101000000+00'00') /Creator (anonymous) /Keywords () /ModDate (D:19700101000000+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+  /Subject (Didimdol grant one-page summary) /Title (Knoema Didimdol Onepager EN) /Trapped /False
+>>
+endobj
+8 0 obj
+<<
+/Count 1 /Kids [ 5 0 R ] /Type /Pages
+>>
+endobj
+9 0 obj
+<<
+/Length 79069
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+.090196 .129412 .109804 rg
+BT /F2 21 Tf 25.2 TL ET
+BT 1 0 0 1 28.3465 805.5433 Tm (Knoema Engine) Tj T* ET
+.121569 .478431 .360784 rg
+BT /F1 9 Tf 10.8 TL ET
+BT 1 0 0 1 28.3465 789.5433 Tm (Open runtime for persistent NPCs, synthetic replay research, and reproducible agent simulation.) Tj T* ET
+.721569 .784314 .745098 RG
+n 28.3465 779.5433 m 566.9291 779.5433 l S
+.121569 .478431 .360784 rg
+BT /F2 11 Tf 13.2 TL ET
+BT 1 0 0 1 28.3465 755.5433 Tm (Triple-use narrative) Tj T* ET
+.090196 .129412 .109804 rg
+BT /F1 8.5 Tf 10.2 TL ET
+BT 1 0 0 1 28.3465 741.5433 Tm (Pedagogical criminology: fictional, non-identifying replay overlays for classroom safety discussions.) Tj T* ET
+BT /F1 8.5 Tf 10.2 TL ET
+BT 1 0 0 1 28.3465 727.5433 Tm (Reproducibility research: seed-fixed configs, logs, and benchmark artifacts for auditable agent studies.) Tj T* ET
+BT /F1 8.5 Tf 10.2 TL ET
+BT 1 0 0 1 28.3465 713.5433 Tm (Game-studio demo: persistent-memory NPC runtime with adapters, replay viewer, and voice playback surface.) Tj T* ET
+.121569 .478431 .360784 rg
+BT /F2 11 Tf 13.2 TL ET
+BT 1 0 0 1 28.3465 694.5433 Tm (Top benchmark numbers) Tj T* ET
+.090196 .129412 .109804 rg
+BT /F1 8.5 Tf 10.2 TL ET
+BT 1 0 0 1 28.3465 680.5433 Tm (LoCoMo-inspired long-term conversational retention proxy: 1.000 / target 0.800 \(source:) Tj T* ET
+BT 1 0 0 1 28.3465 669.5433 Tm (benchmarks/memory_benchmark_integration/results/summary.json rows[0].score,target\)) Tj T* ET
+BT /F1 8.5 Tf 10.2 TL ET
+BT 1 0 0 1 28.3465 655.5433 Tm (MemoryAgentBench-inspired EventQA + FactConsolidation proxy: 1.000 / target 0.800 \(source:) Tj T* ET
+BT 1 0 0 1 28.3465 644.5433 Tm (benchmarks/memory_benchmark_integration/results/summary.json rows[1].score,target\)) Tj T* ET
+BT /F1 8.5 Tf 10.2 TL ET
+BT 1 0 0 1 28.3465 630.5433 Tm (MemoryArena-inspired decision-relevant memory proxy: 1.000 / target 0.600 \(source:) Tj T* ET
+BT 1 0 0 1 28.3465 619.5433 Tm (benchmarks/memory_benchmark_integration/results/summary.json rows[2].score,target\)) Tj T* ET
+.121569 .478431 .360784 rg
+BT /F2 11 Tf 13.2 TL ET
+BT 1 0 0 1 28.3465 600.5433 Tm (1K-agent scale proof) Tj T* ET
+.090196 .129412 .109804 rg
+BT /F1 8.5 Tf 10.2 TL ET
+BT 1 0 0 1 28.3465 586.5433 Tm (1000 agents x 100 ticks ran deterministically in 13.085s at 7642.50 agent-ticks/sec, peak RSS 144.426 MB \(source:) Tj T* ET
+BT 1 0 0 1 28.3465 575.5433 Tm (benchmarks/city_scale_1k_report.md lines 4, 5, 12-14\).) Tj T* ET
+.121569 .478431 .360784 rg
+BT /F2 11 Tf 13.2 TL ET
+BT 1 0 0 1 28.3465 556.5433 Tm (Demo and paper status) Tj T* ET
+.090196 .129412 .109804 rg
+BT /F1 8.5 Tf 10.2 TL ET
+BT 1 0 0 1 28.3465 542.5433 Tm (HF Space: https://huggingface.co/spaces/celovin/knoema-playground) Tj T* ET
+BT /F1 8.5 Tf 10.2 TL ET
+BT 1 0 0 1 28.3465 528.5433 Tm (arXiv:<pending>) Tj T* ET
+.929412 .960784 .937255 rg
+n 486.9291 681.5433 80 98 re f*
+q
+1 0 0 1 494.9291 691.5433 cm
+0 0 0 RG
+1 w
+0 J
+0 j
+[] 0 d
+0 0 0 rg
+BT /F3 10 Tf 12 TL ET
+BT /F3 10 Tf 12 TL ET
+q
+.705556 0 0 .705556 0 0 cm
+q
+1 0 0 1 0 0 cm
+q
+0 w
+0 J
+0 j
+[] 0 d
+n 0 0 90.70866 90.70866 re n
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 79.64663 15.48684 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 30.97369 79.64663 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 79.64663 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 48.67294 79.64663 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 59.73497 79.64663 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 79.64663 15.48684 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 77.43422 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 77.43422 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 77.43422 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 30.97369 77.43422 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 37.61091 77.43422 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 48.67294 77.43422 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 53.09775 77.43422 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 77.43422 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 79.64663 77.43422 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 75.22182 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 75.22182 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 75.22182 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 75.22182 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 42.03572 75.22182 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 53.09775 75.22182 11.06203 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 75.22182 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 70.797 75.22182 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 79.64663 75.22182 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 73.00941 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 73.00941 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 73.00941 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 73.00941 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 73.00941 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 39.82331 73.00941 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 46.46053 73.00941 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 57.52257 73.00941 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 61.94738 73.00941 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 73.00941 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 70.797 73.00941 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 79.64663 73.00941 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 70.797 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 70.797 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 70.797 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 28.76128 70.797 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 42.03572 70.797 19.91166 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 70.797 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 70.797 70.797 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 79.64663 70.797 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 68.5846 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 68.5846 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 68.5846 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 33.1861 68.5846 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 53.09775 68.5846 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 68.5846 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 79.64663 68.5846 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 66.37219 15.48684 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 66.37219 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 30.97369 66.37219 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 66.37219 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 39.82331 66.37219 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 44.24813 66.37219 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 48.67294 66.37219 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 53.09775 66.37219 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 57.52257 66.37219 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 61.94738 66.37219 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 66.37219 15.48684 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 28.76128 64.15978 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 39.82331 64.15978 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 44.24813 64.15978 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 53.09775 64.15978 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 61.94738 64.15978 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 61.94738 11.06203 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 61.94738 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 33.1861 61.94738 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 44.24813 61.94738 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 61.94738 61.94738 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 68.5846 61.94738 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 73.00941 61.94738 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 77.43422 61.94738 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 59.73497 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 30.97369 59.73497 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 59.73497 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 50.88535 59.73497 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 59.73497 59.73497 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 59.73497 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 75.22182 59.73497 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 57.52257 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 15.48684 57.52257 13.27444 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 30.97369 57.52257 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 37.61091 57.52257 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 48.67294 57.52257 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 53.09775 57.52257 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 57.52257 57.52257 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 61.94738 57.52257 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 70.797 57.52257 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 77.43422 57.52257 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 55.31016 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 15.48684 55.31016 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 55.31016 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 42.03572 55.31016 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 48.67294 55.31016 11.06203 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 61.94738 55.31016 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 55.31016 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 75.22182 55.31016 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 53.09775 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 17.69925 53.09775 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 28.76128 53.09775 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 53.09775 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 39.82331 53.09775 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 46.46053 53.09775 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 50.88535 53.09775 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 57.52257 53.09775 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 64.15978 53.09775 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 68.5846 53.09775 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 50.88535 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 50.88535 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 17.69925 50.88535 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 24.33647 50.88535 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 42.03572 50.88535 15.48684 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 59.73497 50.88535 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 50.88535 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 77.43422 50.88535 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 15.48684 48.67294 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 28.76128 48.67294 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 33.1861 48.67294 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 68.5846 48.67294 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 77.43422 48.67294 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 11.06203 46.46053 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 15.48684 46.46053 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 28.76128 46.46053 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 39.82331 46.46053 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 44.24813 46.46053 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 48.67294 46.46053 17.69925 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 70.797 46.46053 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 75.22182 46.46053 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 44.24813 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 44.24813 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 30.97369 44.24813 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 46.46053 44.24813 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 50.88535 44.24813 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 57.52257 44.24813 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 64.15978 44.24813 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 68.5846 44.24813 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 77.43422 44.24813 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 42.03572 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 17.69925 42.03572 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 42.03572 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 42.03572 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 48.67294 42.03572 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 59.73497 42.03572 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 42.03572 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 73.00941 42.03572 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 77.43422 42.03572 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 39.82331 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 39.82331 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 17.69925 39.82331 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 39.82331 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 37.61091 39.82331 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 48.67294 39.82331 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 53.09775 39.82331 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 73.00941 39.82331 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 77.43422 39.82331 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 11.06203 37.61091 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 17.69925 37.61091 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 24.33647 37.61091 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 37.61091 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 42.03572 37.61091 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 50.88535 37.61091 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 55.31016 37.61091 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 64.15978 37.61091 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 75.22182 37.61091 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 35.3985 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 17.69925 35.3985 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 35.3985 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 30.97369 35.3985 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 35.3985 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 39.82331 35.3985 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 46.46053 35.3985 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 50.88535 35.3985 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 57.52257 35.3985 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 68.5846 35.3985 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 77.43422 35.3985 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 33.1861 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 33.1861 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 17.69925 33.1861 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 24.33647 33.1861 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 44.24813 33.1861 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 50.88535 33.1861 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 59.73497 33.1861 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 33.1861 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 73.00941 33.1861 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 77.43422 33.1861 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 30.97369 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 30.97369 13.27444 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 28.76128 30.97369 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 42.03572 30.97369 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 48.67294 30.97369 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 53.09775 30.97369 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 64.15978 30.97369 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 70.797 30.97369 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 77.43422 30.97369 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 28.76128 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 28.76128 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 24.33647 28.76128 11.06203 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 39.82331 28.76128 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 44.24813 28.76128 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 50.88535 28.76128 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 59.73497 28.76128 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 64.15978 28.76128 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 73.00941 28.76128 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 26.54888 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 26.54888 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 19.91166 26.54888 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 26.54888 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 33.1861 26.54888 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 46.46053 26.54888 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 50.88535 26.54888 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 57.52257 26.54888 15.48684 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 79.64663 26.54888 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 24.33647 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 30.97369 24.33647 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 24.33647 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 44.24813 24.33647 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 48.67294 24.33647 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 61.94738 24.33647 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 70.797 24.33647 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 79.64663 24.33647 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 22.12406 15.48684 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 22.12406 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 30.97369 22.12406 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 37.61091 22.12406 11.06203 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 57.52257 22.12406 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 22.12406 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 70.797 22.12406 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 75.22182 22.12406 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 19.91166 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 19.91166 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 28.76128 19.91166 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 19.91166 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 42.03572 19.91166 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 50.88535 19.91166 13.27444 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 70.797 19.91166 11.06203 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 17.69925 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 17.69925 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 17.69925 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 17.69925 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 35.3985 17.69925 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 39.82331 17.69925 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 50.88535 17.69925 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 57.52257 17.69925 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 61.94738 17.69925 13.27444 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 77.43422 17.69925 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 15.48684 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 15.48684 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 15.48684 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 15.48684 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 30.97369 15.48684 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 44.24813 15.48684 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 50.88535 15.48684 11.06203 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 68.5846 15.48684 13.27444 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 13.27444 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 13.27444 13.27444 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 13.27444 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 13.27444 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 30.97369 13.27444 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 42.03572 13.27444 8.849626 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 53.09775 13.27444 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 57.52257 13.27444 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 61.94738 13.27444 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 13.27444 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 73.00941 13.27444 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 11.06203 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 22.12406 11.06203 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 11.06203 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 33.1861 11.06203 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 39.82331 11.06203 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 44.24813 11.06203 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 48.67294 11.06203 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 55.31016 11.06203 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 64.15978 11.06203 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 70.797 11.06203 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 8.849626 8.849626 15.48684 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 26.54888 8.849626 4.424813 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 33.1861 8.849626 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 46.46053 8.849626 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 50.88535 8.849626 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 57.52257 8.849626 6.637219 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 66.37219 8.849626 2.212406 2.212406 re f*
+Q
+q
+0 0 0 rg
+0 w
+0 J
+0 j
+[] 0 d
+n 77.43422 8.849626 2.212406 2.212406 re f*
+Q
+Q
+Q
+Q
+.317647 .392157 .352941 rg
+BT /F1 5.8 Tf 6.96 TL ET
+BT 1 0 0 1 505.9766 683.5433 Tm (HF Space demo) Tj T* ET
+q
+.933333 .952941 .937255 rg
+BT /F1 2.4 Tf 2.88 TL ET
+BT 1 0 0 1 28.3465 14 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 14.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 14 Tm (en-000) Tj T* ET
+BT 1 0 0 1 28.3465 16 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 16.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 16 Tm (en-001) Tj T* ET
+BT 1 0 0 1 28.3465 18 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 18.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 18 Tm (en-002) Tj T* ET
+BT 1 0 0 1 28.3465 20 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 20.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 20 Tm (en-003) Tj T* ET
+BT 1 0 0 1 28.3465 22 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 22.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 22 Tm (en-004) Tj T* ET
+BT 1 0 0 1 28.3465 24 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 24.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 24 Tm (en-005) Tj T* ET
+BT 1 0 0 1 28.3465 26 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 26.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 26 Tm (en-006) Tj T* ET
+BT 1 0 0 1 28.3465 28 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 28.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 28 Tm (en-007) Tj T* ET
+BT 1 0 0 1 28.3465 30 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 30.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 30 Tm (en-008) Tj T* ET
+BT 1 0 0 1 28.3465 32 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 32.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 32 Tm (en-009) Tj T* ET
+BT 1 0 0 1 28.3465 34 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 34.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 34 Tm (en-010) Tj T* ET
+BT 1 0 0 1 28.3465 36 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 36.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 36 Tm (en-011) Tj T* ET
+BT 1 0 0 1 28.3465 38 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 38.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 38 Tm (en-012) Tj T* ET
+BT 1 0 0 1 28.3465 40 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 40.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 40 Tm (en-013) Tj T* ET
+BT 1 0 0 1 28.3465 42 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 42.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 42 Tm (en-014) Tj T* ET
+BT 1 0 0 1 28.3465 44 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 44.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 44 Tm (en-015) Tj T* ET
+BT 1 0 0 1 28.3465 46 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 46.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 46 Tm (en-016) Tj T* ET
+BT 1 0 0 1 28.3465 48 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 48.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 48 Tm (en-017) Tj T* ET
+BT 1 0 0 1 28.3465 50 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 50.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 50 Tm (en-018) Tj T* ET
+BT 1 0 0 1 28.3465 52 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 52.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 52 Tm (en-019) Tj T* ET
+BT 1 0 0 1 28.3465 54 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 54.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 54 Tm (en-020) Tj T* ET
+BT 1 0 0 1 28.3465 56 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 56.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 56 Tm (en-021) Tj T* ET
+BT 1 0 0 1 28.3465 58 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 58.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 58 Tm (en-022) Tj T* ET
+BT 1 0 0 1 28.3465 60 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 60.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 60 Tm (en-023) Tj T* ET
+BT 1 0 0 1 28.3465 62 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 62.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 62 Tm (en-024) Tj T* ET
+BT 1 0 0 1 28.3465 64 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 64.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 64 Tm (en-025) Tj T* ET
+BT 1 0 0 1 28.3465 66 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 66.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 66 Tm (en-026) Tj T* ET
+BT 1 0 0 1 28.3465 68 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 68.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 68 Tm (en-027) Tj T* ET
+BT 1 0 0 1 28.3465 70 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 70.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 70 Tm (en-028) Tj T* ET
+BT 1 0 0 1 28.3465 72 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 72.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 72 Tm (en-029) Tj T* ET
+BT 1 0 0 1 28.3465 74 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 74.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 74 Tm (en-030) Tj T* ET
+BT 1 0 0 1 28.3465 76 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 76.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 76 Tm (en-031) Tj T* ET
+BT 1 0 0 1 28.3465 78 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 78.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 78 Tm (en-032) Tj T* ET
+BT 1 0 0 1 28.3465 80 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 80.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 80 Tm (en-033) Tj T* ET
+BT 1 0 0 1 28.3465 82 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 82.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 82 Tm (en-034) Tj T* ET
+BT 1 0 0 1 28.3465 84 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 84.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 84 Tm (en-035) Tj T* ET
+BT 1 0 0 1 28.3465 86 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 86.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 86 Tm (en-036) Tj T* ET
+BT 1 0 0 1 28.3465 88 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 88.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 88 Tm (en-037) Tj T* ET
+BT 1 0 0 1 28.3465 90 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 90.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 90 Tm (en-038) Tj T* ET
+BT 1 0 0 1 28.3465 92 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 92.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 92 Tm (en-039) Tj T* ET
+BT 1 0 0 1 28.3465 94 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 94.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 94 Tm (en-040) Tj T* ET
+BT 1 0 0 1 28.3465 96 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 96.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 96 Tm (en-041) Tj T* ET
+BT 1 0 0 1 28.3465 98 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 98.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 98 Tm (en-042) Tj T* ET
+BT 1 0 0 1 28.3465 100 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 100.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 100 Tm (en-043) Tj T* ET
+BT 1 0 0 1 28.3465 102 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 102.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 102 Tm (en-044) Tj T* ET
+BT 1 0 0 1 28.3465 104 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 104.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 104 Tm (en-045) Tj T* ET
+BT 1 0 0 1 28.3465 106 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 106.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 106 Tm (en-046) Tj T* ET
+BT 1 0 0 1 28.3465 108 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 108.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 108 Tm (en-047) Tj T* ET
+BT 1 0 0 1 28.3465 110 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 110.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 110 Tm (en-048) Tj T* ET
+BT 1 0 0 1 28.3465 112 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 112.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 112 Tm (en-049) Tj T* ET
+BT 1 0 0 1 28.3465 114 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 114.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 114 Tm (en-050) Tj T* ET
+BT 1 0 0 1 28.3465 116 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 116.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 116 Tm (en-051) Tj T* ET
+BT 1 0 0 1 28.3465 118 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 118.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 118 Tm (en-052) Tj T* ET
+BT 1 0 0 1 28.3465 120 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 120.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 120 Tm (en-053) Tj T* ET
+BT 1 0 0 1 28.3465 122 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 122.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 122 Tm (en-054) Tj T* ET
+BT 1 0 0 1 28.3465 124 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 124.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 124 Tm (en-055) Tj T* ET
+BT 1 0 0 1 28.3465 126 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 126.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 126 Tm (en-056) Tj T* ET
+BT 1 0 0 1 28.3465 128 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 128.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 128 Tm (en-057) Tj T* ET
+BT 1 0 0 1 28.3465 130 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 130.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 130 Tm (en-058) Tj T* ET
+BT 1 0 0 1 28.3465 132 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 132.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 132 Tm (en-059) Tj T* ET
+BT 1 0 0 1 28.3465 134 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 134.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 134 Tm (en-060) Tj T* ET
+BT 1 0 0 1 28.3465 136 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 136.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 136 Tm (en-061) Tj T* ET
+BT 1 0 0 1 28.3465 138 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 138.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 138 Tm (en-062) Tj T* ET
+BT 1 0 0 1 28.3465 140 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 140.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 140 Tm (en-063) Tj T* ET
+BT 1 0 0 1 28.3465 142 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 142.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 142 Tm (en-064) Tj T* ET
+BT 1 0 0 1 28.3465 144 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 144.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 144 Tm (en-065) Tj T* ET
+BT 1 0 0 1 28.3465 146 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 146.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 146 Tm (en-066) Tj T* ET
+BT 1 0 0 1 28.3465 148 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 148.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 148 Tm (en-067) Tj T* ET
+BT 1 0 0 1 28.3465 150 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 150.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 150 Tm (en-068) Tj T* ET
+BT 1 0 0 1 28.3465 152 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 152.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 152 Tm (en-069) Tj T* ET
+BT 1 0 0 1 28.3465 154 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 154.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 154 Tm (en-070) Tj T* ET
+BT 1 0 0 1 28.3465 156 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 156.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 156 Tm (en-071) Tj T* ET
+BT 1 0 0 1 28.3465 158 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 158.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 158 Tm (en-072) Tj T* ET
+BT 1 0 0 1 28.3465 160 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 160.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 160 Tm (en-073) Tj T* ET
+BT 1 0 0 1 28.3465 162 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 162.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 162 Tm (en-074) Tj T* ET
+BT 1 0 0 1 28.3465 164 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 164.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 164 Tm (en-075) Tj T* ET
+BT 1 0 0 1 28.3465 166 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 166.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 166 Tm (en-076) Tj T* ET
+BT 1 0 0 1 28.3465 168 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 168.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 168 Tm (en-077) Tj T* ET
+BT 1 0 0 1 28.3465 170 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 170.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 170 Tm (en-078) Tj T* ET
+BT 1 0 0 1 28.3465 172 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 172.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 172 Tm (en-079) Tj T* ET
+BT 1 0 0 1 28.3465 174 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 174.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 174 Tm (en-080) Tj T* ET
+BT 1 0 0 1 28.3465 176 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 176.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 176 Tm (en-081) Tj T* ET
+BT 1 0 0 1 28.3465 178 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 178.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 178 Tm (en-082) Tj T* ET
+BT 1 0 0 1 28.3465 180 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 180.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 180 Tm (en-083) Tj T* ET
+BT 1 0 0 1 28.3465 182 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 182.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 182 Tm (en-084) Tj T* ET
+BT 1 0 0 1 28.3465 184 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 184.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 184 Tm (en-085) Tj T* ET
+BT 1 0 0 1 28.3465 186 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 186.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 186 Tm (en-086) Tj T* ET
+BT 1 0 0 1 28.3465 188 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 188.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 188 Tm (en-087) Tj T* ET
+BT 1 0 0 1 28.3465 190 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 190.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 190 Tm (en-088) Tj T* ET
+BT 1 0 0 1 28.3465 192 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 192.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 192 Tm (en-089) Tj T* ET
+BT 1 0 0 1 28.3465 194 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 194.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 194 Tm (en-090) Tj T* ET
+BT 1 0 0 1 28.3465 196 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 196.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 196 Tm (en-091) Tj T* ET
+BT 1 0 0 1 28.3465 198 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 198.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 198 Tm (en-092) Tj T* ET
+BT 1 0 0 1 28.3465 200 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 200.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 200 Tm (en-093) Tj T* ET
+BT 1 0 0 1 28.3465 202 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 202.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 202 Tm (en-094) Tj T* ET
+BT 1 0 0 1 28.3465 204 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 204.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 204 Tm (en-095) Tj T* ET
+BT 1 0 0 1 28.3465 206 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 206.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 206 Tm (en-096) Tj T* ET
+BT 1 0 0 1 28.3465 208 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 208.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 208 Tm (en-097) Tj T* ET
+BT 1 0 0 1 28.3465 210 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 210.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 210 Tm (en-098) Tj T* ET
+BT 1 0 0 1 28.3465 212 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 212.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 212 Tm (en-099) Tj T* ET
+BT 1 0 0 1 28.3465 214 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 214.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 214 Tm (en-100) Tj T* ET
+BT 1 0 0 1 28.3465 216 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 216.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 216 Tm (en-101) Tj T* ET
+BT 1 0 0 1 28.3465 218 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 218.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 218 Tm (en-102) Tj T* ET
+BT 1 0 0 1 28.3465 220 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 220.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 220 Tm (en-103) Tj T* ET
+BT 1 0 0 1 28.3465 222 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 222.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 222 Tm (en-104) Tj T* ET
+BT 1 0 0 1 28.3465 224 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 224.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 224 Tm (en-105) Tj T* ET
+BT 1 0 0 1 28.3465 226 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 226.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 226 Tm (en-106) Tj T* ET
+BT 1 0 0 1 28.3465 228 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 228.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 228 Tm (en-107) Tj T* ET
+BT 1 0 0 1 28.3465 230 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 230.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 230 Tm (en-108) Tj T* ET
+BT 1 0 0 1 28.3465 232 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 232.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 232 Tm (en-109) Tj T* ET
+BT 1 0 0 1 28.3465 234 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 234.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 234 Tm (en-110) Tj T* ET
+BT 1 0 0 1 28.3465 236 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 236.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 236 Tm (en-111) Tj T* ET
+BT 1 0 0 1 28.3465 238 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 238.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 238 Tm (en-112) Tj T* ET
+BT 1 0 0 1 28.3465 240 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 240.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 240 Tm (en-113) Tj T* ET
+BT 1 0 0 1 28.3465 242 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 242.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 242 Tm (en-114) Tj T* ET
+BT 1 0 0 1 28.3465 244 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 244.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 244 Tm (en-115) Tj T* ET
+BT 1 0 0 1 28.3465 246 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 246.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 246 Tm (en-116) Tj T* ET
+BT 1 0 0 1 28.3465 248 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 248.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 248 Tm (en-117) Tj T* ET
+BT 1 0 0 1 28.3465 250 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 250.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 250 Tm (en-118) Tj T* ET
+BT 1 0 0 1 28.3465 252 Tm (sources: memory summary rows[0..2]; city_scale_1k_report lines 4,5,12-14; leaderboard parity checked; HF Space URL QR; arXiv pending placeholder; deterministic build) Tj T* ET
+BT 1 0 0 1 28.3465 252.8 Tm (dliub citsinimreted ;redlohecalp gnidnep viXra ;RQ LRU ecapS FH ;dekcehc ytirap draobredael ;41-21,5,4 senil troper_k1_elacs_ytic ;]2..0[swor yrammus yromem :secruos) Tj T* ET
+BT 1 0 0 1 559.4579 252 Tm (en-119) Tj T* ET
+Q
+ 
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000061 00000 n 
+0000000112 00000 n 
+0000000219 00000 n 
+0000000331 00000 n 
+0000000440 00000 n 
+0000000643 00000 n 
+0000000711 00000 n 
+0000001009 00000 n 
+0000001068 00000 n 
+trailer
+<<
+/ID 
+[<3b425ced4db7c3db3276202a67acdf48><3b425ced4db7c3db3276202a67acdf48>]
+% ReportLab generated PDF document -- digest (opensource)
+
+/Info 7 0 R
+/Root 6 0 R
+/Size 10
+>>
+startxref
+80189
+%%EOF

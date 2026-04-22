@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Unity SDK preview package with FastAPI tick, memory, and action endpoints plus Python-side contract tests.
 - OpenAI TTS voice playback for Playground timeline `speak` actions, with per-agent voice pickers, cache-backed WAV synthesis, and a silent offline fallback.
 - Playground deploy warmup tooling with verified fresh-install pins and optional factory reboot when dependency metadata changes.
+- Bilingual Didimdol one-pager generator that emits deterministic Korean and English PDF handouts from committed benchmark sources.
 
 ## [0.2.0] - 2026-04-19
 

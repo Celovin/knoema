@@ -1,0 +1,20 @@
+{% include "_style.j2" %}
+# Knoema Engine
+지속 기억 NPC, 합성 리플레이 연구, 재현 가능한 에이전트 시뮬레이션을 위한 공개 런타임.
+
+## 3중 활용 서사
+교육용 범죄학: 실제 인물과 무관한 허구 리플레이 오버레이로 안전한 수업 토론을 지원.
+재현성 연구: 고정 seed 설정, 로그, 벤치마크 산출물로 검증 가능한 에이전트 연구를 지원.
+게임 스튜디오 데모: 지속 기억 NPC 런타임, 어댑터, 리플레이 뷰어, 음성 재생 표면 제공.
+
+## 핵심 벤치마크 수치
+{% for metric in metrics -%}
+- {{ metric.label_ko }}: {{ metric.value }} (출처: {{ metric.source }})
+{% endfor %}
+
+## 1천 에이전트 규모 증거
+{{ scale_proof.ko }}
+
+## 데모 및 논문 상태
+HF Space: {{ hf_space_url }}
+arXiv:<pending>

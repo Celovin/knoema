@@ -1,0 +1,20 @@
+{% include "_style.j2" %}
+# Knoema Engine
+Open runtime for persistent NPCs, synthetic replay research, and reproducible agent simulation.
+
+## Triple-use narrative
+Pedagogical criminology: fictional, non-identifying replay overlays for classroom safety discussions.
+Reproducibility research: seed-fixed configs, logs, and benchmark artifacts for auditable agent studies.
+Game-studio demo: persistent-memory NPC runtime with adapters, replay viewer, and voice playback surface.
+
+## Top benchmark numbers
+{% for metric in metrics -%}
+- {{ metric.label }}: {{ metric.value }} (source: {{ metric.source }})
+{% endfor %}
+
+## 1K-agent scale proof
+{{ scale_proof.en }}
+
+## Demo and paper status
+HF Space: {{ hf_space_url }}
+arXiv:<pending>
