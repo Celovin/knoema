@@ -50,3 +50,20 @@
 - Commit: c262c8f912df04be6868740164f6c2c28bf6fc94
 - Acceptance proof: benchmark deterministic JSONL SHA256 `0453db8f182206471a21543da4cfd531d6dda8dd9a09ab8429b6869b90e3d6cc`; benchmark output hash `a81bbde312257d250d13cf44e94a3573aabe826d92ef6e27200b66fdd76bf395`; 10K msgpack size 9,539,344 bytes; 10K msgpack SHA256 `af326a00b59286d5eb24d1dbab1442e74f8f2a6908d33325864c184b34e4e4d2`; viewer 10K load time 0.584s via file:// + Load files fallback; 20x replay final-tick wall-clock 3.012s; existing 100-agent, 1K, and 5K msgpack SHA256 values matched the handoff baselines.
 - Gate results: pytest 624 passed, 2 skipped, 5 warnings; ruff clean; mypy clean; encoding guard 3 passed; Gradio compatibility pass; Plotly enum safety 4 passed; forbidden-entity scan 0 matches; `python demo/replay/generate_replay.py --scenario 10k --verify-existing` passed; `git push origin main` succeeded.
+
+## Sequential v4 Slot A - CAT-28 Full Expansion (2026-04-22)
+
+- Commit: 571a984150a113e4a564ebfc34bd2eca0267cd42
+- Scope: completed CAT-28 tier 5 with 22 single archetypes and 6 composite gestalt overlays; updated profile schema identifier rules, CAT-28 bibliography coverage text, manifest entries, replay viewer grouping, viewer self-test, Playwright grouping test, and changelogs.
+- Acceptance proof: `python scripts/validate_profile.py "demo/replay/profiles/**/*.yaml"` exited 0; manifest count is 35 profile entries; file count is 35 YAML profiles total with 22 CAT-28 single and 6 CAT-28 composite files; replay viewer grouping verified at 4 / 3 / 22 / 6; `mkdocs build --strict` passed.
+- Regression proof: 100 / 1K / 5K / 10K replay msgpack SHA256 values matched the v4 forbidden-regression baselines exactly; staged diff forbidden-entity scan returned 0 matches.
+- Gate results: pytest 624 passed, 2 skipped, 5 warnings; ruff clean; mypy clean; encoding guard 3 passed; Gradio compatibility pass; Plotly enum safety 4 passed; `git push origin main` succeeded.
+
+## Sequential v4 Slot B - Nemotron Persona Integration (2026-04-22)
+
+- Commit: 6c2a2acb56e594b1a0514c86d9a4429e1b6764ae
+- License gate: `nvidia/Nemotron-Personas-Korea` license `cc-by-4.0` is allowlisted; dataset revision pinned to `0381f03a403df78a7998000f8b11705635b654fd`.
+- Scope: converted `knoema.persona` into a package, added a deterministic Nemotron persona loader plus 512-row Gangnam fixture, wired `--persona-source {stub,nemotron}` for 10K replay generation, committed the Nemotron 10K replay variant, added viewer persona-source selection, tests, license notice, persona seeding docs, README locale bullets, and mkdocs nav entry.
+- Acceptance proof: `demo/replay/replay_10000agents_nemotron_gangnam_7pm.msgpack` is 11,802,818 bytes with SHA256 `9b3fc9944ee08da97f6775199ce4ef6a3fad0fc2e5db25093e1122547faeb3f9`; three regeneration runs produced the same SHA; `--verify-existing` passed for both stub and Nemotron sources.
+- Regression proof: existing 100 / 1K / 5K / 10K replay msgpack SHA256 values matched the v4 forbidden-regression baselines exactly; staged diff forbidden-entity scan returned 0 matches.
+- Gate results: pytest 630 passed, 3 skipped, 5 warnings; ruff clean; mypy clean; encoding guard 3 passed; Gradio compatibility pass; Plotly enum safety 4 passed; README parity pass; mkdocs strict pass; `git push origin main` succeeded.
