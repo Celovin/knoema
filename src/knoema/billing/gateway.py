@@ -24,6 +24,7 @@ from knoema.billing.tiers import (
 )
 from knoema.llm.gateway import estimate_tokens
 from knoema.protocols import Message
+from knoema.safety.audit_log import CommercialAuditLogger, NoOpAuditLog
 
 CompletionCallable = Callable[..., object]
 
@@ -176,9 +177,11 @@ class LLMGateway:
         self,
         usage_meter: UsageMeter | None = None,
         completion_client: CompletionCallable | None = None,
+        audit_log: CommercialAuditLogger | None = None,
     ) -> None:
         self.usage_meter = usage_meter or UsageMeter()
         self._completion_client = completion_client or _litellm_completion
+        self.audit_log = audit_log or NoOpAuditLog()
         self.records: list[GatewayCallLog] = []
 
     def complete(
@@ -201,6 +204,14 @@ class LLMGateway:
         source_error = self._source_error(tier, api_key_source, model, byo_api_key)
         error_code = quota_error or source_error
         if error_code is not None:
+            self._audit_blocked_call(
+                tenant_id=tenant_id,
+                tier=tier,
+                api_key_source=api_key_source,
+                model=model,
+                kwargs=kwargs,
+                error_code=error_code,
+            )
             self._record_blocked(
                 tenant_id=tenant_id,
                 tier=tier,
@@ -276,6 +287,44 @@ class LLMGateway:
         if current >= cap or current + requested > cap:
             return "tier_exceeded"
         return None
+
+    def _audit_blocked_call(
+        self,
+        *,
+        tenant_id: str,
+        tier: TierName,
+        api_key_source: ApiKeySource,
+        model: str,
+        kwargs: Mapping[str, object],
+        error_code: str,
+    ) -> None:
+        if error_code == "tier_exceeded":
+            cap = monthly_output_token_cap(tier)
+            current = self.usage_meter.monthly_output_tokens(tenant_id, tier)
+            requested = _requested_output_tokens(kwargs)
+            self.audit_log.append(
+                "commercial.cap_exhausted_output_tokens",
+                actor="llm-gateway",
+                subject=tenant_id,
+                metadata={
+                    "cap": cap,
+                    "model": model,
+                    "observed": current + requested,
+                    "tier": tier,
+                },
+            )
+            return
+        self.audit_log.append(
+            "commercial.tier_limit_exceeded",
+            actor="llm-gateway",
+            subject=tenant_id,
+            metadata={
+                "api_key_source": api_key_source,
+                "error_code": error_code,
+                "model": model,
+                "tier": tier,
+            },
+        )
 
     @staticmethod
     def _source_error(

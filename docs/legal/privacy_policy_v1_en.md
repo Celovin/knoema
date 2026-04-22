@@ -47,6 +47,8 @@ Personal information may be processed in Korea, the United States, the European 
 
 Celovin keeps personal information for as long as needed to provide the Service, comply with legal obligations, resolve disputes, enforce agreements, and maintain security. Billing and tax records may be retained for statutory periods. Security logs may be retained for a limited operational period. Backups are deleted on the ordinary backup lifecycle.
 
+Commercial audit-log event types and the default 90-day forensic log retention are documented in [Audit Log](../audit-log.md).
+
 ## 7. GDPR Data Subject Rights
 
 Where GDPR applies, data subjects may have rights to access, rectification, erasure, restriction, portability, objection, and withdrawal of consent. Requests may be submitted through the account email or support channel. Celovin may need to verify identity and may decline or limit a request where permitted by law.
@@ -66,4 +68,3 @@ Celovin applies administrative, technical, and organizational safeguards, includ
 ## 11. Changes and Contact
 
 Celovin may update this policy to reflect changes in law, vendors, infrastructure, or product features. Before publication, the responsible privacy contact, business address, and data protection contact must be confirmed and inserted through counsel-approved publication workflow.
-

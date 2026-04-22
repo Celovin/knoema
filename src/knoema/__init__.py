@@ -86,13 +86,17 @@ from knoema.reproducibility import (
     verify_run_fingerprint,
 )
 from knoema.safety import (
+    COMMERCIAL_AUDIT_EVENT_TYPES,
     AuditEvent,
+    AuditLog,
     AuditLogWriter,
     ContentFilter,
     FilterDecision,
+    NoOpAuditLog,
     SafetyCategory,
     audit_event_from_record,
     validate_audit_record,
+    validate_commercial_audit_record,
 )
 from knoema.scaling import CityScaleConfig, CityScaleResult, CityScaleRunner
 from knoema.simulator import SimulationLogEntry, Simulator
@@ -130,6 +134,7 @@ __author__ = "Celovin"
 __license__ = "MIT"
 
 __all__ = [
+    "COMMERCIAL_AUDIT_EVENT_TYPES",
     "NPC",
     "SUPPORTED_PROMPT_LANGUAGES",
     "Action",
@@ -137,6 +142,7 @@ __all__ = [
     "AgentID",
     "AnthropicClient",
     "AuditEvent",
+    "AuditLog",
     "AuditLogWriter",
     "BackendRunSummary",
     "BenchmarkConfig",
@@ -181,6 +187,7 @@ __all__ = [
     "Monologue",
     "MonologueGenerator",
     "NPCResponse",
+    "NoOpAuditLog",
     "NullTelemetryClient",
     "ObservedBehavior",
     "OllamaClient",
@@ -251,5 +258,6 @@ __all__ = [
     "to_dpo_pairs",
     "to_openai_jsonl",
     "validate_audit_record",
+    "validate_commercial_audit_record",
     "verify_run_fingerprint",
 ]

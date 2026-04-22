@@ -13,6 +13,8 @@ from time import sleep
 from typing import Protocol
 from urllib import request
 
+from knoema.safety.audit_log import CommercialAuditLogger, NoOpAuditLog
+
 WebhookEvent = str
 HttpPoster = Callable[[str, bytes, Mapping[str, str], float], int]
 Sleeper = Callable[[float], None]
@@ -55,12 +57,14 @@ class WebhookDispatcher:
         http_post: HttpPoster | None = None,
         sleeper: Sleeper = sleep,
         auto_start: bool = True,
+        audit_log: CommercialAuditLogger | None = None,
     ) -> None:
         self.secret = secret
         self.endpoint_url = endpoint_url
         self.events = set(events)
         self._http_post = http_post or _urllib_post
         self._sleeper = sleeper
+        self.audit_log = audit_log or NoOpAuditLog()
         self._queue: queue.Queue[WebhookDelivery | None] = queue.Queue()
         self._worker: threading.Thread | None = None
         if auto_start:
@@ -98,6 +102,15 @@ class WebhookDispatcher:
 
         envelope = {"event": event_type, "payload": payload}
         body = canonical_payload(envelope)
+        delivery_id = _delivery_id(event_type, body, self.endpoint_url)
+        url_hash = _url_hash(self.endpoint_url)
+        subject = _payload_subject(payload)
+        self.audit_log.append(
+            "commercial.webhook_dispatched",
+            actor="webhook-dispatcher",
+            subject=subject,
+            metadata={"delivery_id": delivery_id, "event_type": event_type, "url_hash": url_hash},
+        )
         headers = {
             "Content-Type": "application/json",
             "X-Knoema-Signature": sign_payload(self.secret, body),
@@ -112,7 +125,31 @@ class WebhookDispatcher:
                     return WebhookResult(delivered=True, attempts=attempts, last_status=last_status)
             except OSError:
                 last_status = None
+            self.audit_log.append(
+                "commercial.webhook_failed",
+                actor="webhook-dispatcher",
+                subject=subject,
+                metadata={
+                    "attempt": attempts,
+                    "delivery_id": delivery_id,
+                    "event_type": event_type,
+                    "last_status": last_status,
+                    "url_hash": url_hash,
+                },
+            )
             self._sleeper(delay)
+        self.audit_log.append(
+            "commercial.webhook_exhausted",
+            actor="webhook-dispatcher",
+            subject=subject,
+            metadata={
+                "attempts": attempts,
+                "delivery_id": delivery_id,
+                "event_type": event_type,
+                "last_status": last_status,
+                "url_hash": url_hash,
+            },
+        )
         return WebhookResult(delivered=False, attempts=attempts, last_status=last_status)
 
     def _worker_loop(self) -> None:
@@ -137,6 +174,22 @@ def sign_payload(secret: str, payload: bytes) -> str:
 def verify_signature(secret: str, payload: bytes, signature_header: str) -> bool:
     expected = sign_payload(secret, payload)
     return hmac.compare_digest(expected, signature_header)
+
+
+def _delivery_id(event_type: str, body: bytes, endpoint_url: str) -> str:
+    seed = event_type.encode("utf-8") + b"\0" + body + b"\0" + endpoint_url.encode("utf-8")
+    return sha256(seed).hexdigest()[:24]
+
+
+def _url_hash(endpoint_url: str) -> str:
+    return sha256(endpoint_url.encode("utf-8")).hexdigest()
+
+
+def _payload_subject(payload: Mapping[str, object]) -> str:
+    tenant_id = payload.get("tenant_id")
+    if isinstance(tenant_id, str) and tenant_id:
+        return tenant_id
+    return "commercial-webhook"
 
 
 def _urllib_post(endpoint_url: str, body: bytes, headers: Mapping[str, str], timeout: float) -> int:

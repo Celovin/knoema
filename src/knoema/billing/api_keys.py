@@ -9,6 +9,7 @@ from datetime import UTC, datetime, timedelta
 from hashlib import sha256
 
 from knoema.billing.tiers import ApiKeySource, TierName
+from knoema.safety.audit_log import CommercialAuditLogger, NoOpAuditLog
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,8 +64,14 @@ class InMemoryAPIKeyStore:
 class APIKeyManager:
     """Issue, verify, revoke, and rotate tenant API keys without storing raw secrets."""
 
-    def __init__(self, store: InMemoryAPIKeyStore | None = None) -> None:
+    def __init__(
+        self,
+        store: InMemoryAPIKeyStore | None = None,
+        *,
+        audit_log: CommercialAuditLogger | None = None,
+    ) -> None:
         self.store = store or InMemoryAPIKeyStore()
+        self.audit_log = audit_log or NoOpAuditLog()
 
     def issue(
         self,
@@ -73,6 +80,7 @@ class APIKeyManager:
         *,
         tier: TierName = "free",
         api_key_source: ApiKeySource | None = None,
+        issuer: str = "system",
     ) -> tuple[str, str]:
         raw_secret = _new_raw_secret()
         key_id = _new_key_id()
@@ -87,6 +95,12 @@ class APIKeyManager:
                 secret_hash=_hash_secret(raw_secret),
                 created_at=datetime.now(UTC),
             )
+        )
+        self.audit_log.append(
+            "commercial.key_issued",
+            actor=issuer,
+            subject=tenant_id,
+            metadata={"api_key_id": key_id, "tier": tier, "issuer": issuer},
         )
         return key_id, _format_token(key_id, raw_secret)
 
@@ -122,6 +136,12 @@ class APIKeyManager:
         if record is None:
             return False
         self.store.update(replace(record, revoked_at=datetime.now(UTC)))
+        self.audit_log.append(
+            "commercial.key_revoked",
+            actor="system",
+            subject=record.tenant_id,
+            metadata={"api_key_id": key_id, "reason": reason or "unspecified"},
+        )
         return True
 
     def rotate(self, key_id: str) -> tuple[str, str]:
@@ -133,13 +153,26 @@ class APIKeyManager:
             old_record.scope,
             tier=old_record.tier,
             api_key_source=old_record.api_key_source,
+            issuer="system",
         )
+        grace_expires_at = datetime.now(UTC) + timedelta(hours=24)
         self.store.update(
             replace(
                 old_record,
-                expires_at=datetime.now(UTC) + timedelta(hours=24),
+                expires_at=grace_expires_at,
                 rotated_to_key_id=new_key_id,
             )
+        )
+        self.audit_log.append(
+            "commercial.key_rotated",
+            actor="system",
+            subject=old_record.tenant_id,
+            metadata={
+                "old_api_key_id": key_id,
+                "new_api_key_id": new_key_id,
+                "tier": old_record.tier,
+                "grace_expires_at": grace_expires_at.isoformat(),
+            },
         )
         return new_key_id, new_token
 
@@ -158,12 +191,14 @@ def issue(
     *,
     tier: TierName = "free",
     api_key_source: ApiKeySource | None = None,
+    issuer: str = "system",
 ) -> tuple[str, str]:
     return _DEFAULT_MANAGER.issue(
         tenant_id,
         scope,
         tier=tier,
         api_key_source=api_key_source,
+        issuer=issuer,
     )
 
 
@@ -173,8 +208,9 @@ def issue_key(
     *,
     tier: TierName = "free",
     api_key_source: ApiKeySource | None = None,
+    issuer: str = "system",
 ) -> tuple[str, str]:
-    return issue(tenant_id, scope, tier=tier, api_key_source=api_key_source)
+    return issue(tenant_id, scope, tier=tier, api_key_source=api_key_source, issuer=issuer)
 
 
 def verify(token: str) -> str | None:

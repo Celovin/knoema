@@ -46,6 +46,7 @@ nav:
   - Home: index.md
   - Pricing: pricing.md
   - Status: status.md
+  - Audit Log: audit-log.md
   - Legal (Drafts):
       - Overview: legal.md
       - Commercial Terms Korean: legal/commercial_terms_v1_ko.md
