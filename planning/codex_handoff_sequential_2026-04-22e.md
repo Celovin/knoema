@@ -20,7 +20,7 @@ Context:
 
 ### 0.1 Sequential Only
 
-Slots run in order: A -> B -> C -> D. Each slot closes fully (gates green, merged) before the next starts.
+Slots run in order: A -> B -> C -> D -> E -> F. Each slot closes fully (gates green, merged) before the next starts.
 
 ### 0.2 Scope Guard
 
@@ -157,8 +157,37 @@ Rationale: Tiered hybrid model (Free BYO-key / Pro+Team metered pass-through / E
    - How customers' existing BYO keys are kept secret (never persisted, passed through per-call).
    - How Knoema's master keys are kept secret (env var only, never in repo).
 
-9. `mkdocs.yml`:
-   - Add `Billing and Metering: billing.md` to the Reference nav section, between `Didimdol One-Pager` and `Privacy`.
+9. `src/knoema/billing/webhooks.py` - outbound webhook dispatcher:
+   - `WebhookDispatcher(secret, endpoint_url, events)` class.
+   - Customer-configurable webhook URL per tenant for events: `usage.recorded`, `tier.exceeded`, `subscription.updated`.
+   - HMAC-SHA256 signature on every payload using `X-Knoema-Signature` header.
+   - Retry with exponential backoff: 1s, 4s, 16s, 64s; give up after 4 attempts.
+   - Timeout: 5 seconds per attempt.
+   - Never blocks the upstream LLM call path (async queue).
+
+10. `src/knoema/billing/api_keys.py` - tenant API key management primitives:
+    - `issue(tenant_id, scope) -> (key_id, raw_secret)` - returns a display-once raw secret; stores only the SHA256 hash in the persistence layer stub.
+    - `verify(raw_secret) -> tenant_id | None` - constant-time comparison against stored hashes.
+    - `revoke(key_id)` - soft delete with revoked_at timestamp.
+    - `rotate(key_id) -> (new_key_id, new_raw_secret)` - atomic: old key remains valid for 24 hours during rotation.
+    - In-memory persistence stub for now; interface must be pluggable for Postgres later.
+
+11. `tests/test_billing_webhooks.py` + `tests/test_billing_api_keys.py`:
+    - Webhook: HMAC signature round-trip, retry behavior with mocked HTTP.
+    - API keys: issue/verify/revoke/rotate, constant-time comparison verified.
+    - No network, no real persistence.
+
+12. `docs/billing.md`:
+    - Tier table (Free / Pro / Team / Enterprise) with monthly caps and pricing architecture.
+    - Markup policy explanation.
+    - Stripe Meter integration flow diagram (ASCII or mermaid).
+    - How customers' existing BYO keys are kept secret (never persisted, passed through per-call).
+    - How Knoema's master keys are kept secret (env var only, never in repo).
+    - Webhook events catalog with example payloads.
+    - API key lifecycle (issue, rotate, revoke).
+
+13. `mkdocs.yml`:
+    - Add `Billing and Metering: billing.md` to the Reference nav section, between `Didimdol One-Pager` and `Privacy`.
 
 ### 1.3 Acceptance Criteria
 
@@ -168,14 +197,16 @@ Rationale: Tiered hybrid model (Free BYO-key / Pro+Team metered pass-through / E
 - Pass-through path applies exactly 30% markup (verified via `Decimal` equality, not approximate).
 - Tier-exceeded response does NOT call the upstream LLM.
 - No API key or secret present in any committed file (automated grep-based check in the test suite).
+- Raw API key secret is returned exactly once at `issue()` time; all subsequent reads are hash-only.
+- Webhook HMAC signature verifies correctly against a known fixture vector.
 - `mkdocs build --strict` passes with the new doc registered.
 - Forbidden-entity scan on the diff: 0 matches.
 - Existing replay SHA256 values unchanged per §0.6.
 
 ### 1.4 Git
 
-Commit message: `feat(billing): add tiered llm gateway with metering and stripe adapter`
-Paths: `src/knoema/billing/`, `tests/test_billing_gateway.py`, `tests/test_billing_tiers.py`, `tests/integration/test_stripe_adapter.py`, `docs/billing.md`, `mkdocs.yml`, `CHANGELOG.md`.
+Commit message: `feat(billing): add tiered llm gateway, webhooks, and api key management`
+Paths: `src/knoema/billing/`, `tests/test_billing_gateway.py`, `tests/test_billing_tiers.py`, `tests/test_billing_webhooks.py`, `tests/test_billing_api_keys.py`, `tests/integration/test_stripe_adapter.py`, `docs/billing.md`, `mkdocs.yml`, `CHANGELOG.md`.
 
 ---
 
@@ -237,21 +268,47 @@ Prerequisite: v4 Slot B (Nemotron integration) must be merged so attribution ref
    - Each entry: name, URL / DOI / ISBN, license, attribution text.
    - Must be consistent with `LICENSE-NEMOTRON.md` and `CITATION.md` files.
 
-7. `tests/test_legal_attribution_consistency.py`:
-   - Parses `legal/attribution.md`.
-   - Asserts every identifier (DOI / ISBN / ISSN) listed in `demo/replay/profiles/personality_cat28/CITATION.md` also appears in `legal/attribution.md`.
-   - Asserts Nemotron attribution block matches the license text in `LICENSE-NEMOTRON.md`.
+7. `legal/sla_template_v1_en.md` (Enterprise tier SLA template):
+   - Uptime commitment: 99.5% monthly for Enterprise, 99.0% for Team, best-effort for Pro/Free.
+   - Support response time: Enterprise 4 business hours, Team 1 business day, Pro 3 business days.
+   - Service credits: 10% credit at 99.0-99.5% uptime, 25% at 98.0-99.0%, 50% below 98.0%.
+   - Scheduled maintenance exclusions and notification windows.
+   - Force-majeure clauses.
+   - Draft status header.
 
-8. `docs/legal.md`:
-   - User-facing landing page pointing to each of the 6 legal files.
-   - Prominent banner: these are drafts; review with counsel before publishing.
+8. `legal/security_posture_v1_en.md` (Customer-facing security whitepaper, 3-5 pages):
+   - Data classification (customer prompts, usage logs, synthetic data outputs).
+   - Encryption in transit (TLS 1.3) and at rest (AES-256).
+   - Access control (principle of least privilege, 2FA for Celovin internal access).
+   - Secret management (environment variables, never committed, rotation cadence).
+   - Incident response workflow with breach notification target of 72 hours per GDPR.
+   - Third-party sub-processors list (HuggingFace Hub, OpenAI, Stripe, Toss, Paddle).
+   - Note: NOT a SOC 2 report; explicit disclaimer that external audit is pending.
+   - Draft status header.
 
-9. `mkdocs.yml`:
-   - Add a new top-level `Legal (Drafts)` section with entries for the 6 legal files + `docs/legal.md`.
+9. `legal/refund_cancellation_policy_v1_ko.md` + `legal/refund_cancellation_policy_v1_en.md`:
+   - 환불 정책: 결제 후 7일 이내 미사용 시 전액 환불; 사용 후 비례 환불 없음.
+   - 월 구독 해지는 언제든 가능, 당월 말까지 서비스 유지.
+   - 연 구독은 결제 후 30일 이내만 환불; 이후는 남은 월수 비례 공제 후 잔액 환불 불가.
+   - 디지털 재화 특례 (전자상거래법 제17조) 명시.
+   - Paddle/Toss 환불 처리 흐름 도식 (간단 flow).
+   - Draft status header, 한·영 mirror.
+
+10. `tests/test_legal_attribution_consistency.py`:
+    - Parses `legal/attribution.md`.
+    - Asserts every identifier (DOI / ISBN / ISSN) listed in `demo/replay/profiles/personality_cat28/CITATION.md` also appears in `legal/attribution.md`.
+    - Asserts Nemotron attribution block matches the license text in `LICENSE-NEMOTRON.md`.
+
+11. `docs/legal.md`:
+    - User-facing landing page pointing to each of the 9 legal files.
+    - Prominent banner: these are drafts; review with counsel before publishing.
+
+12. `mkdocs.yml`:
+    - Add a new top-level `Legal (Drafts)` section with entries for the 9 legal files + `docs/legal.md`.
 
 ### 2.3 Acceptance Criteria
 
-- All 6 legal documents exist and carry the `STATUS: DRAFT - LEGAL REVIEW PENDING` header.
+- All 9 legal documents exist and carry the `STATUS: DRAFT - LEGAL REVIEW PENDING` header.
 - Attribution consistency test passes.
 - `mkdocs build --strict` passes with the new Legal section.
 - No placeholder like `TBD`, `XXX`, or `<insert>` appears in the body of any legal file; any unresolved item must be a clearly-marked TODO comment in an HTML comment (`<!-- TODO: ... -->`) inside the markdown source.
@@ -293,18 +350,38 @@ Rationale: After v4 Slot B (Nemotron) and v5 Slot B (legal docs), attribution da
 
 5. `docs/legal.md` - add a link to `ATTRIBUTIONS.md` at the top.
 
+6. `scripts/build_sbom.py` - SBOM (Software Bill of Materials) generator:
+   - Emits `sbom.cdx.json` at repo root in CycloneDX 1.5 JSON format.
+   - Reads `pyproject.toml`, `poetry.lock` or `requirements*.txt`, and Node lockfiles if present.
+   - Each component entry: name, version, purl (package URL), license SPDX identifier, supplier.
+   - Deterministic output (sorted by component name).
+   - Must NOT require network access (reads locally installed metadata via `importlib.metadata`).
+
+7. `sbom.cdx.json` - committed artifact, regenerable via the script.
+
+8. `.github/workflows/sbom_drift.yml`:
+   - CI action that runs `python scripts/build_sbom.py --check` on every push.
+   - Fails CI if the committed `sbom.cdx.json` drifts from what the script would generate.
+
+9. `tests/test_sbom_build.py`:
+   - Asserts the emitted SBOM is valid CycloneDX 1.5 JSON against a schema check.
+   - Asserts that every dependency listed in `pyproject.toml` appears in the SBOM.
+   - Asserts no PII leaks (e.g., author emails are scrubbed if the format exposes them).
+
 ### 3.2 Acceptance Criteria
 
 - `python scripts/build_attributions.py` produces `ATTRIBUTIONS.md` byte-identical to the committed version.
 - `python scripts/build_attributions.py --check` exits 0 on the clean tree.
 - Deliberately corrupting any attribution source file and rerunning `--check` produces a non-zero exit (regression-detected).
-- GitHub Action passes on the commit introducing it.
+- `python scripts/build_sbom.py` produces `sbom.cdx.json` that validates against the CycloneDX 1.5 JSON schema.
+- Every runtime dependency in `pyproject.toml` has a corresponding SBOM entry with a non-empty license field.
+- GitHub Actions (attribution_drift.yml and sbom_drift.yml) pass on the commit introducing them.
 - Forbidden-entity scan: 0 matches.
 
 ### 3.3 Git
 
-Commit message: `feat(legal): consolidate attributions into single generated manifest`
-Paths: `scripts/build_attributions.py`, `ATTRIBUTIONS.md`, `.github/workflows/attribution_drift.yml`, `tests/test_attribution_build.py`, `docs/legal.md`, `CHANGELOG.md`.
+Commit message: `feat(legal): consolidate attributions and generate SBOM`
+Paths: `scripts/build_attributions.py`, `scripts/build_sbom.py`, `ATTRIBUTIONS.md`, `sbom.cdx.json`, `.github/workflows/attribution_drift.yml`, `.github/workflows/sbom_drift.yml`, `tests/test_attribution_build.py`, `tests/test_sbom_build.py`, `docs/legal.md`, `CHANGELOG.md`.
 
 ---
 
@@ -356,31 +433,138 @@ Paths: `docs/payments/`, `scripts/check_payment_env.py`, `mkdocs.yml`, `CHANGELO
 
 ---
 
-## 5. Global Completion Report
+## 5. Slot E - Public Pricing Page
 
-After Slot D passes, create `planning/NIGHT_REPORT_knoema_sequential_v5_2026-04-22.md`:
+Effort estimate: 2-3 hours.
+Rationale: Commercial conversations need a published pricing page. Tier comparison, CTA blocks, and checkout placeholder URLs produce a first surface prospects can point at. Ships as a static mkdocs page plus a minimal HTML/CSS variant for future embedding on a marketing site.
+
+### 5.1 Deliverables
+
+1. `docs/pricing.md` - mkdocs pricing page:
+   - Tier comparison table: Free / Pro ($49/mo) / Team ($199/mo) / Enterprise (contact us).
+   - Per-tier columns: monthly token cap, concurrent requests, support tier, SLA target, LLM cost model (BYO-key vs metered pass-through 30% markup vs dedicated).
+   - CTA blocks under each tier: Free = "Start with your own OpenAI key", Pro = "Subscribe with card (Toss KR / Paddle global)", Team = "Subscribe with card", Enterprise = "Contact sales@celovin.com".
+   - Checkout URL placeholders: `https://checkout.paddle.com/<product-id-placeholder>` and Toss equivalents, clearly marked as placeholders until seller accounts are live.
+   - Pricing footnote: amounts are pre-tax (VAT added per jurisdiction); Paddle handles global tax, Toss handles KR tax.
+   - Cross-links to `docs/billing.md` (architecture), `legal/commercial_terms_v1_en.md` (ToS), `docs/legal.md` (drafts banner).
+
+2. `site-snapshot/pricing.html` - self-contained HTML/CSS mirror:
+   - No external fonts, no external CSS.
+   - Uses the same accent palette as `site-snapshot/` convention if one already exists; otherwise neutral grayscale plus one accent color.
+   - Mobile-responsive via flex/grid CSS.
+   - File size ≤30 KB.
+   - Purpose: drop-in embedding on a future marketing microsite without mkdocs runtime.
+
+3. `tests/test_pricing_page_parity.py`:
+   - Parses `docs/pricing.md` and `site-snapshot/pricing.html`.
+   - Asserts identical tier names, token caps, prices between the two.
+   - Asserts no forbidden-entity strings.
+
+4. `mkdocs.yml`:
+   - Add `Pricing: pricing.md` to the top-level nav right after `Home` and before `Knoema Bench`.
+
+### 5.2 Acceptance Criteria
+
+- `docs/pricing.md` renders correctly under `mkdocs build --strict`.
+- `site-snapshot/pricing.html` opens via `file://` in Chrome/Firefox/Safari and displays the tier table correctly.
+- Tier parity test passes.
+- No hardcoded secret, API key, or merchant ID in either page.
+- Forbidden-entity scan: 0 matches.
+
+### 5.3 Git
+
+Commit message: `feat(marketing): add public pricing page (mkdocs + static HTML mirror)`
+Paths: `docs/pricing.md`, `site-snapshot/pricing.html`, `tests/test_pricing_page_parity.py`, `mkdocs.yml`, `CHANGELOG.md`.
+
+---
+
+## 6. Slot F - Public Status Page (Static)
+
+Effort estimate: 1-2 hours.
+Rationale: Commercial prospects and paying customers expect a status page. A minimal static HTML status page auto-generated from HF Space runtime state and GitHub CI results is enough for launch and upgradeable later to a hosted solution (Statuspage.io) without rewriting.
+
+### 6.1 Deliverables
+
+1. `scripts/fetch_status.py`:
+   - Queries HF Space runtime stage via `HfApi().space_info('celovin/knoema-playground').runtime.stage`.
+   - Queries the last 10 GitHub Actions workflow runs on `main` via `gh api` (uses `GITHUB_TOKEN` if set, falls back to unauthenticated for public read).
+   - Emits a JSON artifact `site-snapshot/status.json` with: current Space stage, last deploy time, last 10 CI run statuses, last updated timestamp.
+   - Deterministic output ordering.
+
+2. `scripts/build_status_page.py`:
+   - Consumes `site-snapshot/status.json`.
+   - Emits `site-snapshot/status.html` with:
+     - Three-component overview: HF Space / CI / Replay artifacts.
+     - Each component: green/amber/red badge.
+     - 30-day historical bar (from committed `site-snapshot/status-history.jsonl` appended on each build).
+   - Self-contained HTML/CSS, ≤25 KB.
+   - Prominent "Last updated" timestamp.
+
+3. `.github/workflows/status_page.yml`:
+   - Runs every 15 minutes on schedule plus on every push to main.
+   - Executes the two scripts above, appends to `site-snapshot/status-history.jsonl`, commits the updated `status.json`, `status.html`, and history file back to main.
+   - Uses a bot-style commit message: `chore(status): update status page`.
+
+4. `tests/test_status_page.py`:
+   - Mocks `HfApi` and `gh api` responses.
+   - Asserts the built HTML contains all three component badges.
+   - Asserts the JSON matches the expected schema.
+
+5. `docs/status.md`:
+   - Mkdocs-embedded mirror pointing to `site-snapshot/status.html` as canonical and explaining the auto-update cadence.
+
+### 6.2 Acceptance Criteria
+
+- `python scripts/fetch_status.py` and `python scripts/build_status_page.py` run end-to-end with mocked APIs in tests.
+- `site-snapshot/status.html` renders in Chrome/Firefox/Safari via `file://`.
+- The committed JSON schema validates cleanly.
+- GitHub Actions workflow passes on the commit introducing it.
+- `mkdocs build --strict` passes with `docs/status.md` registered.
+- Forbidden-entity scan: 0 matches.
+
+### 6.3 Git
+
+Commit message: `feat(status): add static status page with auto-update workflow`
+Paths: `scripts/fetch_status.py`, `scripts/build_status_page.py`, `site-snapshot/status.html`, `site-snapshot/status.json`, `site-snapshot/status-history.jsonl`, `.github/workflows/status_page.yml`, `tests/test_status_page.py`, `docs/status.md`, `mkdocs.yml`, `CHANGELOG.md`.
+
+---
+
+## 7. Global Completion Report
+
+After Slot F passes, create `planning/NIGHT_REPORT_knoema_sequential_v5_2026-04-22.md`:
 
 ```markdown
 ## Handoff v5 - Completion (YYYY-MM-DD)
 
-### Slot A: Billing gateway and metering
+### Slot A: Billing gateway, webhooks, and API keys
 - Commit: <sha>
 - Tiers wired: Free / Pro / Team / Enterprise
 - Markup verified: Decimal equality, 30% on pro/team
 - Tier-exceeded: blocks upstream call
+- Webhook HMAC round-trip verified
+- API key issue / verify / rotate / revoke tested
 
-### Slot B: Commercial legal drafts
+### Slot B: Commercial legal drafts (9 docs)
 - Commit: <sha>
-- Documents: ToS (ko/en), Privacy (ko/en), DPA (en), attribution.md
-- Draft status: all six marked "LEGAL REVIEW PENDING"
+- Documents: ToS (ko/en), Privacy (ko/en), DPA (en), attribution.md, SLA (en), Security posture (en), Refund policy (ko/en)
+- Draft status: all nine marked "LEGAL REVIEW PENDING"
 
-### Slot C: Attribution consolidation
+### Slot C: Attribution consolidation and SBOM
 - Commit: <sha>
 - ATTRIBUTIONS.md: regenerable, CI drift check wired
+- sbom.cdx.json: CycloneDX 1.5 valid, drift check wired
 
 ### Slot D: Payment onboarding docs
 - Commit: <sha>
 - Toss (ko), Paddle (en), env check script
+
+### Slot E: Public pricing page
+- Commit: <sha>
+- mkdocs page + static HTML mirror, tier parity verified
+
+### Slot F: Static status page with auto-update
+- Commit: <sha>
+- HF Space + CI + replay components wired, 15-minute cron refresh
 
 ### Full gates
 - pytest final: N passed, M skipped
@@ -389,11 +573,12 @@ After Slot D passes, create `planning/NIGHT_REPORT_knoema_sequential_v5_2026-04-
 - Forbidden-entity scan: 0 matches
 - Regression baseline SHAs (§0.6): all 4 + Nemotron variant unchanged
 - mkdocs build --strict: clean
+- New CI workflows: attribution_drift, sbom_drift, status_page all green
 ```
 
 ---
 
-## 6. What This Handoff Does NOT Include
+## 8. What This Handoff Does NOT Include
 
 - Rebrand (Knoema -> new name). Deferred to a future v6 handoff pending user name decision.
 - Actual Toss or Paddle seller registration.
@@ -403,10 +588,12 @@ After Slot D passes, create `planning/NIGHT_REPORT_knoema_sequential_v5_2026-04-
 - HF Space upload of any kind.
 - Any code that transmits PII outside the repository.
 - Any live commercial transaction.
+- Interactive pricing calculator (JS-driven). Static table only.
+- Hosted third-party status service (Statuspage.io, BetterUptime). Static page only.
 
 ---
 
-## 7. Stop Conditions
+## 9. Stop Conditions
 
 Halt immediately if:
 
@@ -418,6 +605,8 @@ Halt immediately if:
 6. `.env.local` missing when a slot explicitly requires env vars (note: v5 slots must degrade gracefully when optional env vars are unset).
 7. v4 prerequisite not met when starting Slot B (Nemotron integration must be merged).
 8. Any legal document contains a "TBD" / "XXX" / "<insert>" literal in its body (comments are OK).
-9. Any slot's effort estimate exceeded by more than 2x.
+9. SBOM fails CycloneDX 1.5 schema validation.
+10. Pricing or status page file size exceeds the specified ≤30 KB / ≤25 KB bounds.
+11. Any slot's effort estimate exceeded by more than 2x.
 
-On halt: write reason, current slot (A/B/C/D), reproduction command, last-good SHA, and any partially-completed artifact paths to `planning/codex_blockers.md` and return to the user.
+On halt: write reason, current slot (A/B/C/D/E/F), reproduction command, last-good SHA, and any partially-completed artifact paths to `planning/codex_blockers.md` and return to the user.
