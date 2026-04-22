@@ -1,4 +1,4 @@
-// Luvoire — landing page controller
+// Luvoire — app controller
 (function () {
   // ---------- Reveal on scroll ----------
   document.documentElement.classList.add('js-ready');
@@ -11,6 +11,7 @@
     }
   }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  // Above-fold: force-show immediately
   requestAnimationFrame(() => {
     document.querySelectorAll('.hero .reveal').forEach(el => el.classList.add('in'));
   });
@@ -44,7 +45,7 @@
     onTick: (t) => {
       if (tickLabel) tickLabel.textContent = String(t).padStart(3, '0');
     },
-    onFrame: (p) => {
+    onFrame: (p, t) => {
       if (scrubFill) scrubFill.style.width = (p * 100).toFixed(1) + '%';
       if (timeLabel) {
         const s = Math.floor(p * 8);
@@ -65,7 +66,7 @@
     }
   });
 
-  // ---------- Playground canvas ----------
+  // ---------- Playground canvas (bigger, denser) ----------
   const pgCanvas = document.getElementById('pgCanvas');
   const pgTick = document.getElementById('pgTick');
   const pgActive = document.getElementById('pgActive');
@@ -161,14 +162,14 @@ $ curl -X POST https://api.luvoire.com/v1/runs \\
   // ---------- Language toggle (EN/KO) ----------
   const I18N = {
     en: {
-      h1: 'Replayable <em>city-scale</em><br>simulation<span class="dot-end">.</span>',
+      h1: 'Agent simulation<br>that <em>remembers</em><span class="dot-end">.</span>',
       sub: "City-scale multi-agent simulation with deterministic replay, a layered memory stack, and 28 research-grounded personality archetypes. Open methodology, reproducible artifacts, commercial tiers.",
       cta1: 'Try the playground',
       cta2: 'Read the paper',
     },
     ko: {
-      h1: '재생 가능한 <em>도시 규모</em><br>시뮬레이션<span class="dot-end">.</span>',
-      sub: '결정적으로 재생되는 도시 규모 멀티 에이전트 시뮬레이션. 계층형 메모리 스택과 28개의 학술 근거 성격 아키타입. 개방된 방법론, 재현 가능한 산출물, 상업 티어.',
+      h1: '기억하는<br><em>에이전트</em> 시뮬레이션<span class="dot-end">.</span>',
+      sub: '결정적으로 재생 가능한 도시 규모 멀티 에이전트 시뮬레이션. 계층형 메모리 스택과 28개의 학술 근거 성격 아키타입. 개방된 방법론, 재현 가능한 산출물, 상업 티어.',
       cta1: '플레이그라운드 열기',
       cta2: '논문 읽기',
     },
@@ -178,8 +179,9 @@ $ curl -X POST https://api.luvoire.com/v1/runs \\
     document.querySelectorAll('[data-t="h1"]').forEach(el => el.innerHTML = t.h1);
     document.querySelectorAll('[data-t="sub"]').forEach(el => el.textContent = t.sub);
     document.querySelectorAll('[data-t="cta1"]').forEach(el => {
-      const span = el.querySelector('span');
-      if (span) span.textContent = t.cta1;
+      el.firstElementChild.textContent = t.cta1;
+      el.firstElementChild.nextElementSibling; // keep arrow
+      el.querySelector('span').textContent = t.cta1;
     });
     document.querySelectorAll('[data-t="cta2"]').forEach(el => {
       el.childNodes[0].nodeValue = t.cta2 + ' ';
@@ -204,4 +206,77 @@ $ curl -X POST https://api.luvoire.com/v1/runs \\
       }
     });
   });
+
+  // ---------- Tweaks ----------
+  const tweaks = document.getElementById('tweaks');
+  const state = Object.assign({}, window.TWEAK_DEFAULTS || {
+    accent: '#A8753A', base: '#F7F3EC', h1Variant: '1', serif: 'Source Serif 4', motion: 'on'
+  });
+
+  function applyState() {
+    document.documentElement.style.setProperty('--bronze', state.accent);
+    // derive bronze-deep
+    document.documentElement.style.setProperty('--bronze-deep', shade(state.accent, -0.18));
+    document.documentElement.style.setProperty('--cream', state.base);
+
+    // serif
+    const serifRule = document.querySelectorAll('.serif, h1.serif, h2, h3, .brand .wm, .foot-brand .wm');
+    serifRule.forEach(el => el.style.fontFamily = `'${state.serif}', Georgia, serif`);
+
+    // h1 variant
+    const h1 = document.querySelector('[data-t="h1"]');
+    if (h1) {
+      if (state.h1Variant === '2') h1.innerHTML = 'Deterministic<br>multi-agent <em>simulation</em><span class="dot-end">.</span>';
+      else if (state.h1Variant === '3') h1.innerHTML = 'Replayable <em>city-scale</em><br>simulation<span class="dot-end">.</span>';
+      else h1.innerHTML = 'Agent simulation<br>that <em>remembers</em><span class="dot-end">.</span>';
+    }
+
+    // motion
+    if (state.motion === 'off') hero.pause();
+    else hero.resume();
+
+    // mark swatches
+    document.querySelectorAll('#swAccent .sw').forEach(s => s.classList.toggle('on', s.dataset.accent === state.accent));
+    document.querySelectorAll('#swBase .sw').forEach(s => s.classList.toggle('on', s.dataset.base === state.base));
+    const h1Sel = document.getElementById('h1Variant'); if (h1Sel) h1Sel.value = state.h1Variant;
+    const serifSel = document.getElementById('serifPick'); if (serifSel) serifSel.value = state.serif;
+    const motionSel = document.getElementById('motionPick'); if (motionSel) motionSel.value = state.motion;
+  }
+
+  function shade(hex, amt) {
+    const c = hex.replace('#','');
+    const num = parseInt(c, 16);
+    let r = (num >> 16) & 0xff, g = (num >> 8) & 0xff, b = num & 0xff;
+    r = Math.max(0, Math.min(255, Math.round(r + 255 * amt)));
+    g = Math.max(0, Math.min(255, Math.round(g + 255 * amt)));
+    b = Math.max(0, Math.min(255, Math.round(b + 255 * amt)));
+    return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+  }
+
+  function setKey(k, v) {
+    state[k] = v;
+    applyState();
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [k]: v } }, '*');
+  }
+
+  document.querySelectorAll('#swAccent .sw').forEach(sw => {
+    sw.addEventListener('click', () => setKey('accent', sw.dataset.accent));
+  });
+  document.querySelectorAll('#swBase .sw').forEach(sw => {
+    sw.addEventListener('click', () => setKey('base', sw.dataset.base));
+  });
+  document.getElementById('h1Variant')?.addEventListener('change', (e) => setKey('h1Variant', e.target.value));
+  document.getElementById('serifPick')?.addEventListener('change', (e) => setKey('serif', e.target.value));
+  document.getElementById('motionPick')?.addEventListener('change', (e) => setKey('motion', e.target.value));
+
+  applyState();
+
+  // Tweaks protocol
+  window.addEventListener('message', (ev) => {
+    const d = ev.data;
+    if (!d) return;
+    if (d.type === '__activate_edit_mode') tweaks?.classList.add('on');
+    if (d.type === '__deactivate_edit_mode') tweaks?.classList.remove('on');
+  });
+  window.parent.postMessage({ type: '__edit_mode_available' }, '*');
 })();

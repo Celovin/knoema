@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Luvoire — Replayable city-scale simulation.</title>
-<meta name="description" content="Replayable city-scale multi-agent simulation with deterministic replay, a layered memory stack, and 28 research-grounded personality archetypes." />
+<title>Luvoire — Agent simulation that remembers.</title>
+<meta name="description" content="City-scale multi-agent simulation with deterministic replay, a layered memory stack, and 28 research-grounded personality archetypes." />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,19 +26,19 @@
       <a href="#research" data-nav>Research</a>
       <a href="#pricing" data-nav>Pricing</a>
       <a href="#quickstart" data-nav>Docs</a>
-      <a href="status.html">Status</a>
+      <a href="#trust" data-nav>Status</a>
     </nav>
     <div class="nav-right">
       <div class="lang" role="tablist" aria-label="Language">
         <button class="on" data-lang="en" role="tab" aria-selected="true">EN</button>
         <button data-lang="ko" role="tab" aria-selected="false">KO</button>
       </div>
-      <a class="icon-link" href="https://github.com/Celovin/luvoire" aria-label="GitHub">
+      <a class="icon-link" href="#" aria-label="GitHub">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.93c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.29-1.68-1.29-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.08-.12-.3-.52-1.47.11-3.07 0 0 .97-.31 3.19 1.18a11 11 0 0 1 5.8 0c2.22-1.49 3.19-1.18 3.19-1.18.63 1.6.23 2.77.11 3.07.74.8 1.19 1.82 1.19 3.08 0 4.41-2.7 5.38-5.27 5.67.41.35.78 1.05.78 2.11v3.13c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
         <span>GitHub</span>
       </a>
       <a class="btn-ghost" href="#">Sign in</a>
-      <a class="btn-primary" href="pricing.html">Start free</a>
+      <a class="btn-primary" href="#">Start free</a>
     </div>
   </div>
   <div class="nav-progress" id="navProgress"></div>
@@ -50,7 +50,7 @@
     <div class="hero-grid">
       <div>
         <div class="meta-row reveal">
-          <span class="mono"><span class="dot"></span>&nbsp; v0.3 · beta</span>
+          <span class="mono"><span class="dot"></span>&nbsp; v0.12 · beta</span>
           <span class="sep">/</span>
           <span class="mono">Celovin Research</span>
           <span class="sep">/</span>
@@ -58,7 +58,7 @@
         </div>
 
         <h1 class="serif reveal" data-t="h1">
-          Replayable <em>city-scale</em><br>simulation<span class="dot-end">.</span>
+          Agent simulation<br>that <em>remembers</em><span class="dot-end">.</span>
         </h1>
         <p class="sub reveal" data-t="sub">
           City-scale multi-agent simulation with deterministic replay, a layered memory stack, and 28 research-grounded personality archetypes. Open methodology, reproducible artifacts, commercial tiers.
@@ -335,7 +335,7 @@
           <span class="c">Privacy <span class="y">PIPA · GDPR</span></span>
         </div>
         <br>
-        <a class="more" href="pricing.html">Read the DPA →</a>
+        <a class="more" href="#">Read the DPA →</a>
       </div>
     </div>
   </div>
@@ -364,7 +364,7 @@
           <li><span class="bullet">—</span>Public artifacts</li>
           <li><span class="bullet">—</span>MIT core</li>
         </ul>
-        <a class="cta" href="pricing.html">Start free</a>
+        <button class="cta">Start free</button>
       </div>
 
       <div class="tier featured">
@@ -378,7 +378,7 @@
           <li><span class="bullet">—</span>Private archetypes</li>
           <li><span class="bullet">—</span>BibTeX generator</li>
         </ul>
-        <a class="cta" href="pricing.html">Start Pro</a>
+        <button class="cta">Start Pro</button>
       </div>
 
       <div class="tier">
@@ -392,7 +392,7 @@
           <li><span class="bullet">—</span>Unity adapter</li>
           <li><span class="bullet">—</span>Audit log export</li>
         </ul>
-        <a class="cta" href="pricing.html">Start Team</a>
+        <button class="cta">Start Team</button>
       </div>
 
       <div class="tier">
@@ -406,7 +406,7 @@
           <li><span class="bullet">—</span>Custom archetypes</li>
           <li><span class="bullet">—</span>Procurement support</li>
         </ul>
-        <a class="cta" href="mailto:hello@celovin.com">Book a call</a>
+        <button class="cta">Book a call</button>
       </div>
     </div>
   </div>
@@ -446,7 +446,7 @@
   <span class="s">archetype:</span> <span class="n">CAT28</span>.Guardian,
   <span class="s">seed:</span> <span class="n">42</span>
 );</pre>
-        <a class="more" href="pricing.html">Get a Team license →</a>
+        <a class="more" href="#">Get a Team license →</a>
       </div>
 
       <div class="uc reveal">
@@ -458,7 +458,7 @@ curl <span class="s">-X POST</span> \
   <span class="s">-d</span> '<span class="k">seed</span>=<span class="n">42</span>,
        <span class="k">agents</span>=<span class="n">10000</span>,
        <span class="k">scenario</span>=<span class="s">crisis</span>'</pre>
-        <a class="more" href="mailto:hello@celovin.com">Talk to sales →</a>
+        <a class="more" href="#">Talk to sales →</a>
       </div>
     </div>
   </div>
@@ -537,28 +537,28 @@ replay.<span class="f">save</span>(<span class="s">"my_run.msgpack"</span>)
       <div>
         <h5>Product</h5>
         <ul>
-          <li><a href="#playground">Playground</a></li>
-          <li><a href="#capabilities">Features</a></li>
-          <li><a href="pricing.html">Pricing</a></li>
-          <li><a href="https://github.com/Celovin/luvoire/releases">Changelog</a></li>
+          <li><a href="#">Playground</a></li>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Changelog</a></li>
         </ul>
       </div>
       <div>
         <h5>Research</h5>
         <ul>
           <li><a href="#">Paper (preprint)</a></li>
-          <li><a href="#research">CAT-28 bibliography</a></li>
+          <li><a href="#">CAT-28 bibliography</a></li>
           <li><a href="#">Replay artifacts</a></li>
-          <li><a href="https://github.com/Celovin/luvoire/blob/main/sbom.cdx.json">SBOM</a></li>
+          <li><a href="#">SBOM</a></li>
         </ul>
       </div>
       <div>
         <h5>Company</h5>
         <ul>
+          <li><a href="#">About Celovin</a></li>
           <li><a href="mailto:hello@celovin.com">hello@celovin.com</a></li>
-          <li><a href="https://github.com/Celovin/luvoire">GitHub</a></li>
-          <li><a href="status.html">Status</a></li>
-          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="#">GitHub</a></li>
+          <li><a href="#">Status</a></li>
         </ul>
       </div>
     </div>
@@ -568,6 +568,63 @@ replay.<span class="f">save</span>(<span class="s">"my_run.msgpack"</span>)
     </div>
   </div>
 </footer>
+
+<!-- ============ TWEAKS ============ -->
+<aside class="tweaks" id="tweaks" aria-label="Tweaks">
+  <h6>Tweaks</h6>
+  <div class="row">
+    <label>Accent</label>
+    <div class="swatches" id="swAccent">
+      <span class="sw on" data-accent="#A8753A" style="background:#A8753A" title="Antique bronze"></span>
+      <span class="sw" data-accent="#1E293B" style="background:#1E293B" title="Ink navy"></span>
+      <span class="sw" data-accent="#7A8F7B" style="background:#7A8F7B" title="Muted sage"></span>
+      <span class="sw" data-accent="#5C5148" style="background:#5C5148" title="Deep taupe"></span>
+    </div>
+  </div>
+  <div class="row">
+    <label>Base</label>
+    <div class="swatches" id="swBase">
+      <span class="sw on" data-base="#F7F3EC" style="background:#F7F3EC" title="Warm cream"></span>
+      <span class="sw" data-base="#FAFAF7" style="background:#FAFAF7" title="Clean off-white"></span>
+      <span class="sw" data-base="#EDE7D8" style="background:#EDE7D8" title="Deeper cream"></span>
+    </div>
+  </div>
+  <div class="row">
+    <label>H1 variant</label>
+    <select id="h1Variant">
+      <option value="1">Agent simulation that remembers.</option>
+      <option value="2">Deterministic multi-agent simulation.</option>
+      <option value="3">Replayable city-scale simulation.</option>
+    </select>
+  </div>
+  <div class="row">
+    <label>Display serif</label>
+    <select id="serifPick">
+      <option value="Source Serif 4">Source Serif 4</option>
+      <option value="Crimson Pro">Crimson Pro</option>
+      <option value="Fraunces">Fraunces</option>
+    </select>
+  </div>
+  <div class="row">
+    <label>Hero motion</label>
+    <select id="motionPick">
+      <option value="on">Auto-loop</option>
+      <option value="slow">Slow</option>
+      <option value="off">Still frame</option>
+    </select>
+  </div>
+</aside>
+
+<!-- Editmode persistence block (host-managed) -->
+<script>
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "#A8753A",
+  "base": "#F7F3EC",
+  "h1Variant": "3",
+  "serif": "Source Serif 4",
+  "motion": "on"
+}/*EDITMODE-END*/;
+</script>
 
 <script src="hero.js"></script>
 <script src="app.js"></script>
