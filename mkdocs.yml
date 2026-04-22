@@ -169,6 +169,7 @@ nav:
   - Reference:
       - CLI Overview: cli.md
       - CLI: reference/cli.md
+      - Benchmarks: benchmarks/replay-perf.md
       - CI and Release: ci-release-automation.md
       - Playground Deploy: playground-deploy.md
       - Persona Seeding: persona_seeding.md
