@@ -1,5 +1,5 @@
 services:
-  engine-api:
+  luvoire-api:
     build:
       context: ../..
       dockerfile: deploy/docker/Dockerfile.api

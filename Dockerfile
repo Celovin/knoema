@@ -1,5 +1,10 @@
 FROM python:3.12-slim
 
+LABEL org.opencontainers.image.title="Luvoire Playground" \
+      org.opencontainers.image.description="Self-hosted Luvoire Playground container." \
+      org.opencontainers.image.source="https://github.com/Celovin/luvoire" \
+      org.opencontainers.image.url="https://github.com/Celovin/luvoire"
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1

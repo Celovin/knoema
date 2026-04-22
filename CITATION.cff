@@ -6,7 +6,7 @@ authors:
   - name: "Celovin"
     email: "hello@celovin.com"
 version: 0.3.0
-date-released: 2026-04-19
+date-released: 2026-04-22
 license: MIT
 doi: 10.5281/zenodo.19643409
 repository-code: "https://github.com/Celovin/luvoire"
