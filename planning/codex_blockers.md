@@ -67,3 +67,15 @@ Hard rules for Codex:
 ## Policy Note - Never Hand-Type Git SHAs
 
 The Slot 5 build failure was caused by a hand-typed SHA that did not correspond to any real commit. When Codex (or any agent) needs to pin a pip dependency to a specific commit, it MUST obtain the SHA from `git rev-parse HEAD` or `git log --format=%H -1` rather than transcribing from memory. Any SHA written into a file must be verified with `git cat-file -e <sha>` before the file is committed.
+
+## Slot B RESOLVED - Standard Gate Failed
+
+- Status: RESOLVED on 2026-04-22.
+- Resolution: User-side added the Slot B documentation file `docs/playground-deploy.md` to `mkdocs.yml` nav under the `Reference` section (line inserted between `CI and Release` and `Privacy`). Verified with `python -m pytest tests/test_phase29_mkdocs.py` -> `4 passed`.
+- Resolution commit: includes `mkdocs.yml` and this blockers update only; Codex's in-flight Slot B files (`scripts/warm_space.py`, `tests/test_warm_space.py`, `docs/playground-deploy.md`, `scripts/deploy_playground_space.py`, `CHANGELOG.md`) remain untracked / modified in the working tree for Codex to finish committing as the Slot B commit.
+- Root cause: `docs/playground-deploy.md` is a new Slot B deliverable per handoff §2.2 item 4; the repository's mkdocs nav coverage test (`tests/test_phase29_mkdocs.py::test_phase29_mkdocs_nav_covers_all_public_markdown_pages`) treats every public markdown file under `docs/` as required in the nav.
+- Codex resumption instruction: re-run §0.5 from gate 1 (pytest) with the existing Slot B working-tree changes intact. Gate 1 now passes because `mkdocs.yml` is already updated and committed. On gate 7, add `mkdocs.yml` to the Slot B commit paths alongside the other Slot B deliverables, so the commit message `feat(playground-deploy): add warmup, cache-bust, and factory-reboot flags` still accurately covers the nav registration.
+- Original reason: `pytest --no-cov --ignore=tests/test_phase60_mobile_sdks.py` failed because `docs/playground-deploy.md` was not listed in `mkdocs.yml` nav (`tests/test_phase29_mkdocs.py::test_phase29_mkdocs_nav_covers_all_public_markdown_pages`).
+- Current slot: Slot B - HF Space Cold-Start Warmup and Cache Bust
+- Reproduction command: `python -m pytest --no-cov --ignore=tests/test_phase60_mobile_sdks.py`
+- Last-good SHA before resolution: `6f1e8efde3963ef4e33a86a52fc563da40b56cfb`

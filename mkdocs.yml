@@ -150,6 +150,7 @@ nav:
       - CLI Overview: cli.md
       - CLI: reference/cli.md
       - CI and Release: ci-release-automation.md
+      - Playground Deploy: playground-deploy.md
       - Privacy: PRIVACY.md
       - Security Policy: SECURITY.md
       - Security Audit: security/audit_2026-04-18.md
