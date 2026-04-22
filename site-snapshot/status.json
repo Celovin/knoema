@@ -1,0 +1,173 @@
+{
+  "generated_at": "2026-04-22T05:41:50Z",
+  "github_actions": {
+    "branch": "main",
+    "error": null,
+    "last_deploy_time": "2026-04-21T23:06:17Z",
+    "repo": "Celovin/knoema",
+    "runs": [
+      {
+        "conclusion": "failure",
+        "created_at": "2026-04-22T05:35:07Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24762076826",
+        "id": 24762076826,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "status": "completed",
+        "updated_at": "2026-04-22T05:37:45Z"
+      },
+      {
+        "conclusion": "failure",
+        "created_at": "2026-04-22T05:35:07Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24762076796",
+        "id": 24762076796,
+        "name": "SBOM Drift",
+        "path": ".github/workflows/sbom_drift.yml",
+        "status": "completed",
+        "updated_at": "2026-04-22T05:37:16Z"
+      },
+      {
+        "conclusion": "skipped",
+        "created_at": "2026-04-22T05:35:07Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24762076794",
+        "id": 24762076794,
+        "name": "Release Please",
+        "path": ".github/workflows/release-please.yml",
+        "status": "completed",
+        "updated_at": "2026-04-22T05:35:08Z"
+      },
+      {
+        "conclusion": "success",
+        "created_at": "2026-04-22T05:35:07Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24762076777",
+        "id": 24762076777,
+        "name": "Attribution Drift",
+        "path": ".github/workflows/attribution_drift.yml",
+        "status": "completed",
+        "updated_at": "2026-04-22T05:37:10Z"
+      },
+      {
+        "conclusion": "failure",
+        "created_at": "2026-04-22T05:24:01Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24761752908",
+        "id": 24761752908,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "status": "completed",
+        "updated_at": "2026-04-22T05:26:29Z"
+      },
+      {
+        "conclusion": "failure",
+        "created_at": "2026-04-22T05:24:01Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24761752894",
+        "id": 24761752894,
+        "name": "SBOM Drift",
+        "path": ".github/workflows/sbom_drift.yml",
+        "status": "completed",
+        "updated_at": "2026-04-22T05:27:14Z"
+      },
+      {
+        "conclusion": "skipped",
+        "created_at": "2026-04-22T05:24:01Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24761752892",
+        "id": 24761752892,
+        "name": "Release Please",
+        "path": ".github/workflows/release-please.yml",
+        "status": "completed",
+        "updated_at": "2026-04-22T05:24:02Z"
+      },
+      {
+        "conclusion": "success",
+        "created_at": "2026-04-22T05:24:01Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24761752889",
+        "id": 24761752889,
+        "name": "Attribution Drift",
+        "path": ".github/workflows/attribution_drift.yml",
+        "status": "completed",
+        "updated_at": "2026-04-22T05:25:59Z"
+      },
+      {
+        "conclusion": "failure",
+        "created_at": "2026-04-22T05:12:19Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24761411546",
+        "id": 24761411546,
+        "name": "SBOM Drift",
+        "path": ".github/workflows/sbom_drift.yml",
+        "status": "completed",
+        "updated_at": "2026-04-22T05:14:23Z"
+      },
+      {
+        "conclusion": "skipped",
+        "created_at": "2026-04-22T05:12:19Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24761411506",
+        "id": 24761411506,
+        "name": "Release Please",
+        "path": ".github/workflows/release-please.yml",
+        "status": "completed",
+        "updated_at": "2026-04-22T05:12:20Z"
+      }
+    ],
+    "source": "gh api"
+  },
+  "replay_artifacts": {
+    "artifacts": [
+      {
+        "current_sha256": "af326a00b59286d5eb24d1dbab1442e74f8f2a6908d33325864c184b34e4e4d2",
+        "matches": true,
+        "path": "demo/replay/replay_10000agents_gangnam_7pm.msgpack",
+        "sha256": "af326a00b59286d5eb24d1dbab1442e74f8f2a6908d33325864c184b34e4e4d2"
+      },
+      {
+        "current_sha256": "9b3fc9944ee08da97f6775199ce4ef6a3fad0fc2e5db25093e1122547faeb3f9",
+        "matches": true,
+        "path": "demo/replay/replay_10000agents_nemotron_gangnam_7pm.msgpack",
+        "sha256": "9b3fc9944ee08da97f6775199ce4ef6a3fad0fc2e5db25093e1122547faeb3f9"
+      },
+      {
+        "current_sha256": "0cc79baf78a81cfdbad33fae7b437a2cb9de135b39a6abcde1fffbdb4dfb884b",
+        "matches": true,
+        "path": "demo/replay/replay_1000agents_gangnam_7pm.msgpack",
+        "sha256": "0cc79baf78a81cfdbad33fae7b437a2cb9de135b39a6abcde1fffbdb4dfb884b"
+      },
+      {
+        "current_sha256": "8e00496a491218ef541378ebe990b20040f071c1fb7821ba82e050b00c7447ab",
+        "matches": true,
+        "path": "demo/replay/replay_100agents_gangnam_7pm.msgpack",
+        "sha256": "8e00496a491218ef541378ebe990b20040f071c1fb7821ba82e050b00c7447ab"
+      },
+      {
+        "current_sha256": "d253d008f340a2661d15aa0f86f4cf1e5aa7b403c689e07eea5d0b1cc7a39c01",
+        "matches": true,
+        "path": "demo/replay/replay_5000agents_gangnam_7pm.msgpack",
+        "sha256": "d253d008f340a2661d15aa0f86f4cf1e5aa7b403c689e07eea5d0b1cc7a39c01"
+      }
+    ],
+    "count": 5,
+    "verified": true
+  },
+  "schema_version": 1,
+  "space": {
+    "repo_id": "celovin/knoema-playground",
+    "stage": "RUNNING"
+  }
+}
