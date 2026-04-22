@@ -53,9 +53,33 @@ The committed file is `demo/replay/replay_5000agents_gangnam_7pm.msgpack`
 (4,779,728 bytes). This replay is local-demo only: it is not bundled into the
 HF Space footprint and should not be uploaded as part of the playground surface.
 
-## Extending To 10K Agents
+### 10K Scenario
 
-The runner is intentionally simple. For 10K-agent work, keep the same constraints:
+The 10K replay uses `demo/replay/scenario_config_60x60.yaml`, a 60x60 variant
+that scales the same alley connectors, main-road corridor, and commercial-edge
+zone used by the smaller offline replays. The larger grid keeps per-cell density
+near the 1K/20x20 and 5K/40x40 demo configurations while preserving the same
+local viewer interaction model.
+
+Regenerate the artifact with:
+
+```bash
+python demo/replay/generate_replay.py --scenario 10k
+```
+
+Verify the committed artifact with:
+
+```bash
+python demo/replay/generate_replay.py --scenario 10k --verify-existing
+```
+
+The committed file is `demo/replay/replay_10000agents_gangnam_7pm.msgpack`
+(9,539,344 bytes). This replay is local-demo only: it is not bundled into the
+HF Space footprint and should not be uploaded as part of the playground surface.
+
+## Extending Beyond 10K Agents
+
+The runner is intentionally simple. For larger replay work, keep the same constraints:
 
 - preserve deterministic seeds and output hashing;
 - keep inter-shard messages coordinator-routed;

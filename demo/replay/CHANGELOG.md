@@ -2,6 +2,8 @@
 
 ## 2026-04-22
 
+- Added the 10000-agent 60x60 local replay scenario for the largest current
+  offline city-scale demo path.
 - Added the 5000-agent 40x40 local replay scenario for demo-scale playback between
   the 1000-agent scenario and future larger-scale runs.
 - Added CAT-28 tier 5 personality overlays to the offline replay viewer's archetype injection dropdown.

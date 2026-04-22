@@ -16,7 +16,7 @@ from knoema.scaling.city_scale import replay_timestamp
 
 REPLAY_DIR = Path(__file__).resolve().parent
 DEFAULT_SCENARIOS = ("100", "1k")
-VERIFY_SCENARIOS = ("100", "1k", "5k")
+VERIFY_SCENARIOS = ("100", "1k", "5k", "10k")
 SCENARIOS: dict[str, dict[str, object]] = {
     "100": {
         "agent_count": 100,
@@ -31,6 +31,14 @@ SCENARIOS: dict[str, dict[str, object]] = {
         "filename": "replay_5000agents_gangnam_7pm.msgpack",
         "config": "scenario_config_40x40.yaml",
         "compact_initial_memories": True,
+        "include_memory_deltas": False,
+    },
+    "10k": {
+        "agent_count": 10000,
+        "filename": "replay_10000agents_gangnam_7pm.msgpack",
+        "config": "scenario_config_60x60.yaml",
+        "compact_initial_memories": True,
+        "compact_demographics": True,
         "include_memory_deltas": False,
     },
 }
@@ -89,6 +97,7 @@ def main() -> None:
                 else None
             ),
             compact_initial_memories=bool(scenario.get("compact_initial_memories", False)),
+            compact_demographics=bool(scenario.get("compact_demographics", False)),
             include_memory_deltas=bool(scenario.get("include_memory_deltas", True)),
         )
         encoded = msgpack.packb(payload, use_bin_type=True, strict_types=True)
@@ -125,6 +134,7 @@ def build_replay_payload(
     agent_count: int,
     scenario_config: Path | None = None,
     compact_initial_memories: bool = False,
+    compact_demographics: bool = False,
     include_memory_deltas: bool = True,
 ) -> dict[str, Any]:
     scenario_values = _scenario_values(scenario_config)
@@ -156,6 +166,7 @@ def build_replay_payload(
                 memory_snapshots,
                 config,
                 compact_initial_memories=compact_initial_memories,
+                compact_demographics=compact_demographics,
             )
         )
     frames = _frames_by_tick(
@@ -188,6 +199,7 @@ def _agent_static(
     config: CityScaleConfig,
     *,
     compact_initial_memories: bool = False,
+    compact_demographics: bool = False,
 ) -> dict[str, Any]:
     agent_id = str(agent["agent_id"])
     role = str(agent["role"])
@@ -201,7 +213,7 @@ def _agent_static(
     return {
         "id": agent_id,
         "role": role,
-        "demographics": _demographics(agent_id, role),
+        "demographics": {} if compact_demographics else _demographics(agent_id, role),
         "initial_position": list(initial_frame.position),
         "initial_status_flags": list(initial_frame.status_flags),
         "initial_memory_snapshot": [str(memory["memory_id"]) for memory in memories],

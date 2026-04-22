@@ -1,0 +1,43 @@
+# Routine Activity Theory reference: Cohen and Felson (1979), Social Change and
+# Crime Rate Trends: A Routine Activity Approach, American Sociological Review.
+# Role percentages are deterministic demo controls derived from the theory's
+# offender / target / guardian convergence triad, not field prevalence claims.
+scenario_id: gangnam_7pm_offline_replay_10k
+seed: 20260421
+start_time_iso: '2026-04-21T19:00:00'
+tick_minutes: 1
+tick_count: 30
+grid:
+  width: 60
+  height: 60
+  topology: gangnam_style_grid_scaled_60x60
+  edge_types:
+    alley:
+      description: narrow commercial back-alley connectors, scaled from the 20x20 replay
+      cells: [[15, 18], [18, 18], [21, 18], [24, 18], [36, 39], [39, 39], [42, 39]]
+    main_road:
+      description: wide commute corridors and arterial roads
+      cells: [[0, 30], [1, 30], [2, 30], [3, 30], [4, 30], [5, 30], [6, 30], [7, 30], [8, 30], [9, 30], [10, 30], [11, 30], [12, 30], [13, 30], [14, 30], [15, 30], [16, 30], [17, 30], [18, 30], [19, 30], [20, 30], [21, 30], [22, 30], [23, 30], [24, 30], [25, 30], [26, 30], [27, 30], [28, 30], [29, 30], [30, 30], [31, 30], [32, 30], [33, 30], [34, 30], [35, 30], [36, 30], [37, 30], [38, 30], [39, 30], [40, 30], [41, 30], [42, 30], [43, 30], [44, 30], [45, 30], [46, 30], [47, 30], [48, 30], [49, 30], [50, 30], [51, 30], [52, 30], [53, 30], [54, 30], [55, 30], [56, 30], [57, 30], [58, 30], [59, 30]]
+    commercial:
+      description: retail strips, transit exits, and evening footfall zones
+      bounds: [21, 21, 41, 41]
+roles:
+  general: 0.92
+  motivated_offender: 0.03
+  guardian: 0.05
+routine_patterns:
+  - role: general
+    pattern: rush_hour_commute
+    location_type: main_road
+  - role: general
+    pattern: commercial_zone_errand
+    location_type: commercial
+  - role: motivated_offender
+    pattern: commercial_zone_loitering
+    location_type: alley
+  - role: guardian
+    pattern: patrol_route
+    location_type: main_road
+convergence_rule:
+  description: offender plus suitable target with no guardian within one cell
+  radius_cells: 1
