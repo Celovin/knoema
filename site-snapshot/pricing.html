@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Knoema Pricing</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f7f8f3;
+      --ink: #18221d;
+      --muted: #5e6a61;
+      --line: #cfd8ce;
+      --green: #1f7a50;
+      --teal: #1c7c84;
+      --coral: #c85f4b;
+      --soft: #eef3ea;
+      --white: #fffefa;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Aptos, "Segoe UI", "Noto Sans", sans-serif;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 56px;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--green);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 800px;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.45rem, 4vw, 4.7rem);
+      font-weight: 600;
+      line-height: 0.98;
+    }
+
+    .lede {
+      max-width: 720px;
+      margin: 20px 0 34px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+
+    table {
+      width: 100%;
+      min-width: 860px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 18px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #304238;
+      background: var(--soft);
+      font-size: 0.76rem;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    tbody tr:last-child th,
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody th {
+      background: transparent;
+      color: var(--ink);
+      font-size: 1rem;
+      text-transform: none;
+    }
+
+    .price {
+      color: var(--green);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .ctas {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .cta {
+      min-height: 210px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .cta strong {
+      display: block;
+      font-size: 1.02rem;
+    }
+
+    .cta p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 42px;
+      margin-top: auto;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--white);
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    code {
+      display: block;
+      overflow-wrap: anywhere;
+      color: var(--teal);
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 0.77rem;
+    }
+
+    .notes {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      margin-top: 34px;
+      color: var(--muted);
+    }
+
+    .notes h2 {
+      margin: 0 0 10px;
+      color: var(--ink);
+      font-size: 1.05rem;
+    }
+
+    .notes p {
+      margin: 0 0 10px;
+    }
+
+    @media (max-width: 860px) {
+      .ctas,
+      .notes {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .shell {
+        width: min(100% - 22px, 1120px);
+        padding-top: 24px;
+      }
+
+      .cta {
+        min-height: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <p class="eyebrow">Knoema pricing</p>
+    <h1>Use your own key first. Subscribe only when hosted throughput matters.</h1>
+    <p class="lede">Prices are pre-tax and keep the LLM cost model visible: Free uses customer credentials, Pro and Team use pass-through metering, and Enterprise moves to a reviewed contract path.</p>
+
+    <div class="table-wrap" aria-label="Pricing table">
+      <table data-pricing-table="tiers">
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Price</th>
+            <th>Monthly token cap</th>
+            <th>Concurrent requests</th>
+            <th>Support</th>
+            <th>SLA target</th>
+            <th>LLM cost model</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-tier="Free" data-price="$0/mo" data-token-cap="100,000 output tokens">
+            <th>Free</th>
+            <td class="price">$0/mo</td>
+            <td>100,000 output tokens</td>
+            <td>1</td>
+            <td>Community docs and GitHub issues</td>
+            <td>No uptime SLA</td>
+            <td>Customer BYO OpenAI key; usage is counted only, with no Knoema-side variable charge</td>
+          </tr>
+          <tr data-tier="Pro" data-price="$49/mo" data-token-cap="2,000,000 output tokens">
+            <th>Pro</th>
+            <td class="price">$49/mo</td>
+            <td>2,000,000 output tokens</td>
+            <td>4</td>
+            <td>Email support, next-business-day target</td>
+            <td>Best-effort, no contractual SLA</td>
+            <td>Knoema pass-through key; provider cost plus 30% markup</td>
+          </tr>
+          <tr data-tier="Team" data-price="$199/mo" data-token-cap="10,000,000 output tokens">
+            <th>Team</th>
+            <td class="price">$199/mo</td>
+            <td>10,000,000 output tokens</td>
+            <td>16</td>
+            <td>Priority email for workspace admins</td>
+            <td>99.5% target after commercial terms are countersigned</td>
+            <td>Shared pass-through key; provider cost plus 30% markup</td>
+          </tr>
+          <tr data-tier="Enterprise" data-price="Contact sales" data-token-cap="Contract-specific">
+            <th>Enterprise</th>
+            <td class="price">Contact sales</td>
+            <td>Contract-specific</td>
+            <td>64 default</td>
+            <td>Named support path and launch review</td>
+            <td>Contract-specific SLA target</td>
+            <td>Dedicated endpoint or approved customer provider; flat contract with usage analytics</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <section class="ctas" aria-label="Plan actions">
+      <article class="cta">
+        <strong>Free</strong>
+        <p>Start local and hosted evaluation with customer-held provider credentials.</p>
+        <a class="button secondary" href="../docs/billing.md">Start with your own OpenAI key</a>
+      </article>
+      <article class="cta">
+        <strong>Pro</strong>
+        <p>Placeholder checkout templates only. Replace them before live billing.</p>
+        <!-- Paddle placeholder: https://checkout.paddle.com/<product-id-placeholder> -->
+        <!-- Toss placeholder: https://pay.tosspayments.com/<payment-link-placeholder> -->
+        <code>https://checkout.paddle.com/&lt;product-id-placeholder&gt;</code>
+        <code>https://pay.tosspayments.com/&lt;payment-link-placeholder&gt;</code>
+        <a class="button" href="#placeholder-pro">Subscribe with card (Toss KR / Paddle global)</a>
+      </article>
+      <article class="cta">
+        <strong>Team</strong>
+        <p>Shared workspace throughput with the same pass-through cost model.</p>
+        <code>https://checkout.paddle.com/&lt;team-product-id-placeholder&gt;</code>
+        <code>https://pay.tosspayments.com/&lt;team-payment-link-placeholder&gt;</code>
+        <a class="button" href="#placeholder-team">Subscribe with card</a>
+      </article>
+      <article class="cta">
+        <strong>Enterprise</strong>
+        <p>Dedicated endpoint review, procurement, DPA, and custom SLA terms.</p>
+        <a class="button" href="mailto:sales@celovin.com">Contact sales@celovin.com</a>
+      </article>
+    </section>
+
+    <section class="notes" aria-label="Billing notes">
+      <div>
+        <h2>Taxes and provider roles</h2>
+        <p>Paddle global checkout calculates and remits applicable taxes where Paddle is merchant of record. Toss KR checkout should show Korean tax handling and receipt behavior during seller onboarding.</p>
+      </div>
+      <div>
+        <h2>References</h2>
+        <p>Review <a href="../docs/billing.md">docs/billing.md</a>, <a href="../docs/legal.md">docs/legal.md</a>, and the <a href="../docs/legal/commercial_terms_v1_en.md">legal terms</a> before enabling live checkout.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

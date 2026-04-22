@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 ### Added
+- Public pricing page with Free, Pro, Team, and Enterprise tiers plus a self-contained static HTML mirror.
 - Payment seller onboarding references for Toss Payments and Paddle plus a safe environment status checker.
 - Deterministic attribution and SBOM artifacts with CI drift checks for downstream package compliance.
 - Draft commercial legal package covering terms, privacy, DPA, attribution, SLA, security posture, and refund policies.
