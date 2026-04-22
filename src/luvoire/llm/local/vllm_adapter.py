@@ -5,7 +5,12 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any
 
-from luvoire.llm.local.http import normalize_messages, numeric_option, openai_chat_content, post_json
+from luvoire.llm.local.http import (
+    normalize_messages,
+    numeric_option,
+    openai_chat_content,
+    post_json,
+)
 from luvoire.protocols import Message
 
 

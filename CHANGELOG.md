@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-22
+
+### Added
+- Luvoire rebrand release surface with the renamed Python package, CLI entry points, project metadata, and one-release compatibility shim for legacy imports and environment variables.
+- Brand package, landing deployment notes, and landing bundle tracking for the Luvoire launch surface.
+
+### Changed
+- Active code, documentation, distribution metadata, adapters, and playground surfaces now use the Luvoire name while preserving historical reports and pre-v7 changelog entries verbatim.
+- Release metadata now targets `v0.3.0` and the `Celovin/luvoire` repository namespace.
+
+### Security
+- Replay artifact SHA-256 invariants remain unchanged across the rebrand, including the Nemotron 10K replay artifact.
+
 ### Added
 - Static status page generator with Hugging Face Space, GitHub Actions, replay artifact badges, and a 15-minute update workflow.
 - Public pricing page with Free, Pro, Team, and Enterprise tiers plus a self-contained static HTML mirror.

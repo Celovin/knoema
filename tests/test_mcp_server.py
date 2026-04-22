@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 import json
+import warnings
+from pathlib import Path
 
+import luvoire.config as config
+import luvoire_mcp.server as mcp_server
 from luvoire_mcp.server import LuvoireMcpService, handle_jsonrpc_line
 
 
@@ -83,3 +87,30 @@ def test_batch_o_jsonrpc_initialize_and_tool_call_schema() -> None:
     assert tool_call is not None
     assert tool_call["result"]["structuredContent"]["count"] == 30
     assert tool_call["result"]["content"][0]["type"] == "text"
+
+
+def test_batch_o_mcp_scenario_dir_prefers_luvoire_env(monkeypatch) -> None:
+    monkeypatch.setenv("LUVOIRE_SCENARIO_DIR", "playground/scenarios")
+    monkeypatch.setenv("KNOEMA_SCENARIO_DIR", "legacy/scenarios")
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        value = mcp_server._env_scenario_dir()
+
+    assert value == Path("playground/scenarios")
+    assert caught == []
+
+
+def test_batch_o_mcp_scenario_dir_accepts_legacy_env(monkeypatch) -> None:
+    config._WARNED_LEGACY_ENV_VARS.clear()
+    monkeypatch.delenv("LUVOIRE_SCENARIO_DIR", raising=False)
+    monkeypatch.setenv("KNOEMA_SCENARIO_DIR", "legacy/scenarios")
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        value = mcp_server._env_scenario_dir()
+
+    assert value == Path("legacy/scenarios")
+    assert len(caught) == 1
+    assert caught[0].category is DeprecationWarning
+    assert "KNOEMA_SCENARIO_DIR is deprecated" in str(caught[0].message)

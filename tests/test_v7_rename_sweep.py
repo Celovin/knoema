@@ -3,7 +3,6 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-
 TOKEN_ARGS = ["knoema", "Knoema", "KNOEMA"]
 
 ALLOWLIST = {
@@ -17,10 +16,12 @@ ALLOWLIST = {
     Path("src/luvoire/api/rate_limit.py"),
     Path("src/luvoire/api/server.py"),
     Path("src/luvoire/config.py"),
+    Path("src/luvoire_mcp/server.py"),
     Path("src/luvoire/multimodal/tts.py"),
     Path("src/luvoire/telemetry/client.py"),
     Path("tests/test_bench_replay_perf.py"),
     Path("tests/test_env_var_compat_shim.py"),
+    Path("tests/test_mcp_server.py"),
 }
 
 

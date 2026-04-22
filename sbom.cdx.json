@@ -904,23 +904,6 @@
       "version": "0.36.2"
     },
     {
-      "bom-ref": "pkg:pypi/luvoire-engine@0.3.0",
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "luvoire-engine",
-      "purl": "pkg:pypi/luvoire-engine@0.3.0",
-      "supplier": {
-        "name": "Python Package Index"
-      },
-      "type": "library",
-      "version": "0.3.0"
-    },
-    {
       "bom-ref": "pkg:pypi/loguru@0.7.3",
       "licenses": [
         {
@@ -936,6 +919,23 @@
       },
       "type": "library",
       "version": "0.7.3"
+    },
+    {
+      "bom-ref": "pkg:pypi/luvoire-engine@0.3.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "name": "luvoire-engine",
+      "purl": "pkg:pypi/luvoire-engine@0.3.0",
+      "supplier": {
+        "name": "Python Package Index"
+      },
+      "type": "library",
+      "version": "0.3.0"
     },
     {
       "bom-ref": "pkg:pypi/msgpack@1.1.2",

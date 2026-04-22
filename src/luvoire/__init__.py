@@ -44,7 +44,12 @@ from luvoire.evaluation import (
     compute_inter_rater_reliability,
     fleiss_kappa,
 )
-from luvoire.export import export_finetuning_jsonl, to_anthropic_jsonl, to_dpo_pairs, to_openai_jsonl
+from luvoire.export import (
+    export_finetuning_jsonl,
+    to_anthropic_jsonl,
+    to_dpo_pairs,
+    to_openai_jsonl,
+)
 from luvoire.game import NPC, GameSession, NPCResponse
 from luvoire.llm import (
     AnthropicClient,
@@ -171,7 +176,6 @@ __all__ = [
     "HashEmbeddingEncoder",
     "HierarchicalPlanner",
     "InteractionOutcome",
-    "LuvoireConfig",
     "LLMCacheStats",
     "LLMCallRecord",
     "LLMClient",
@@ -180,6 +184,7 @@ __all__ = [
     "LlamaCppClient",
     "LocalClient",
     "LocalLLMError",
+    "LuvoireConfig",
     "Memory",
     "MemoryRetriever",
     "MemorySearchResult",
@@ -226,9 +231,9 @@ __all__ = [
     "VerificationReport",
     "WorldEvent",
     "WorldState",
-    "__version__",
-    "__pronounces__",
     "__korean_name__",
+    "__pronounces__",
+    "__version__",
     "audit_event_from_record",
     "build_cli_properties",
     "build_comparison_rows",

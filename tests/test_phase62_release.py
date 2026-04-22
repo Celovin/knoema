@@ -30,16 +30,17 @@ def test_phase62_package_and_metadata_versions_are_synchronized() -> None:
 def test_phase62_changelog_promotes_unreleased_notes() -> None:
     changelog = Path("CHANGELOG.md").read_text(encoding="utf-8")
     unreleased_start = changelog.index("## [Unreleased]")
-    release_start = changelog.index(f"## [{RELEASE_VERSION}] - 2026-04-19")
-    release_end = changelog.index("## [0.1.1]")
+    release_start = changelog.index(f"## [{RELEASE_VERSION}] - 2026-04-22")
+    release_end = changelog.index("## [0.2.0]")
     unreleased_section = changelog[unreleased_start:release_start]
     release_section = changelog[release_start:release_end]
 
     assert "Phase 61" not in unreleased_section
-    assert "Phase 43 persona opt-in Theory of Mind" in release_section
-    assert "Phase 61 interactive 5-chapter tutorial website" in release_section
+    assert "Luvoire rebrand" in release_section
+    assert "compatibility shim" in release_section
+    assert "landing bundle" in release_section
     assert "### Security" in release_section
-    assert "Phase 53 red-team safety suite" in release_section
+    assert "Replay artifact SHA-256 invariants" in release_section
 
 
 def test_phase62_release_docs_surface_current_version_and_doi() -> None:

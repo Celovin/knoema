@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any, TextIO, TypeAlias
 
 from luvoire.cli import SimulationRunConfig, load_run_config
+from luvoire.config import get_env
 from luvoire.llm import LocalClient
 from luvoire.protocols import Message
 from luvoire.simulator import SimulationLogEntry, Simulator
@@ -603,10 +604,8 @@ def _tokens(text: str) -> tuple[str, ...]:
 
 
 def _env_scenario_dir() -> Path | None:
-    # `os.environ` is avoided at import time to keep tests free to monkeypatch.
-    import os
-
-    value = os.environ.get("LUVOIRE_SCENARIO_DIR")
+    # `get_env` reads at call time so tests can freely monkeypatch the process env.
+    value = get_env("LUVOIRE_SCENARIO_DIR", "KNOEMA_SCENARIO_DIR")
     if not value:
         return None
     return Path(value)

@@ -110,7 +110,10 @@ def cost_budget(
 
 
 def citation_bundle(*, title: str, author: str = "Celovin", year: int = 2026) -> dict[str, str]:
-    key = "".join(character.lower() for character in title if character.isalnum())[:24]
+    normalized_title = "".join(character.lower() for character in title if character.isalnum())
+    if normalized_title.startswith("luvoire") and not normalized_title.startswith("luvoireengine"):
+        normalized_title = f"luvoireengine{normalized_title.removeprefix('luvoire')}"
+    key = normalized_title[:24]
     bibtex = "\n".join(
         [
             f"@software{{{key},",
