@@ -168,7 +168,7 @@ $ curl -X POST https://api.luvoire.com/v1/runs \\
       cta2: 'Read the paper',
     },
     ko: {
-      h1: '기억하는<br><em>에이전트</em> 시뮬레이션<span class="dot-end">.</span>',
+      h1: '재생 가능한 <em>도시 규모</em><br>시뮬레이션<span class="dot-end">.</span>',
       sub: '결정적으로 재생 가능한 도시 규모 멀티 에이전트 시뮬레이션. 계층형 메모리 스택과 28개의 학술 근거 성격 아키타입. 개방된 방법론, 재현 가능한 산출물, 상업 티어.',
       cta1: '플레이그라운드 열기',
       cta2: '논문 읽기',
