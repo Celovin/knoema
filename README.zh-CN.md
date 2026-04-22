@@ -14,10 +14,10 @@
 
 ## Knoema Bench
 
-Knoema Bench is the seven-axis public leaderboard for persistent-agent frameworks. Live page: [https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/). Submission template: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml).
+Knoema Bench 是面向持久型智能体框架的七轴公开排行榜。在线页面：[https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/)。提交模板：[bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml)。
 
-- Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout.
-- Opt-in OpenAI TTS voice playback for Playground timeline `speak` actions with per-agent voices and cache-backed WAV fallback.
+- Unity SDK（预览）提供 FastAPI tick、memory、action 合约和 UPM 包结构。
+- 可选 OpenAI TTS 语音播放支持 Playground 时间线中的 `speak` 动作，包含每个智能体的声音和基于缓存的 WAV fallback。
 
 ## 语言
 
@@ -47,7 +47,7 @@ Knoema Engine 是一个早期 MVP，用于构建具备记忆、关系、情绪�
 - 带伦理护栏的 YAML Scenario DSL v1
 - 支持 JSONL 导出的仿真运行器、CLI 与仪表板
 - Playground、基准测试、游戏 SDK 和研究报告
-- 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
+- 城市规模 1K 基准、离线 msgpack replay 查看器，以及 CAT-28 五级人格档案的教学 overlay
 
 ## 快速开始
 

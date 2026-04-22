@@ -1,0 +1,26 @@
+name: README parity
+
+on:
+  push:
+    paths:
+      - "README*.md"
+      - "scripts/check_readme_parity.py"
+      - "tests/test_readme_parity.py"
+      - ".github/workflows/readme-parity.yml"
+  pull_request:
+    paths:
+      - "README*.md"
+      - "scripts/check_readme_parity.py"
+      - "tests/test_readme_parity.py"
+      - ".github/workflows/readme-parity.yml"
+
+jobs:
+  readme-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check README locale parity
+        run: python scripts/check_readme_parity.py

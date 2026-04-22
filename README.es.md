@@ -14,9 +14,9 @@
 
 ## Knoema Bench
 
-Knoema Bench is the seven-axis public leaderboard for persistent-agent frameworks. Live page: [https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/). Submission template: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml).
+Knoema Bench es la tabla pública de siete ejes para frameworks de agentes persistentes. Página en vivo: [https://celovin.github.io/knoema/bench/](https://celovin.github.io/knoema/bench/). Plantilla de envío: [bench/submissions/TEMPLATE.yaml](bench/submissions/TEMPLATE.yaml).
 
-- Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout.
+- Unity SDK (vista previa) con contrato FastAPI de tick, memoria y acción, más diseño de paquete UPM.
 
 ## Idiomas
 
@@ -46,8 +46,8 @@ Todos los ejemplos de seguridad pública de este repositorio son ficticios, sint
 - Scenario DSL v1 en YAML con guardrails éticos
 - Motor de simulación, CLI y panel con exportación JSONL
 - Playground, benchmarks, SDK de juego e informes de investigación
-- 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
-- Opt-in OpenAI TTS voice playback for Playground timeline `speak` actions with per-agent voices and cache-backed WAV fallback
+- Benchmark urbano 1K, visor de replay msgpack sin conexión y perfiles de personalidad CAT-28 de nivel 5 como overlays pedagógicos
+- Reproducción de voz OpenAI TTS opcional para acciones `speak` en la línea de tiempo del Playground, con voces por agente y fallback WAV en caché
 
 ## Inicio rápido
 

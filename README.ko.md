@@ -47,10 +47,10 @@ Knoema Engine은 기억, 관계, 감정, 환경 맥락, LLM 기반 의사결정�
 - YAML 기반 로컬 시뮬레이션을 실행하는 `knoema run` CLI
 - MVP 데모 트랙과 10명 마을 확장 실험을 보여주는 Jupyter 노트북
 - JSON과 Markdown 리포트를 생성하는 deterministic benchmark script
-- 1K city-scale benchmark, offline msgpack replay viewer, and pedagogical archetype overlays
+- 도시 규모 1K 벤치마크, 오프라인 msgpack 리플레이 뷰어, CAT-28 티어 5 성격 프로필 기반 교육용 오버레이
 - Godot 4 어댑터 스캐폴드
-- Unity SDK (preview) with FastAPI tick/memory/action contract and UPM package layout
-- Opt-in OpenAI TTS voice playback for Playground timeline `speak` actions with per-agent voices and cache-backed WAV fallback
+- Unity SDK 미리보기: FastAPI tick/memory/action 계약과 UPM 패키지 레이아웃 제공
+- Playground 타임라인의 `speak` 액션을 위한 선택형 OpenAI TTS 음성 재생, 에이전트별 음성과 캐시 기반 WAV fallback 포함
 - Python, TypeScript, GDScript Game SDK facade
 - Playback과 live-tail control을 포함한 Streamlit 시뮬레이션 로그 대시보드
 
