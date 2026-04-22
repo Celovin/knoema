@@ -9,6 +9,10 @@ Knoema pricing separates bring-your-own-key evaluation from metered hosted usage
 | Team | $199/mo | 10,000,000 output tokens | 16 | Priority email for workspace admins | 99.5% target after commercial terms are countersigned | Shared pass-through key; provider cost plus 30% markup |
 | Enterprise | Contact sales | Contract-specific | 64 default | Named support path and launch review | Contract-specific SLA target | Dedicated endpoint or approved customer provider; flat contract with usage analytics |
 
+## How do I get a key?
+
+Use the customer onboarding CLI to create a PoC tenant and issue a hashed tenant API key. See [Customer Onboarding](customer-onboarding.md) for the command sequence and `/simulations/run` curl example.
+
 ## Start or Subscribe
 
 ### Free

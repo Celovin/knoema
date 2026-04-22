@@ -16,6 +16,7 @@ from typing import Any, cast
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
+from knoema.customer_cli import add_customer_subparser, handle_customer_command
 from knoema.dsl import collect_validation_issues, load_scenario
 from knoema.environment import Environment
 from knoema.game.schedule import RoutineEntry
@@ -332,6 +333,7 @@ def build_parser() -> argparse.ArgumentParser:
     playground_parser.add_argument("--port", type=int, default=7860, help="Port to bind.")
     playground_parser.add_argument("--dry-run", action="store_true", help="Print launch plan without starting Gradio.")
     playground_parser.add_argument("--json", action="store_true", help="Print launch plan as JSON.")
+    add_customer_subparser(subparsers)
     return parser
 
 
@@ -424,6 +426,8 @@ def main(
             return 0
         launch_playground(args.host, args.port)
         return 0
+    if args.command == "customer":
+        return handle_customer_command(args)
     parser.error(f"Unknown command: {args.command}")
     return 2
 

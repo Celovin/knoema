@@ -16,6 +16,7 @@ from knoema.api.unity_service import UnityRuntimeService
 from knoema.api.usage_middleware import UsageMeteringMiddleware
 from knoema.billing.api_keys import APIKeyManager
 from knoema.billing.gateway import UsageMeter
+from knoema.billing.tenant_registry import TenantRegistry
 
 
 def create_app(
@@ -30,7 +31,7 @@ def create_app(
     service = simulation_service or SimulationService()
     unity_service = unity_runtime_service or UnityRuntimeService()
     limiter = rate_limiter or RateLimiter.from_env()
-    tenant_keys = api_key_manager or APIKeyManager()
+    tenant_keys = api_key_manager or TenantRegistry().key_manager()
     meter = usage_meter or UsageMeter()
     tenant_limiter = tier_rate_limiter or TierRateLimiter()
 
