@@ -75,3 +75,25 @@ def test_subtask57_build_app_exposes_questionnaire_mode_and_sixty_likert_items()
     assert questionnaire_panel.visible is False
     assert questionnaire_mode.value == hexaco_questionnaire.QUESTIONNAIRE_MODE_SLIDERS
     assert len(question_sliders) == 60
+
+
+def test_subtask57_questionnaire_mode_auto_projects_answers_into_trait_updates() -> None:
+    responses = hexaco_questionnaire.questionnaire_default_responses()
+    for item in hexaco_questionnaire.questionnaire_domain_items("honesty_humility"):
+        responses[item.item_id] = 1 if item.reverse_scored else 5
+
+    updates = playground_app._questionnaire_mode_updates(
+        hexaco_questionnaire.QUESTIONNAIRE_MODE_HEXACO,
+        "English",
+        *[responses[item.item_id] for item in hexaco_questionnaire.HEXACO_QUESTIONNAIRE_ITEMS],
+    )
+
+    panel_update = updates[0]
+    trait_values = updates[1:-1]
+    summary = updates[-1]
+
+    assert panel_update["visible"] is True
+    assert panel_update["open"] is True
+    assert trait_values[playground_app.PERSONA_TRAIT_FIELDS.index("honesty_humility")] > 0.9
+    assert trait_values[playground_app.PERSONA_TRAIT_FIELDS.index("machiavellianism")] < 0.2
+    assert "HEXACO summary" in summary

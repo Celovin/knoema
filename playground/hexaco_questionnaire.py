@@ -85,12 +85,14 @@ def questionnaire_intro_markdown(language: str) -> str:
     if language == "ko":
         return (
             "- 60문항, 1=전혀 아니다, 5=매우 그렇다.\n"
-            "- Apply 버튼을 누르면 HEXACO 6요인 점수를 현재 30개 trait 슬라이더로 투영합니다.\n"
+            "- 설문 모드가 켜져 있으면 응답이 현재 30개 trait 슬라이더에 자동 투영됩니다.\n"
+            "- Apply 버튼은 투영 결과를 다시 계산할 때 사용할 수 있습니다.\n"
             "- 근거: Ashton, Lee, Goldberg (2007) public-domain IPIP-HEXACO scales."
         )
     return (
         "- 60 items, 1 = strongly disagree, 5 = strongly agree.\n"
-        "- Press Apply to project the six HEXACO scores into the current 30-trait slider profile.\n"
+        "- When questionnaire mode is active, responses automatically project into the current 30-trait slider profile.\n"
+        "- Use Apply to refresh the projected trait profile on demand.\n"
         "- Basis: Ashton, Lee, Goldberg (2007) public-domain IPIP-HEXACO scales."
     )
 
@@ -101,9 +103,9 @@ def questionnaire_domain_label(domain: HexacoDomain, language: str) -> str:
 
 def questionnaire_apply_label(language: str) -> str:
     return (
-        "설문 점수를 trait 슬라이더에 적용"
+        "설문 trait 투영 새로고침"
         if language == "ko"
-        else "Apply questionnaire to trait sliders"
+        else "Refresh questionnaire trait projection"
     )
 
 

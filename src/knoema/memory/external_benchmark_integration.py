@@ -1,4 +1,4 @@
-"""Synthetic local proxies for named memory benchmark families."""
+"""Synthetic local proxy suites inspired by named memory benchmark families."""
 
 from __future__ import annotations
 
@@ -41,14 +41,24 @@ class ExternalMemoryBenchmarkIntegrationResult:
 def run_external_memory_benchmark_integration() -> ExternalMemoryBenchmarkIntegrationResult:
     rows = []
     for benchmark_id, label, target, cases in (
-        ("locomo", "LoCoMo long-term conversational retention", 0.8, _locomo_cases()),
+        (
+            "locomo",
+            "LoCoMo-inspired long-term conversational retention proxy",
+            0.8,
+            _locomo_cases(),
+        ),
         (
             "memoryagentbench",
-            "MemoryAgentBench EventQA + FactConsolidation",
+            "MemoryAgentBench-inspired EventQA + FactConsolidation proxy",
             0.8,
             _memoryagentbench_cases(),
         ),
-        ("memoryarena", "MemoryArena decision-relevant memory", 0.6, _memoryarena_cases()),
+        (
+            "memoryarena",
+            "MemoryArena-inspired decision-relevant memory proxy",
+            0.6,
+            _memoryarena_cases(),
+        ),
     ):
         result = run_memory_benchmark_cases(cases, target_recall_at_5=target)
         rows.append(

@@ -34,12 +34,12 @@
       "retrieved_memory_id": "alpha-emotional-01"
     },
     {
-      "final_score": 0.722632,
+      "final_score": 0.707411,
       "hit": false,
       "query_id": "q4",
       "relevant_memory_id": "alpha-episodic-02",
       "retrieved_layer": "procedural",
-      "retrieved_memory_id": "beta-procedural-01"
+      "retrieved_memory_id": "alpha-procedural-01"
     },
     {
       "final_score": 0.742258,

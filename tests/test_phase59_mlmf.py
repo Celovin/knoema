@@ -58,6 +58,7 @@ def test_phase59_store_supports_four_layers_with_shared_scheduler() -> None:
 
     results = store.retrieve(
         "Where is the brass key stored?",
+        agent_id="agent_a",
         as_of=base + timedelta(days=10),
         top_k=4,
     )
@@ -65,6 +66,7 @@ def test_phase59_store_supports_four_layers_with_shared_scheduler() -> None:
     assert store.shared_decay_scheduler is scheduler
     assert {result.record.layer for result in results} == set(MEMORY_LAYERS)
     assert results[0].record.memory_id == "semantic-1"
+    assert {result.record.agent_id for result in results} == {"agent_a"}
 
 
 def test_phase59_shared_decay_scheduler_preserves_procedural_memory_longer_than_episodic() -> None:
@@ -87,6 +89,11 @@ def test_phase59_mlmf_retention_benchmark_beats_published_baseline() -> None:
     assert len(result.per_query) == 8
     assert sum(1 for row in result.per_query if row.hit) >= 7
     assert {row.retrieved_layer for row in result.per_query} == set(MEMORY_LAYERS)
+    assert all(
+        row.retrieved_memory_id.split("-", 1)[0]
+        == row.relevant_memory_id.split("-", 1)[0]
+        for row in result.per_query
+    )
 
 
 def test_phase59_mlmf_script_writes_summary() -> None:

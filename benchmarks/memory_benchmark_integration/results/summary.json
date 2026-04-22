@@ -2,7 +2,7 @@
   "rows": [
     {
       "benchmark_id": "locomo",
-      "benchmark_label": "LoCoMo long-term conversational retention",
+      "benchmark_label": "LoCoMo-inspired long-term conversational retention proxy",
       "evaluation_mode": "synthetic local proxy over SQLite+FAISS retrieval",
       "passed": true,
       "score": 1.0,
@@ -10,7 +10,7 @@
     },
     {
       "benchmark_id": "memoryagentbench",
-      "benchmark_label": "MemoryAgentBench EventQA + FactConsolidation",
+      "benchmark_label": "MemoryAgentBench-inspired EventQA + FactConsolidation proxy",
       "evaluation_mode": "synthetic local proxy over SQLite+FAISS retrieval",
       "passed": true,
       "score": 1.0,
@@ -18,7 +18,7 @@
     },
     {
       "benchmark_id": "memoryarena",
-      "benchmark_label": "MemoryArena decision-relevant memory",
+      "benchmark_label": "MemoryArena-inspired decision-relevant memory proxy",
       "evaluation_mode": "synthetic local proxy over SQLite+FAISS retrieval",
       "passed": true,
       "score": 1.0,

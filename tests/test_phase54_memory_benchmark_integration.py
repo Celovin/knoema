@@ -30,6 +30,13 @@ def test_phase54_memoryarena_meets_sixty_percent_target() -> None:
     assert "synthetic local proxy" in memoryarena.evaluation_mode
 
 
+def test_phase54_benchmark_labels_disclose_proxy_status() -> None:
+    result = run_external_memory_benchmark_integration()
+
+    assert all("proxy" in row.benchmark_label.lower() for row in result.rows)
+    assert all("inspired" in row.benchmark_label.lower() for row in result.rows)
+
+
 def test_phase54_memory_benchmark_script_writes_summary() -> None:
     subprocess.run(
         [sys.executable, "benchmarks/memory_benchmark_integration/run.py"],

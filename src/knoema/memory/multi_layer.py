@@ -123,6 +123,7 @@ class MultiLayerSearchResult:
 @dataclass(frozen=True, slots=True)
 class MLMFBenchmarkQuery:
     query_id: str
+    agent_id: str
     query: str
     relevant_memory_id: str
 
@@ -203,19 +204,29 @@ class MultiLayerMemoryStore:
         self,
         query: str,
         *,
+        agent_id: str | None = None,
         as_of: datetime | None = None,
         top_k: int = 5,
     ) -> list[MultiLayerSearchResult]:
         if not query.strip():
             raise ValueError("query must not be blank")
+        if agent_id is not None and not str(agent_id).strip():
+            raise ValueError("agent_id must not be blank when provided")
         if top_k < 1:
             raise ValueError("top_k must be positive")
         if not self._records:
             return []
-        reference_time = as_of or max(record.timestamp for record in self._records)
+        candidate_records = [
+            record
+            for record in self._records
+            if agent_id is None or record.agent_id == str(agent_id).strip()
+        ]
+        if not candidate_records:
+            return []
+        reference_time = as_of or max(record.timestamp for record in candidate_records)
         query_embedding = tuple(self.encoder.encode(query))
         scored: list[MultiLayerSearchResult] = []
-        for record in self._records:
+        for record in candidate_records:
             embedding = record.embedding or tuple(self.encoder.encode(record.content))
             semantic_score = _cosine_like_similarity(query_embedding, embedding)
             decay_score = self.shared_decay_scheduler.retention_score(
@@ -261,7 +272,12 @@ def run_mlmf_retention_benchmark() -> MLMFRetentionBenchmarkResult:
     as_of = datetime(2026, 4, 26, 9, 0, tzinfo=UTC)
     per_query: list[MLMFBenchmarkQueryResult] = []
     for query in queries:
-        top_result = store.retrieve(query.query, as_of=as_of, top_k=1)[0]
+        top_result = store.retrieve(
+            query.query,
+            agent_id=query.agent_id,
+            as_of=as_of,
+            top_k=1,
+        )[0]
         per_query.append(
             MLMFBenchmarkQueryResult(
                 query_id=query.query_id,
@@ -384,41 +400,49 @@ def _default_benchmark_queries() -> tuple[MLMFBenchmarkQuery, ...]:
     return (
         MLMFBenchmarkQuery(
             query_id="q1",
+            agent_id="agent_alpha",
             query="Where is the brass key stored for the archive cabinet?",
             relevant_memory_id="alpha-semantic-01",
         ),
         MLMFBenchmarkQuery(
             query_id="q2",
+            agent_id="agent_alpha",
             query="Which cabinet should carry the radio in the evacuation routine?",
             relevant_memory_id="alpha-procedural-01",
         ),
         MLMFBenchmarkQuery(
             query_id="q3",
+            agent_id="agent_alpha",
             query="Which bridge should agents avoid after dusk?",
             relevant_memory_id="alpha-emotional-01",
         ),
         MLMFBenchmarkQuery(
             query_id="q4",
+            agent_id="agent_alpha",
             query="Where were the ceramic mugs stacked before the workshop?",
             relevant_memory_id="alpha-episodic-02",
         ),
         MLMFBenchmarkQuery(
             query_id="q5",
+            agent_id="agent_beta",
             query="Where does the field notebook remain with the orange tape roll?",
             relevant_memory_id="beta-semantic-01",
         ),
         MLMFBenchmarkQuery(
             query_id="q6",
+            agent_id="agent_beta",
             query="What is step four of the calibration checklist?",
             relevant_memory_id="beta-procedural-01",
         ),
         MLMFBenchmarkQuery(
             query_id="q7",
+            agent_id="agent_beta",
             query="Which corridor feels safer after the blackout in the west hall?",
             relevant_memory_id="beta-emotional-01",
         ),
         MLMFBenchmarkQuery(
             query_id="q8",
+            agent_id="agent_beta",
             query="Where was the sample-size note written during the debrief?",
             relevant_memory_id="beta-episodic-01",
         ),
