@@ -44,3 +44,9 @@
 - Commit: 6f3ac76ae03337d9e1b3e99fdc9d35163692a24a
 - Acceptance proof: benchmark deterministic JSONL SHA256 `78a71d9504d602e810043cf3eb6c2b5730865a89cf600b6ed77eb490893ba9e3`; benchmark output hash `923f55541e1f5e079c2c5e9af58693048d6079ae25a7c07b49dec037248deb26`; 5K msgpack size 4,779,728 bytes; viewer 5K load time 0.293s via file:// + Load files fallback; 20x replay final-tick wall-clock 1.761s; existing 100-agent and 1K msgpack SHA256 values matched `demo/replay/SHA256SUMS.json`.
 - Gate results: pytest 619 passed, 2 skipped, 5 warnings; ruff clean; mypy clean; encoding guard 3 passed; Gradio compatibility pass; Plotly enum safety 4 passed; forbidden-entity scan 0 matches; `python demo/replay/generate_replay.py --scenario 5k --verify-existing` passed; `git push origin main` succeeded.
+
+## Sequential Slot A - 10K Replay Extension (2026-04-22)
+
+- Commit: c262c8f912df04be6868740164f6c2c28bf6fc94
+- Acceptance proof: benchmark deterministic JSONL SHA256 `0453db8f182206471a21543da4cfd531d6dda8dd9a09ab8429b6869b90e3d6cc`; benchmark output hash `a81bbde312257d250d13cf44e94a3573aabe826d92ef6e27200b66fdd76bf395`; 10K msgpack size 9,539,344 bytes; 10K msgpack SHA256 `af326a00b59286d5eb24d1dbab1442e74f8f2a6908d33325864c184b34e4e4d2`; viewer 10K load time 0.584s via file:// + Load files fallback; 20x replay final-tick wall-clock 3.012s; existing 100-agent, 1K, and 5K msgpack SHA256 values matched the handoff baselines.
+- Gate results: pytest 624 passed, 2 skipped, 5 warnings; ruff clean; mypy clean; encoding guard 3 passed; Gradio compatibility pass; Plotly enum safety 4 passed; forbidden-entity scan 0 matches; `python demo/replay/generate_replay.py --scenario 10k --verify-existing` passed; `git push origin main` succeeded.
