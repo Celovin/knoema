@@ -1,11 +1,71 @@
 {
-  "generated_at": "2026-04-22T07:44:22Z",
+  "generated_at": "2026-04-22T07:50:01Z",
   "github_actions": {
     "branch": "main",
     "error": null,
     "last_deploy_time": "2026-04-21T23:06:17Z",
     "repo": "Celovin/knoema",
     "runs": [
+      {
+        "conclusion": null,
+        "created_at": "2026-04-22T07:49:49Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24766789244",
+        "id": 24766789244,
+        "name": "Attribution Drift",
+        "path": ".github/workflows/attribution_drift.yml",
+        "status": "in_progress",
+        "updated_at": "2026-04-22T07:49:53Z"
+      },
+      {
+        "conclusion": "skipped",
+        "created_at": "2026-04-22T07:49:49Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24766789228",
+        "id": 24766789228,
+        "name": "Release Please",
+        "path": ".github/workflows/release-please.yml",
+        "status": "completed",
+        "updated_at": "2026-04-22T07:49:50Z"
+      },
+      {
+        "conclusion": null,
+        "created_at": "2026-04-22T07:49:49Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24766789221",
+        "id": 24766789221,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "status": "in_progress",
+        "updated_at": "2026-04-22T07:49:53Z"
+      },
+      {
+        "conclusion": null,
+        "created_at": "2026-04-22T07:49:49Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24766789202",
+        "id": 24766789202,
+        "name": "SBOM Drift",
+        "path": ".github/workflows/sbom_drift.yml",
+        "status": "in_progress",
+        "updated_at": "2026-04-22T07:49:53Z"
+      },
+      {
+        "conclusion": null,
+        "created_at": "2026-04-22T07:49:49Z",
+        "event": "push",
+        "head_branch": "main",
+        "html_url": "https://github.com/Celovin/knoema/actions/runs/24766789201",
+        "id": 24766789201,
+        "name": "Status Page",
+        "path": ".github/workflows/status_page.yml",
+        "status": "in_progress",
+        "updated_at": "2026-04-22T07:49:53Z"
+      },
       {
         "conclusion": "skipped",
         "created_at": "2026-04-22T07:44:11Z",
@@ -19,7 +79,7 @@
         "updated_at": "2026-04-22T07:44:12Z"
       },
       {
-        "conclusion": null,
+        "conclusion": "failure",
         "created_at": "2026-04-22T07:44:11Z",
         "event": "push",
         "head_branch": "main",
@@ -27,11 +87,11 @@
         "id": 24766572414,
         "name": "CI",
         "path": ".github/workflows/ci.yml",
-        "status": "in_progress",
-        "updated_at": "2026-04-22T07:44:15Z"
+        "status": "completed",
+        "updated_at": "2026-04-22T07:46:37Z"
       },
       {
-        "conclusion": null,
+        "conclusion": "failure",
         "created_at": "2026-04-22T07:44:11Z",
         "event": "push",
         "head_branch": "main",
@@ -39,11 +99,11 @@
         "id": 24766572400,
         "name": "SBOM Drift",
         "path": ".github/workflows/sbom_drift.yml",
-        "status": "in_progress",
-        "updated_at": "2026-04-22T07:44:15Z"
+        "status": "completed",
+        "updated_at": "2026-04-22T07:46:24Z"
       },
       {
-        "conclusion": null,
+        "conclusion": "success",
         "created_at": "2026-04-22T07:44:11Z",
         "event": "push",
         "head_branch": "main",
@@ -51,11 +111,11 @@
         "id": 24766572399,
         "name": "Attribution Drift",
         "path": ".github/workflows/attribution_drift.yml",
-        "status": "in_progress",
-        "updated_at": "2026-04-22T07:44:15Z"
+        "status": "completed",
+        "updated_at": "2026-04-22T07:46:26Z"
       },
       {
-        "conclusion": null,
+        "conclusion": "success",
         "created_at": "2026-04-22T07:44:11Z",
         "event": "push",
         "head_branch": "main",
@@ -63,68 +123,8 @@
         "id": 24766572393,
         "name": "Status Page",
         "path": ".github/workflows/status_page.yml",
-        "status": "in_progress",
-        "updated_at": "2026-04-22T07:44:15Z"
-      },
-      {
-        "conclusion": "success",
-        "created_at": "2026-04-22T07:30:21Z",
-        "event": "push",
-        "head_branch": "main",
-        "html_url": "https://github.com/Celovin/knoema/actions/runs/24766030542",
-        "id": 24766030542,
-        "name": "Scenario Hub",
-        "path": ".github/workflows/scenario-hub.yml",
         "status": "completed",
-        "updated_at": "2026-04-22T07:32:51Z"
-      },
-      {
-        "conclusion": "success",
-        "created_at": "2026-04-22T07:30:21Z",
-        "event": "push",
-        "head_branch": "main",
-        "html_url": "https://github.com/Celovin/knoema/actions/runs/24766030536",
-        "id": 24766030536,
-        "name": "Attribution Drift",
-        "path": ".github/workflows/attribution_drift.yml",
-        "status": "completed",
-        "updated_at": "2026-04-22T07:32:30Z"
-      },
-      {
-        "conclusion": "failure",
-        "created_at": "2026-04-22T07:30:21Z",
-        "event": "push",
-        "head_branch": "main",
-        "html_url": "https://github.com/Celovin/knoema/actions/runs/24766030534",
-        "id": 24766030534,
-        "name": "SBOM Drift",
-        "path": ".github/workflows/sbom_drift.yml",
-        "status": "completed",
-        "updated_at": "2026-04-22T07:32:26Z"
-      },
-      {
-        "conclusion": "skipped",
-        "created_at": "2026-04-22T07:30:21Z",
-        "event": "push",
-        "head_branch": "main",
-        "html_url": "https://github.com/Celovin/knoema/actions/runs/24766030533",
-        "id": 24766030533,
-        "name": "Release Please",
-        "path": ".github/workflows/release-please.yml",
-        "status": "completed",
-        "updated_at": "2026-04-22T07:30:22Z"
-      },
-      {
-        "conclusion": "success",
-        "created_at": "2026-04-22T07:30:21Z",
-        "event": "push",
-        "head_branch": "main",
-        "html_url": "https://github.com/Celovin/knoema/actions/runs/24766030512",
-        "id": 24766030512,
-        "name": "Status Page",
-        "path": ".github/workflows/status_page.yml",
-        "status": "completed",
-        "updated_at": "2026-04-22T07:30:40Z"
+        "updated_at": "2026-04-22T07:44:26Z"
       }
     ],
     "source": "gh api"
