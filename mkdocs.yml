@@ -181,6 +181,7 @@ nav:
       - CLI: reference/cli.md
       - Benchmarks: benchmarks/replay-perf.md
       - CI and Release: ci-release-automation.md
+      - Legacy Name Migration: migration/legacy-name.md
       - Playground Deploy: playground-deploy.md
       - Persona Seeding: persona_seeding.md
       - Didimdol One-Pager: didimdol-onepager.md

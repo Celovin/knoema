@@ -19,7 +19,7 @@ Seed: `20260421`
 
 | Framework | Status | Agents | Ticks | Median seconds | Agent-ticks/sec | Notes |
 | --- | --- | ---: | ---: | ---: | ---: | --- |
-| Knoema | measured | 1000 | 100 | 13.084720 | 7642.50 | Deterministic local city-scale runner; no live LLM calls. |
+| Luvoire | measured | 1000 | 100 | 13.084720 | 7642.50 | Deterministic local city-scale runner; no live LLM calls. |
 | Concordia | not-measured | not-measured | not-measured | not-measured | not-measured | External adapter was not benchmarked in this run. |
 | Mesa | not-measured | not-measured | not-measured | not-measured | not-measured | External adapter was not benchmarked in this run. |
 

@@ -79,3 +79,19 @@ The Slot 5 build failure was caused by a hand-typed SHA that did not correspond 
 - Current slot: Slot B - HF Space Cold-Start Warmup and Cache Bust
 - Reproduction command: `python -m pytest --no-cov --ignore=tests/test_phase60_mobile_sdks.py`
 - Last-good SHA before resolution: `6f1e8efde3963ef4e33a86a52fc563da40b56cfb`
+
+## Slot E BLOCKED - Hugging Face Space Runtime Not Healthy
+
+- Status: BLOCKED, updated on 2026-04-23.
+- Current slot: Slot E - Adapter and Playground final sweep.
+- Current reason: the canonical Luvoire Space slug now resolves, but the Space runtime is not healthy. `HfApi().space_info(...)` reports `BUILD_ERROR` for both `celovin/luvoire-playground` and `celovin/knoema-playground` at SHA `d2bb0cfc3e9a1863e08f5733d4038d7d5b5639f0`.
+- Original 2026-04-22 reason: the canonical Luvoire Space slug was not reachable. `https://huggingface.co/spaces/celovin/luvoire-playground` returned HTTP 401, while the legacy `https://huggingface.co/spaces/celovin/knoema-playground` returned HTTP 200. Per the v7 handoff, an unchanged HF Space slug was a blocker and Codex had to halt.
+- Last pushed SHA before halt: `d655b08c89052549982bc50614753ae9c879ba38`.
+- Verification already completed before halt:
+  - Tracked adapter/playground sweep found no `knoema` / `Knoema` / `KNOEMA` tokens under `adapters/`, `unity-sdk/`, `sdk/`, `playground/`, `website/`, or allowed `site-snapshot` paths.
+  - Filename sweep over the same tracked paths found no old-name tracked filenames.
+- Reproduction commands:
+  - `python - <<'PY'\nfrom huggingface_hub import HfApi\napi = HfApi()\nfor repo_id in ("celovin/luvoire-playground", "celovin/knoema-playground"):\n    info = api.space_info(repo_id=repo_id)\n    print(repo_id, info.sha, info.runtime.stage)\nPY`
+  - `Invoke-WebRequest -Uri 'https://huggingface.co/spaces/celovin/luvoire-playground' -UseBasicParsing -TimeoutSec 20`
+  - `Invoke-WebRequest -Uri 'https://huggingface.co/spaces/celovin/knoema-playground' -UseBasicParsing -TimeoutSec 20`
+- Required user action: fix or factory-rebuild the Hugging Face Space so `celovin/luvoire-playground` reaches `RUNNING`, then resume Slot E cold-start verification.

@@ -27,6 +27,18 @@ def test_phase62_package_and_metadata_versions_are_synchronized() -> None:
     assert manifest["."] == RELEASE_VERSION
 
 
+def test_phase62_wheel_package_list_matches_compatibility_policy() -> None:
+    pyproject = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+    packages = pyproject["tool"]["hatch"]["build"]["targets"]["wheel"]["packages"]
+
+    assert "src/luvoire" in packages
+    assert "src/luvoire_mcp" in packages
+    assert "src/luvoire_bots" in packages
+    assert "src/knoema" in packages
+    assert "src/knoema_compat" in packages
+    assert "src/luvoire_compat" not in packages
+
+
 def test_phase62_changelog_promotes_unreleased_notes() -> None:
     changelog = Path("CHANGELOG.md").read_text(encoding="utf-8")
     unreleased_start = changelog.index("## [Unreleased]")

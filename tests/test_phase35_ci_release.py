@@ -30,7 +30,13 @@ def test_phase35_compatibility_workflow_declares_cross_platform_matrix() -> None
     assert "ubuntu-latest" in workflow
     assert "actions/cache@v5" in workflow
     assert 'python-version: ["3.11", "3.12"]' in workflow
+    assert "python -m luvoire.cli --help" in workflow
+    assert "python -m luvoire.cli list-scenarios --json" in workflow
+    assert "from fastapi.testclient import TestClient" in workflow
     assert "pytest tests/test_version.py tests/test_phase1_types.py --no-cov -q" in workflow
+    assert "if: matrix.os == 'ubuntu-latest'" in workflow
+    assert "python -m build --wheel --outdir wheelhouse" in workflow
+    assert "python -m pip install --force-reinstall --no-deps wheelhouse/luvoire_engine-*.whl" in workflow
 
 
 def test_phase35_release_workflow_uses_oidc_pypi_publish() -> None:

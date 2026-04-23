@@ -7,6 +7,7 @@ import yaml
 
 def test_dockerfile_runs_playground_cli() -> None:
     dockerfile = Path("Dockerfile").read_text(encoding="utf-8")
+    dockerignore = Path(".dockerignore").read_text(encoding="utf-8")
 
     assert "FROM python:3.12-slim" in dockerfile
     assert 'org.opencontainers.image.title="Luvoire Playground"' in dockerfile
@@ -14,6 +15,8 @@ def test_dockerfile_runs_playground_cli() -> None:
     assert "COPY playground ./playground" in dockerfile
     assert "EXPOSE 7860" in dockerfile
     assert 'CMD ["luvoire", "playground", "--host", "0.0.0.0", "--port", "7860"]' in dockerfile
+    assert ".env.*" in dockerignore
+    assert "**/.env.*" in dockerignore
 
 
 def test_docker_compose_exposes_persistent_playground() -> None:
@@ -43,5 +46,8 @@ def test_self_hosted_docs_are_in_nav() -> None:
     assert "luvoire run" in docs
     assert "luvoire list-scenarios" in docs
     assert "luvoire verify" in docs
+    assert "docker build -t luvoire-engine:0.3.0 ." in docs
+    assert 'docker run --rm -p 7860:7860 -v "$PWD/runs:/app/runs" luvoire-engine:0.3.0' in docs
+    assert "export OPENAI_API_KEY" in docs
     assert "docker compose up --build" in docs
     assert "deploy/self-hosted.md" in mkdocs

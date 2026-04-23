@@ -50,5 +50,21 @@ jobs:
       - name: Import smoke
         run: python -c "import luvoire; print(luvoire.__version__)"
 
+      - name: CLI smoke
+        run: |
+          python -m luvoire.cli --help
+          python -m luvoire.cli list-scenarios --json
+
+      - name: API smoke
+        run: python -c "from fastapi.testclient import TestClient; from luvoire.api.server import create_app; response = TestClient(create_app()).get('/healthz'); response.raise_for_status(); print(response.json())"
+
       - name: Cross-platform smoke tests
         run: pytest tests/test_version.py tests/test_phase1_types.py --no-cov -q
+
+      - name: Linux wheel smoke
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          python -m pip install build
+          python -m build --wheel --outdir wheelhouse
+          python -m pip install --force-reinstall --no-deps wheelhouse/luvoire_engine-*.whl
+          python -c "import luvoire; print(luvoire.__version__)"

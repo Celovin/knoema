@@ -149,7 +149,13 @@ luvoire-discord-bot = "luvoire_bots.discord:main"
 luvoire-slack-bot = "luvoire_bots.slack:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/luvoire", "src/luvoire_mcp", "src/luvoire_bots", "src/luvoire_compat"]
+packages = [
+    "src/luvoire",
+    "src/luvoire_mcp",
+    "src/luvoire_bots",
+    "src/knoema",
+    "src/knoema_compat",
+]
 
 [tool.ruff]
 line-length = 100

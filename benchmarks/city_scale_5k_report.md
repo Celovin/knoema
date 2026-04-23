@@ -22,7 +22,7 @@ Grid: 40x40
 
 | Framework | Status | Agents | Ticks | Median seconds | Agent-ticks/sec | Notes |
 | --- | --- | ---: | ---: | ---: | ---: | --- |
-| Knoema | measured | 5000 | 100 | 6.801190 | 73516.55 | Deterministic local city-scale runner; no live LLM calls. |
+| Luvoire | measured | 5000 | 100 | 6.801190 | 73516.55 | Deterministic local city-scale runner; no live LLM calls. |
 | Concordia | not-measured | not-measured | not-measured | not-measured | not-measured | External adapter was not benchmarked in this run. |
 | Mesa | not-measured | not-measured | not-measured | not-measured | not-measured | External adapter was not benchmarked in this run. |
 

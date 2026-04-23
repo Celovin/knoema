@@ -6,6 +6,14 @@ Luvoire can run fully local simulations from a source checkout, a wheel install,
 
 Install the package and run a YAML config:
 
+```bash
+python -m pip install luvoire-engine
+luvoire run examples/cli_dorm.yaml --json
+```
+
+On Windows PowerShell, use the native path separator when referring to local
+files:
+
 ```powershell
 python -m pip install luvoire-engine
 luvoire run examples\cli_dorm.yaml --json
@@ -36,19 +44,35 @@ Use `--dry-run --json` to check the launch plan without binding a port.
 
 From the repository root:
 
-```powershell
+```bash
 docker compose up --build
 ```
 
-The Playground is served at `http://localhost:7860`. The compose file mounts `.\runs` into `/app/runs` so JSONL exports and reproducibility artifacts survive container restarts.
+The Playground is served at `http://localhost:7860`. The compose file mounts
+`./runs` into `/app/runs` so JSONL exports and reproducibility artifacts survive
+container restarts.
+
+Build and run the image directly on a Linux host:
+
+```bash
+docker build -t luvoire-engine:0.3.0 .
+docker run --rm -p 7860:7860 -v "$PWD/runs:/app/runs" luvoire-engine:0.3.0
+```
 
 ## Environment
 
 Set provider keys only when a live provider mode is needed:
 
+```bash
+export OPENAI_API_KEY="..."
+export ANTHROPIC_API_KEY="..."
+```
+
+On Windows PowerShell:
+
 ```powershell
-$env:OPENAI_API_KEY="..."
-$env:ANTHROPIC_API_KEY="..."
+$env:OPENAI_API_KEY = "..."
+$env:ANTHROPIC_API_KEY = "..."
 ```
 
 Local replay, scenario validation, scoring, and certificate verification do not require API keys.
