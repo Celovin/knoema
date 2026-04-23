@@ -18,6 +18,10 @@
 
 Luvoire Bench publishes a seven-axis public leaderboard for long-term memory, multi-layer retention, theory-of-mind, hierarchical planning, and real-time latency. See the live page at [https://celovin.github.io/luvoire/bench/](https://celovin.github.io/luvoire/bench/) or start from the [submission template](bench/submissions/TEMPLATE.yaml).
 
+## Datasets
+
+Luvoire supports seven CC-BY-4.0 NVIDIA Nemotron-Personas countries through `luvoire.personas`: USA, Japan, India, Brazil, Singapore, France, and Korea. The Luvoire Persona Interface v1 (LPI v1) maps each country into a common 18-field dataclass while preserving country-specific fields in `extras`; install with `pip install -e ".[personas]"` and inspect with `python -m luvoire.cli personas list`.
+
 ## Languages
 
 | English | 한국어 | 日本語 | 简体中文 | 繁體中文 | Deutsch | Français | Español |

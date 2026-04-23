@@ -54,6 +54,10 @@ dependencies = [
 mesa = [
     "mesa[rec]>=3.0,<4",
 ]
+personas = [
+    "datasets>=2.20,<4",
+    "pyarrow>=16,<23",
+]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.24",
@@ -182,6 +186,7 @@ asyncio_mode = "auto"
 addopts = "-v --cov=luvoire --cov-report=term-missing"
 markers = [
     "slow: opt-in tests that require live external services or large downloads",
+    "hf_live: opt-in tests that require live Hugging Face dataset access",
 ]
 
 [tool.coverage.run]

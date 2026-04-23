@@ -1,0 +1,178 @@
+{
+  "$id": "https://luvoire.celovin.com/schemas/lpi_v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "age": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "big5": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "country_iso": {
+      "enum": [
+        "USA",
+        "JPN",
+        "IND",
+        "BRA",
+        "SGP",
+        "FRA",
+        "KOR"
+      ]
+    },
+    "distortion_flags": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "education_isced": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "extras": {
+      "type": "object"
+    },
+    "grounding_source": {
+      "type": "string"
+    },
+    "grounding_version": {
+      "type": "string"
+    },
+    "household_size": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "income_bracket_oecd": {
+      "anyOf": [
+        {
+          "enum": [
+            "q1",
+            "q2",
+            "q3",
+            "q4",
+            "q5"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "language_locale": {
+      "type": "string"
+    },
+    "marital_status": {
+      "anyOf": [
+        {
+          "enum": [
+            "single",
+            "married",
+            "divorced",
+            "widowed",
+            "other"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "narrative_text": {
+      "type": "string"
+    },
+    "occupation_isco08": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "persona_id": {
+      "type": "string"
+    },
+    "region_l1": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "region_l2": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sex": {
+      "anyOf": [
+        {
+          "enum": [
+            "F",
+            "M",
+            "X"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "persona_id",
+    "country_iso",
+    "language_locale",
+    "age",
+    "sex",
+    "region_l1",
+    "region_l2",
+    "education_isced",
+    "occupation_isco08",
+    "income_bracket_oecd",
+    "household_size",
+    "marital_status",
+    "big5",
+    "narrative_text",
+    "grounding_source",
+    "grounding_version"
+  ],
+  "title": "Luvoire Persona Interface v1",
+  "type": "object"
+}

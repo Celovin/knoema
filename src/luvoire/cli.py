@@ -347,6 +347,16 @@ def build_parser() -> argparse.ArgumentParser:
     inspect_parser = replay_subparsers.add_parser("inspect", help="Summarize an NDMP replay cache.")
     inspect_parser.add_argument("path", type=Path, help="Path to a replay-cache NDMP file.")
 
+    personas_parser = subparsers.add_parser("personas", help="Inspect Luvoire Persona Interface sources.")
+    personas_subparsers = personas_parser.add_subparsers(dest="personas_command", required=True)
+    personas_subparsers.add_parser("list", help="List supported Nemotron-Personas countries.")
+    sample_parser = personas_subparsers.add_parser("sample", help="Sample LPI personas as NDJSON.")
+    sample_parser.add_argument("--country", required=True, help="Country ISO: USA, JPN, IND, BRA, SGP, FRA, KOR.")
+    sample_parser.add_argument("--n", type=int, required=True, help="Number of personas to emit.")
+    sample_parser.add_argument("--seed", type=int, default=None, help="Optional deterministic sampling seed.")
+    schema_parser = personas_subparsers.add_parser("schema", help="Write the LPI JSON schema.")
+    schema_parser.add_argument("--out", type=Path, required=True, help="Output JSON schema path.")
+
     add_customer_subparser(subparsers)
     return parser
 
@@ -457,6 +467,34 @@ def main(
             print(f"total_bytes: {cache_summary.total_bytes}")
             return 0
         parser.error(f"Unknown replay-cache command: {args.replay_cache_command}")
+        return 2
+    if args.command == "personas":
+        from luvoire.personas import load_country, write_lpi_schema
+        from luvoire.personas.loaders import list_country_metadata
+
+        if args.personas_command == "list":
+            for row in list_country_metadata():
+                print(
+                    "\t".join(
+                        [
+                            row["iso"],
+                            row["population_source"],
+                            row["record_count"],
+                            row["license"],
+                            row["grounding_version"],
+                        ]
+                    )
+                )
+            return 0
+        if args.personas_command == "sample":
+            for persona in load_country(args.country, limit=args.n, seed=args.seed):
+                print(json.dumps(persona.to_dict(), ensure_ascii=False, sort_keys=True))
+            return 0
+        if args.personas_command == "schema":
+            output_path = write_lpi_schema(args.out)
+            print(f"Wrote LPI schema to {output_path}")
+            return 0
+        parser.error(f"Unknown personas command: {args.personas_command}")
         return 2
     if args.command == "customer":
         return handle_customer_command(args)

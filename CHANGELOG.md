@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 ### Added
+- `luvoire.personas.lpi` defines Luvoire Persona Interface v1, a harmonized cross-country persona dataclass plus JSON schema.
+- `luvoire.personas.loaders` adds CC-BY-4.0 Nemotron-Personas loaders for USA, Japan, India, Brazil, Singapore, France, and Korea behind the `luvoire[personas]` extra.
+- `python -m luvoire.cli personas {list,sample,schema}` for country metadata, deterministic LPI sampling, and schema export.
 - `POLICIES/civilian_use.md` and `.ko.md` publicly refuse defense, predictive policing, PSYOP, non-consenting twinning, and minors-in-synthetic-pipelines use categories.
 - `luvoire.adapters.mesa` provides plain Mesa 3 integration behind the `luvoire[mesa]` extra.
 - `luvoire.export.odd` adds a Grimm 2020 ODD protocol markdown exporter via `python -m luvoire.cli export odd`.

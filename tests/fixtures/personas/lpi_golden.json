@@ -1,0 +1,544 @@
+[
+  {
+    "age": 25,
+    "big5": null,
+    "country_iso": "USA",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 6,
+    "extras": {
+      "cultural_background": "USA fixture cultural background 007.",
+      "hobbies_and_interests": "USA fixture hobbies 007",
+      "skills_and_expertise": "USA fixture skill set 007"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-USA@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 3,
+    "income_bracket_oecd": "q3",
+    "language_locale": "en-US",
+    "marital_status": "married",
+    "narrative_text": "Synthetic USA persona 007 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "2",
+    "persona_id": "usa00000000000000000000000000007",
+    "region_l1": "TX",
+    "region_l2": "Austin",
+    "sex": "M"
+  },
+  {
+    "age": 75,
+    "big5": null,
+    "country_iso": "USA",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 3,
+    "extras": {
+      "cultural_background": "USA fixture cultural background 057.",
+      "hobbies_and_interests": "USA fixture hobbies 057",
+      "skills_and_expertise": "USA fixture skill set 057"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-USA@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 3,
+    "income_bracket_oecd": "q3",
+    "language_locale": "en-US",
+    "marital_status": "single",
+    "narrative_text": "Synthetic USA persona 057 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "5",
+    "persona_id": "usa00000000000000000000000000057",
+    "region_l1": "WI",
+    "region_l2": "Madison",
+    "sex": "M"
+  },
+  {
+    "age": 45,
+    "big5": null,
+    "country_iso": "USA",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 6,
+    "extras": {
+      "cultural_background": "USA fixture cultural background 097.",
+      "hobbies_and_interests": "USA fixture hobbies 097",
+      "skills_and_expertise": "USA fixture skill set 097"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-USA@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 3,
+    "income_bracket_oecd": "q3",
+    "language_locale": "en-US",
+    "marital_status": "married",
+    "narrative_text": "Synthetic USA persona 097 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "2",
+    "persona_id": "usa00000000000000000000000000097",
+    "region_l1": "WI",
+    "region_l2": "Madison",
+    "sex": "M"
+  },
+  {
+    "age": 62,
+    "big5": null,
+    "country_iso": "JPN",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 7,
+    "extras": {
+      "cultural_background": "JPN fixture cultural background 044.",
+      "hobbies_and_interests": "JPN fixture hobbies 044",
+      "skills_and_expertise": "JPN fixture skill set 044"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-Japan@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 5,
+    "income_bracket_oecd": "q5",
+    "language_locale": "ja-JP",
+    "marital_status": "widowed",
+    "narrative_text": "Synthetic JPN persona 044 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "5",
+    "persona_id": "jpn00000000000000000000000000044",
+    "region_l1": "Tokyo",
+    "region_l2": "Setagaya",
+    "sex": "F"
+  },
+  {
+    "age": 43,
+    "big5": null,
+    "country_iso": "JPN",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 7,
+    "extras": {
+      "cultural_background": "JPN fixture cultural background 095.",
+      "hobbies_and_interests": "JPN fixture hobbies 095",
+      "skills_and_expertise": "JPN fixture skill set 095"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-Japan@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 1,
+    "income_bracket_oecd": "q1",
+    "language_locale": "ja-JP",
+    "marital_status": "widowed",
+    "narrative_text": "Synthetic JPN persona 095 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "5",
+    "persona_id": "jpn00000000000000000000000000095",
+    "region_l1": "Fukuoka",
+    "region_l2": "Hakata",
+    "sex": "M"
+  },
+  {
+    "age": 52,
+    "big5": null,
+    "country_iso": "JPN",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 6,
+    "extras": {
+      "cultural_background": "JPN fixture cultural background 034.",
+      "hobbies_and_interests": "JPN fixture hobbies 034",
+      "skills_and_expertise": "JPN fixture skill set 034"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-Japan@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 5,
+    "income_bracket_oecd": "q5",
+    "language_locale": "ja-JP",
+    "marital_status": "married",
+    "narrative_text": "Synthetic JPN persona 034 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "4",
+    "persona_id": "jpn00000000000000000000000000034",
+    "region_l1": "Hokkaido",
+    "region_l2": "Sapporo",
+    "sex": "F"
+  },
+  {
+    "age": 62,
+    "big5": null,
+    "country_iso": "IND",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 7,
+    "extras": {
+      "cultural_background": "IND fixture cultural background 044.",
+      "hobbies_and_interests": "IND fixture hobbies 044",
+      "religion": "Hindu",
+      "script_variant": "Deva",
+      "skills_and_expertise": "IND fixture skill set 044"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-India@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 5,
+    "income_bracket_oecd": "q5",
+    "language_locale": "hi-IN-Deva",
+    "marital_status": "widowed",
+    "narrative_text": "Synthetic IND persona 044 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "5",
+    "persona_id": "ind00000000000000000000000000044",
+    "region_l1": "Maharashtra",
+    "region_l2": "Pune",
+    "sex": "F"
+  },
+  {
+    "age": 41,
+    "big5": null,
+    "country_iso": "IND",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 7,
+    "extras": {
+      "cultural_background": "IND fixture cultural background 023.",
+      "hobbies_and_interests": "IND fixture hobbies 023",
+      "religion": "Sikh",
+      "script_variant": "Latn",
+      "skills_and_expertise": "IND fixture skill set 023"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-India@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 4,
+    "income_bracket_oecd": "q4",
+    "language_locale": "hi-IN-Deva",
+    "marital_status": "widowed",
+    "narrative_text": "Synthetic IND persona 023 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "5",
+    "persona_id": "ind00000000000000000000000000023",
+    "region_l1": "Tamil Nadu",
+    "region_l2": "Chennai",
+    "sex": "M"
+  },
+  {
+    "age": 75,
+    "big5": null,
+    "country_iso": "IND",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 3,
+    "extras": {
+      "cultural_background": "IND fixture cultural background 057.",
+      "hobbies_and_interests": "IND fixture hobbies 057",
+      "religion": "Muslim",
+      "script_variant": "Latn",
+      "skills_and_expertise": "IND fixture skill set 057"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-India@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 3,
+    "income_bracket_oecd": "q3",
+    "language_locale": "hi-IN-Deva",
+    "marital_status": "single",
+    "narrative_text": "Synthetic IND persona 057 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "2",
+    "persona_id": "ind00000000000000000000000000057",
+    "region_l1": "Karnataka",
+    "region_l2": "Bengaluru Urban",
+    "sex": "M"
+  },
+  {
+    "age": 44,
+    "big5": null,
+    "country_iso": "BRA",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 7,
+    "extras": {
+      "cbo_code": "4110",
+      "cultural_background": "BRA fixture cultural background 026.",
+      "hobbies_and_interests": "BRA fixture hobbies 026",
+      "skills_and_expertise": "BRA fixture skill set 026"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-Brazil@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 2,
+    "income_bracket_oecd": "q2",
+    "language_locale": "pt-BR",
+    "marital_status": "divorced",
+    "narrative_text": "Synthetic BRA persona 026 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "5",
+    "persona_id": "bra00000000000000000000000000026",
+    "region_l1": "MG",
+    "region_l2": "Belo Horizonte",
+    "sex": "F"
+  },
+  {
+    "age": 22,
+    "big5": null,
+    "country_iso": "BRA",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 7,
+    "extras": {
+      "cbo_code": "4110",
+      "cultural_background": "BRA fixture cultural background 074.",
+      "hobbies_and_interests": "BRA fixture hobbies 074",
+      "skills_and_expertise": "BRA fixture skill set 074"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-Brazil@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 5,
+    "income_bracket_oecd": "q5",
+    "language_locale": "pt-BR",
+    "marital_status": "divorced",
+    "narrative_text": "Synthetic BRA persona 074 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "5",
+    "persona_id": "bra00000000000000000000000000074",
+    "region_l1": "MG",
+    "region_l2": "Belo Horizonte",
+    "sex": "F"
+  },
+  {
+    "age": 42,
+    "big5": null,
+    "country_iso": "BRA",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 3,
+    "extras": {
+      "cbo_code": "2124",
+      "cultural_background": "BRA fixture cultural background 024.",
+      "hobbies_and_interests": "BRA fixture hobbies 024",
+      "skills_and_expertise": "BRA fixture skill set 024"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-Brazil@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 5,
+    "income_bracket_oecd": "q5",
+    "language_locale": "pt-BR",
+    "marital_status": "single",
+    "narrative_text": "Synthetic BRA persona 024 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "2",
+    "persona_id": "bra00000000000000000000000000024",
+    "region_l1": "SP",
+    "region_l2": "Sao Paulo",
+    "sex": "F"
+  },
+  {
+    "age": 30,
+    "big5": null,
+    "country_iso": "SGP",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 3,
+    "extras": {
+      "cultural_background": "SGP fixture cultural background 012.",
+      "ethnicity": "Chinese",
+      "hobbies_and_interests": "SGP fixture hobbies 012",
+      "industry": "Public Administration & Education Services",
+      "skills_and_expertise": "SGP fixture skill set 012"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-Singapore@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 3,
+    "income_bracket_oecd": "q3",
+    "language_locale": "en-SG",
+    "marital_status": "single",
+    "narrative_text": "Synthetic SGP persona 012 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "1",
+    "persona_id": "sgp00000000000000000000000000012",
+    "region_l1": "Sengkang",
+    "region_l2": "Compassvale",
+    "sex": "F"
+  },
+  {
+    "age": 66,
+    "big5": null,
+    "country_iso": "SGP",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 3,
+    "extras": {
+      "cultural_background": "SGP fixture cultural background 048.",
+      "ethnicity": "Chinese",
+      "hobbies_and_interests": "SGP fixture hobbies 048",
+      "industry": "Public Administration & Education Services",
+      "skills_and_expertise": "SGP fixture skill set 048"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-Singapore@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 4,
+    "income_bracket_oecd": "q4",
+    "language_locale": "en-SG",
+    "marital_status": "single",
+    "narrative_text": "Synthetic SGP persona 048 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "1",
+    "persona_id": "sgp00000000000000000000000000048",
+    "region_l1": "Sengkang",
+    "region_l2": "Compassvale",
+    "sex": "F"
+  },
+  {
+    "age": 35,
+    "big5": null,
+    "country_iso": "SGP",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 3,
+    "extras": {
+      "cultural_background": "SGP fixture cultural background 087.",
+      "ethnicity": "Other",
+      "hobbies_and_interests": "SGP fixture hobbies 087",
+      "industry": "Wholesale & Retail Trade",
+      "skills_and_expertise": "SGP fixture skill set 087"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-Singapore@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 3,
+    "income_bracket_oecd": "q3",
+    "language_locale": "en-SG",
+    "marital_status": "single",
+    "narrative_text": "Synthetic SGP persona 087 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "1",
+    "persona_id": "sgp00000000000000000000000000087",
+    "region_l1": "Jurong West",
+    "region_l2": "Boon Lay",
+    "sex": "M"
+  },
+  {
+    "age": 20,
+    "big5": null,
+    "country_iso": "FRA",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 7,
+    "extras": {
+      "cultural_background": "FRA fixture cultural background 002.",
+      "department_code": "29",
+      "hobbies_and_interests": "FRA fixture hobbies 002",
+      "skills_and_expertise": "FRA fixture skill set 002"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-France@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 3,
+    "income_bracket_oecd": "q3",
+    "language_locale": "fr-FR",
+    "marital_status": "divorced",
+    "narrative_text": "Synthetic FRA persona 002 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "4",
+    "persona_id": "fra00000000000000000000000000002",
+    "region_l1": "Bretagne",
+    "region_l2": "Finistere",
+    "sex": "F"
+  },
+  {
+    "age": 34,
+    "big5": null,
+    "country_iso": "FRA",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 7,
+    "extras": {
+      "cultural_background": "FRA fixture cultural background 086.",
+      "department_code": "29",
+      "hobbies_and_interests": "FRA fixture hobbies 086",
+      "skills_and_expertise": "FRA fixture skill set 086"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-France@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 2,
+    "income_bracket_oecd": "q2",
+    "language_locale": "fr-FR",
+    "marital_status": "divorced",
+    "narrative_text": "Synthetic FRA persona 086 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "4",
+    "persona_id": "fra00000000000000000000000000086",
+    "region_l1": "Bretagne",
+    "region_l2": "Finistere",
+    "sex": "F"
+  },
+  {
+    "age": 43,
+    "big5": null,
+    "country_iso": "FRA",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 7,
+    "extras": {
+      "cultural_background": "FRA fixture cultural background 095.",
+      "department_code": "69",
+      "hobbies_and_interests": "FRA fixture hobbies 095",
+      "skills_and_expertise": "FRA fixture skill set 095"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-France@hf-main",
+    "grounding_version": "hf-main",
+    "household_size": 1,
+    "income_bracket_oecd": "q1",
+    "language_locale": "fr-FR",
+    "marital_status": "divorced",
+    "narrative_text": "Synthetic FRA persona 095 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "4",
+    "persona_id": "fra00000000000000000000000000095",
+    "region_l1": "Auvergne-Rhone-Alpes",
+    "region_l2": "Rhone",
+    "sex": "M"
+  },
+  {
+    "age": 83,
+    "big5": null,
+    "country_iso": "KOR",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 7,
+    "extras": {
+      "cultural_background": "KOR fixture cultural background 065.",
+      "hobbies_and_interests": "KOR fixture hobbies 065",
+      "honorific_style": "polite",
+      "military_status": "현역",
+      "skills_and_expertise": "KOR fixture skill set 065"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-Korea@0381f03a403df78a7998000f8b11705635b654fd",
+    "grounding_version": "0381f03a403df78a7998000f8b11705635b654fd",
+    "household_size": 1,
+    "income_bracket_oecd": "q1",
+    "language_locale": "ko-KR",
+    "marital_status": "divorced",
+    "narrative_text": "Synthetic KOR persona 065 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "1",
+    "persona_id": "kor00000000000000000000000000065",
+    "region_l1": "Busan",
+    "region_l2": "Haeundae-gu",
+    "sex": "M"
+  },
+  {
+    "age": 37,
+    "big5": null,
+    "country_iso": "KOR",
+    "distortion_flags": [
+      "llm_narrative_synthetic"
+    ],
+    "education_isced": 6,
+    "extras": {
+      "cultural_background": "KOR fixture cultural background 019.",
+      "hobbies_and_interests": "KOR fixture hobbies 019",
+      "honorific_style": "polite",
+      "military_status": "현역",
+      "skills_and_expertise": "KOR fixture skill set 019"
+    },
+    "grounding_source": "nvidia/Nemotron-Personas-Korea@0381f03a403df78a7998000f8b11705635b654fd",
+    "grounding_version": "0381f03a403df78a7998000f8b11705635b654fd",
+    "household_size": 5,
+    "income_bracket_oecd": "q5",
+    "language_locale": "ko-KR",
+    "marital_status": "married",
+    "narrative_text": "Synthetic KOR persona 019 for Luvoire LPI fixture validation.",
+    "occupation_isco08": "2",
+    "persona_id": "kor00000000000000000000000000019",
+    "region_l1": "Jeju",
+    "region_l2": "Jeju-si",
+    "sex": "M"
+  }
+]

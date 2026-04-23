@@ -101,6 +101,9 @@ nav:
       - Mesa 3 Adapter: adapters/mesa.md
   - Export:
       - ODD Protocol Export: export/odd.md
+  - Personas:
+      - LPI v1 Schema: personas/lpi.md
+      - Nemotron Countries: personas/countries.md
   - Guides:
       - Game Integration: guides/game-integration.md
       - Game Demos: adapters/game_demos.md

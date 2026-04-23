@@ -33,6 +33,8 @@ PersonaRecord = dict[str, Any]
 class NemotronPersonaSource:
     """Stream and deterministically sample synthetic Korean personas."""
 
+    # deprecated: migrate new cross-country callers to
+    # luvoire.personas.loaders.korea.iter_personas().
     repo_id: str = DEFAULT_REPO_ID
     cache_dir: str | Path | None = None
     hf_token: str | None = None
