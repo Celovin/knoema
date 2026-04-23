@@ -151,10 +151,11 @@ def load_config(
 
     config_path = Path(path) if path is not None else None
     payload = _load_yaml_payload(config_path)
+    resolved_environ = os.environ if environ is None else environ
     merged = _apply_env_overrides(
         payload,
         env_prefix=env_prefix,
-        environ=environ or {},
+        environ=resolved_environ,
         legacy_env_prefix="KNOEMA_" if env_prefix == "LUVOIRE_" else None,
     )
     return LuvoireConfig.model_validate(merged)

@@ -140,6 +140,14 @@ def test_load_config_merges_yaml_with_environment_overrides(tmp_path: Path) -> N
     assert config.logging.json_output is True
 
 
+def test_load_config_reads_process_environment_by_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("LUVOIRE_LLM__OPENAI_MODEL", "gpt-live-env")
+
+    config = load_config()
+
+    assert config.llm.openai_model == "gpt-live-env"
+
+
 def test_runtime_protocols_support_structural_typing() -> None:
     class DemoPrompt:
         def to_system_prompt(self) -> str:

@@ -6,14 +6,19 @@ from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from importlib import import_module
 from typing import Any
+from urllib.parse import urlsplit, urlunsplit
+from weakref import WeakSet
 
 _TRACER: Any | None = None
+_REGISTERED_PROCESSORS: dict[tuple[int, str], Any] = {}
+_INSTRUMENTED_APPS: WeakSet[object] = WeakSet()
 
 
 def setup_tracing(exporter: str | None, *, app: object | None = None) -> bool:
     """Configure OpenTelemetry tracing when an exporter name is supplied."""
 
     if exporter is None or exporter == "":
+        _set_tracer(None)
         return False
     if exporter != "otlp":
         raise ValueError("LUVOIRE_OTEL_EXPORTER must be unset or 'otlp'")
@@ -32,10 +37,15 @@ def setup_tracing(exporter: str | None, *, app: object | None = None) -> bool:
     if not hasattr(provider, "add_span_processor"):
         provider = trace_sdk_module.TracerProvider(resource=resource)
         trace.set_tracer_provider(provider)
-    provider.add_span_processor(export_module.SimpleSpanProcessor(_build_span_exporter(exporter)))
+    processor_key = (id(provider), exporter)
+    if processor_key not in _REGISTERED_PROCESSORS:
+        processor = export_module.SimpleSpanProcessor(_build_span_exporter(exporter))
+        provider.add_span_processor(processor)
+        _REGISTERED_PROCESSORS[processor_key] = processor
     _set_tracer(trace.get_tracer("luvoire"))
-    if app is not None:
+    if app is not None and app not in _INSTRUMENTED_APPS:
         fastapi_module.FastAPIInstrumentor.instrument_app(app)
+        _INSTRUMENTED_APPS.add(app)
     return True
 
 
@@ -60,8 +70,9 @@ def genai_attributes(
         attributes["gen_ai.request.temperature"] = temperature
     if max_tokens is not None:
         attributes["gen_ai.request.max_tokens"] = max_tokens
-    if base_url:
-        attributes["luvoire.llm.base_url"] = base_url
+    sanitized_base_url = _sanitize_base_url(base_url)
+    if sanitized_base_url:
+        attributes["luvoire.llm.base_url"] = sanitized_base_url
     return attributes
 
 
@@ -90,6 +101,45 @@ def _build_span_exporter(exporter: str) -> Any:
 def _set_tracer(tracer: Any) -> None:
     global _TRACER
     _TRACER = tracer
+
+
+def _sanitize_base_url(base_url: str | None) -> str | None:
+    if not base_url:
+        return None
+    try:
+        parsed = urlsplit(base_url)
+    except ValueError:
+        return None
+    if not parsed.scheme or parsed.hostname is None:
+        return None
+    netloc = parsed.hostname
+    if parsed.port is not None:
+        netloc = f"{netloc}:{parsed.port}"
+    return urlunsplit((parsed.scheme, netloc, "", "", ""))
+
+
+def _reset_tracing_state_for_tests() -> None:
+    global _INSTRUMENTED_APPS
+    _set_tracer(None)
+    _INSTRUMENTED_APPS = WeakSet()
+    try:
+        trace = import_module("opentelemetry.trace")
+    except ImportError:
+        _REGISTERED_PROCESSORS.clear()
+        return
+    provider = trace.get_tracer_provider()
+    active_processor = getattr(provider, "_active_span_processor", None)
+    current_processors = getattr(active_processor, "_span_processors", None)
+    if active_processor is not None and isinstance(current_processors, tuple):
+        registered = set(_REGISTERED_PROCESSORS.values())
+        active_processor._span_processors = tuple(
+            processor for processor in current_processors if processor not in registered
+        )
+    for processor in _REGISTERED_PROCESSORS.values():
+        shutdown = getattr(processor, "shutdown", None)
+        if callable(shutdown):
+            shutdown()
+    _REGISTERED_PROCESSORS.clear()
 
 
 __all__ = ["genai_attributes", "setup_tracing", "trace_span"]

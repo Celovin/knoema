@@ -151,6 +151,19 @@ def test_batch_o_mcp_resources_and_prompts_surface_scenarios_and_runs() -> None:
     assert "dominant action patterns" in prompt["result"]["messages"][0]["content"]["text"]
 
 
+def test_batch_o_jsonrpc_rejects_boolean_id() -> None:
+    service = LuvoireMcpService()
+
+    response = handle_jsonrpc_line(
+        service,
+        json.dumps({"jsonrpc": "2.0", "id": True, "method": "ping"}),
+    )
+
+    assert response is not None
+    assert response["error"]["code"] == -32600
+    assert "JSON-RPC id must be a string, integer, or null" in response["error"]["message"]
+
+
 def test_batch_o_mcp_scenario_dir_prefers_luvoire_env(monkeypatch) -> None:
     monkeypatch.setenv("LUVOIRE_SCENARIO_DIR", "playground/scenarios")
     monkeypatch.setenv("KNOEMA_SCENARIO_DIR", "legacy/scenarios")

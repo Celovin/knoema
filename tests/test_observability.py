@@ -113,6 +113,16 @@ def test_metric_labels_hash_tenant_id(monkeypatch: pytest.MonkeyPatch) -> None:
     assert tenant_id not in metrics
 
 
+def test_setup_tracing_none_clears_active_tracer() -> None:
+    from luvoire.observability import tracing
+
+    tracing._reset_tracing_state_for_tests()
+    tracing._set_tracer("sentinel")
+
+    assert tracing.setup_tracing(None) is False
+    assert tracing._TRACER is None
+
+
 @pytest.mark.skipif(
     importlib.util.find_spec("opentelemetry") is None,
     reason="OpenTelemetry optional dependencies are not installed.",
@@ -136,6 +146,7 @@ def test_otel_exporter_can_capture_request_span(
             return None
 
     exporter = ListSpanExporter()
+    tracing._reset_tracing_state_for_tests()
     monkeypatch.setenv("LUVOIRE_OTEL_EXPORTER", "otlp")
     monkeypatch.delenv("LUVOIRE_METRICS_ENABLED", raising=False)
     monkeypatch.setattr(tracing, "_build_span_exporter", lambda _exporter: exporter)
@@ -175,6 +186,7 @@ def test_otel_exporter_captures_genai_attributes_for_llm_gateway(
             return None
 
     exporter = ListSpanExporter()
+    tracing._reset_tracing_state_for_tests()
     monkeypatch.setattr(tracing, "_build_span_exporter", lambda _exporter: exporter)
     tracing.setup_tracing("otlp")
 
@@ -195,3 +207,55 @@ def test_otel_exporter_captures_genai_attributes_for_llm_gateway(
     assert attributes["luvoire.llm.success"] is True
     assert attributes["gen_ai.usage.input_tokens"] > 0
     assert attributes["gen_ai.usage.output_tokens"] > 0
+
+
+@pytest.mark.skipif(
+    importlib.util.find_spec("opentelemetry") is None,
+    reason="OpenTelemetry optional dependencies are not installed.",
+)
+def test_setup_tracing_does_not_duplicate_span_processors(monkeypatch: pytest.MonkeyPatch) -> None:
+    from opentelemetry.sdk.trace.export import SpanExporter, SpanExportResult
+
+    from luvoire.observability import tracing
+
+    class ListSpanExporter(SpanExporter):
+        def __init__(self) -> None:
+            self.spans: list[Any] = []
+
+        def export(self, spans: Any) -> SpanExportResult:
+            self.spans.extend(spans)
+            return SpanExportResult.SUCCESS
+
+        def shutdown(self) -> None:
+            return None
+
+    exporter = ListSpanExporter()
+    tracing._reset_tracing_state_for_tests()
+    monkeypatch.setattr(tracing, "_build_span_exporter", lambda _exporter: exporter)
+
+    tracing.setup_tracing("otlp")
+    with tracing.trace_span("first"):
+        pass
+    first_count = len(exporter.spans)
+
+    tracing.setup_tracing("otlp")
+    with tracing.trace_span("second"):
+        pass
+    second_count = len(exporter.spans)
+
+    assert first_count == 1
+    assert second_count == 2
+    assert [span.name for span in exporter.spans] == ["first", "second"]
+
+
+def test_genai_attributes_redacts_base_url_credentials() -> None:
+    from luvoire.observability.tracing import genai_attributes
+
+    attributes = genai_attributes(
+        system="openai",
+        operation="responses.create",
+        base_url="https://user:secret@example.test:443/v1/responses?debug=1",
+    )
+
+    assert attributes["luvoire.llm.base_url"] == "https://example.test:443"
+    assert "secret" not in attributes["luvoire.llm.base_url"]

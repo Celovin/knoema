@@ -720,7 +720,7 @@ def _error_response(request_id: JsonRpcId, code: int, message: str) -> JsonObjec
 
 def _request_id(request: JsonObject) -> JsonRpcId:
     raw_id = request.get("id")
-    if raw_id is None or isinstance(raw_id, str | int):
+    if _is_jsonrpc_id(raw_id):
         return raw_id
     raise McpProtocolError(-32600, "JSON-RPC id must be a string, integer, or null")
 
@@ -729,9 +729,17 @@ def _request_id_from_raw(raw_request: object) -> JsonRpcId:
     if not isinstance(raw_request, dict):
         return None
     raw_id = raw_request.get("id")
-    if raw_id is None or isinstance(raw_id, str | int):
+    if _is_jsonrpc_id(raw_id):
         return raw_id
     return None
+
+
+def _is_jsonrpc_id(value: object) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, bool):
+        return False
+    return isinstance(value, str | int)
 
 
 def _string_arg(args: JsonObject, key: str, *, default: str | None = None) -> str:
