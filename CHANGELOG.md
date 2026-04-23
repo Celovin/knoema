@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 ### Added
+- `luvoire.adapters.mesa` provides plain Mesa 3 integration behind the `luvoire[mesa]` extra.
+- `luvoire.export.odd` adds a Grimm 2020 ODD protocol markdown exporter via `python -m luvoire.cli export odd`.
 - `luvoire.core.replay_cache` with record/replay modes for deterministic LLM side effects.
 - `LUVOIRE_REPLAY_CACHE_PATH` and `LUVOIRE_REPLAY_CACHE_MODE` env-var controls; path unset preserves current behavior.
 

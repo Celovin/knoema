@@ -95,6 +95,10 @@ nav:
       - LLM Gateway: api/llm-gateway.md
       - REST Reference: api/rest-reference.md
       - WebSocket Guide: api/websocket-guide.md
+  - Adapters:
+      - Mesa 3 Adapter: adapters/mesa.md
+  - Export:
+      - ODD Protocol Export: export/odd.md
   - Guides:
       - Game Integration: guides/game-integration.md
       - Game Demos: adapters/game_demos.md

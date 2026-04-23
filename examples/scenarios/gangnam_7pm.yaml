@@ -1,0 +1,72 @@
+schema_version: "1.0"
+scenario_id: gangnam_7pm
+title: Gangnam 7 p.m. Coordination
+domain: academic_research
+description: Fictional evening coordination scenario in a busy Gangnam plaza.
+seed: 20260423
+tick_duration_minutes: 30
+duration_days: 1
+environment:
+  start_time: "2026-04-23T19:00:00"
+  location_path: [Luvoire Demo World, Seoul, Gangnam Plaza]
+  conditions:
+    weather: clear
+    crowd_level: high
+    transit_status: normal
+agents:
+  - agent_id: coordinator
+    name: Sora
+    age: 32
+    background: Synthetic coordinator helping participants find a meetup point.
+    personality:
+      openness: 0.59
+      conscientiousness: 0.76
+      extraversion: 0.63
+      agreeableness: 0.72
+      neuroticism: 0.24
+    values: [clarity, patience]
+    goals: [keep the queue visible, reduce confusion]
+    synthetic: true
+  - agent_id: commuter
+    name: Jiho
+    age: 27
+    background: Synthetic commuter navigating a crowded station exit.
+    personality:
+      openness: 0.48
+      conscientiousness: 0.58
+      extraversion: 0.41
+      agreeableness: 0.66
+      neuroticism: 0.33
+    values: [punctuality, courtesy]
+    goals: [find the group, avoid blocking the exit]
+    synthetic: true
+  - agent_id: shop_staff
+    name: Yuna
+    age: 38
+    background: Synthetic nearby shop staff watching foot traffic near the entrance.
+    personality:
+      openness: 0.52
+      conscientiousness: 0.69
+      extraversion: 0.55
+      agreeableness: 0.7
+      neuroticism: 0.29
+    values: [order, helpfulness]
+    goals: [keep the storefront accessible, answer simple directions]
+    synthetic: true
+events:
+  - timestamp: "2026-04-23T19:00:00"
+    event_type: plaza.meetup_window
+    participants: [coordinator, commuter, shop_staff]
+    location: Luvoire Demo World > Seoul > Gangnam Plaza
+    description: Participants coordinate around a visible meetup sign during evening foot traffic.
+metrics:
+  - name: queue_visibility
+    kind: ratio
+    description: Share of actions that keep the waiting area legible.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+local_response: '{"action_type": "observe", "target": null, "content": "maintains a clear meetup area."}'

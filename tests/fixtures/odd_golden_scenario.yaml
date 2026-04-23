@@ -1,0 +1,58 @@
+schema_version: "1.0"
+scenario_id: odd_plaza_coordination
+title: ODD Plaza Coordination
+domain: academic_research
+description: Fictional plaza coordination scenario for an ODD exporter golden test.
+seed: 20260423
+tick_duration_minutes: 60
+duration_days: 1
+environment:
+  start_time: "2026-04-23T09:00:00"
+  location_path: [Luvoire Demo World, Gangnam Plaza]
+  conditions:
+    weather: clear
+    crowd_level: moderate
+agents:
+  - agent_id: host
+    name: Hana
+    age: 34
+    background: Synthetic event host coordinating a public demo.
+    personality:
+      openness: 0.62
+      conscientiousness: 0.74
+      extraversion: 0.58
+      agreeableness: 0.71
+      neuroticism: 0.22
+    values: [clarity, inclusion]
+    goals: [coordinate arrivals, keep the demo calm]
+    synthetic: true
+  - agent_id: visitor
+    name: Min
+    age: 29
+    background: Synthetic visitor deciding where to wait.
+    personality:
+      openness: 0.57
+      conscientiousness: 0.61
+      extraversion: 0.44
+      agreeableness: 0.69
+      neuroticism: 0.27
+    values: [courtesy, context]
+    goals: [find the meeting point, avoid blocking the path]
+    synthetic: true
+events:
+  - timestamp: "2026-04-23T09:00:00"
+    event_type: plaza.arrival
+    participants: [host, visitor]
+    location: Luvoire Demo World > Gangnam Plaza
+    description: The host and visitor arrive at the same meeting point.
+metrics:
+  - name: coordination_actions
+    kind: count
+    description: Number of actions that preserve shared context.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false
+local_response: '{"action_type": "observe", "target": null, "content": "keeps the meeting point clear."}'

@@ -20,6 +20,7 @@ from luvoire.core.replay_cache import inspect_replay_cache
 from luvoire.customer_cli import add_customer_subparser, handle_customer_command
 from luvoire.dsl import collect_validation_issues, load_scenario
 from luvoire.environment import Environment
+from luvoire.export.odd import export_odd_markdown
 from luvoire.game.schedule import RoutineEntry
 from luvoire.llm import LocalClient
 from luvoire.metrics import score_log
@@ -320,6 +321,12 @@ def build_parser() -> argparse.ArgumentParser:
     validate_parser.add_argument("path", type=Path, help="Scenario YAML file or directory.")
     validate_parser.add_argument("--json", action="store_true", help="Print validation results as JSON.")
 
+    export_parser = subparsers.add_parser("export", help="Export scenario-derived artifacts.")
+    export_subparsers = export_parser.add_subparsers(dest="export_command", required=True)
+    odd_parser = export_subparsers.add_parser("odd", help="Export a Grimm 2020 ODD markdown report.")
+    odd_parser.add_argument("scenario", type=Path, help="Scenario DSL YAML file.")
+    odd_parser.add_argument("--out", type=Path, required=True, help="Output markdown path.")
+
     list_parser = subparsers.add_parser("list-scenarios", help="List packaged Playground scenarios.")
     list_parser.add_argument("--json", action="store_true", help="Print scenarios as JSON.")
 
@@ -400,6 +407,13 @@ def main(
                 f"{payload['failed']} failed."
             )
         return 0 if payload["failed"] == 0 else 1
+    if args.command == "export":
+        if args.export_command == "odd":
+            output_path = export_odd_markdown(args.scenario, args.out)
+            print(f"Wrote ODD report to {output_path}")
+            return 0
+        parser.error(f"Unknown export command: {args.export_command}")
+        return 2
     if args.command == "list-scenarios":
         payload = list_scenarios_payload()
         if args.json:

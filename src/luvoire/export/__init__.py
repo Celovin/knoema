@@ -9,11 +9,21 @@ from luvoire.export.finetuning import (
     to_openai_jsonl,
     write_finetuning_jsonl,
 )
+from luvoire.export.odd import (
+    OddReport,
+    export_odd_markdown,
+    populate_from_simulation,
+    render_markdown,
+)
 
 __all__ = [
     "FineTuningFormat",
+    "OddReport",
     "export_finetuning_jsonl",
+    "export_odd_markdown",
     "parse_run_log",
+    "populate_from_simulation",
+    "render_markdown",
     "to_anthropic_jsonl",
     "to_dpo_pairs",
     "to_openai_jsonl",
