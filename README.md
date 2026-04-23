@@ -490,3 +490,7 @@ Local package and Docker release checks are documented in [RELEASE.md](RELEASE.m
 ## License
 
 MIT License. Copyright (c) 2026 Celovin.
+
+## Civilian Use Policy
+
+Luvoire is for civilian research and commercial multi-agent simulation. The public policy declines defense, predictive policing, PSYOP/influence optimization, non-consenting real-person twinning, and minors-in-synthetic-pipelines use categories regardless of payment; see [POLICIES/civilian_use.md](POLICIES/civilian_use.md).

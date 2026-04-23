@@ -256,3 +256,7 @@ Next.js 기반 공식 프로젝트 페이지입니다. 적용 영역, SDK 진입
 ## 라이선스
 
 MIT License. Copyright (c) 2026 Celovin.
+
+## Civilian Use Policy
+
+Luvoire는 연구 및 상용 목적의 민간 다중 에이전트 시뮬레이션 엔진입니다. 결제 여부와 관계없이 방위 목적, 예측 치안, 심리전/영향력 최적화, 동의 없는 실존 인물 트위닝, 미성년자 합성 피험자 파이프라인을 거절하는 공개 정책은 [POLICIES/civilian_use.ko.md](POLICIES/civilian_use.ko.md)를 참조하십시오.

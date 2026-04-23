@@ -1003,6 +1003,7 @@ curl <span class="s">-X POST</span> \\
                 <li><a href="https://celovin.com">About Celovin</a></li>
                 <li><a href="mailto:hello@celovin.com">hello@celovin.com</a></li>
                 <li><a href="https://github.com/Celovin/luvoire">GitHub</a></li>
+                <li><a href="https://github.com/Celovin/luvoire/blob/main/POLICIES/civilian_use.md">Civilian Use</a></li>
                 <li><a href="/status.html">Status</a></li>
               </ul>
             </div>

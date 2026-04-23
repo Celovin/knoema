@@ -61,6 +61,8 @@ nav:
       - Security Posture: legal/security_posture_v1_en.md
       - Refund Policy Korean: legal/refund_cancellation_policy_v1_ko.md
       - Refund Policy English: legal/refund_cancellation_policy_v1_en.md
+  - Policies:
+      - Civilian Use: https://github.com/Celovin/luvoire/blob/main/POLICIES/civilian_use.md
   - Payments (Onboarding):
       - Overview: payments/index.md
       - Toss Payments Korean: payments/toss-onboarding-ko.md
