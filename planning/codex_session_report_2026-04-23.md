@@ -97,3 +97,80 @@ Notes:
 - The ODD exporter creates the canonical seven-section Grimm 2020 markdown report and warns non-fatally when human-authored sections still contain TODO stubs.
 - No existing msgpack replay artifact changed.
 - Existing user dirty state was not touched: `planning/codex_blockers.md` and `sdk/ios/KnoemaMobile/`.
+
+## Slot C - Pending KO Translation Review
+
+Status: approved in session on 2026-04-23 by user message: `승인할테니 계속 진행해`.
+
+Vocabulary note: this draft uses `워게임`, `예측 치안`, `심리전(PSYOP)`, `트위닝`, and `IRB 수준의 동의` as the Korean domain terms.
+
+```markdown
+# 민간 이용 정책
+
+버전 1.0 - 시행일 2026-04-23
+
+Luvoire는 민간 다중 에이전트 시뮬레이션을 위한 연구 및 상용 엔진입니다.
+본 프로젝트와 유지관리자(Celovin)는 결제 여부와 관계없이 다음 이용 범주를
+거절합니다.
+
+1. 군, 정보기관 또는 작전 수행 역량으로 활동하는 방위산업 계약자를 위한
+   군사 작전 워게임, 표적 선정 지원 또는 전투 피해 평가.
+2. 개인별 범죄 위험 점수화, 또는 개인별 위험도나 의심 순위를 산출하는
+   모든 법집행 목적의 응용을 포함한 예측 치안.
+3. 정치 캠페인, 선거 표적화 또는 국가 정보작전을 위한 설득, 영향력 행사,
+   허위정보 또는 심리전(PSYOP) 최적화. 출처 표시나 위장 명목과 관계없이
+   적용됩니다.
+4. 동의 없는 실존 인물 시뮬레이션: 이름으로 식별되는 자연인을 해당 인물의
+   공개 또는 비공개 데이터로 트위닝하면서 IRB 수준의 동의를 받지 않는 경우.
+5. 합성 피험자 파이프라인에서의 미성년자: 식별되었거나 식별 가능한 만 18세
+   미만 개인을 IRB 승인과 보호자 동의 없이 시뮬레이션하는 경우.
+
+허위정보 대응, 재난 및 비상 대비, 긴장 완화 훈련, 도시계획, 공중보건 시나리오
+분석, 학술 목적의 계산사회과학 연구는 계속 지원됩니다. 단, Luvoire 기술
+보고서에 문서화된 동일한 재식별, 출처 추적 및 투명성 통제의 적용을 받습니다.
+
+이 정책은 버전 관리됩니다. 여기의 어떤 범주라도 완화하기 전에는 CHANGELOG.md에
+변경을 공지하고 두 개 버전에 걸친 유예 기간을 둡니다.
+
+문의: hello@celovin.com
+```
+
+## Slot C - Civilian-only use policy
+
+Status: closed after user approval of the KO translation.
+
+Implementation commit: `001f71c63b3175a350c63f849c6e7d5fa086fef2` (`feat(policy): publish Civilian Use Policy v1.0`).
+
+Files changed:
+
+- `CHANGELOG.md`
+- `POLICIES/civilian_use.md`
+- `POLICIES/civilian_use.ko.md`
+- `README.md`
+- `README.ko.md`
+- `mkdocs.yml`
+- `site-snapshot/index.html`
+- `website/components/LuvoireLanding.tsx`
+
+Verification:
+
+- `python -m pytest --no-cov --ignore=tests/test_phase60_mobile_sdks.py`: 700 passed, 5 skipped.
+- `python -m ruff check .`: passed.
+- `python -m mypy src`: passed, 126 source files checked.
+- `python -m pytest tests/test_playground_encoding_guard.py --no-cov`: 3 passed.
+- `python scripts/check_gradio_compat.py`: `Gradio compatibility OK`.
+- `python -m pytest tests/test_plotly_enum_safety.py --no-cov`: 4 passed.
+- `python -m mkdocs build --strict`: passed.
+- `python scripts/verify_replay_shas.py`: verified 5 replay SHA256 baselines.
+- `git ls-files --cached POLICIES/`: exactly `POLICIES/civilian_use.ko.md` and `POLICIES/civilian_use.md` before commit.
+- `rg -n "Civilian Use" README.md README.ko.md site-snapshot/index.html website/components/LuvoireLanding.tsx`: found at least one match in each required file.
+- `git diff --cached -- src/luvoire`: no Slot C source changes.
+- `git diff --cached -U0 | rg "Litheon|Seizn|Ovriel|Fangden|Notrivo|Milkypix|Yami|Qwen3\\.5-35B-A3B|knoema|Knoema|KNOEMA"`: no matches before commit.
+
+Notes:
+
+- The English policy text was copied from the handoff without paraphrase.
+- The Korean translation was approved by the user in session before commit.
+- `website/public/pricing.html` has no mirrored Company footer column; no Slot C edit was made there.
+- No existing msgpack replay artifact changed.
+- Existing user dirty state was not touched: `planning/codex_blockers.md` and `sdk/ios/KnoemaMobile/`.
