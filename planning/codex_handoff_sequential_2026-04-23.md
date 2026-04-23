@@ -8,7 +8,9 @@ Deadline anchors:
 - EU AI Act Art. 50 transparency enforceable 2026-08-02 (next-handoff Slot E prerequisite; not in this handoff)
 - PIPA 10% global-revenue fine regime starts 2026-09-11 (next-handoff Slot F prerequisite; not in this handoff)
 
-Prerequisite: v7 handoff (`planning/codex_handoff_sequential_2026-04-22g.md`) MUST be fully closed (all six slots A-F green and merged) before any slot of this handoff starts. v7's rebrand is load-bearing for every path in this document.
+Prerequisite (revised 2026-04-23 post-initial-halt): v7 handoff (`planning/codex_handoff_sequential_2026-04-22g.md`) code deliverables for all six slots A-F MUST be merged to `origin/main`. This is satisfied as of `a667d72` per the interim close report `planning/NIGHT_REPORT_knoema_sequential_v7_2026-04-22.md`.
+
+v7 Slot E's HF Space cold-start runtime gate is ACKNOWLEDGED as externally BLOCKED on the GitHub account flag (ticket with Sophia Hayes, filed 2026-04-22, follow-up 2026-04-23). That external block does NOT gate this handoff's Slots A-D because none of them touch `playground/`, HF Space deployment scripts, `adapters/huggingface/`, or any `github.com/Celovin/luvoire` clone path. Full rationale is in section 4 of the interim close report. Codex should proceed with Slot A once v7 code merge is verified via `git log --oneline | head -20` showing the commits listed in the interim close report section 1.
 
 Scope of this handoff: four slots that encode the highest-priority research findings from the five-track 2026-04-23 strengthening research into concrete code. Slots target the "Top 4 next-2-weeks" items from the unified roadmap:
 
