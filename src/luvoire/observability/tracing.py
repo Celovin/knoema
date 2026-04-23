@@ -28,25 +28,53 @@ def setup_tracing(exporter: str | None, *, app: object | None = None) -> bool:
         raise RuntimeError("Install luvoire-engine[observability] to enable OpenTelemetry tracing.") from exc
 
     resource = resources_module.Resource.create({"service.name": "luvoire-engine"})
-    provider = trace_sdk_module.TracerProvider(resource=resource)
+    provider = trace.get_tracer_provider()
+    if not hasattr(provider, "add_span_processor"):
+        provider = trace_sdk_module.TracerProvider(resource=resource)
+        trace.set_tracer_provider(provider)
     provider.add_span_processor(export_module.SimpleSpanProcessor(_build_span_exporter(exporter)))
-    trace.set_tracer_provider(provider)
     _set_tracer(trace.get_tracer("luvoire"))
     if app is not None:
         fastapi_module.FastAPIInstrumentor.instrument_app(app)
     return True
 
 
+def genai_attributes(
+    *,
+    system: str,
+    operation: str,
+    model: str | None = None,
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+    base_url: str | None = None,
+) -> dict[str, object]:
+    """Build a stable attribute set for Luvoire GenAI spans."""
+
+    attributes: dict[str, object] = {
+        "gen_ai.system": system,
+        "gen_ai.operation.name": operation,
+    }
+    if model:
+        attributes["gen_ai.request.model"] = model
+    if temperature is not None:
+        attributes["gen_ai.request.temperature"] = temperature
+    if max_tokens is not None:
+        attributes["gen_ai.request.max_tokens"] = max_tokens
+    if base_url:
+        attributes["luvoire.llm.base_url"] = base_url
+    return attributes
+
+
 @contextmanager
-def trace_span(name: str, attributes: Mapping[str, object] | None = None) -> Iterator[None]:
+def trace_span(name: str, attributes: Mapping[str, object] | None = None) -> Iterator[Any | None]:
     tracer = _TRACER
     if tracer is None:
-        yield
+        yield None
         return
     with tracer.start_as_current_span(name) as span:
         for key, value in (attributes or {}).items():
             span.set_attribute(key, value)
-        yield
+        yield span
 
 
 def _build_span_exporter(exporter: str) -> Any:
@@ -64,4 +92,4 @@ def _set_tracer(tracer: Any) -> None:
     _TRACER = tracer
 
 
-__all__ = ["setup_tracing", "trace_span"]
+__all__ = ["genai_attributes", "setup_tracing", "trace_span"]

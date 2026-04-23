@@ -16,6 +16,7 @@ from luvoire.core.replay_cache import (
     ReplayCacheMiss,
     replay_cache_from_env,
 )
+from luvoire.observability.tracing import genai_attributes, trace_span
 from luvoire.protocols import LLMClient, Message
 
 
@@ -77,35 +78,55 @@ class LLMGateway:
         last_error: Exception | None = None
         for provider_name, provider in self._providers:
             started_at = perf_counter()
-            try:
-                response = provider.complete(messages, **dict(kwargs))
-            except Exception as exc:  # pragma: no cover - exact provider errors vary
-                last_error = exc
+            model = _provider_model(provider_name, provider)
+            with trace_span(
+                "luvoire.llm.provider.complete",
+                genai_attributes(
+                    system=provider_name,
+                    operation="complete",
+                    model=model,
+                    temperature=_float_kwarg(kwargs, "temperature"),
+                    max_tokens=_int_kwarg(kwargs, "max_tokens"),
+                ),
+            ) as span:
+                try:
+                    response = provider.complete(messages, **dict(kwargs))
+                except Exception as exc:  # pragma: no cover - exact provider errors vary
+                    last_error = exc
+                    elapsed = perf_counter() - started_at
+                    if span is not None:
+                        span.set_attribute("luvoire.llm.success", False)
+                        span.set_attribute("error.type", type(exc).__name__)
+                    self.records.append(
+                        LLMCallRecord(
+                            provider=provider_name,
+                            prompt_tokens=prompt_tokens,
+                            completion_tokens=0,
+                            estimated_cost_usd=0.0,
+                            elapsed_seconds=elapsed,
+                            success=False,
+                            error=str(exc),
+                        )
+                    )
+                    continue
+
+                completion_tokens = estimate_tokens(response)
+                elapsed = perf_counter() - started_at
+                if span is not None:
+                    span.set_attribute("luvoire.llm.success", True)
+                    span.set_attribute("gen_ai.usage.input_tokens", prompt_tokens)
+                    span.set_attribute("gen_ai.usage.output_tokens", completion_tokens)
                 self.records.append(
                     LLMCallRecord(
                         provider=provider_name,
                         prompt_tokens=prompt_tokens,
-                        completion_tokens=0,
-                        estimated_cost_usd=0.0,
-                        elapsed_seconds=perf_counter() - started_at,
-                        success=False,
-                        error=str(exc),
+                        completion_tokens=completion_tokens,
+                        estimated_cost_usd=estimate_cost_usd(prompt_tokens, completion_tokens),
+                        elapsed_seconds=elapsed,
+                        success=True,
                     )
                 )
-                continue
-
-            completion_tokens = estimate_tokens(response)
-            self.records.append(
-                LLMCallRecord(
-                    provider=provider_name,
-                    prompt_tokens=prompt_tokens,
-                    completion_tokens=completion_tokens,
-                    estimated_cost_usd=estimate_cost_usd(prompt_tokens, completion_tokens),
-                    elapsed_seconds=perf_counter() - started_at,
-                    success=True,
-                )
-            )
-            return response
+                return response
 
         raise RuntimeError("all LLM providers failed") from last_error
 
@@ -130,74 +151,108 @@ class LLMGateway:
                 seed=seed,
             )
             started_at = perf_counter()
-            try:
-                recorded = self._replay_cache.get(cache_key)
-            except ReplayCacheMiss:
+            with trace_span(
+                "luvoire.llm.provider.complete",
+                {
+                    **genai_attributes(
+                        system=provider_name,
+                        operation="replay_cache",
+                        model=model,
+                        temperature=_float_kwarg(kwargs, "temperature"),
+                        max_tokens=_int_kwarg(kwargs, "max_tokens"),
+                    ),
+                    "luvoire.replay_cache.enabled": True,
+                },
+            ) as span:
+                try:
+                    recorded = self._replay_cache.get(cache_key)
+                except ReplayCacheMiss:
+                    elapsed = perf_counter() - started_at
+                    if span is not None:
+                        span.set_attribute("luvoire.replay_cache.hit", False)
+                        span.set_attribute("luvoire.llm.success", False)
+                    self.records.append(
+                        LLMCallRecord(
+                            provider=provider_name,
+                            prompt_tokens=prompt_tokens,
+                            completion_tokens=0,
+                            estimated_cost_usd=0.0,
+                            elapsed_seconds=elapsed,
+                            success=False,
+                            error=f"replay cache miss for {provider_name}",
+                        )
+                    )
+                    raise
+                if recorded is not None:
+                    elapsed = perf_counter() - started_at
+                    if span is not None:
+                        span.set_attribute("luvoire.replay_cache.hit", True)
+                        span.set_attribute("luvoire.llm.success", True)
+                        span.set_attribute("gen_ai.usage.input_tokens", recorded.prompt_tokens)
+                        span.set_attribute("gen_ai.usage.output_tokens", recorded.completion_tokens)
+                    self.records.append(
+                        LLMCallRecord(
+                            provider=provider_name,
+                            prompt_tokens=recorded.prompt_tokens,
+                            completion_tokens=recorded.completion_tokens,
+                            estimated_cost_usd=0.0,
+                            elapsed_seconds=elapsed,
+                            success=True,
+                        )
+                    )
+                    return recorded.text
+
+                try:
+                    response = provider.complete(messages, **dict(kwargs))
+                except Exception as exc:  # pragma: no cover - exact provider errors vary
+                    last_error = exc
+                    elapsed = perf_counter() - started_at
+                    if span is not None:
+                        span.set_attribute("luvoire.replay_cache.hit", False)
+                        span.set_attribute("luvoire.llm.success", False)
+                        span.set_attribute("error.type", type(exc).__name__)
+                    self.records.append(
+                        LLMCallRecord(
+                            provider=provider_name,
+                            prompt_tokens=prompt_tokens,
+                            completion_tokens=0,
+                            estimated_cost_usd=0.0,
+                            elapsed_seconds=elapsed,
+                            success=False,
+                            error=str(exc),
+                        )
+                    )
+                    continue
+
+                completion_tokens = estimate_tokens(response)
+                self._replay_cache.put(
+                    cache_key,
+                    RecordedResponse(
+                        text=response,
+                        finish_reason=str(kwargs.get("finish_reason", "stop")),
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=completion_tokens,
+                        model_fingerprint=_model_fingerprint(provider),
+                        captured_at=datetime.now(UTC),
+                    ),
+                )
+                elapsed = perf_counter() - started_at
+                if span is not None:
+                    span.set_attribute("luvoire.replay_cache.hit", False)
+                    span.set_attribute("luvoire.llm.success", True)
+                    span.set_attribute("gen_ai.usage.input_tokens", prompt_tokens)
+                    span.set_attribute("gen_ai.usage.output_tokens", completion_tokens)
                 self.records.append(
                     LLMCallRecord(
                         provider=provider_name,
                         prompt_tokens=prompt_tokens,
-                        completion_tokens=0,
-                        estimated_cost_usd=0.0,
-                        elapsed_seconds=perf_counter() - started_at,
-                        success=False,
-                        error=f"replay cache miss for {provider_name}",
-                    )
-                )
-                raise
-            if recorded is not None:
-                self.records.append(
-                    LLMCallRecord(
-                        provider=provider_name,
-                        prompt_tokens=recorded.prompt_tokens,
-                        completion_tokens=recorded.completion_tokens,
-                        estimated_cost_usd=0.0,
-                        elapsed_seconds=perf_counter() - started_at,
+                        completion_tokens=completion_tokens,
+                        estimated_cost_usd=estimate_cost_usd(prompt_tokens, completion_tokens),
+                        elapsed_seconds=elapsed,
                         success=True,
                     )
                 )
-                return recorded.text
-
-            try:
-                response = provider.complete(messages, **dict(kwargs))
-            except Exception as exc:  # pragma: no cover - exact provider errors vary
-                last_error = exc
-                self.records.append(
-                    LLMCallRecord(
-                        provider=provider_name,
-                        prompt_tokens=prompt_tokens,
-                        completion_tokens=0,
-                        estimated_cost_usd=0.0,
-                        elapsed_seconds=perf_counter() - started_at,
-                        success=False,
-                        error=str(exc),
-                    )
-                )
-                continue
-
-            completion_tokens = estimate_tokens(response)
-            self._replay_cache.put(
-                cache_key,
-                RecordedResponse(
-                    text=response,
-                    finish_reason=str(kwargs.get("finish_reason", "stop")),
-                    prompt_tokens=prompt_tokens,
-                    completion_tokens=completion_tokens,
-                    model_fingerprint=_model_fingerprint(provider),
-                    captured_at=datetime.now(UTC),
-                ),
-            )
-            self.records.append(
-                LLMCallRecord(
-                    provider=provider_name,
-                    prompt_tokens=prompt_tokens,
-                    completion_tokens=completion_tokens,
-                    estimated_cost_usd=estimate_cost_usd(prompt_tokens, completion_tokens),
-                    elapsed_seconds=perf_counter() - started_at,
-                    success=True,
-                )
-            )
-            return response
+                return response
 
         raise RuntimeError("all LLM providers failed") from last_error
 
@@ -334,6 +389,26 @@ def _cache_key(messages: Sequence[Message], kwargs: Mapping[str, object]) -> str
     }
     encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
     return sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def _float_kwarg(kwargs: Mapping[str, object], key: str) -> float | None:
+    value = kwargs.get(key)
+    if value is None:
+        return None
+    if isinstance(value, int | float):
+        return float(value)
+    return None
+
+
+def _int_kwarg(kwargs: Mapping[str, object], key: str) -> int | None:
+    value = kwargs.get(key)
+    if value is None:
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float):
+        return int(value)
+    return None
 
 
 __all__ = [

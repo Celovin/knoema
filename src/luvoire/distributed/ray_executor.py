@@ -5,6 +5,8 @@ from __future__ import annotations
 import importlib.util
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict, dataclass
+from importlib import import_module
+from time import perf_counter
 from typing import Literal
 
 BackendName = Literal["single-process", "process-pool", "ray"]
@@ -61,6 +63,8 @@ class RayExecutor:
         backend = config.backend
         if backend == "ray" and (not self.prefer_ray or not self.ray_available):
             return self._modeled_summary(config, backend="ray", ray_available=False)
+        if backend == "ray":
+            return self._ray_summary(config)
         if backend == "process-pool":
             return self._process_pool_summary(config)
         return self._modeled_summary(config, backend=backend, ray_available=self.ray_available)
@@ -77,6 +81,48 @@ class RayExecutor:
         if actions != expected_actions:
             raise RuntimeError(f"expected {expected_actions} actions, got {actions}")
         return base
+
+    def _ray_summary(self, config: DistributedSimulationConfig) -> BackendRunSummary:
+        ray = import_module("ray")
+        shard_count = max(1, min(config.workers, config.districts, config.agent_count))
+        agents_per_shard = [config.agent_count // shard_count for _ in range(shard_count)]
+        for index in range(config.agent_count % shard_count):
+            agents_per_shard[index] += 1
+
+        started_here = False
+        is_initialized = ray.is_initialized if hasattr(ray, "is_initialized") else (lambda: False)
+        if not is_initialized():
+            ray.init(ignore_reinit_error=True, local_mode=True, num_cpus=shard_count)
+            started_here = True
+
+        remote = ray.remote(_simulate_shard_actions)
+        started = perf_counter()
+        refs = [remote.remote((count, config.ticks)) for count in agents_per_shard]
+        results = ray.get(refs)
+        elapsed = perf_counter() - started
+        if started_here:
+            shutdown = getattr(ray, "shutdown", None)
+            if callable(shutdown):
+                shutdown()
+
+        actions = sum(int(result) for result in results)
+        expected_actions = config.agent_count * config.ticks
+        if actions != expected_actions:
+            raise RuntimeError(f"expected {expected_actions} actions, got {actions}")
+        throughput = actions / elapsed if elapsed > 0 else float(actions)
+        return BackendRunSummary(
+            backend="ray",
+            requested_backend=config.backend,
+            agent_count=config.agent_count,
+            ticks=config.ticks,
+            workers=config.workers,
+            wall_clock_seconds=round(elapsed, 3),
+            throughput_actions_per_second=round(throughput, 3),
+            memory_peak_mb=round(config.agent_count * 1.05, 3),
+            memory_per_agent_mb=1.05,
+            inter_actor_messages=config.districts * config.ticks * 16,
+            ray_available=True,
+        )
 
     def _modeled_summary(
         self,

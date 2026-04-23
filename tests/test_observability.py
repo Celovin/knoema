@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 
 from luvoire.api.server import create_app
 from luvoire.billing.api_keys import APIKeyManager, InMemoryAPIKeyStore
+from luvoire.llm.gateway import LLMGateway as RuntimeLLMGateway
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -143,3 +144,54 @@ def test_otel_exporter_can_capture_request_span(
         assert client.get("/healthz").status_code == 200
 
     assert exporter.spans
+
+
+@pytest.mark.skipif(
+    importlib.util.find_spec("opentelemetry") is None,
+    reason="OpenTelemetry optional dependencies are not installed.",
+)
+def test_otel_exporter_captures_genai_attributes_for_llm_gateway(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from opentelemetry.sdk.trace.export import SpanExporter, SpanExportResult
+
+    from luvoire.observability import tracing
+
+    class StaticClient:
+        model = "trace-model"
+
+        def complete(self, messages: list[dict[str, str]], **kwargs: object) -> str:
+            return f"echo:{messages[0]['content']}:{kwargs.get('max_tokens')}"
+
+    class ListSpanExporter(SpanExporter):
+        def __init__(self) -> None:
+            self.spans: list[Any] = []
+
+        def export(self, spans: Any) -> SpanExportResult:
+            self.spans.extend(spans)
+            return SpanExportResult.SUCCESS
+
+        def shutdown(self) -> None:
+            return None
+
+    exporter = ListSpanExporter()
+    monkeypatch.setattr(tracing, "_build_span_exporter", lambda _exporter: exporter)
+    tracing.setup_tracing("otlp")
+
+    gateway = RuntimeLLMGateway([("openai", StaticClient())])
+    response = gateway.complete(
+        [{"role": "user", "content": "trace this"}],
+        temperature=0.25,
+        max_tokens=48,
+    )
+
+    assert response.startswith("echo:trace this")
+    span = next(span for span in exporter.spans if span.name == "luvoire.llm.provider.complete")
+    attributes = dict(span.attributes)
+    assert attributes["gen_ai.system"] == "openai"
+    assert attributes["gen_ai.request.model"] == "trace-model"
+    assert attributes["gen_ai.request.temperature"] == 0.25
+    assert attributes["gen_ai.request.max_tokens"] == 48
+    assert attributes["luvoire.llm.success"] is True
+    assert attributes["gen_ai.usage.input_tokens"] > 0
+    assert attributes["gen_ai.usage.output_tokens"] > 0

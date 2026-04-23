@@ -72,6 +72,8 @@ def test_batch_o_jsonrpc_initialize_and_tool_call_schema() -> None:
     assert initialize is not None
     assert initialize["result"]["protocolVersion"] == "2025-06-18"
     assert initialize["result"]["capabilities"]["tools"]["listChanged"] is False
+    assert initialize["result"]["capabilities"]["resources"]["subscribe"] is False
+    assert initialize["result"]["capabilities"]["prompts"]["listChanged"] is False
 
     tool_call = handle_jsonrpc_line(
         service,
@@ -87,6 +89,66 @@ def test_batch_o_jsonrpc_initialize_and_tool_call_schema() -> None:
     assert tool_call is not None
     assert tool_call["result"]["structuredContent"]["count"] == 30
     assert tool_call["result"]["content"][0]["type"] == "text"
+
+
+def test_batch_o_mcp_resources_and_prompts_surface_scenarios_and_runs() -> None:
+    service = LuvoireMcpService()
+    run = service.run_scenario(name="Dorm: two agents", provider="replay", ticks=2)
+
+    resources = handle_jsonrpc_line(
+        service,
+        json.dumps({"jsonrpc": "2.0", "id": 3, "method": "resources/list"}),
+    )
+    assert resources is not None
+    resource_uris = {resource["uri"] for resource in resources["result"]["resources"]}
+    assert "luvoire://scenario/dorm_two_agents" in resource_uris
+    assert f"luvoire://runs/{run['run_id']}/report" in resource_uris
+
+    templates = handle_jsonrpc_line(
+        service,
+        json.dumps({"jsonrpc": "2.0", "id": 31, "method": "resources/templates/list"}),
+    )
+    assert templates is not None
+    assert templates["result"]["resourceTemplates"][0]["uriTemplate"] == "luvoire://runs/{run_id}/report"
+
+    scenario_resource = handle_jsonrpc_line(
+        service,
+        json.dumps(
+            {
+                "jsonrpc": "2.0",
+                "id": 4,
+                "method": "resources/read",
+                "params": {"uri": "luvoire://scenario/dorm_two_agents"},
+            }
+        ),
+    )
+    assert scenario_resource is not None
+    assert "Dorm: two agents" in scenario_resource["result"]["contents"][0]["text"]
+
+    prompts = handle_jsonrpc_line(
+        service,
+        json.dumps({"jsonrpc": "2.0", "id": 5, "method": "prompts/list"}),
+    )
+    assert prompts is not None
+    prompt_names = {prompt["name"] for prompt in prompts["result"]["prompts"]}
+    assert prompt_names == {"scenario_brief", "run_report_review"}
+
+    prompt = handle_jsonrpc_line(
+        service,
+        json.dumps(
+            {
+                "jsonrpc": "2.0",
+                "id": 6,
+                "method": "prompts/get",
+                "params": {
+                    "name": "run_report_review",
+                    "arguments": {"run_id": str(run["run_id"])},
+                },
+            }
+        ),
+    )
+    assert prompt is not None
+    assert "dominant action patterns" in prompt["result"]["messages"][0]["content"]["text"]
 
 
 def test_batch_o_mcp_scenario_dir_prefers_luvoire_env(monkeypatch) -> None:

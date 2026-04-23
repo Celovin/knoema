@@ -20,7 +20,8 @@ from luvoire.core.replay_cache import inspect_replay_cache
 from luvoire.customer_cli import add_customer_subparser, handle_customer_command
 from luvoire.dsl import collect_validation_issues, load_scenario
 from luvoire.environment import Environment
-from luvoire.export.odd import export_odd_markdown
+from luvoire.evaluation import grade_trace_report
+from luvoire.export import export_odd_markdown, export_run_log_parquet, query_run_parquet
 from luvoire.game.schedule import RoutineEntry
 from luvoire.llm import LocalClient
 from luvoire.metrics import score_log
@@ -326,15 +327,41 @@ def build_parser() -> argparse.ArgumentParser:
     odd_parser = export_subparsers.add_parser("odd", help="Export a Grimm 2020 ODD markdown report.")
     odd_parser.add_argument("scenario", type=Path, help="Scenario DSL YAML file.")
     odd_parser.add_argument("--out", type=Path, required=True, help="Output markdown path.")
+    parquet_parser = export_subparsers.add_parser(
+        "parquet",
+        help="Export a Luvoire JSONL run log as analytics Parquet.",
+    )
+    parquet_parser.add_argument("logfile", type=Path, help="Input Luvoire JSONL run log.")
+    parquet_parser.add_argument("--out", type=Path, required=True, help="Output Parquet path.")
 
     list_parser = subparsers.add_parser("list-scenarios", help="List packaged Playground scenarios.")
     list_parser.add_argument("--json", action="store_true", help="Print scenarios as JSON.")
+
+    query_parser = subparsers.add_parser("query", help="Query analytics artifacts.")
+    query_subparsers = query_parser.add_subparsers(dest="query_command", required=True)
+    query_runs_parser = query_subparsers.add_parser(
+        "runs",
+        help="Run a DuckDB SQL query against Parquet exports as `runs`.",
+    )
+    query_runs_parser.add_argument("paths", nargs="+", type=Path, help="One or more Parquet paths.")
+    query_runs_parser.add_argument("--sql", required=True, help="DuckDB SQL using the `runs` view.")
+    query_runs_parser.add_argument("--json", action="store_true", help="Print rows as JSON.")
 
     verify_parser = subparsers.add_parser("verify", help="Verify a reproducibility certificate.")
     verify_parser.add_argument("certificate", type=Path, help="Path to run_fingerprint.json.")
     verify_parser.add_argument("--run-config", type=Path, default=None, help="Optional JSON config to hash.")
     verify_parser.add_argument("--result-jsonl", type=Path, default=None, help="Optional result JSONL to verify.")
     verify_parser.add_argument("--json", action="store_true", help="Print verification JSON.")
+
+    evaluate_parser = subparsers.add_parser("evaluate", help="Evaluate trace and study artifacts.")
+    evaluate_subparsers = evaluate_parser.add_subparsers(dest="evaluate_command", required=True)
+    evaluate_trace_parser = evaluate_subparsers.add_parser(
+        "trace",
+        help="Grade a Luvoire JSONL trace with a deterministic rubric.",
+    )
+    evaluate_trace_parser.add_argument("logfile", type=Path, help="Path to a Luvoire JSONL simulation log.")
+    evaluate_trace_parser.add_argument("--trace-id", default=None, help="Optional explicit trace identifier.")
+    evaluate_trace_parser.add_argument("--json", action="store_true", help="Print evaluation JSON.")
 
     playground_parser = subparsers.add_parser("playground", help="Start the local Gradio Playground.")
     playground_parser.add_argument("--host", default="127.0.0.1", help="Host interface.")
@@ -422,6 +449,10 @@ def main(
             output_path = export_odd_markdown(args.scenario, args.out)
             print(f"Wrote ODD report to {output_path}")
             return 0
+        if args.export_command == "parquet":
+            output_path = export_run_log_parquet(args.logfile, args.out)
+            print(f"Wrote analytics parquet to {output_path}")
+            return 0
         parser.error(f"Unknown export command: {args.export_command}")
         return 2
     if args.command == "list-scenarios":
@@ -432,6 +463,16 @@ def main(
             for scenario in payload["scenarios"]:
                 print(f"{scenario['name']} ({scenario['filename']})")
         return 0
+    if args.command == "query":
+        if args.query_command == "runs":
+            rows = query_run_parquet(args.paths, args.sql)
+            if args.json:
+                print(json.dumps(rows, ensure_ascii=False, sort_keys=True))
+            else:
+                _print_query_rows(rows)
+            return 0
+        parser.error(f"Unknown query command: {args.query_command}")
+        return 2
     if args.command == "verify":
         report = verify_certificate_path(
             args.certificate,
@@ -447,6 +488,19 @@ def main(
             for mismatch in report.mismatches:
                 print(f"- {mismatch}")
         return 0 if report.verified else 1
+    if args.command == "evaluate":
+        if args.evaluate_command == "trace":
+            trace_report = grade_trace_report(args.logfile, trace_id=args.trace_id)
+            if args.json:
+                print(json.dumps(trace_report.to_json_dict(), ensure_ascii=False, sort_keys=True))
+            else:
+                print(
+                    f"Trace {trace_report.trace_id}: score={trace_report.weighted_score:.3f} "
+                    f"gate={'pass' if trace_report.passes_default_gate else 'fail'}"
+                )
+            return 0 if trace_report.passes_default_gate else 1
+        parser.error(f"Unknown evaluate command: {args.evaluate_command}")
+        return 2
     if args.command == "playground":
         payload = playground_launch_payload(args.host, args.port)
         if args.dry_run:
@@ -554,6 +608,16 @@ def list_scenarios_payload() -> dict[str, Any]:
         "count": len(PLAYGROUND_SCENARIOS),
         "scenarios": [dict(scenario) for scenario in PLAYGROUND_SCENARIOS],
     }
+
+
+def _print_query_rows(rows: list[dict[str, Any]]) -> None:
+    if not rows:
+        print("0 rows")
+        return
+    columns = list(rows[0].keys())
+    print("\t".join(columns))
+    for row in rows:
+        print("\t".join("" if row.get(column) is None else str(row[column]) for column in columns))
 
 
 def verify_certificate_path(

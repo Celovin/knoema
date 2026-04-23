@@ -118,7 +118,11 @@ class LuvoireMcpService:
         )
         return {
             "protocolVersion": protocol_version,
-            "capabilities": {"tools": {"listChanged": False}},
+            "capabilities": {
+                "tools": {"listChanged": False},
+                "resources": {"subscribe": False, "listChanged": False},
+                "prompts": {"listChanged": False},
+            },
             "serverInfo": {
                 "name": "luvoire-engine",
                 "version": _package_version(),
@@ -127,6 +131,153 @@ class LuvoireMcpService:
 
     def list_tools(self) -> JsonObject:
         return {"tools": list(_tool_descriptors())}
+
+    def list_resources(self) -> JsonObject:
+        resources = [
+            {
+                "uri": self._scenario_uri(record),
+                "name": record.name,
+                "description": f"Structured scenario summary for {record.name}.",
+                "mimeType": "application/json",
+            }
+            for record in self.scenarios
+        ]
+        if self.latest_run_id is not None and self.latest_run_id in self.runs:
+            resources.append(
+                {
+                    "uri": self._run_report_uri(self.latest_run_id),
+                    "name": "Latest MCP Run Report",
+                    "description": "Markdown report for the latest Luvoire MCP run.",
+                    "mimeType": "text/markdown",
+                }
+            )
+        return {"resources": resources}
+
+    def read_resource(self, uri: str) -> JsonObject:
+        if uri.startswith("luvoire://scenario/"):
+            record = self._record_for(uri.removeprefix("luvoire://scenario/"))
+            config = self._load_config(record.name)
+            text = json.dumps(
+                {
+                    "id": record.scenario_id,
+                    "name": record.name,
+                    "agent_count": len(config.agents),
+                    "tick_duration_minutes": config.runtime.tick_duration_minutes,
+                    "description": config.description_en or config.description_ko or "",
+                    "agent_ids": [agent.agent_id for agent in config.agents],
+                },
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+            )
+            return {
+                "contents": [
+                    {
+                        "uri": uri,
+                        "mimeType": "application/json",
+                        "text": text,
+                    }
+                ]
+            }
+        if uri.startswith("luvoire://runs/") and uri.endswith("/report"):
+            run_id = uri.removeprefix("luvoire://runs/").removesuffix("/report")
+            report = self.generate_report(run_id=run_id)
+            return {
+                "contents": [
+                    {
+                        "uri": uri,
+                        "mimeType": "text/markdown",
+                        "text": str(report["markdown"]),
+                    }
+                ]
+            }
+        raise ValueError(f"Unknown resource URI: {uri}")
+
+    def list_resource_templates(self) -> JsonObject:
+        return {
+            "resourceTemplates": [
+                {
+                    "uriTemplate": "luvoire://runs/{run_id}/report",
+                    "name": "run_report",
+                    "title": "Run Report Resource",
+                    "description": "Markdown report for a stored Luvoire MCP run.",
+                    "mimeType": "text/markdown",
+                }
+            ]
+        }
+
+    def list_prompts(self) -> JsonObject:
+        return {
+            "prompts": [
+                {
+                    "name": "scenario_brief",
+                    "title": "Scenario Brief",
+                    "description": "Summarize a built-in scenario for a human reviewer or agent.",
+                    "arguments": [
+                        {
+                            "name": "name",
+                            "description": "Scenario name or id.",
+                            "required": True,
+                        }
+                    ],
+                },
+                {
+                    "name": "run_report_review",
+                    "title": "Run Report Review",
+                    "description": "Ask the model to analyze a stored Luvoire MCP run report.",
+                    "arguments": [
+                        {
+                            "name": "run_id",
+                            "description": "Stored run id or 'latest'.",
+                            "required": True,
+                        }
+                    ],
+                },
+            ]
+        }
+
+    def get_prompt(self, name: str, arguments: JsonObject | None = None) -> JsonObject:
+        args = arguments or {}
+        if name == "scenario_brief":
+            scenario_name = _string_arg(args, "name")
+            record = self._record_for(scenario_name)
+            resource = self.read_resource(self._scenario_uri(record))["contents"][0]
+            return {
+                "description": f"Prompt for reviewing scenario {record.name}.",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": {
+                            "type": "text",
+                            "text": (
+                                "Review the following Luvoire scenario summary and explain the agent "
+                                "count, core setup, and likely interaction dynamics.\n\n"
+                                f"{resource['text']}"
+                            ),
+                        },
+                    }
+                ],
+            }
+        if name == "run_report_review":
+            run_id = _string_arg(args, "run_id", default="latest")
+            report = self.generate_report(run_id=run_id)
+            return {
+                "description": f"Prompt for analyzing Luvoire run {report['run_id']}.",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": {
+                            "type": "text",
+                            "text": (
+                                "Review this Luvoire run report and call out the dominant action "
+                                "patterns, active agents, and any anomalies.\n\n"
+                                f"{report['markdown']}"
+                            ),
+                        },
+                    }
+                ],
+            }
+        raise ValueError(f"Unknown prompt: {name}")
 
     def call_tool(self, name: str, arguments: JsonObject | None = None) -> JsonObject:
         args = arguments or {}
@@ -341,6 +492,12 @@ class LuvoireMcpService:
         searched = ", ".join(str(path) for path in self._scenario_dirs())
         raise FileNotFoundError(f"Scenario file {record.filename} not found; searched {searched}")
 
+    def _scenario_uri(self, record: ScenarioRecord) -> str:
+        return f"luvoire://scenario/{record.scenario_id}"
+
+    def _run_report_uri(self, run_id: str) -> str:
+        return f"luvoire://runs/{run_id}/report"
+
     def _scenario_dirs(self) -> tuple[Path, ...]:
         candidates: list[Path] = []
         if self.scenario_dir is not None:
@@ -446,6 +603,29 @@ def _dispatch_request(service: LuvoireMcpService, request: JsonObject) -> JsonOb
         if arguments is not None and not isinstance(arguments, dict):
             raise McpProtocolError(-32602, "tools/call params.arguments must be an object")
         return _success_response(request_id, service.call_tool(tool_name, arguments))
+    if method == "resources/list":
+        return _success_response(request_id, service.list_resources())
+    if method == "resources/read":
+        if params is None:
+            raise McpProtocolError(-32602, "resources/read requires params")
+        uri = params.get("uri")
+        if not isinstance(uri, str) or not uri.strip():
+            raise McpProtocolError(-32602, "resources/read params.uri must be a non-empty string")
+        return _success_response(request_id, service.read_resource(uri))
+    if method == "resources/templates/list":
+        return _success_response(request_id, service.list_resource_templates())
+    if method == "prompts/list":
+        return _success_response(request_id, service.list_prompts())
+    if method == "prompts/get":
+        if params is None:
+            raise McpProtocolError(-32602, "prompts/get requires params")
+        prompt_name = params.get("name")
+        if not isinstance(prompt_name, str) or not prompt_name.strip():
+            raise McpProtocolError(-32602, "prompts/get params.name must be a non-empty string")
+        arguments = params.get("arguments")
+        if arguments is not None and not isinstance(arguments, dict):
+            raise McpProtocolError(-32602, "prompts/get params.arguments must be an object")
+        return _success_response(request_id, service.get_prompt(prompt_name, arguments))
     raise McpProtocolError(-32601, f"Method not found: {method}")
 
 

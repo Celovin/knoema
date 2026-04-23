@@ -21,6 +21,7 @@ class LLMConfig(BaseModel):
     fallback_order: tuple[Literal["anthropic", "openai", "local"], ...] = ("openai", "local")
     anthropic_model: str = "claude-3-7-sonnet-latest"
     openai_model: str = "gpt-5"
+    openai_base_url: str | None = None
     local_model: str = "llama3.1:8b"
     default_temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     default_max_tokens: int = Field(default=1024, gt=0)

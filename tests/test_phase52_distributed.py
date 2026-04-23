@@ -46,6 +46,56 @@ def test_phase52_process_pool_executor_counts_all_actions() -> None:
     assert summary.inter_actor_messages == 96
 
 
+def test_phase52_ray_executor_uses_real_ray_path_when_available(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    class _RemoteFunction:
+        def __init__(self, fn):
+            self._fn = fn
+
+        def remote(self, payload):
+            return ("ref", self._fn(payload))
+
+    class _FakeRay:
+        def __init__(self) -> None:
+            self.init_called = False
+            self.shutdown_called = False
+            self.initialized = False
+
+        def is_initialized(self) -> bool:
+            return self.initialized
+
+        def init(self, **kwargs):
+            self.init_called = True
+            self.initialized = True
+
+        def shutdown(self) -> None:
+            self.shutdown_called = True
+            self.initialized = False
+
+        def remote(self, fn):
+            return _RemoteFunction(fn)
+
+        def get(self, refs):
+            return [value for _label, value in refs]
+
+    fake_ray = _FakeRay()
+    monkeypatch.setattr("luvoire.distributed.ray_executor.import_module", lambda _name: fake_ray)
+    monkeypatch.setattr(
+        "luvoire.distributed.ray_executor.importlib.util.find_spec",
+        lambda name: object() if name == "ray" else None,
+    )
+
+    summary = RayExecutor(prefer_ray=True).execute(
+        DistributedSimulationConfig(agent_count=40, ticks=5, districts=4, backend="ray", workers=4)
+    )
+
+    assert summary.backend == "ray"
+    assert summary.requested_backend == "ray"
+    assert summary.ray_available is True
+    assert summary.throughput_actions_per_second > 0
+    assert fake_ray.init_called is True
+    assert fake_ray.shutdown_called is True
+
+
 def test_phase52_location_sharding_detects_and_rebalances_hot_shards() -> None:
     locations = {f"agent-{index:03d}": "central" for index in range(10)}
     locations.update({f"agent-north-{index}": "north" for index in range(3)})

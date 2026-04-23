@@ -129,10 +129,12 @@ def test_load_config_merges_yaml_with_environment_overrides(tmp_path: Path) -> N
         environ={
             "LUVOIRE_MEMORY__SHORT_TERM_CAPACITY": "32",
             "LUVOIRE_LOGGING__JSON": "true",
+            "LUVOIRE_LLM__OPENAI_BASE_URL": "http://localhost:8000/v1",
         },
     )
 
     assert config.llm.primary_provider == "anthropic"
+    assert config.llm.openai_base_url == "http://localhost:8000/v1"
     assert config.memory.short_term_capacity == 32
     assert config.runtime.tick_duration_minutes == 15
     assert config.logging.json_output is True
