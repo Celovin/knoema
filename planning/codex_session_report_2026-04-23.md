@@ -174,3 +174,64 @@ Notes:
 - `website/public/pricing.html` has no mirrored Company footer column; no Slot C edit was made there.
 - No existing msgpack replay artifact changed.
 - Existing user dirty state was not touched: `planning/codex_blockers.md` and `sdk/ios/KnoemaMobile/`.
+
+## Slot D - Nemotron-Personas multi-country loader + LPI v1
+
+Status: closed.
+
+Implementation commit: `04177d34aff36db2262c47b864a0f46d8dc43349` (`feat(personas): add multi-country Nemotron loader and Luvoire Persona Interface v1`).
+
+Files changed:
+
+- `CHANGELOG.md`
+- `README.md`
+- `docs/personas/countries.md`
+- `docs/personas/lpi.md`
+- `mkdocs.yml`
+- `pyproject.toml`
+- `src/luvoire/cli.py`
+- `src/luvoire/persona/nemotron_loader.py`
+- `src/luvoire/personas/__init__.py`
+- `src/luvoire/personas/lpi.py`
+- `src/luvoire/personas/lpi_schema.json`
+- `src/luvoire/personas/loaders/`
+- `tests/fixtures/personas/`
+- `tests/test_personas_hf_smoke.py`
+- `tests/test_personas_loaders.py`
+- `tests/test_personas_lpi.py`
+
+Verification:
+
+- `python -m pip install -e ".[personas]"`: passed; `datasets` stayed optional and `pyarrow` resolved within `<23`.
+- `python -m pytest tests/test_personas_lpi.py tests/test_personas_loaders.py --no-cov`: 8 passed.
+- `python -m pytest tests/test_personas_hf_smoke.py --no-cov -rs`: 1 skipped with reason `set LUVOIRE_HF_LIVE=1 to run live Hugging Face persona smoke tests`.
+- `python -m luvoire.cli personas list`: printed exactly 7 ISO rows: `USA`, `JPN`, `IND`, `BRA`, `SGP`, `FRA`, `KOR`.
+- `LUVOIRE_PERSONAS_FIXTURE_ROOT=tests/fixtures/personas python -m luvoire.cli personas sample --country USA --n 3 --seed 42`: emitted 3 valid NDJSON LPI personas from the synthetic fixture.
+- `python -m luvoire.cli personas schema --out %TEMP%/lpi_schema_slotd.json`: wrote a 3064-byte schema file and exited 0.
+- `python scripts/verify_replay_shas.py`: verified 5 replay SHA256 baselines.
+- `rg -n "Nemotron-Personas-" src/luvoire`: found attribution strings for all seven countries, plus the preserved legacy Korea loader.
+- `python -m pytest --no-cov --ignore=tests/test_phase60_mobile_sdks.py`: 708 passed, 6 skipped.
+- `python -m ruff check .`: passed.
+- `python -m mypy src`: passed, 144 source files checked.
+- `python -m pytest tests/test_playground_encoding_guard.py --no-cov`: 3 passed.
+- `python scripts/check_gradio_compat.py`: `Gradio compatibility OK`.
+- `python -m pytest tests/test_plotly_enum_safety.py --no-cov`: 4 passed.
+- `python -m mkdocs build --strict`: passed.
+- `git diff --cached --check`: passed before commit.
+- Staged forbidden-token check: broad staged-path `git grep` only reported pre-existing `CHANGELOG.md` historical allowlist hits; staged added lines had no legacy brand-token hits.
+
+Final LPI v1 field list:
+
+`persona_id`, `country_iso`, `language_locale`, `age`, `sex`, `region_l1`, `region_l2`, `education_isced`, `occupation_isco08`, `income_bracket_oecd`, `household_size`, `marital_status`, `big5`, `narrative_text`, `grounding_source`, `grounding_version`, `distortion_flags`, `extras`.
+
+Notes:
+
+- The Korea-only legacy path remains callable through `luvoire.persona.nemotron_loader.NemotronPersonaSource` and now carries the requested deprecation marker for new cross-country callers.
+- Loader tests use synthetic parquet fixtures under `tests/fixtures/personas/`; no upstream persona data was vendored.
+- No LLM calls were added to loader or LPI code.
+- No existing msgpack replay artifact changed.
+- Existing user dirty state was not touched: `planning/codex_blockers.md` and `sdk/ios/KnoemaMobile/`.
+
+### Slot D - Didimdol-ready one-liner
+
+Luvoire now supports seven CC-BY-4.0 NVIDIA Nemotron-Personas countries through one Luvoire Persona Interface v1, giving the project a harmonized cross-country persona ontology for USA, Japan, India, Brazil, Singapore, France, and Korea while preserving country-specific axes in `extras`; this positions Luvoire as a first harmonized cross-country persona interface layer for simulation research and a concrete global-R&D narrative for Didimdol.

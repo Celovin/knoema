@@ -1,6 +1,6 @@
 # Night Report - Luvoire Research Hardening v1 - 2026-04-23
 
-Status: interim report after Slot C. Slot D remains pending and this file should be updated again after Slot D closes.
+Status: final report after Slot D. Slots A-D are closed; this report commit follows the Slot D implementation commit.
 
 Baseline:
 
@@ -58,11 +58,59 @@ Verification summary:
 - User approved the KO translation in session before commit.
 - Replay SHA baselines remained unchanged.
 
-## Slot D
+## Slot D - Nemotron-Personas multi-country loader + LPI v1
 
-Status: pending.
+Status: closed; implementation commit recorded and this report commit follows.
 
-Next required slot: Nemotron-Personas multi-country loader + Luvoire Persona Interface v1.
+Commit:
+
+- `04177d34aff36db2262c47b864a0f46d8dc43349` - `feat(personas): add multi-country Nemotron loader and Luvoire Persona Interface v1`
+
+Files changed:
+
+- `CHANGELOG.md`, `README.md`, `mkdocs.yml`, `pyproject.toml`
+- `docs/personas/countries.md`, `docs/personas/lpi.md`
+- `src/luvoire/cli.py`
+- `src/luvoire/persona/nemotron_loader.py`
+- `src/luvoire/personas/` including LPI v1, JSON schema, registry, shared Nemotron loader, and seven country mapping modules
+- `tests/fixtures/personas/` synthetic parquet fixtures and LPI golden fixture
+- `tests/test_personas_lpi.py`, `tests/test_personas_loaders.py`, `tests/test_personas_hf_smoke.py`
+
+Verification summary:
+
+- `pip install -e ".[personas]"` passed.
+- Full pytest: 708 passed, 6 skipped.
+- Persona tests: 8 passed.
+- HF live smoke: 1 skipped by default with `LUVOIRE_HF_LIVE` skip reason.
+- Ruff, mypy, encoding guard, Gradio compatibility, Plotly enum safety, mkdocs strict, replay SHA verification, LPI schema export, CLI list, and fixture-backed CLI sample all passed.
+- `python scripts/verify_replay_shas.py`: verified 5 replay SHA256 baselines.
+- `rg -n "Nemotron-Personas-" src/luvoire`: found attribution strings for all seven countries.
+- Staged added-line forbidden-token sweep found no new legacy brand-token hits; broad staged-path grep only returned pre-existing historical `CHANGELOG.md` allowlist hits.
+- Replay SHA baselines remained unchanged.
+
+Final LPI v1 field list:
+
+`persona_id`, `country_iso`, `language_locale`, `age`, `sex`, `region_l1`, `region_l2`, `education_isced`, `occupation_isco08`, `income_bracket_oecd`, `household_size`, `marital_status`, `big5`, `narrative_text`, `grounding_source`, `grounding_version`, `distortion_flags`, `extras`.
+
+Notes:
+
+- The Korea-only legacy path remains callable and now carries a deprecation marker for new cross-country callers.
+- No upstream persona data was vendored; test fixture shards are hand-crafted synthetic rows.
+- Loader and LPI code do not call an LLM.
+
+## Handoff Close
+
+All four research-hardening slots are implemented in repository code, gated locally, committed, and ready to push.
+
+Suggested next-handoff candidates:
+
+- Slot E: C2PA 2.2 manifest emission on replay artifacts before the 2026-08-02 EU AI Act transparency deadline.
+- Slot F: PIPA re-identification-risk evaluator for persona pipelines before the 2026-09-11 enforcement change.
+- Slot G: A-MEM optional plugin behind `luvoire[amem]`, now safer because Slot A replay cache exists.
+- Slot H: LongMemEval-S run with gpt-4o reader, target 80-85% overall for publication collateral.
+- Slot I: HugAgent cross-domain belief-transfer experiment after Slot G.
+- Slot J: Nemotron-Personas-Germany custom build using ALLBUS + Destatis.
+- Slot K: cross-country migration-scenario reference simulation using LPI as input.
 
 ## Dirty State Preserved
 
