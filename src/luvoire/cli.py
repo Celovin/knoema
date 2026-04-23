@@ -16,6 +16,7 @@ from typing import Any, cast
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
+from luvoire.core.replay_cache import inspect_replay_cache
 from luvoire.customer_cli import add_customer_subparser, handle_customer_command
 from luvoire.dsl import collect_validation_issues, load_scenario
 from luvoire.environment import Environment
@@ -333,6 +334,12 @@ def build_parser() -> argparse.ArgumentParser:
     playground_parser.add_argument("--port", type=int, default=7860, help="Port to bind.")
     playground_parser.add_argument("--dry-run", action="store_true", help="Print launch plan without starting Gradio.")
     playground_parser.add_argument("--json", action="store_true", help="Print launch plan as JSON.")
+
+    replay_parser = subparsers.add_parser("replay-cache", help="Inspect replay-cache artifacts.")
+    replay_subparsers = replay_parser.add_subparsers(dest="replay_cache_command", required=True)
+    inspect_parser = replay_subparsers.add_parser("inspect", help="Summarize an NDMP replay cache.")
+    inspect_parser.add_argument("path", type=Path, help="Path to a replay-cache NDMP file.")
+
     add_customer_subparser(subparsers)
     return parser
 
@@ -426,6 +433,17 @@ def main(
             return 0
         launch_playground(args.host, args.port)
         return 0
+    if args.command == "replay-cache":
+        if args.replay_cache_command == "inspect":
+            cache_summary = inspect_replay_cache(args.path)
+            print(f"records: {cache_summary.record_count}")
+            print(f"unique_models: {', '.join(cache_summary.unique_models) or 'none'}")
+            print(f"first_capture: {cache_summary.first_capture or 'none'}")
+            print(f"last_capture: {cache_summary.last_capture or 'none'}")
+            print(f"total_bytes: {cache_summary.total_bytes}")
+            return 0
+        parser.error(f"Unknown replay-cache command: {args.replay_cache_command}")
+        return 2
     if args.command == "customer":
         return handle_customer_command(args)
     parser.error(f"Unknown command: {args.command}")

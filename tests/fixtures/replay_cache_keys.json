@@ -1,0 +1,86 @@
+[
+  {
+    "model": "gpt-5.4-mini",
+    "prompt": "Hello, city.",
+    "sampling": {"temperature": 0.2, "max_tokens": 128},
+    "seed": 0,
+    "expected": "27789a998e01dacb1787592e40fcfda5af2f46780a7664d7d7f92c6fa38e437b"
+  },
+  {
+    "model": "gpt-5.4-mini",
+    "prompt": "Hello, city.",
+    "sampling": {"max_tokens": 128, "temperature": 0.2},
+    "seed": 0,
+    "expected": "27789a998e01dacb1787592e40fcfda5af2f46780a7664d7d7f92c6fa38e437b"
+  },
+  {
+    "model": "gpt-5.4-mini",
+    "prompt": "\uc548\ub155\ud558\uc138\uc694",
+    "sampling": {"temperature": 0, "top_p": 1},
+    "seed": 42,
+    "expected": "7dd2ce46006ad663f34824e411430a69db81d8d84cddd5e838130f4d30c51a77"
+  },
+  {
+    "model": "claude-3-7-sonnet-latest",
+    "prompt": "Plan\nAct",
+    "sampling": {"temperature": 0.7, "max_tokens": 1024, "stop": ["END"]},
+    "seed": 7,
+    "expected": "2a4bc05235792962ade6f15c0072b977cd50b85625cee729d226afcfab860b2f"
+  },
+  {
+    "model": "local/llama",
+    "prompt": "{\"role\":\"user\"}",
+    "sampling": {"mirostat": false, "repeat_penalty": 1.1},
+    "seed": 99,
+    "expected": "3a90e8533c54d344f02c9052e6010f5428c55cf6703704d839c352a22fe83889"
+  },
+  {
+    "model": "vllm/qwen",
+    "prompt": "spaces  and tabs\t",
+    "sampling": {"nested": {"b": 2, "a": 1}},
+    "seed": 12345,
+    "expected": "5acc79f8c142ee61481ed1d8c34ac50cb3b55365d96f4624bd7f4d3bf5d13688"
+  },
+  {
+    "model": "gpt-5",
+    "prompt": "emoji-free ascii",
+    "sampling": {"temperature": 1.0, "presence_penalty": 0.0},
+    "seed": 314159,
+    "expected": "5c9235652779cf00501904b35afe1f86e860a9c27f6d9ba2272c77dacaa8f339"
+  },
+  {
+    "model": "gpt-5",
+    "prompt": "emoji-free ascii ",
+    "sampling": {"temperature": 1.0, "presence_penalty": 0.0},
+    "seed": 314159,
+    "expected": "6b4341b2cc0a20ca27b8da03b8bea1e5ebf05504a46bb3739a81399a848a4c60"
+  },
+  {
+    "model": "gpt-5",
+    "prompt": "emoji-free ascii",
+    "sampling": {"presence_penalty": 0.0, "temperature": 1.0},
+    "seed": 314160,
+    "expected": "bd1ee7a318d750a6c8e026c3b092b3ee01c3c2f2b4394e77853c67fca7b17bfc"
+  },
+  {
+    "model": "anthropic/test",
+    "prompt": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "sampling": {"temperature": 0.3333333333333333},
+    "seed": 1,
+    "expected": "2eef4fb6be72c7426ae7755204da508cbdbc44dbcc27fa7719c1b1b267e4a6b2"
+  },
+  {
+    "model": "openai/fingerprint",
+    "prompt": "line1\r\nline2",
+    "sampling": {"logit_bias": {"42": -1, "7": 0.5}},
+    "seed": 5,
+    "expected": "ded4ba6a19a887e80ef4310b02991d6f729a88f6d21b5c9a36bea8733c87b2ce"
+  },
+  {
+    "model": "openai/fingerprint",
+    "prompt": "line1\nline2",
+    "sampling": {"logit_bias": {"7": 0.5, "42": -1}},
+    "seed": 5,
+    "expected": "99a1ae696f1ceb0eea4406519047ca4007fc3eec11161f1cc705da3b5652de68"
+  }
+]

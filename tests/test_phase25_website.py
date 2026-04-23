@@ -17,11 +17,8 @@ def test_phase25_website_files_exist() -> None:
         "website/app/research/page.tsx",
         "website/app/showcase/page.tsx",
         "website/app/blog/page.tsx",
-        "website/components/Hero.tsx",
-        "website/components/ThreeApplications.tsx",
-        "website/components/CodeDemo.tsx",
-        "website/components/Architecture.tsx",
-        "website/components/CTA.tsx",
+        "website/components/LuvoireLanding.tsx",
+        "website/components/heroGrid.ts",
         "website/public/og-image.png",
         "website/public/figures/memory_recall.svg",
         "website/public/figures/token_efficiency.svg",
@@ -44,21 +41,27 @@ def test_phase25_website_package_scripts_are_buildable() -> None:
 
 def test_phase25_website_copy_keeps_safety_and_sdk_surfaces() -> None:
     page = Path("website/app/page.tsx").read_text(encoding="utf-8")
-    hero = Path("website/components/Hero.tsx").read_text(encoding="utf-8")
-    applications = Path("website/components/ThreeApplications.tsx").read_text(encoding="utf-8")
-    code_demo = Path("website/components/CodeDemo.tsx").read_text(encoding="utf-8")
+    landing = Path("website/components/LuvoireLanding.tsx").read_text(encoding="utf-8")
+    hero_grid = Path("website/components/heroGrid.ts").read_text(encoding="utf-8")
+    docs = Path("website/app/docs/page.tsx").read_text(encoding="utf-8")
+    showcase = Path("website/app/showcase/page.tsx").read_text(encoding="utf-8")
 
-    combined = "\n".join([page, hero, applications, code_demo])
+    combined = "\n".join([page, landing, hero_grid, docs, showcase])
 
-    assert "One engine. Three worlds." in combined
-    assert "synthetic, non-identifying scenarios" in combined
-    assert "from luvoire.game import GameSession" in combined
-    assert "Python, TypeScript, and GDScript" in combined
+    assert "LuvoireLanding" in page
+    assert "City-scale multi-agent simulation with deterministic replay" in combined
+    assert "pip install luvoire-engine" in combined
+    assert "Python" in combined
+    assert "TypeScript" in combined
+    assert "Godot" in combined
+    assert "CC-BY-4.0 dataset" in combined
+    assert "Audit log, PIPA-ready" in combined
 
 
-def test_phase25_website_has_seo_and_image_loading_basics() -> None:
+def test_phase25_website_has_seo_canvas_and_image_loading_basics() -> None:
     layout = Path("website/app/layout.tsx").read_text(encoding="utf-8")
-    hero = Path("website/components/Hero.tsx").read_text(encoding="utf-8")
+    landing = Path("website/components/LuvoireLanding.tsx").read_text(encoding="utf-8")
+    hero_grid = Path("website/components/heroGrid.ts").read_text(encoding="utf-8")
     research = Path("website/app/research/page.tsx").read_text(encoding="utf-8")
     docs = Path("website/app/docs/page.tsx").read_text(encoding="utf-8")
     showcase = Path("website/app/showcase/page.tsx").read_text(encoding="utf-8")
@@ -67,9 +70,10 @@ def test_phase25_website_has_seo_and_image_loading_basics() -> None:
     assert "alternates" in layout
     assert "robots" in layout
     assert "twitter" in layout
-    assert 'src="/og-image.png"' in hero
-    assert "priority" in hero
-    assert 'className="hero-bg"' in hero
+    assert 'images: ["/og-image.png"]' in layout
+    assert 'aria-label="Deterministic replay preview"' in landing
+    assert 'className="grid-canvas"' in landing
+    assert "requestAnimationFrame" in hero_grid
     assert 'loading="lazy"' in research
     assert 'width="960"' in research
 

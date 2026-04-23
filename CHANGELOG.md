@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+- `luvoire.core.replay_cache` with record/replay modes for deterministic LLM side effects.
+- `LUVOIRE_REPLAY_CACHE_PATH` and `LUVOIRE_REPLAY_CACHE_MODE` env-var controls; path unset preserves current behavior.
+
 ## [0.3.0] - 2026-04-22
 
 ### Added

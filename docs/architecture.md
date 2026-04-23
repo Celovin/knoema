@@ -10,6 +10,26 @@ Luvoire is a Python runtime for LLM-based multi-agent social simulation. The MVP
 - Export replayable logs for notebooks, dashboards, and engine adapters.
 - Keep public examples fictional and non-identifying.
 
+## Determinism
+
+Local runs stay deterministic when they use `LocalClient`, fixed scenario YAML, fixed seeds, and committed replay artifacts. Provider-backed LLM calls are non-deterministic side effects at the edge of that core, so replay safety is handled by recording the side effect rather than trying to regenerate it from scratch.
+
+## Replay Cache
+
+`luvoire.core.replay_cache` records LLM side effects as an append-only NDMP file so later runs can replay the same response while the simulator core remains deterministic.
+
+Modes:
+
+- `off`: no cache object is created and current behavior is preserved when `LUVOIRE_REPLAY_CACHE_PATH` is unset.
+- `record`: cache hits are served from disk; misses call the configured provider and append the response.
+- `replay`: cache hits are served from disk; misses raise `ReplayCacheMiss` and never fall back to a live provider call.
+
+Set `LUVOIRE_REPLAY_CACHE_PATH` to enable the gateway cache. `LUVOIRE_REPLAY_CACHE_MODE` accepts `record`, `replay`, or `off`; when the path is set and mode is omitted, the gateway records by default.
+
+Cache keys are SHA256 digests over `(model, prompt_hash, sampling_params, seed)`. Sampling parameters are recursively canonicalized with alphabetically sorted keys, JSON-safe numeric values, UTF-8 prompt hashing, and a decimal integer seed. The file stores `RecordedResponse` values with text, finish reason, token counts, model fingerprint, and capture timestamp.
+
+Closed-API LLMs can drift. A replay cache is evidence for one captured model response and fingerprint; it is not proof that a future live call against the same model label will behave identically.
+
 ## Non-Goals
 
 - No crime prediction or suspect scoring.
