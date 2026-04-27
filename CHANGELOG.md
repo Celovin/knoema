@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 ### Added
+- `paper/asc2026_poster/` — four committed methodology panels (Method 3-tier, Theory RAT convergence, Sensitivity Sobol bars, Replay-hash invariants table) generated deterministically by `paper/asc2026_poster/build_panels.py`. PDFs and SVGs both committed for arXiv/LaTeX consumption. The Sensitivity panel reads `experiments/rat_sensitivity/results/sobol_indices.json` so live regeneration always reflects the latest committed indices. The Replay panel reads `scripts/verify_replay_shas.py` baselines so the 5-artifact invariant table is single-sourced. 4 smoke tests in `tests/test_asc2026_poster_panels.py`.
 - `luvoire.sensitivity.sobol` — deterministic Saltelli/Sobol sensitivity helpers (radial design, Jansen 1999 first-order, Saltelli 2010 total-order). Pure numpy; no SALib runtime dependency.
 - `experiments/rat_sensitivity/` — committed Sobol sweep over the three RAT inputs with `results/sobol_indices.json`, `sobol_indices.md`, and `run_manifest.json`. Default seed 20260427, n=4096, 20480 evaluations. Indices are near-symmetric across motivation/exposure/gap (multiplicative model) and total-order ≈ 0.5 vs first-order ≈ 0.23 confirms strong interaction effects.
 - `tests/test_sensitivity_sobol.py` (13 tests) and `tests/test_rat_sensitivity_experiment.py` (6 tests) lock determinism, manifest invariants, near-symmetric indices, and total > first inequality.
