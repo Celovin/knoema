@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+from types import MappingProxyType
 from typing import Literal
 
 import numpy as np
@@ -179,11 +180,17 @@ class CounterfactualScenarioEngine:
 # a default reference set. Values mirror KOSTAT 장래인구추계 2022 reference
 # multipliers on the medium scenario; users are expected to tune these
 # via Tier C parameters.
-KOSTAT_REFERENCE_TRIPLE: dict[str, tuple[ScenarioKind, RatePerturbation]] = {
-    "low_fertility": ("fertility", RatePerturbation(fertility_scale=0.85)),
-    "medium_fertility": ("fertility", RatePerturbation(fertility_scale=1.00)),
-    "high_fertility": ("fertility", RatePerturbation(fertility_scale=1.15)),
-}
+#
+# Wrapped in :class:`types.MappingProxyType` so the canonical dict cannot
+# be mutated at module scope — engine determinism depends on this set
+# being identical across runs.
+KOSTAT_REFERENCE_TRIPLE: Mapping[str, tuple[ScenarioKind, RatePerturbation]] = MappingProxyType(
+    {
+        "low_fertility": ("fertility", RatePerturbation(fertility_scale=0.85)),
+        "medium_fertility": ("fertility", RatePerturbation(fertility_scale=1.00)),
+        "high_fertility": ("fertility", RatePerturbation(fertility_scale=1.15)),
+    }
+)
 
 
 __all__ = [

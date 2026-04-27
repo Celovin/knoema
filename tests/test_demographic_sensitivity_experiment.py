@@ -92,25 +92,27 @@ def test_committed_indices_json_is_byte_identical(tmp_path: Path) -> None:
     )
 
 
-def test_total_order_aggregate_exceeds_first_order_aggregate() -> None:
-    """Across both axes, total-order indices must exceed first-order indices.
+def test_total_order_indices_are_strictly_positive() -> None:
+    """Sanity check — every total-order index is positive.
 
-    For the multiplicative cohort-component projection, fertility and mortality
-    interact non-linearly over a 30-year horizon (the survivors of today's
-    reproductive cohort under a perturbed mortality schedule are themselves
-    the parents of the year-30 cohort). The aggregate ``sum(S_T) > sum(S_1)``
-    captures this interaction-effect existence robustly at ``n = 1024``,
-    where per-variable Saltelli estimators retain visible finite-sample noise.
+    Pure-additive (no-interaction) models satisfy
+    ``sum(S_T) == sum(S_1)``, but strict positivity of each total-order
+    index alone proves the projection has non-zero output variance and
+    is the minimum invariant a Sobol decomposition must satisfy on a
+    well-formed model. Note that per-axis ``S_T >= S_1`` is the
+    estimator-theoretic invariant in the large-``n`` limit, but at
+    ``n = 1024`` finite-sample noise can violate it on axes with
+    delayed variance contribution (fertility here); see the per-axis
+    test :func:`test_mortality_total_order_exceeds_first_order` for the
+    cleanly-resolved case and the ``README.md`` for the n>=32k
+    recommendation.
     """
 
     payload = json.loads(COMMITTED_INDICES_PATH.read_text(encoding="utf-8"))
-    sum_total = sum(
-        entry["total_order"] for entry in payload["variables"].values()
-    )
-    assert sum_total > 0.0, "total-order indices must be positive"
-    # Pure-additive (no interaction) models satisfy sum(S_T) == sum(S_1).
-    # Strict positivity of total-order alone proves the projection has
-    # non-zero variance — a necessary condition for interaction analysis.
+    for name, entry in payload["variables"].items():
+        assert entry["total_order"] > 0.0, (
+            f"total_order for {name} must be strictly positive"
+        )
 
 
 def test_mortality_total_order_exceeds_first_order() -> None:

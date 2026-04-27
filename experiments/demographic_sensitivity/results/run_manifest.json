@@ -17,7 +17,7 @@
   "module_version": "luvoire.demography.projector.v1",
   "n_samples": 1024,
   "seed": 20260428,
-  "timestamp": "2026-04-27T20:00:28Z",
+  "timestamp": "2026-04-27T20:34:33Z",
   "variables": [
     "fertility_scale",
     "mortality_scale"

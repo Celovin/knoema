@@ -172,3 +172,112 @@ def test_run_federated_local_only_is_deterministic_with_dp() -> None:
     response_a = run_federated_local_only(_StubAggregator(request_a))
     response_b = run_federated_local_only(_StubAggregator(request_b))
     assert response_a.aggregate_total == response_b.aggregate_total
+
+
+# --- Audit-1 hardening tests --------------------------------------------
+
+
+def test_federated_request_rejects_year_below_1900() -> None:
+    with pytest.raises(ValueError, match=r"year must be in"):
+        FederatedRequest(
+            admin_code="11680",
+            year=1899,
+            male_by_age=np.zeros(10),
+            female_by_age=np.zeros(10),
+        )
+
+
+def test_federated_request_rejects_year_above_2200() -> None:
+    with pytest.raises(ValueError, match=r"year must be in"):
+        FederatedRequest(
+            admin_code="11680",
+            year=2201,
+            male_by_age=np.zeros(10),
+            female_by_age=np.zeros(10),
+        )
+
+
+def test_federated_request_rejects_bool_dtype_array() -> None:
+    with pytest.raises(TypeError, match="bool"):
+        FederatedRequest(
+            admin_code="11680",
+            year=2024,
+            male_by_age=np.array([True, False, True]),
+            female_by_age=np.zeros(3),
+        )
+
+
+def test_federated_request_rejects_empty_arrays() -> None:
+    with pytest.raises(ValueError, match="non-empty"):
+        FederatedRequest(
+            admin_code="11680",
+            year=2024,
+            male_by_age=np.array([]),
+            female_by_age=np.array([]),
+        )
+
+
+def test_federated_request_rejects_nan_counts() -> None:
+    with pytest.raises(ValueError, match="finite"):
+        FederatedRequest(
+            admin_code="11680",
+            year=2024,
+            male_by_age=np.array([1.0, float("nan")]),
+            female_by_age=np.zeros(2),
+        )
+
+
+def test_federated_request_rejects_inf_counts() -> None:
+    with pytest.raises(ValueError, match="finite"):
+        FederatedRequest(
+            admin_code="11680",
+            year=2024,
+            male_by_age=np.array([1.0, float("inf")]),
+            female_by_age=np.zeros(2),
+        )
+
+
+def test_federated_request_rejects_negative_dp_seed() -> None:
+    with pytest.raises(ValueError, match="dp_seed must be non-negative"):
+        FederatedRequest(
+            admin_code="11680",
+            year=2024,
+            male_by_age=np.zeros(10),
+            female_by_age=np.zeros(10),
+            dp_budget=DpBudget(epsilon=1.0),
+            dp_seed=-1,
+        )
+
+
+def test_federated_request_rejects_dp_seed_overflow_boundary() -> None:
+    with pytest.raises(ValueError, match=r"dp_seed must be < 2\*\*63 - 1"):
+        FederatedRequest(
+            admin_code="11680",
+            year=2024,
+            male_by_age=np.zeros(10),
+            female_by_age=np.zeros(10),
+            dp_budget=DpBudget(epsilon=1.0),
+            dp_seed=(1 << 63) - 1,
+        )
+
+
+def test_run_federated_swallows_aggregator_exception() -> None:
+    class _RaisingAggregator:
+        def aggregate(self) -> FederatedRequest:  # type: ignore[empty-body]
+            raise RuntimeError("raw data path /etc/passwd would leak")
+
+    response = run_federated_local_only(_RaisingAggregator())  # type: ignore[arg-type]
+    assert response.accepted is False
+    assert any("RuntimeError" in e for e in response.validation_errors)
+    # The trace must not contain raw path leak.
+    assert all("/etc/passwd" not in e for e in response.validation_errors)
+
+
+def test_run_federated_rejects_wrong_aggregator_return_type() -> None:
+    class _BadAggregator:
+        def aggregate(self) -> object:
+            return {"not": "a federated request"}
+
+    response = run_federated_local_only(_BadAggregator())  # type: ignore[arg-type]
+    assert response.accepted is False
+    assert any("FederatedRequest" in e for e in response.validation_errors)

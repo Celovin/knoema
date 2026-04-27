@@ -182,6 +182,40 @@ def test_add_dp_noise_rejects_unknown_mechanism() -> None:
 # --- Integration with CellPopulation aggregates --------------------------
 
 
+def test_gaussian_sigma_rejects_epsilon_above_one() -> None:
+    """Classical Gaussian mechanism only valid for epsilon in (0, 1].
+
+    For larger epsilon the Dwork-Roth Theorem A.1 sigma calibration is
+    not a sound DP guarantee; callers must use the analytic Gaussian
+    mechanism (Balle & Wang 2018) instead.
+    """
+
+    budget = DpBudget(epsilon=2.0, delta=1e-5)
+    with pytest.raises(ValueError, match="classical Gaussian"):
+        gaussian_noise_sigma(budget)
+
+
+def test_add_dp_noise_gaussian_rejects_epsilon_above_one() -> None:
+    counts = np.array([100.0])
+    budget = DpBudget(epsilon=2.0, delta=1e-5)
+    with pytest.raises(ValueError, match="classical Gaussian"):
+        add_dp_noise(counts, budget=budget, mechanism="gaussian", seed=1)
+
+
+def test_add_dp_noise_gaussian_at_epsilon_one_boundary_works() -> None:
+    counts = np.array([100.0])
+    budget = DpBudget(epsilon=1.0, delta=1e-5)
+    noisy = add_dp_noise(counts, budget=budget, mechanism="gaussian", seed=1)
+    assert noisy.shape == counts.shape
+
+
+def test_laplace_mechanism_unaffected_by_epsilon_one_cap() -> None:
+    counts = np.array([100.0])
+    budget = DpBudget(epsilon=10.0, sensitivity=1.0)
+    noisy = add_dp_noise(counts, budget=budget, mechanism="laplace", seed=1)
+    assert noisy.shape == counts.shape
+
+
 def test_add_dp_noise_round_trip_on_cell_population_totals() -> None:
     """Apply DP noise to per-cell totals — noisy values should still
     be in roughly the same scale and sum to a similar total under

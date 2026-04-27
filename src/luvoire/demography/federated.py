@@ -87,6 +87,19 @@ class FederatedRequest:
             )
         if not isinstance(self.year, int) or isinstance(self.year, bool):
             raise TypeError("year must be int")
+        if self.year < 1900 or self.year > 2200:
+            raise ValueError(
+                f"year must be in [1900, 2200] (got {self.year})"
+            )
+        # Reject bool ndarray smuggled in as count vectors. ``np.bool_``
+        # auto-coerces to float on ``np.asarray(..., dtype=float)``, so
+        # we have to inspect the input dtype before coercion.
+        for name in ("male_by_age", "female_by_age"):
+            raw = getattr(self, name)
+            if isinstance(raw, np.ndarray) and raw.dtype == np.bool_:
+                raise TypeError(
+                    f"{name} must be a numeric array, not bool (got dtype {raw.dtype})"
+                )
         male = np.asarray(self.male_by_age, dtype=float)
         female = np.asarray(self.female_by_age, dtype=float)
         if male.ndim != 1 or female.ndim != 1:
@@ -96,12 +109,32 @@ class FederatedRequest:
                 f"male and female aggregate shapes must match "
                 f"(got {male.shape} vs {female.shape})"
             )
+        if male.size == 0:
+            raise ValueError(
+                "male_by_age and female_by_age must be non-empty"
+            )
+        if not np.isfinite(male).all() or not np.isfinite(female).all():
+            raise ValueError("aggregate counts must be finite (no NaN/Inf)")
         if (male < 0).any() or (female < 0).any():
             raise ValueError("aggregate counts must be non-negative")
         if self.dp_budget is not None and self.dp_seed is None:
             raise ValueError(
                 "dp_seed must be provided when dp_budget is set"
             )
+        if self.dp_seed is not None:
+            if not isinstance(self.dp_seed, int) or isinstance(self.dp_seed, bool):
+                raise TypeError("dp_seed must be int")
+            # numpy.random.default_rng requires non-negative seed; we also
+            # cap at uint63 - 1 so dp_seed + 1 cannot overflow when the
+            # federated runner pairs male/female under different streams.
+            if self.dp_seed < 0:
+                raise ValueError(
+                    f"dp_seed must be non-negative (got {self.dp_seed})"
+                )
+            if self.dp_seed >= (1 << 63) - 1:
+                raise ValueError(
+                    "dp_seed must be < 2**63 - 1 to keep dp_seed + 1 in range"
+                )
         object.__setattr__(self, "male_by_age", male)
         object.__setattr__(self, "female_by_age", female)
 
@@ -165,7 +198,33 @@ def run_federated_local_only(
     they want to run a counterfactual scenario.
     """
 
-    request = aggregator.aggregate()
+    try:
+        request = aggregator.aggregate()
+    except Exception as exc:  # caller-supplied surface — broad catch is intentional
+        # The aggregator runs across the trust boundary on the caller's
+        # raw data; an exception there must not leak a stack trace upward
+        # because that trace can carry file paths or schema fragments
+        # from raw input. We surface a redacted boundary error instead.
+        return FederatedResponse(
+            admin_code="00000",
+            year=0,
+            accepted=False,
+            validation_errors=(
+                f"aggregator raised {type(exc).__name__} during aggregate()",
+            ),
+            aggregate_total=0.0,
+        )
+    if not isinstance(request, FederatedRequest):
+        return FederatedResponse(
+            admin_code="00000",
+            year=0,
+            accepted=False,
+            validation_errors=(
+                f"aggregator.aggregate() must return FederatedRequest "
+                f"(got {type(request).__name__})",
+            ),
+            aggregate_total=0.0,
+        )
     record: Mapping[str, object] = {
         "admin_code": request.admin_code,
         "year": request.year,

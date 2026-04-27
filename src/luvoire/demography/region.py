@@ -1,23 +1,38 @@
 """시군구 administrative-region label registry — opaque strings only.
 
 This module deliberately stores Korean 시군구 (city / county / district)
-labels as **opaque strings** plus a stable 5-digit administrative code,
+labels as **opaque strings** plus a 5-digit administrative code,
 *never* as coordinates, EPSG values, or polygon geometry. Storing only
-labels lets demographic projections and policy what-if scenarios reference
-real Korean administrative units without violating the
+labels lets demographic projections and policy what-if scenarios
+reference real Korean administrative units without violating the
 ``ethics.no_real_geometry: true`` guardrail of Scenario DSL v2.
 
 Registry scope
 --------------
-The bundled registry covers a small canonical sample (4 시군구 across
-2 시도) sufficient for tests and reference. Real production scenarios
-are expected to load their region set from a separate JSON fixture or
-KOSIS download stub. The key invariant — ``no_coordinates``, ``no_polygon``,
-``aggregation_floor='시군구'`` — is enforced at construction.
+The bundled registry covers all 17 광역 시도 (특별시·광역시·도·특별
+자치도·특별자치시) with at least one 시군구 each — a canonical sample
+sufficient for tests and reference. Real production scenarios are
+expected to load their region set from a separate JSON fixture or
+KOSIS download stub. The key invariant — ``no_coordinates``,
+``no_polygon``, ``aggregation_floor='시군구'`` — is enforced at
+construction.
 
-License note: 행정안전부 `행정표준코드관리시스템` distributes the
-administrative-code list under KOGL Type 1; the codes themselves are not
-copyrightable. We do not bundle any coordinate / geometry data here.
+Administrative-code provenance
+------------------------------
+The 5-digit codes here follow the **통계청 SGIS** 시군구 code convention
+(matching the prefix scheme used across KOSIS and 통계지리정보서비스
+exports). They overlap with but **are not identical to** the 행정안전
+부 행정표준코드관리시스템 10-digit codes. For 강원특별자치도 (구
+강원도, 명칭 변경 2023-06-11) and 전북특별자치도 (구 전라북도, 명칭
+변경 2024-01-18) the SGIS codes use 51xxx / 52xxx, whereas 행정자치
+부 historical codes used 42xxx / 45xxx. **Treat the codes here as
+illustrative SGIS-style placeholders** — production callers should
+verify against the canonical 행안부 export of their target year before
+cross-referencing with KOSIS.
+
+License note: 통계청 SGIS distributes its administrative-code list
+under KOGL Type 1; the codes themselves are not copyrightable. We do
+not bundle any coordinate / geometry data here.
 """
 
 from __future__ import annotations

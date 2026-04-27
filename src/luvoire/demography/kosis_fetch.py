@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -278,13 +279,20 @@ class KosisFetchClient:
             "endPrdDe": str(key.year),
             "format": "json",
         }
-        if self._api_key is not None:
-            params["apiKey"] = self._api_key
         if key.region_code is not None:
             params["objL1"] = key.region_code
 
+        # The api_key travels in an Authorization-like header rather
+        # than the URL query string so it does not appear in HTTP access
+        # logs, mocked-call captures, or KosisFetchError messages.
+        headers: dict[str, str] = {}
+        if self._api_key is not None:
+            headers["X-Kosis-Api-Key"] = self._api_key
+
         try:
-            response = client.get("/statisticsData.do", params=params)
+            response = client.get(
+                "/statisticsData.do", params=params, headers=headers
+            )
         except httpx.HTTPError as exc:
             raise KosisFetchError(
                 f"KOSIS transport error for table {key.table_id!r}: {exc}"
@@ -368,12 +376,32 @@ def _validate_aggregate_payload(payload: dict[str, Any]) -> None:
                 )
             continue
 
-        population = row.get("population")
-        if (
-            isinstance(population, int | float)
-            and not isinstance(population, bool)
-            and float(population) < _MIN_ROW_POPULATION
+        # When the row has no explicit aggregation_level, the population
+        # denominator becomes the only floor signal. Reject the row if
+        # the population field is missing entirely OR carries a string
+        # / NaN / boolean placeholder so a malicious payload cannot
+        # silently cross the validator by omitting both fields.
+        if "population" not in row:
+            raise KosisAggregateOnlyError(
+                "KOSIS row has neither aggregation_level nor population; "
+                "cannot verify the 시군구 aggregate-only floor"
+            )
+        population = row["population"]
+        if isinstance(population, bool) or not isinstance(
+            population, (int, float)
         ):
+            raise KosisAggregateOnlyError(
+                f"KOSIS row population={population!r} is not a real number; "
+                "string / boolean populations are rejected because they "
+                "cannot be compared against the aggregate-only floor"
+            )
+        pop_float = float(population)
+        if not math.isfinite(pop_float):
+            raise KosisAggregateOnlyError(
+                f"KOSIS row population={population!r} is not finite "
+                "(NaN/Inf); aggregate-only floor cannot apply"
+            )
+        if pop_float < _MIN_ROW_POPULATION:
             raise KosisAggregateOnlyError(
                 f"KOSIS row population={population!r} below "
                 f"{_MIN_ROW_POPULATION}; treated as sub-시군구 microdata"

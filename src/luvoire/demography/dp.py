@@ -86,10 +86,25 @@ def _laplace_scale(budget: DpBudget) -> float:
     return budget.sensitivity / budget.epsilon
 
 
+_CLASSICAL_GAUSSIAN_EPSILON_UPPER: float = 1.0
+"""The Dwork & Roth (2014) classical Gaussian-mechanism proof
+(Theorem A.1) is only valid for ``epsilon in (0, 1]``. For larger
+epsilon, callers should use the analytic Gaussian mechanism (Balle &
+Wang 2018) instead — we deliberately do not implement that here.
+"""
+
+
 def _gaussian_sigma(budget: DpBudget) -> float:
     if budget.delta <= 0:
         raise ValueError(
             f"gaussian mechanism requires delta > 0 (got {budget.delta})"
+        )
+    if budget.epsilon > _CLASSICAL_GAUSSIAN_EPSILON_UPPER:
+        raise ValueError(
+            "classical Gaussian mechanism requires epsilon <= "
+            f"{_CLASSICAL_GAUSSIAN_EPSILON_UPPER} (got {budget.epsilon}); "
+            "for larger epsilon use the analytic Gaussian mechanism "
+            "(Balle & Wang 2018)"
         )
     return budget.sensitivity * float(np.sqrt(2.0 * np.log(1.25 / budget.delta))) / budget.epsilon
 

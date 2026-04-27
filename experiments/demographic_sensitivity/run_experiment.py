@@ -198,9 +198,16 @@ def _format_markdown(indices: SobolIndices, *, seed: int, n: int) -> str:
     lines.append(
         "Interpretation: ``first_order`` is the share of variance in year-30 "
         "total population explained by varying that axis alone. "
-        "``total_order`` additionally includes interaction with the other axis. "
-        "A larger gap (``total_order - first_order``) indicates stronger "
-        "fertility-mortality interaction."
+        "``total_order`` additionally includes interaction with the other "
+        "axis. The estimator-theoretic invariant ``total_order >= "
+        "first_order`` holds per axis in the limit of large ``n``; finite-"
+        "sample noise at small ``n`` can violate it on axes whose variance "
+        "contribution is delayed (e.g. fertility at a 30-year horizon, "
+        "where the born cohort takes ~15 years to enter the reproductive "
+        "age band). Saltelli & Annoni (2010) recommend ``n >= 16k`` for "
+        "two-axis decompositions; ``n >= 32k`` is robust here. The "
+        "committed indices at ``n = "
+        f"{n}`` keep the violation visible rather than re-tuned."
     )
     lines.append("")
     return "\n".join(lines)

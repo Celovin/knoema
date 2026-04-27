@@ -111,6 +111,9 @@ class CohortPopulation:
         return float(self.male.sum() + self.female.sum())
 
 
+_MIGRATION_DEFAULT_SENTINEL: np.ndarray = np.zeros(0, dtype=float)
+
+
 @dataclass(frozen=True, slots=True)
 class DemographicRates:
     """Tier B fertility / mortality / migration rate set.
@@ -120,6 +123,11 @@ class DemographicRates:
     elsewhere by convention. Mortality rates are annual probability of
     death within the age year; migration entries are net (positive
     inflow, negative outflow) absolute counts to be added after mortality.
+
+    When ``net_migration_male`` / ``net_migration_female`` are not
+    supplied, they default to a zero array **whose shape is derived from
+    the asfr length at construction time**, so a non-default
+    ``max_age`` choice transparently produces the right migration shape.
 
     The :attr:`sex_ratio_at_birth` is the male-to-female ratio of newborns
     (Korea historical mean ~1.05). Construction validates
@@ -131,10 +139,10 @@ class DemographicRates:
     asmr_male: np.ndarray
     asmr_female: np.ndarray
     net_migration_male: np.ndarray = field(
-        default_factory=lambda: np.zeros(DEFAULT_MAX_AGE + 1)
+        default_factory=lambda: _MIGRATION_DEFAULT_SENTINEL
     )
     net_migration_female: np.ndarray = field(
-        default_factory=lambda: np.zeros(DEFAULT_MAX_AGE + 1)
+        default_factory=lambda: _MIGRATION_DEFAULT_SENTINEL
     )
     sex_ratio_at_birth: float = DEFAULT_SEX_RATIO_AT_BIRTH
 
@@ -142,8 +150,20 @@ class DemographicRates:
         asfr = _as_float_array(self.asfr)
         asmr_m = _as_float_array(self.asmr_male)
         asmr_f = _as_float_array(self.asmr_female)
-        mig_m = _as_float_array(self.net_migration_male)
-        mig_f = _as_float_array(self.net_migration_female)
+        # Sentinel-driven migration default: when either migration arg
+        # is omitted (sentinel zero-length array), broadcast a zero
+        # array shaped from asfr so callers with non-default max_age
+        # don't have to remember to supply matching migration arrays.
+        raw_mig_m = self.net_migration_male
+        raw_mig_f = self.net_migration_female
+        if isinstance(raw_mig_m, np.ndarray) and raw_mig_m is _MIGRATION_DEFAULT_SENTINEL:
+            mig_m = np.zeros_like(asfr)
+        else:
+            mig_m = _as_float_array(raw_mig_m)
+        if isinstance(raw_mig_f, np.ndarray) and raw_mig_f is _MIGRATION_DEFAULT_SENTINEL:
+            mig_f = np.zeros_like(asfr)
+        else:
+            mig_f = _as_float_array(raw_mig_f)
         shapes = {asfr.shape, asmr_m.shape, asmr_f.shape, mig_m.shape, mig_f.shape}
         if len(shapes) != 1:
             raise ValueError(

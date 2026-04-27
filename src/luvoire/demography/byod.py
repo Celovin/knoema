@@ -6,17 +6,30 @@ enforces the aggregate-only / no-individual / no-real-geometry contract
 at ingest time:
 
 - Reject any column whose name suggests an individual identifier
-  (name, RRN, RRN6, address, phone, email, MAC, IMEI, plate, license).
+  (RRN, SSN, passport, plate, phone, mobile, email, MAC, IMEI, UDID,
+  license, name family/given/full/first/last, address, birthdate, plus
+  the Korean equivalents 주민등록번호 / 주민번호 / 전화번호 / 휴대전화 /
+  이메일 / 주소 / 성명 / 이름 / 여권번호 / 운전면허번호 / 생년월일).
 - Reject any column whose name suggests sub-시군구 geometry
-  (lat, lon, latitude, longitude, x, y, EPSG, geometry, polygon, WKT,
-  WKB, GeoJSON, h3, geohash, plus_code, address, road_address,
-  jibun, dong, eupmyeondong, building, zip, postal_code).
+  (lat, lon, lng, latitude, longitude, latLng, EPSG, geometry, polygon,
+  centroid, bbox, WKT, WKB, GeoJSON, h3, geohash, plus_code, jibun,
+  dong/eup/myeon, building number, zip / postal code, road_address,
+  plus the Korean equivalents 위도 / 경도 / 좌표 / 도로명 / 도로명주소 /
+  지번 / 지번주소 / 법정동 / 행정동 / 건물번호 / 우편번호).
 - Reject rows whose declared population count falls below
   ``MIN_AGGREGATION_FLOOR`` (default ``10000``) — Korean 시군구 are
   ~5000-1.5M residents and well above this floor; any sub-시군구
-  aggregate would breach it.
+  aggregate would breach it. NaN / ±Inf populations are also rejected
+  because their comparison semantics let them sneak past a naive
+  ``value < floor`` guard.
 - Reject schemas missing the canonical aggregate-id column
   (``admin_code`` 5-digit administrative code).
+
+Column-name matching is **token-based**: column names are split on both
+non-alphanumeric separators (``_`` ``-`` ``.`` whitespace) and on
+camelCase / PascalCase boundaries so disguised identifiers like
+``RRNumber``, ``latLng``, ``passportNumber``, or ``firstName`` decompose
+into their constituent tokens before matching.
 
 This validator does **not** read or load microdata; it only inspects a
 caller-provided record list (typically parsed from CSV / Excel /
@@ -28,6 +41,7 @@ forbidden shapes.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 
@@ -40,19 +54,54 @@ floor by construction.
 # Tokens forbidden anywhere in a column name. Lower-case match, anywhere.
 _FORBIDDEN_INDIVIDUAL_TOKENS: frozenset[str] = frozenset(
     {
+        # English / ASCII identifiers
         "rrn",  # 주민등록번호
+        "rrnumber",
         "ssn",
         "passport",
+        "passportno",
+        "passportnumber",
         "plate",
         "phone",
+        "phoneno",
+        "phonenumber",
         "mobile",
+        "mobileno",
         "email",
+        "emailaddress",
+        "mac",
+        "macaddress",
         "imei",
         "udid",
+        "license",
+        "licenseno",
         "fname",
         "lname",
         "firstname",
         "lastname",
+        "fullname",
+        "givenname",
+        "familyname",
+        "address",
+        "homeaddress",
+        "streetaddress",
+        "birthdate",
+        "birthday",
+        "dob",
+        # Korean identifiers (KOSIS-style 데이터에서 흔함)
+        "주민등록번호",
+        "주민번호",
+        "전화번호",
+        "휴대전화",
+        "휴대폰번호",
+        "이메일",
+        "이메일주소",
+        "주소",
+        "성명",
+        "이름",
+        "여권번호",
+        "운전면허번호",
+        "생년월일",
     }
 )
 """Tokens that suggest an individual identifier; presence in a column
@@ -60,13 +109,19 @@ name forces rejection. We match lower-cased token-as-substring."""
 
 _FORBIDDEN_GEOMETRY_TOKENS: frozenset[str] = frozenset(
     {
+        # English / ASCII coordinates and geometry
         "lat",
         "lon",
+        "lng",
         "latitude",
         "longitude",
+        "latlng",
+        "latlong",
         "epsg",
         "geometry",
         "polygon",
+        "centroid",
+        "bbox",
         "wkt",
         "wkb",
         "geojson",
@@ -79,6 +134,21 @@ _FORBIDDEN_GEOMETRY_TOKENS: frozenset[str] = frozenset(
         "zipcode",
         "postal",
         "postalcode",
+        "roadaddress",
+        "buildingno",
+        "buildingnumber",
+        # Korean coordinates / addresses
+        "위도",
+        "경도",
+        "좌표",
+        "도로명",
+        "도로명주소",
+        "지번",
+        "지번주소",
+        "법정동",
+        "행정동",
+        "건물번호",
+        "우편번호",
     }
 )
 """Tokens that suggest sub-시군구 geometry / address / coordinate
@@ -111,28 +181,66 @@ def _normalise_column(name: str) -> str:
 def _split_column_tokens(column: str) -> set[str]:
     """Split a column name into lower-cased tokens for whole-word matching.
 
-    Splits on common separators (underscore, hyphen, dot, whitespace) and
-    returns the set of non-empty tokens. This avoids substring false-
-    positives such as ``population`` matching ``lat``.
+    Splits on common separators (underscore, hyphen, dot, whitespace) AND
+    on camelCase / PascalCase boundaries so columns like ``RRNumber``,
+    ``latLng``, ``passportNumber``, or ``firstName`` decompose into their
+    constituent tokens. Korean tokens are preserved as-is (Korean script
+    has no case so the camelCase split is a no-op for it). This avoids
+    substring false-positives such as ``population`` matching ``lat``
+    while still catching disguised identifiers.
     """
 
     out: set[str] = set()
     buf = ""
+    prev_lower = False
     for ch in column:
         if ch.isalnum():
+            # camelCase boundary: lower→upper transition starts a new token.
+            if prev_lower and ch.isupper() and buf:
+                out.add(buf.lower())
+                buf = ""
             buf += ch
+            prev_lower = ch.islower()
         else:
             if buf:
                 out.add(buf.lower())
             buf = ""
+            prev_lower = False
     if buf:
         out.add(buf.lower())
     return out
 
 
 def _has_forbidden_token(column: str, tokens: Iterable[str]) -> bool:
+    """Return True when *column* matches any forbidden token.
+
+    Matching is performed against two views of the column name:
+
+    1. The set of split tokens (separators + camelCase boundaries).
+    2. The lowercased / non-alphanumeric-stripped concatenation. This
+       catches compound tokens like ``firstname`` / ``lastname`` /
+       ``buildingno`` / ``zipcode`` whose camelCase split decomposes
+       into individually-too-broad tokens (``first``, ``no``, ``code``)
+       that we deliberately do not list.
+    """
+
     column_tokens = _split_column_tokens(column)
-    return any(token in column_tokens for token in tokens)
+    merged = "".join(c for c in column.lower() if c.isalnum())
+    token_set = set(tokens)
+    if any(token in column_tokens for token in token_set):
+        return True
+    return bool(merged and merged in token_set)
+
+
+def _is_finite_real(value: float | int) -> bool:
+    """Return ``True`` when ``value`` is a finite real number.
+
+    Rejects NaN and ±Inf so callers cannot smuggle a non-comparable
+    placeholder past the aggregation-floor check (NaN comparisons are
+    always ``False``, so a naive ``value < floor`` lets NaN through).
+    """
+
+    return math.isfinite(float(value))
 
 
 def validate_aggregate_byod(
@@ -238,6 +346,18 @@ def validate_aggregate_byod(
                         message=(
                             f"population must be numeric at row {row_index} "
                             f"(got {pop_value!r})"
+                        ),
+                    )
+                )
+            elif not _is_finite_real(pop_value):
+                issues.append(
+                    ByodValidationIssue(
+                        code="invalid_population",
+                        column=pop_column,
+                        row_index=row_index,
+                        message=(
+                            f"population must be finite (not NaN/Inf) at row "
+                            f"{row_index} (got {pop_value!r})"
                         ),
                     )
                 )

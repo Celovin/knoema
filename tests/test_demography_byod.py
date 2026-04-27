@@ -206,3 +206,128 @@ def test_byod_validation_issue_is_frozen() -> None:
     )
     with pytest.raises(AttributeError):
         issue.code = "other"  # type: ignore[misc]
+
+
+# --- Audit-1 hardening: camelCase + Korean + NaN/Inf ---------------------
+
+
+@pytest.mark.parametrize(
+    "camel_col",
+    [
+        "RRNumber",
+        "passportNumber",
+        "phoneNumber",
+        "emailAddress",
+        "homeAddress",
+        "firstName",
+        "lastName",
+        "fullName",
+        "macAddress",
+    ],
+)
+def test_camelcase_individual_identifiers_are_rejected(camel_col: str) -> None:
+    record = _valid_record()
+    record[camel_col] = "blocked"
+    issues = validate_aggregate_byod([record])
+    assert any(
+        i.code == "forbidden_individual_column" and i.column == camel_col
+        for i in issues
+    ), f"camelCase column {camel_col!r} must be rejected"
+
+
+@pytest.mark.parametrize(
+    "camel_col",
+    [
+        "latLng",
+        "latLong",
+        "roadAddress",
+        "buildingNo",
+        "buildingNumber",
+        "zipCode",
+        "postalCode",
+    ],
+)
+def test_camelcase_geometry_columns_are_rejected(camel_col: str) -> None:
+    record = _valid_record()
+    record[camel_col] = "blocked"
+    issues = validate_aggregate_byod([record])
+    assert any(
+        i.code == "forbidden_geometry_column" and i.column == camel_col
+        for i in issues
+    ), f"camelCase column {camel_col!r} must be rejected"
+
+
+@pytest.mark.parametrize(
+    "korean_col",
+    [
+        "주민등록번호",
+        "주민번호",
+        "전화번호",
+        "휴대전화",
+        "이메일",
+        "주소",
+        "성명",
+        "이름",
+        "여권번호",
+        "생년월일",
+    ],
+)
+def test_korean_individual_identifiers_are_rejected(korean_col: str) -> None:
+    record = _valid_record()
+    record[korean_col] = "blocked"
+    issues = validate_aggregate_byod([record])
+    assert any(
+        i.code == "forbidden_individual_column" and i.column == korean_col
+        for i in issues
+    ), f"Korean column {korean_col!r} must be rejected"
+
+
+@pytest.mark.parametrize(
+    "korean_col",
+    [
+        "위도",
+        "경도",
+        "좌표",
+        "도로명주소",
+        "지번",
+        "법정동",
+        "행정동",
+        "건물번호",
+        "우편번호",
+    ],
+)
+def test_korean_geometry_columns_are_rejected(korean_col: str) -> None:
+    record = _valid_record()
+    record[korean_col] = "blocked"
+    issues = validate_aggregate_byod([record])
+    assert any(
+        i.code == "forbidden_geometry_column" and i.column == korean_col
+        for i in issues
+    ), f"Korean column {korean_col!r} must be rejected"
+
+
+def test_population_nan_is_rejected() -> None:
+    record = _valid_record(population=float("nan"))
+    issues = validate_aggregate_byod([record])
+    assert any(
+        i.code == "invalid_population" and "finite" in i.message
+        for i in issues
+    )
+
+
+def test_population_positive_inf_is_rejected() -> None:
+    record = _valid_record(population=float("inf"))
+    issues = validate_aggregate_byod([record])
+    assert any(
+        i.code == "invalid_population" and "finite" in i.message
+        for i in issues
+    )
+
+
+def test_population_negative_inf_is_rejected() -> None:
+    record = _valid_record(population=float("-inf"))
+    issues = validate_aggregate_byod([record])
+    assert any(
+        i.code == "invalid_population" and "finite" in i.message
+        for i in issues
+    )

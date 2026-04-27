@@ -172,11 +172,30 @@ class ServiceDemandReport:
         return totals
 
 
+def _require_supports_age(cell: CellPopulation, *, age: int) -> None:
+    """Raise ValueError if ``cell`` cannot represent the requested age.
+
+    The PSSDP coefficients are calibrated against age 65+ and 6-18 ranges;
+    a cell whose age vector is shorter would silently slice to zero and
+    misreport demand as zero. We surface the shape mismatch instead so
+    callers can see why a coefficient regression test would fail.
+    """
+
+    length = int(cell.male.shape[0])
+    if length <= age:
+        raise ValueError(
+            f"cell {cell.cell_id!r} age vector length {length} cannot index "
+            f"age {age}; PSSDP demand coefficients require length > {age}"
+        )
+
+
 def _elderly_count(cell: CellPopulation) -> float:
+    _require_supports_age(cell, age=ELDERLY_AGE_FLOOR)
     return float(cell.male[ELDERLY_AGE_FLOOR:].sum() + cell.female[ELDERLY_AGE_FLOOR:].sum())
 
 
 def _school_age_count(cell: CellPopulation) -> float:
+    _require_supports_age(cell, age=SCHOOL_AGE_HI - 1)
     return float(
         cell.male[SCHOOL_AGE_LO:SCHOOL_AGE_HI].sum()
         + cell.female[SCHOOL_AGE_LO:SCHOOL_AGE_HI].sum()

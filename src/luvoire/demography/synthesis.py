@@ -117,10 +117,18 @@ def synthesize_cell_populations(
     """Allocate ``population`` into ``num_cells`` synthetic-grid cells.
 
     Each ``(age, sex)`` cohort is split across cells via a Dirichlet-
-    multinomial draw seeded by ``seed``. The aggregate invariant
-    ``sum(cell.total for cell in result) == population.total`` holds
-    exactly (modulo float rounding inside :class:`CohortPopulation` —
-    we cast to int64 here so the integer invariant is byte-exact).
+    multinomial draw seeded by ``seed``. The exact aggregate invariant
+    is **per-cohort**: for each ``(age, sex)`` cell the sum across all
+    output cells equals ``round(population.male[age])`` (resp.
+    ``population.female[age]``). The integer invariant is byte-exact
+    because numpy ``multinomial`` is exact-integer, but it is taken on
+    the **per-cohort rounded** values rather than on
+    ``population.total`` itself: if ``population.male`` carries non-
+    half-integer floats, ``sum(rint(arr))`` is **not generally equal**
+    to ``rint(sum(arr))`` (e.g. ``[0.5, 1.5]`` rints to ``[0, 2]`` with
+    sum 2 while ``rint(2.0) = 2`` only by coincidence). Callers who
+    need exact total preservation should pass an already-integer
+    population.
 
     Parameters
     ----------
