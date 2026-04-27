@@ -55,6 +55,12 @@ from luvoire.demography.kosis import (
     lookup_kosis_table,
     tables_by_kind,
 )
+from luvoire.demography.kosis_fetch import (
+    DEFAULT_CACHE_DIR,
+    KosisAggregateOnlyError,
+    KosisFetchClient,
+    KosisFetchError,
+)
 from luvoire.demography.projector import (
     DEFAULT_MAX_AGE,
     DEFAULT_SEX_RATIO_AT_BIRTH,
@@ -71,6 +77,19 @@ from luvoire.demography.region import (
     lookup_region,
     regions_by_sido,
 )
+from luvoire.demography.report import (
+    DEFAULT_FIRE_PER_1000_ELDERLY,
+    DEFAULT_PATROL_PER_1000_TOTAL,
+    DEFAULT_SCHOOL_PER_1000_SCHOOL_AGE,
+    ELDERLY_AGE_FLOOR,
+    SCHOOL_AGE_HI,
+    SCHOOL_AGE_LO,
+    ServiceDemandCoefficients,
+    ServiceDemandProjection,
+    ServiceDemandReport,
+    project_service_demand,
+    render_demand_panel,
+)
 from luvoire.demography.synthesis import (
     CellPopulation,
     aggregate_cells_to_pyramid,
@@ -79,8 +98,13 @@ from luvoire.demography.synthesis import (
 )
 
 __all__ = [
+    "DEFAULT_CACHE_DIR",
+    "DEFAULT_FIRE_PER_1000_ELDERLY",
     "DEFAULT_MAX_AGE",
+    "DEFAULT_PATROL_PER_1000_TOTAL",
+    "DEFAULT_SCHOOL_PER_1000_SCHOOL_AGE",
     "DEFAULT_SEX_RATIO_AT_BIRTH",
+    "ELDERLY_AGE_FLOOR",
     "KOSTAT_REFERENCE_TRIPLE",
     "MIN_AGGREGATION_FLOOR",
     "REGISTERED_KOSIS_TABLES",
@@ -88,6 +112,8 @@ __all__ = [
     "REPRODUCTIVE_AGE_HI",
     "REPRODUCTIVE_AGE_LO",
     "REQUIRED_COLUMNS",
+    "SCHOOL_AGE_HI",
+    "SCHOOL_AGE_LO",
     "ByodValidationIssue",
     "CellPopulation",
     "CohortComponentProjector",
@@ -98,13 +124,19 @@ __all__ = [
     "DpMechanism",
     "FederatedRequest",
     "FederatedResponse",
+    "KosisAggregateOnlyError",
     "KosisDataKind",
+    "KosisFetchClient",
+    "KosisFetchError",
     "KosisTable",
     "LocalAggregator",
     "RatePerturbation",
     "RegionLabel",
     "ScenarioKind",
     "ScenarioResult",
+    "ServiceDemandCoefficients",
+    "ServiceDemandProjection",
+    "ServiceDemandReport",
     "Sex",
     "add_dp_noise",
     "aggregate_cells_to_pyramid",
@@ -114,7 +146,9 @@ __all__ = [
     "laplace_noise_scale",
     "lookup_kosis_table",
     "lookup_region",
+    "project_service_demand",
     "regions_by_sido",
+    "render_demand_panel",
     "run_federated_local_only",
     "synthesize_cell_populations",
     "tables_by_kind",

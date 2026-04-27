@@ -83,14 +83,66 @@ class RegionLabel:
 
 
 REGISTERED_REGIONS: tuple[RegionLabel, ...] = (
+    # 서울특별시 (11xxx)
     RegionLabel(admin_code="11680", sido="서울특별시", sigungu="강남구"),
     RegionLabel(admin_code="11530", sido="서울특별시", sigungu="구로구"),
+    # 부산광역시 (26xxx)
     RegionLabel(admin_code="26110", sido="부산광역시", sigungu="중구"),
+    RegionLabel(admin_code="26350", sido="부산광역시", sigungu="해운대구"),
+    # 대구광역시 (27xxx)
+    RegionLabel(admin_code="27110", sido="대구광역시", sigungu="중구"),
+    RegionLabel(admin_code="27200", sido="대구광역시", sigungu="동구"),
+    # 인천광역시 (28xxx)
+    RegionLabel(admin_code="28110", sido="인천광역시", sigungu="중구"),
+    RegionLabel(admin_code="28245", sido="인천광역시", sigungu="연수구"),
+    # 광주광역시 (29xxx)
+    RegionLabel(admin_code="29110", sido="광주광역시", sigungu="동구"),
+    RegionLabel(admin_code="29155", sido="광주광역시", sigungu="서구"),
+    # 대전광역시 (30xxx)
+    RegionLabel(admin_code="30110", sido="대전광역시", sigungu="동구"),
+    RegionLabel(admin_code="30200", sido="대전광역시", sigungu="중구"),
+    # 울산광역시 (31xxx)
+    RegionLabel(admin_code="31110", sido="울산광역시", sigungu="중구"),
+    RegionLabel(admin_code="31170", sido="울산광역시", sigungu="남구"),
+    # 세종특별자치시 (36xxx) — sido == sigungu
     RegionLabel(admin_code="36110", sido="세종특별자치시", sigungu="세종특별자치시"),
+    # 경기도 (41xxx)
+    RegionLabel(admin_code="41110", sido="경기도", sigungu="수원시"),
+    RegionLabel(admin_code="41130", sido="경기도", sigungu="성남시"),
+    # 강원특별자치도 (51xxx) — renamed 2023
+    RegionLabel(admin_code="51110", sido="강원특별자치도", sigungu="춘천시"),
+    RegionLabel(admin_code="51130", sido="강원특별자치도", sigungu="원주시"),
+    # 충청북도 (43xxx)
+    RegionLabel(admin_code="43110", sido="충청북도", sigungu="청주시"),
+    RegionLabel(admin_code="43130", sido="충청북도", sigungu="충주시"),
+    # 충청남도 (44xxx)
+    RegionLabel(admin_code="44130", sido="충청남도", sigungu="천안시"),
+    # 전북특별자치도 (52xxx) — renamed 2024
+    RegionLabel(admin_code="52110", sido="전북특별자치도", sigungu="전주시"),
+    RegionLabel(admin_code="52130", sido="전북특별자치도", sigungu="군산시"),
+    # 전라남도 (46xxx)
+    RegionLabel(admin_code="46110", sido="전라남도", sigungu="목포시"),
+    RegionLabel(admin_code="46130", sido="전라남도", sigungu="여수시"),
+    # 경상북도 (47xxx)
+    RegionLabel(admin_code="47110", sido="경상북도", sigungu="포항시"),
+    RegionLabel(admin_code="47130", sido="경상북도", sigungu="경주시"),
+    # 경상남도 (48xxx)
+    RegionLabel(admin_code="48120", sido="경상남도", sigungu="창원시"),
+    RegionLabel(admin_code="48250", sido="경상남도", sigungu="김해시"),
+    # 제주특별자치도 (50xxx)
+    RegionLabel(admin_code="50110", sido="제주특별자치도", sigungu="제주시"),
+    RegionLabel(admin_code="50130", sido="제주특별자치도", sigungu="서귀포시"),
 )
 """Canonical sample of 시군구 region labels used by demography tests and
-reference scenarios. Production scenarios may load larger sets from JSON
-fixtures, but the same construction-time geometry exclusion still applies.
+reference scenarios. Covers all 17 시도 (특별시·광역시·도·특별자치도·
+특별자치시) with at least one 시군구 each. Production scenarios may load
+larger sets from JSON fixtures, but the same construction-time geometry
+exclusion still applies.
+
+시도 명칭 주의:
+- ``강원특별자치도`` (구 강원도, 2023-06-11 명칭 변경)
+- ``전북특별자치도`` (구 전라북도, 2024-01-18 명칭 변경)
+- 세종특별자치시는 산하 시군구가 없어 ``sido == sigungu`` 로 표기.
 """
 
 

@@ -1,0 +1,808 @@
+{
+  "aggregate_totals_per_scenario": {
+    "high_fertility": {
+      "fire_ambulance_demand": 1941.1000000000004,
+      "patrol_baseline_demand": 295.498,
+      "school_age_demand": 747.1500000000001
+    },
+    "low_fertility": {
+      "fire_ambulance_demand": 1941.1000000000001,
+      "patrol_baseline_demand": 283.298,
+      "school_age_demand": 547.5
+    },
+    "medium_fertility": {
+      "fire_ambulance_demand": 1941.1000000000001,
+      "patrol_baseline_demand": 289.36800000000005,
+      "school_age_demand": 646.9499999999998
+    }
+  },
+  "panel_sha256": "9842f7cd6776e47f236e70f58bfff8a0bdd958ded26a2b8b08dd9b25c7731161",
+  "scenarios": [
+    {
+      "cell_demands": [
+        {
+          "cell_id": "synthetic-grid-r0c0",
+          "elderly_population": 2603.0,
+          "fire_ambulance_demand": 91.105,
+          "patrol_baseline_demand": 11.72,
+          "school_age_demand": 18.45,
+          "school_age_population": 246.0,
+          "total_population": 5860.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r0c1",
+          "elderly_population": 2894.0,
+          "fire_ambulance_demand": 101.29,
+          "patrol_baseline_demand": 12.7,
+          "school_age_demand": 22.35,
+          "school_age_population": 298.0,
+          "total_population": 6350.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r0c2",
+          "elderly_population": 2079.0,
+          "fire_ambulance_demand": 72.765,
+          "patrol_baseline_demand": 11.212,
+          "school_age_demand": 27.975,
+          "school_age_population": 373.0,
+          "total_population": 5606.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r0c3",
+          "elderly_population": 2058.0,
+          "fire_ambulance_demand": 72.03,
+          "patrol_baseline_demand": 10.306,
+          "school_age_demand": 11.175,
+          "school_age_population": 149.0,
+          "total_population": 5153.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r0c4",
+          "elderly_population": 1850.0,
+          "fire_ambulance_demand": 64.75,
+          "patrol_baseline_demand": 10.756,
+          "school_age_demand": 27.9,
+          "school_age_population": 372.0,
+          "total_population": 5378.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c0",
+          "elderly_population": 2653.0,
+          "fire_ambulance_demand": 92.855,
+          "patrol_baseline_demand": 12.714,
+          "school_age_demand": 21.15,
+          "school_age_population": 282.0,
+          "total_population": 6357.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c1",
+          "elderly_population": 1953.0,
+          "fire_ambulance_demand": 68.355,
+          "patrol_baseline_demand": 10.77,
+          "school_age_demand": 25.05,
+          "school_age_population": 334.0,
+          "total_population": 5385.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c2",
+          "elderly_population": 1811.0,
+          "fire_ambulance_demand": 63.385,
+          "patrol_baseline_demand": 9.786,
+          "school_age_demand": 25.8,
+          "school_age_population": 344.0,
+          "total_population": 4893.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c3",
+          "elderly_population": 2278.0,
+          "fire_ambulance_demand": 79.73,
+          "patrol_baseline_demand": 11.242,
+          "school_age_demand": 20.025,
+          "school_age_population": 267.0,
+          "total_population": 5621.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c4",
+          "elderly_population": 1889.0,
+          "fire_ambulance_demand": 66.115,
+          "patrol_baseline_demand": 9.798,
+          "school_age_demand": 20.4,
+          "school_age_population": 272.0,
+          "total_population": 4899.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c0",
+          "elderly_population": 2027.0,
+          "fire_ambulance_demand": 70.945,
+          "patrol_baseline_demand": 9.78,
+          "school_age_demand": 16.95,
+          "school_age_population": 226.0,
+          "total_population": 4890.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c1",
+          "elderly_population": 2316.0,
+          "fire_ambulance_demand": 81.06,
+          "patrol_baseline_demand": 12.272,
+          "school_age_demand": 20.7,
+          "school_age_population": 276.0,
+          "total_population": 6136.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c2",
+          "elderly_population": 2078.0,
+          "fire_ambulance_demand": 72.73,
+          "patrol_baseline_demand": 12.124,
+          "school_age_demand": 27.525,
+          "school_age_population": 367.0,
+          "total_population": 6062.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c3",
+          "elderly_population": 1757.0,
+          "fire_ambulance_demand": 61.495,
+          "patrol_baseline_demand": 10.754,
+          "school_age_demand": 29.325,
+          "school_age_population": 391.0,
+          "total_population": 5377.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c4",
+          "elderly_population": 2129.0,
+          "fire_ambulance_demand": 74.515,
+          "patrol_baseline_demand": 9.94,
+          "school_age_demand": 22.5,
+          "school_age_population": 300.0,
+          "total_population": 4970.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c0",
+          "elderly_population": 2509.0,
+          "fire_ambulance_demand": 87.815,
+          "patrol_baseline_demand": 11.114,
+          "school_age_demand": 22.95,
+          "school_age_population": 306.0,
+          "total_population": 5557.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c1",
+          "elderly_population": 2061.0,
+          "fire_ambulance_demand": 72.135,
+          "patrol_baseline_demand": 10.376,
+          "school_age_demand": 18.0,
+          "school_age_population": 240.0,
+          "total_population": 5188.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c2",
+          "elderly_population": 2072.0,
+          "fire_ambulance_demand": 72.52,
+          "patrol_baseline_demand": 11.902,
+          "school_age_demand": 25.425,
+          "school_age_population": 339.0,
+          "total_population": 5951.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c3",
+          "elderly_population": 1965.0,
+          "fire_ambulance_demand": 68.775,
+          "patrol_baseline_demand": 11.552,
+          "school_age_demand": 19.125,
+          "school_age_population": 255.0,
+          "total_population": 5776.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c4",
+          "elderly_population": 1568.0,
+          "fire_ambulance_demand": 54.88,
+          "patrol_baseline_demand": 10.12,
+          "school_age_demand": 17.175,
+          "school_age_population": 229.0,
+          "total_population": 5060.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c0",
+          "elderly_population": 3300.0,
+          "fire_ambulance_demand": 115.5,
+          "patrol_baseline_demand": 14.496,
+          "school_age_demand": 24.825,
+          "school_age_population": 331.0,
+          "total_population": 7248.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c1",
+          "elderly_population": 2585.0,
+          "fire_ambulance_demand": 90.475,
+          "patrol_baseline_demand": 13.17,
+          "school_age_demand": 21.6,
+          "school_age_population": 288.0,
+          "total_population": 6585.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c2",
+          "elderly_population": 1823.0,
+          "fire_ambulance_demand": 63.805,
+          "patrol_baseline_demand": 9.762,
+          "school_age_demand": 19.275,
+          "school_age_population": 257.0,
+          "total_population": 4881.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c3",
+          "elderly_population": 2325.0,
+          "fire_ambulance_demand": 81.375,
+          "patrol_baseline_demand": 12.706,
+          "school_age_demand": 21.6,
+          "school_age_population": 288.0,
+          "total_population": 6353.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c4",
+          "elderly_population": 2877.0,
+          "fire_ambulance_demand": 100.695,
+          "patrol_baseline_demand": 12.226,
+          "school_age_demand": 20.25,
+          "school_age_population": 270.0,
+          "total_population": 6113.0,
+          "year": 2056
+        }
+      ],
+      "coefficients": {
+        "fire_per_1000_elderly": 35.0,
+        "patrol_per_1000_total": 2.0,
+        "school_per_1000_school_age": 75.0
+      },
+      "horizon_year": 2056,
+      "region_label": "서울특별시 강남구",
+      "scenario_label": "low_fertility"
+    },
+    {
+      "cell_demands": [
+        {
+          "cell_id": "synthetic-grid-r0c0",
+          "elderly_population": 1959.0,
+          "fire_ambulance_demand": 68.565,
+          "patrol_baseline_demand": 10.548,
+          "school_age_demand": 22.35,
+          "school_age_population": 298.0,
+          "total_population": 5274.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r0c1",
+          "elderly_population": 2197.0,
+          "fire_ambulance_demand": 76.895,
+          "patrol_baseline_demand": 10.966,
+          "school_age_demand": 27.9,
+          "school_age_population": 372.0,
+          "total_population": 5483.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r0c2",
+          "elderly_population": 2395.0,
+          "fire_ambulance_demand": 83.825,
+          "patrol_baseline_demand": 12.56,
+          "school_age_demand": 28.425,
+          "school_age_population": 379.0,
+          "total_population": 6280.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r0c3",
+          "elderly_population": 2922.0,
+          "fire_ambulance_demand": 102.27,
+          "patrol_baseline_demand": 13.32,
+          "school_age_demand": 30.075,
+          "school_age_population": 401.0,
+          "total_population": 6660.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r0c4",
+          "elderly_population": 2711.0,
+          "fire_ambulance_demand": 94.885,
+          "patrol_baseline_demand": 13.002,
+          "school_age_demand": 23.625,
+          "school_age_population": 315.0,
+          "total_population": 6501.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c0",
+          "elderly_population": 2342.0,
+          "fire_ambulance_demand": 81.97,
+          "patrol_baseline_demand": 11.5,
+          "school_age_demand": 28.35,
+          "school_age_population": 378.0,
+          "total_population": 5750.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c1",
+          "elderly_population": 1899.0,
+          "fire_ambulance_demand": 66.465,
+          "patrol_baseline_demand": 11.684,
+          "school_age_demand": 33.0,
+          "school_age_population": 440.0,
+          "total_population": 5842.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c2",
+          "elderly_population": 1799.0,
+          "fire_ambulance_demand": 62.965,
+          "patrol_baseline_demand": 10.242,
+          "school_age_demand": 25.95,
+          "school_age_population": 346.0,
+          "total_population": 5121.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c3",
+          "elderly_population": 2497.0,
+          "fire_ambulance_demand": 87.395,
+          "patrol_baseline_demand": 12.358,
+          "school_age_demand": 31.35,
+          "school_age_population": 418.0,
+          "total_population": 6179.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c4",
+          "elderly_population": 1899.0,
+          "fire_ambulance_demand": 66.465,
+          "patrol_baseline_demand": 10.008,
+          "school_age_demand": 30.075,
+          "school_age_population": 401.0,
+          "total_population": 5004.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c0",
+          "elderly_population": 2294.0,
+          "fire_ambulance_demand": 80.29,
+          "patrol_baseline_demand": 10.688,
+          "school_age_demand": 18.15,
+          "school_age_population": 242.0,
+          "total_population": 5344.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c1",
+          "elderly_population": 2334.0,
+          "fire_ambulance_demand": 81.69,
+          "patrol_baseline_demand": 11.94,
+          "school_age_demand": 21.15,
+          "school_age_population": 282.0,
+          "total_population": 5970.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c2",
+          "elderly_population": 1871.0,
+          "fire_ambulance_demand": 65.485,
+          "patrol_baseline_demand": 9.75,
+          "school_age_demand": 21.825,
+          "school_age_population": 291.0,
+          "total_population": 4875.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c3",
+          "elderly_population": 1891.0,
+          "fire_ambulance_demand": 66.185,
+          "patrol_baseline_demand": 11.508,
+          "school_age_demand": 25.95,
+          "school_age_population": 346.0,
+          "total_population": 5754.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c4",
+          "elderly_population": 3155.0,
+          "fire_ambulance_demand": 110.425,
+          "patrol_baseline_demand": 13.308,
+          "school_age_demand": 20.325,
+          "school_age_population": 271.0,
+          "total_population": 6654.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c0",
+          "elderly_population": 2124.0,
+          "fire_ambulance_demand": 74.34,
+          "patrol_baseline_demand": 13.472,
+          "school_age_demand": 25.8,
+          "school_age_population": 344.0,
+          "total_population": 6736.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c1",
+          "elderly_population": 1998.0,
+          "fire_ambulance_demand": 69.93,
+          "patrol_baseline_demand": 11.798,
+          "school_age_demand": 28.95,
+          "school_age_population": 386.0,
+          "total_population": 5899.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c2",
+          "elderly_population": 2039.0,
+          "fire_ambulance_demand": 71.365,
+          "patrol_baseline_demand": 10.234,
+          "school_age_demand": 17.475,
+          "school_age_population": 233.0,
+          "total_population": 5117.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c3",
+          "elderly_population": 2112.0,
+          "fire_ambulance_demand": 73.92,
+          "patrol_baseline_demand": 11.594,
+          "school_age_demand": 25.425,
+          "school_age_population": 339.0,
+          "total_population": 5797.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c4",
+          "elderly_population": 2720.0,
+          "fire_ambulance_demand": 95.2,
+          "patrol_baseline_demand": 13.348,
+          "school_age_demand": 26.25,
+          "school_age_population": 350.0,
+          "total_population": 6674.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c0",
+          "elderly_population": 1804.0,
+          "fire_ambulance_demand": 63.14,
+          "patrol_baseline_demand": 10.75,
+          "school_age_demand": 33.15,
+          "school_age_population": 442.0,
+          "total_population": 5375.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c1",
+          "elderly_population": 2135.0,
+          "fire_ambulance_demand": 74.725,
+          "patrol_baseline_demand": 10.21,
+          "school_age_demand": 20.925,
+          "school_age_population": 279.0,
+          "total_population": 5105.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c2",
+          "elderly_population": 2249.0,
+          "fire_ambulance_demand": 78.715,
+          "patrol_baseline_demand": 11.28,
+          "school_age_demand": 25.95,
+          "school_age_population": 346.0,
+          "total_population": 5640.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c3",
+          "elderly_population": 1801.0,
+          "fire_ambulance_demand": 63.035,
+          "patrol_baseline_demand": 10.312,
+          "school_age_demand": 26.475,
+          "school_age_population": 353.0,
+          "total_population": 5156.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c4",
+          "elderly_population": 2313.0,
+          "fire_ambulance_demand": 80.955,
+          "patrol_baseline_demand": 12.988,
+          "school_age_demand": 28.05,
+          "school_age_population": 374.0,
+          "total_population": 6494.0,
+          "year": 2056
+        }
+      ],
+      "coefficients": {
+        "fire_per_1000_elderly": 35.0,
+        "patrol_per_1000_total": 2.0,
+        "school_per_1000_school_age": 75.0
+      },
+      "horizon_year": 2056,
+      "region_label": "서울특별시 강남구",
+      "scenario_label": "medium_fertility"
+    },
+    {
+      "cell_demands": [
+        {
+          "cell_id": "synthetic-grid-r0c0",
+          "elderly_population": 2786.0,
+          "fire_ambulance_demand": 97.51,
+          "patrol_baseline_demand": 11.902,
+          "school_age_demand": 28.5,
+          "school_age_population": 380.0,
+          "total_population": 5951.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r0c1",
+          "elderly_population": 3095.0,
+          "fire_ambulance_demand": 108.325,
+          "patrol_baseline_demand": 13.02,
+          "school_age_demand": 30.3,
+          "school_age_population": 404.0,
+          "total_population": 6510.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r0c2",
+          "elderly_population": 2265.0,
+          "fire_ambulance_demand": 79.275,
+          "patrol_baseline_demand": 11.094,
+          "school_age_demand": 22.5,
+          "school_age_population": 300.0,
+          "total_population": 5547.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r0c3",
+          "elderly_population": 2224.0,
+          "fire_ambulance_demand": 77.84,
+          "patrol_baseline_demand": 11.748,
+          "school_age_demand": 25.35,
+          "school_age_population": 338.0,
+          "total_population": 5874.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r0c4",
+          "elderly_population": 1662.0,
+          "fire_ambulance_demand": 58.17,
+          "patrol_baseline_demand": 10.312,
+          "school_age_demand": 19.8,
+          "school_age_population": 264.0,
+          "total_population": 5156.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c0",
+          "elderly_population": 2422.0,
+          "fire_ambulance_demand": 84.77,
+          "patrol_baseline_demand": 10.936,
+          "school_age_demand": 36.15,
+          "school_age_population": 482.0,
+          "total_population": 5468.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c1",
+          "elderly_population": 2576.0,
+          "fire_ambulance_demand": 90.16,
+          "patrol_baseline_demand": 12.678,
+          "school_age_demand": 34.5,
+          "school_age_population": 460.0,
+          "total_population": 6339.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c2",
+          "elderly_population": 1765.0,
+          "fire_ambulance_demand": 61.775,
+          "patrol_baseline_demand": 11.722,
+          "school_age_demand": 36.45,
+          "school_age_population": 486.0,
+          "total_population": 5861.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c3",
+          "elderly_population": 2259.0,
+          "fire_ambulance_demand": 79.065,
+          "patrol_baseline_demand": 12.728,
+          "school_age_demand": 30.825,
+          "school_age_population": 411.0,
+          "total_population": 6364.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r1c4",
+          "elderly_population": 1917.0,
+          "fire_ambulance_demand": 67.095,
+          "patrol_baseline_demand": 11.956,
+          "school_age_demand": 41.325,
+          "school_age_population": 551.0,
+          "total_population": 5978.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c0",
+          "elderly_population": 1682.0,
+          "fire_ambulance_demand": 58.87,
+          "patrol_baseline_demand": 11.31,
+          "school_age_demand": 30.375,
+          "school_age_population": 405.0,
+          "total_population": 5655.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c1",
+          "elderly_population": 1916.0,
+          "fire_ambulance_demand": 67.06,
+          "patrol_baseline_demand": 11.67,
+          "school_age_demand": 34.425,
+          "school_age_population": 459.0,
+          "total_population": 5835.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c2",
+          "elderly_population": 2390.0,
+          "fire_ambulance_demand": 83.65,
+          "patrol_baseline_demand": 12.044,
+          "school_age_demand": 25.95,
+          "school_age_population": 346.0,
+          "total_population": 6022.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c3",
+          "elderly_population": 1711.0,
+          "fire_ambulance_demand": 59.885,
+          "patrol_baseline_demand": 10.52,
+          "school_age_demand": 30.225,
+          "school_age_population": 403.0,
+          "total_population": 5260.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r2c4",
+          "elderly_population": 1853.0,
+          "fire_ambulance_demand": 64.855,
+          "patrol_baseline_demand": 11.652,
+          "school_age_demand": 32.7,
+          "school_age_population": 436.0,
+          "total_population": 5826.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c0",
+          "elderly_population": 2429.0,
+          "fire_ambulance_demand": 85.015,
+          "patrol_baseline_demand": 12.914,
+          "school_age_demand": 28.875,
+          "school_age_population": 385.0,
+          "total_population": 6457.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c1",
+          "elderly_population": 2362.0,
+          "fire_ambulance_demand": 82.67,
+          "patrol_baseline_demand": 11.572,
+          "school_age_demand": 28.2,
+          "school_age_population": 376.0,
+          "total_population": 5786.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c2",
+          "elderly_population": 3367.0,
+          "fire_ambulance_demand": 117.845,
+          "patrol_baseline_demand": 13.84,
+          "school_age_demand": 26.85,
+          "school_age_population": 358.0,
+          "total_population": 6920.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c3",
+          "elderly_population": 2253.0,
+          "fire_ambulance_demand": 78.855,
+          "patrol_baseline_demand": 13.552,
+          "school_age_demand": 32.7,
+          "school_age_population": 436.0,
+          "total_population": 6776.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r3c4",
+          "elderly_population": 1463.0,
+          "fire_ambulance_demand": 51.205,
+          "patrol_baseline_demand": 9.364,
+          "school_age_demand": 25.35,
+          "school_age_population": 338.0,
+          "total_population": 4682.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c0",
+          "elderly_population": 3726.0,
+          "fire_ambulance_demand": 130.41,
+          "patrol_baseline_demand": 14.756,
+          "school_age_demand": 26.775,
+          "school_age_population": 357.0,
+          "total_population": 7378.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c1",
+          "elderly_population": 1893.0,
+          "fire_ambulance_demand": 66.255,
+          "patrol_baseline_demand": 10.386,
+          "school_age_demand": 25.725,
+          "school_age_population": 343.0,
+          "total_population": 5193.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c2",
+          "elderly_population": 1491.0,
+          "fire_ambulance_demand": 52.185,
+          "patrol_baseline_demand": 10.666,
+          "school_age_demand": 26.25,
+          "school_age_population": 350.0,
+          "total_population": 5333.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c3",
+          "elderly_population": 1641.0,
+          "fire_ambulance_demand": 57.435,
+          "patrol_baseline_demand": 10.55,
+          "school_age_demand": 21.3,
+          "school_age_population": 284.0,
+          "total_population": 5275.0,
+          "year": 2056
+        },
+        {
+          "cell_id": "synthetic-grid-r4c4",
+          "elderly_population": 2312.0,
+          "fire_ambulance_demand": 80.92,
+          "patrol_baseline_demand": 12.606,
+          "school_age_demand": 45.75,
+          "school_age_population": 610.0,
+          "total_population": 6303.0,
+          "year": 2056
+        }
+      ],
+      "coefficients": {
+        "fire_per_1000_elderly": 35.0,
+        "patrol_per_1000_total": 2.0,
+        "school_per_1000_school_age": 75.0
+      },
+      "horizon_year": 2056,
+      "region_label": "서울특별시 강남구",
+      "scenario_label": "high_fertility"
+    }
+  ]
+}

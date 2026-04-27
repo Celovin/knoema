@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from luvoire.dsl.v2 import load_scenario_v2, validate_scenario_v2
 from scenarios.seoul_demography_30y import run_scenario as scenario
 
@@ -150,3 +152,67 @@ def test_region_label_is_string_only() -> None:
     for payload in summary["scenarios"].values():
         assert isinstance(payload["region_label"], str)
         assert payload["region_label"] == "서울특별시 강남구"
+
+
+# --- PSSDP demand panel --------------------------------------------------
+
+
+def test_committed_demand_panel_matches_freshly_built() -> None:
+    """The committed demand_panel.json digest must match a fresh build."""
+
+    from scenarios.seoul_demography_30y import run_pssdp_panel
+
+    panel_path = (
+        ROOT
+        / "scenarios"
+        / "seoul_demography_30y"
+        / "results"
+        / "demand_panel.json"
+    )
+    if not panel_path.exists():
+        pytest.skip("demand_panel.json not yet committed")
+    committed = json.loads(panel_path.read_text(encoding="utf-8"))
+    reports = run_pssdp_panel.build_panel()
+    # Recompute digest without writing.
+    fresh_payload = {
+        "scenarios": [r.to_dict() for r in reports],
+        "aggregate_totals_per_scenario": {
+            r.scenario_label: r.aggregate_demand() for r in reports
+        },
+    }
+    import hashlib as _hashlib  # local — no need to expose at module top
+    _serialised = json.dumps(
+        fresh_payload, sort_keys=True, ensure_ascii=False
+    ).encode("utf-8")
+    fresh_digest = _hashlib.sha256(_serialised).hexdigest()
+    assert fresh_digest == committed["panel_sha256"]
+
+
+def test_demand_panel_carries_three_scenarios_with_aggregate_totals() -> None:
+    from scenarios.seoul_demography_30y import run_pssdp_panel
+
+    reports = run_pssdp_panel.build_panel()
+    labels = {r.scenario_label for r in reports}
+    assert labels == {"low_fertility", "medium_fertility", "high_fertility"}
+    for r in reports:
+        totals = r.aggregate_demand()
+        for key in (
+            "fire_ambulance_demand",
+            "school_age_demand",
+            "patrol_baseline_demand",
+        ):
+            assert totals[key] >= 0
+
+
+def test_demand_panel_higher_fertility_yields_more_school_age_demand() -> None:
+    """Higher fertility scenarios produce larger school-age population
+    after 30 years and therefore larger school-age service demand."""
+
+    from scenarios.seoul_demography_30y import run_pssdp_panel
+
+    reports = run_pssdp_panel.build_panel()
+    by_label = {r.scenario_label: r for r in reports}
+    low = by_label["low_fertility"].aggregate_demand()["school_age_demand"]
+    medium = by_label["medium_fertility"].aggregate_demand()["school_age_demand"]
+    high = by_label["high_fertility"].aggregate_demand()["school_age_demand"]
+    assert low <= medium <= high

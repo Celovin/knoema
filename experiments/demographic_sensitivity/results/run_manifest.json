@@ -1,0 +1,25 @@
+{
+  "bounds": {
+    "fertility_scale": [
+      0.7,
+      1.3
+    ],
+    "mortality_scale": [
+      0.7,
+      1.3
+    ]
+  },
+  "estimator": "saltelli2002_jansen1999_saltelli2010",
+  "eval_count": 4096,
+  "experiment": "demographic_sensitivity",
+  "horizon_years": 30,
+  "initial_cohort_value": 1000.0,
+  "module_version": "luvoire.demography.projector.v1",
+  "n_samples": 1024,
+  "seed": 20260428,
+  "timestamp": "2026-04-27T20:00:28Z",
+  "variables": [
+    "fertility_scale",
+    "mortality_scale"
+  ]
+}

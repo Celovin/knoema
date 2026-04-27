@@ -1,0 +1,30 @@
+{
+  "table_id": "1B36E27",
+  "publisher": "KOSTAT",
+  "year": 2024,
+  "region_code": "11680",
+  "region_name": "강남구",
+  "aggregation_level": "시군구",
+  "rows": [
+    {
+      "metric": "live_births_total",
+      "value": 2840,
+      "aggregation_level": "시군구",
+      "population": 540000
+    },
+    {
+      "metric": "crude_birth_rate_per_1000",
+      "value": 5.26,
+      "aggregation_level": "시군구",
+      "population": 540000
+    },
+    {
+      "metric": "total_fertility_rate",
+      "value": 0.82,
+      "aggregation_level": "시군구",
+      "population": 540000
+    }
+  ],
+  "_synthetic": true,
+  "_note": "Synthetic test fixture, not real KOSIS data."
+}
