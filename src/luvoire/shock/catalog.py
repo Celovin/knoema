@@ -178,6 +178,25 @@ class Catalog:
 
         return Catalog(shocks=(*self.shocks, shock))
 
+    def duplicate_ids(self) -> tuple[str, ...]:
+        """Return shock_ids that appear more than once in :attr:`shocks`.
+
+        The catalogue intentionally does not raise on duplicate ids — some
+        scenarios re-use the same id across catalogues that are merged later.
+        Callers that require uniqueness should call this helper before
+        consuming the catalogue and reject when the result is non-empty.
+        """
+
+        seen: dict[str, int] = {}
+        for shock in self.shocks:
+            seen[shock.shock_id] = seen.get(shock.shock_id, 0) + 1
+        return tuple(sorted(sid for sid, count in seen.items() if count > 1))
+
+    def has_unique_ids(self) -> bool:
+        """Return ``True`` when every shock_id is unique."""
+
+        return not self.duplicate_ids()
+
     def active_at(self, tick: int) -> tuple[Shock, ...]:
         """Return shocks active at *tick* (inclusive endpoints)."""
 

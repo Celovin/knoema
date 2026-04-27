@@ -54,9 +54,18 @@ class PosteriorHandle:
         arr = _to_numpy(raw)
         if arr.ndim == 1:
             arr = arr.reshape(n, -1)
+        if arr.ndim != 2:
+            raise RuntimeError(
+                f"posterior returned a {arr.ndim}-D array (expected 2-D)"
+            )
         if arr.shape[0] != n:
             raise RuntimeError(
                 f"posterior returned {arr.shape[0]} samples (expected {n})"
+            )
+        if arr.shape[1] != self.dimension:
+            raise RuntimeError(
+                f"posterior returned dimension {arr.shape[1]} "
+                f"(expected {self.dimension})"
             )
         return arr
 

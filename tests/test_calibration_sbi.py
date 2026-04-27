@@ -123,6 +123,26 @@ def test_posterior_handle_rejects_non_positive_n() -> None:
         handle.sample(0)
 
 
+def test_posterior_handle_rejects_wrong_dimension() -> None:
+    class _MismatchPosterior:
+        def sample(self, shape: tuple[int, ...]) -> np.ndarray:
+            return np.zeros((shape[0], 5), dtype=float)
+
+    handle = PosteriorHandle(_posterior=_MismatchPosterior(), dimension=3)
+    with pytest.raises(RuntimeError, match="dimension 5"):
+        handle.sample(4)
+
+
+def test_posterior_handle_rejects_non_2d_output() -> None:
+    class _ThreeDPosterior:
+        def sample(self, shape: tuple[int, ...]) -> np.ndarray:
+            return np.zeros((shape[0], 1, 1), dtype=float)
+
+    handle = PosteriorHandle(_posterior=_ThreeDPosterior(), dimension=1)
+    with pytest.raises(RuntimeError, match="3-D array"):
+        handle.sample(2)
+
+
 def test_infer_posterior_real_run_smoke() -> None:
     pytest.importorskip("sbi")
     pytest.importorskip("torch")

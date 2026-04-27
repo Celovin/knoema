@@ -199,3 +199,32 @@ def test_catalog_iteration_yields_shocks_in_insertion_order() -> None:
     c = _make_shock(shock_id="c")
     cat = Catalog().add(a).add(b).add(c)
     assert tuple(s.shock_id for s in cat) == ("a", "b", "c")
+
+
+def test_catalog_unique_id_helpers_report_duplicates_in_sorted_order() -> None:
+    cat = (
+        Catalog()
+        .add(_make_shock(shock_id="b"))
+        .add(_make_shock(shock_id="a"))
+        .add(_make_shock(shock_id="b"))
+        .add(_make_shock(shock_id="c"))
+        .add(_make_shock(shock_id="a"))
+    )
+    assert cat.duplicate_ids() == ("a", "b")
+    assert cat.has_unique_ids() is False
+
+
+def test_catalog_unique_id_helpers_when_all_unique() -> None:
+    cat = (
+        Catalog()
+        .add(_make_shock(shock_id="x"))
+        .add(_make_shock(shock_id="y"))
+        .add(_make_shock(shock_id="z"))
+    )
+    assert cat.duplicate_ids() == ()
+    assert cat.has_unique_ids() is True
+
+
+def test_empty_catalog_has_unique_ids() -> None:
+    assert Catalog().duplicate_ids() == ()
+    assert Catalog().has_unique_ids() is True

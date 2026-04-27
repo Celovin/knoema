@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+- `luvoire.calibration.sbi_adapter.PosteriorHandle.sample` now validates that the upstream posterior returns a 2-D ``(n, dimension)`` array and raises `RuntimeError` with the offending shape on mismatch (was a silent reshape on 1-D output and no dimension check). Hardens the boundary against malformed mock or upstream posteriors.
+- `luvoire.shock.catalog.Catalog` gains opt-in `duplicate_ids()` and `has_unique_ids()` query helpers. Existing `add()` semantics are unchanged: the catalogue still does not enforce uniqueness, but callers can now detect duplicates without iterating manually.
+
 ### Added
 - `luvoire.scaling.city_scale` extended with an `aggregate` trace mode for large-N runs. `CityScaleTraceMode` literal, `CityScaleTickAggregate` frozen dataclass, and `sample_agent_count` config field let callers retain only per-tick aggregates plus a deterministic sample of full per-agent frames. New `city_scale_aggregate_output_hash`, `CityScaleResult.aggregates`, `frame_count_total`, `event_count_total`, `write_aggregate_jsonl`, and `write_aggregate_parquet` helpers expose the compact stream. `benchmarks/city_scale_100k.py` plus a committed `benchmarks/city_scale_100k_report.md` demonstrate a 100 000-agent × 100-tick aggregate proof on a 200×200 grid (single-shard, deterministic, no live LLM calls). 2 new scaling tests cover aggregate determinism and parquet export.
 - `paper/rat_methodology/` — RAT methodology paper drafts. `kci_draft.md` is a Korean-language draft targeting KCI venues (target submission 2027-09); `ssci_draft.md` is an English-language draft targeting SSCI venues or arXiv preprint (target submission 2027-12); `methodology_section.md` is the canonical shared methods text reused by both. All three documents include explicit Civilian Use Policy alignment and disclaim prediction, per-person risk scoring, and operational deployment. 6 smoke tests verify keyword presence, citation set, and policy disclaimers.
