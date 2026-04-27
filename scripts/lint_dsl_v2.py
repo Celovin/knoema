@@ -11,6 +11,8 @@ skipped — this script does not enforce v2 rules on legacy fixtures.
 from __future__ import annotations
 
 import argparse
+import importlib
+import re
 from collections.abc import Iterable, Sequence
 from pathlib import Path
 from typing import Any
@@ -19,6 +21,44 @@ import yaml
 
 V2_TIER_KEYS_TIER_A_FORBIDDEN = ("value", "range", "source", "default")
 V2_TIER_KEYS_TIER_B_REQUIRED_ANY = ("value", "distribution")
+
+# ``code:<dotted.module.path>.v<N>`` — the trailing ``v<N>`` MUST equal
+# the module's ``VERSION`` constant. This regex matches the Tier A ref
+# format used across :mod:`luvoire.demography.cohort_component` and
+# :mod:`luvoire.theory.rat`.
+_CODE_REF_PATTERN = re.compile(r"^code:([a-z_][a-z0-9_.]*)\.(v\d+)$")
+
+
+def _resolve_code_ref(ref: str) -> str | None:
+    """Verify that ``ref`` (a ``code:...vN`` string) points to an
+    importable module whose ``VERSION`` matches the trailing ``vN``.
+
+    Returns ``None`` on success, or a human-readable failure message.
+    A non-``code:`` ref returns ``None`` (out of scope for this check).
+    """
+
+    if not ref.startswith("code:"):
+        return None
+    match = _CODE_REF_PATTERN.match(ref)
+    if not match:
+        return f"ref {ref!r} does not match 'code:<dotted.path>.v<N>' shape"
+    module_path, version_suffix = match.group(1), match.group(2)
+    try:
+        module = importlib.import_module(module_path)
+    except ImportError as exc:
+        return f"ref {ref!r} module {module_path!r} is not importable ({exc})"
+    declared = getattr(module, "VERSION", None)
+    if declared is None:
+        return (
+            f"ref {ref!r} module {module_path!r} has no VERSION constant; "
+            f"add ``VERSION = {version_suffix!r}`` to lock the ref<->module pairing"
+        )
+    if declared != version_suffix:
+        return (
+            f"ref {ref!r} version suffix {version_suffix!r} disagrees with "
+            f"module.VERSION {declared!r}"
+        )
+    return None
 
 
 def lint_file(path: Path) -> list[str]:
@@ -47,10 +87,17 @@ def lint_file(path: Path) -> list[str]:
                         f"{path}::parameters.{name}: Tier A must only define "
                         f"'ref' (forbidden key '{forbidden}')"
                     )
-            if "ref" not in spec:
+            ref_value = spec.get("ref")
+            if ref_value is None:
                 issues.append(
                     f"{path}::parameters.{name}: Tier A requires 'ref'"
                 )
+            elif isinstance(ref_value, str):
+                resolution_failure = _resolve_code_ref(ref_value)
+                if resolution_failure is not None:
+                    issues.append(
+                        f"{path}::parameters.{name}: {resolution_failure}"
+                    )
         elif tier == "B":
             if not spec.get("source"):
                 issues.append(

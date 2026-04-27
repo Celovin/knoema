@@ -58,6 +58,11 @@ def _as_float_array(arr: np.ndarray | list[float] | tuple[float, ...]) -> np.nda
     out = np.asarray(arr, dtype=float)
     if out.ndim != 1:
         raise ValueError(f"expected 1-D array, got shape {out.shape}")
+    # Reject NaN / +-Inf at the boundary. ``(arr < 0).any()`` is False for
+    # NaN, so without this guard a NaN-laden rate or population would
+    # silently propagate through the projector for the entire horizon.
+    if not np.isfinite(out).all():
+        raise ValueError("array must be finite (no NaN / +-Inf)")
     return out
 
 

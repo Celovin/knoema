@@ -38,6 +38,34 @@ not bundle any coordinate / geometry data here.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from types import MappingProxyType
+
+# Canonical SGIS prefix (admin_code[:2]) -> 시도 mapping. Only the prefixes
+# that appear in :data:`REGISTERED_REGIONS` are listed here; production
+# fixtures that introduce additional prefixes must extend this map (and the
+# accompanying tests) so the prefix<->sido cross-check stays exhaustive.
+# Source: 통계청 SGIS 시군구 코드 (KOGL Type 1).
+_SIDO_BY_PREFIX: MappingProxyType[str, str] = MappingProxyType(
+    {
+        "11": "서울특별시",
+        "26": "부산광역시",
+        "27": "대구광역시",
+        "28": "인천광역시",
+        "29": "광주광역시",
+        "30": "대전광역시",
+        "31": "울산광역시",
+        "36": "세종특별자치시",
+        "41": "경기도",
+        "43": "충청북도",
+        "44": "충청남도",
+        "46": "전라남도",
+        "47": "경상북도",
+        "48": "경상남도",
+        "50": "제주특별자치도",
+        "51": "강원특별자치도",
+        "52": "전북특별자치도",
+    }
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -78,6 +106,23 @@ class RegionLabel:
             raise ValueError("sido must be a non-empty string")
         if not isinstance(self.sigungu, str) or not self.sigungu:
             raise ValueError("sigungu must be a non-empty string")
+        # Cross-check: admin_code[:2] must agree with the canonical SGIS
+        # prefix for sido. This catches data-entry errors like
+        # ``RegionLabel(admin_code='26680', sido='서울특별시', ...)`` —
+        # Busan prefix paired with Seoul sido — which would otherwise
+        # corrupt :func:`lookup_region` and downstream KOSIS joins.
+        prefix = self.admin_code[:2]
+        expected_sido = _SIDO_BY_PREFIX.get(prefix)
+        if expected_sido is None:
+            raise ValueError(
+                f"admin_code prefix {prefix!r} is not a registered SGIS "
+                f"시도 prefix; extend _SIDO_BY_PREFIX before adding this region"
+            )
+        if expected_sido != self.sido:
+            raise ValueError(
+                f"admin_code prefix {prefix!r} maps to sido "
+                f"{expected_sido!r}, not {self.sido!r}"
+            )
 
     @property
     def full_label(self) -> str:

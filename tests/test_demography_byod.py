@@ -415,3 +415,59 @@ def test_population_numpy_nan_is_rejected() -> None:
         i.code == "invalid_population" and "finite" in i.message
         for i in issues
     )
+
+
+# --- Audit-3 hardening: NFC normalization for NFD Hangul bypass ---------
+
+
+def _to_nfd(s: str) -> str:
+    import unicodedata
+
+    return unicodedata.normalize("NFD", s)
+
+
+@pytest.mark.parametrize(
+    "korean_individual",
+    [
+        "이메일",
+        "주민번호",
+        "전화번호",
+        "성명",
+        "여권번호",
+    ],
+)
+def test_nfd_decomposed_korean_individual_is_rejected(korean_individual: str) -> None:
+    """NFD-decomposed Hangul Jamo column names must still match the
+    NFC-stored forbidden token set. Without canonical normalisation the
+    Jamo split form silently bypasses ``_FORBIDDEN_INDIVIDUAL_TOKENS``.
+    """
+
+    nfd_col = _to_nfd(korean_individual)
+    assert nfd_col != korean_individual, "input must actually decompose under NFD"
+    record = _valid_record()
+    record[nfd_col] = "blocked"
+    issues = validate_aggregate_byod([record])
+    assert any(i.code == "forbidden_individual_column" for i in issues), (
+        f"NFD-decomposed {korean_individual!r} must still be rejected"
+    )
+
+
+@pytest.mark.parametrize(
+    "korean_geometry",
+    [
+        "위도",
+        "경도",
+        "도로명주소",
+        "법정동",
+        "우편번호",
+    ],
+)
+def test_nfd_decomposed_korean_geometry_is_rejected(korean_geometry: str) -> None:
+    nfd_col = _to_nfd(korean_geometry)
+    assert nfd_col != korean_geometry, "input must actually decompose under NFD"
+    record = _valid_record()
+    record[nfd_col] = "blocked"
+    issues = validate_aggregate_byod([record])
+    assert any(i.code == "forbidden_geometry_column" for i in issues), (
+        f"NFD-decomposed {korean_geometry!r} must still be rejected"
+    )

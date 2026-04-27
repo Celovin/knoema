@@ -42,6 +42,7 @@ forbidden shapes.
 from __future__ import annotations
 
 import math
+import unicodedata
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 
@@ -175,7 +176,11 @@ class ByodValidationIssue:
 
 
 def _normalise_column(name: str) -> str:
-    return name.strip().lower()
+    # NFC-fold so NFD-decomposed Hangul (e.g. ``"이메일"`` arriving as Jamo
+    # ``ㅇ ㅣ ㅁ ...``) collapses to the canonical pre-composed form before
+    # token comparison. Without this, the forbidden-token frozensets — which
+    # store NFC source literals — would miss NFD-encoded smuggling attempts.
+    return unicodedata.normalize("NFC", name).strip().lower()
 
 
 def _split_column_tokens(column: str) -> set[str]:
@@ -188,8 +193,12 @@ def _split_column_tokens(column: str) -> set[str]:
     has no case so the camelCase split is a no-op for it). This avoids
     substring false-positives such as ``population`` matching ``lat``
     while still catching disguised identifiers.
+
+    Input is NFC-normalised first so NFD-decomposed Hangul Jamo collapses
+    to the same canonical form the forbidden-token frozensets store.
     """
 
+    column = unicodedata.normalize("NFC", column)
     out: set[str] = set()
     buf = ""
     prev_lower = False
@@ -255,7 +264,8 @@ def _has_forbidden_token(column: str, tokens: Iterable[str]) -> bool:
     """
 
     column_tokens = _split_column_tokens(column)
-    merged = "".join(c for c in column.lower() if c.isalnum())
+    nfc_column = unicodedata.normalize("NFC", column).lower()
+    merged = "".join(c for c in nfc_column if c.isalnum())
     token_set = set(tokens)
     if any(token in column_tokens for token in token_set):
         return True

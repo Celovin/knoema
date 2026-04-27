@@ -241,3 +241,65 @@ def test_projector_rejects_population_with_wrong_max_age() -> None:
     proj = CohortComponentProjector()
     with pytest.raises(ValueError, match="max_age"):
         proj.step(pop, rates)
+
+
+# --- Audit-3 hardening: NaN/Inf rejection at construction --------------
+
+
+def test_cohort_population_rejects_nan_counts() -> None:
+    """``(arr < 0).any()`` is False for NaN, so without an explicit
+    finite check NaN-laden populations would silently propagate through
+    the projector. Round-3 audit fix.
+    """
+
+    male = np.full(DEFAULT_MAX_AGE + 1, 100.0)
+    male[0] = float("nan")
+    with pytest.raises(ValueError, match="finite"):
+        CohortPopulation(
+            year=2026,
+            region_label="서울특별시 강남구",
+            male=male,
+            female=np.full(DEFAULT_MAX_AGE + 1, 100.0),
+        )
+
+
+def test_cohort_population_rejects_inf_counts() -> None:
+    male = np.full(DEFAULT_MAX_AGE + 1, 100.0)
+    male[10] = float("inf")
+    with pytest.raises(ValueError, match="finite"):
+        CohortPopulation(
+            year=2026,
+            region_label="서울특별시 강남구",
+            male=male,
+            female=np.full(DEFAULT_MAX_AGE + 1, 100.0),
+        )
+
+
+def test_demographic_rates_rejects_nan_asmr() -> None:
+    asfr = np.zeros(DEFAULT_MAX_AGE + 1)
+    asfr[REPRODUCTIVE_AGE_LO:REPRODUCTIVE_AGE_HI] = 0.05
+    asmr = np.full(DEFAULT_MAX_AGE + 1, 0.005)
+    asmr[5] = float("nan")
+    with pytest.raises(ValueError, match="finite"):
+        DemographicRates(asfr=asfr, asmr_male=asmr, asmr_female=asmr)
+
+
+def test_demographic_rates_rejects_inf_asfr() -> None:
+    asfr = np.zeros(DEFAULT_MAX_AGE + 1)
+    asfr[REPRODUCTIVE_AGE_LO:REPRODUCTIVE_AGE_HI] = 0.05
+    asfr[20] = float("inf")
+    asmr = np.full(DEFAULT_MAX_AGE + 1, 0.005)
+    with pytest.raises(ValueError, match="finite"):
+        DemographicRates(asfr=asfr, asmr_male=asmr, asmr_female=asmr)
+
+
+def test_demographic_rates_rejects_nan_migration() -> None:
+    asfr = np.zeros(DEFAULT_MAX_AGE + 1)
+    asfr[REPRODUCTIVE_AGE_LO:REPRODUCTIVE_AGE_HI] = 0.05
+    asmr = np.full(DEFAULT_MAX_AGE + 1, 0.005)
+    mig = np.zeros(DEFAULT_MAX_AGE + 1)
+    mig[30] = float("nan")
+    with pytest.raises(ValueError, match="finite"):
+        DemographicRates(
+            asfr=asfr, asmr_male=asmr, asmr_female=asmr, net_migration_male=mig
+        )

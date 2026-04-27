@@ -149,3 +149,17 @@ def test_target_tick_mismatch_returns_none() -> None:
     assert (
         opportunity_event(actor, target_late, guardian, tick=7, cell=CELL_A) is None
     )
+
+
+# --- Audit-3 hardening: VERSION constant matches Tier A ref suffix -----
+
+
+def test_rat_module_version_constant_is_v1() -> None:
+    """Tier A ref ``code:luvoire.theory.rat.v1`` must match
+    ``module.VERSION`` so the lint_dsl_v2 import-resolution check
+    succeeds. Round-3 audit fix.
+    """
+
+    from luvoire.theory import rat as rat_module
+
+    assert rat_module.VERSION == "v1"

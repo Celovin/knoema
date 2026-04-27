@@ -201,3 +201,46 @@ def test_registered_regions_total_count_within_expected_band() -> None:
 
     n = len(REGISTERED_REGIONS)
     assert 25 <= n <= 35, f"unexpected registry size: {n}"
+
+
+# ---------------------------------------------------------------------------
+# Audit-3 hardening: admin_code prefix <-> sido cross-validation
+# ---------------------------------------------------------------------------
+
+
+def test_region_label_rejects_prefix_sido_mismatch() -> None:
+    """SGIS prefix 26 = 부산광역시; pairing it with 서울특별시 must raise."""
+
+    with pytest.raises(ValueError, match="prefix"):
+        RegionLabel(admin_code="26680", sido="서울특별시", sigungu="강남구")
+
+
+def test_region_label_rejects_unknown_prefix() -> None:
+    """Prefix 99 is not registered in _SIDO_BY_PREFIX; must raise so a
+    silently-wrong code is caught at construction."""
+
+    with pytest.raises(ValueError, match="prefix"):
+        RegionLabel(admin_code="99999", sido="서울특별시", sigungu="강남구")
+
+
+def test_region_label_accepts_aligned_prefix_and_sido() -> None:
+    """Sanity — the matching pairing must continue to construct cleanly."""
+
+    region = RegionLabel(admin_code="11680", sido="서울특별시", sigungu="강남구")
+    assert region.admin_code[:2] == "11"
+    assert region.sido == "서울특별시"
+
+
+def test_all_registered_regions_satisfy_prefix_sido_invariant() -> None:
+    """Every entry of REGISTERED_REGIONS must respect the prefix<->sido
+    cross-check that __post_init__ now enforces. This is implicitly true
+    if module import succeeded (else we'd fail at import); the explicit
+    assertion documents the invariant for future maintainers.
+    """
+
+    from luvoire.demography.region import _SIDO_BY_PREFIX
+
+    for region in REGISTERED_REGIONS:
+        prefix = region.admin_code[:2]
+        assert prefix in _SIDO_BY_PREFIX, region
+        assert _SIDO_BY_PREFIX[prefix] == region.sido, region

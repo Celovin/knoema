@@ -20,6 +20,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
+VERSION: Literal["v1"] = "v1"
+"""Semantic version suffix matching the canonical Tier A ref
+``code:luvoire.theory.rat.v1``. Must match the trailing ``vN`` of any
+Scenario DSL v2 ``ref:`` that resolves into this module so the lint
+tool can verify ref<->module agreement without a separate metadata
+file. Bump this in lockstep with the ref suffix when introducing v2.
+"""
+
 H3CellRef = str
 """A 15-character h3 v4 hex index, or a synthetic-grid cell label."""
 
@@ -172,6 +180,7 @@ def _is_h3_v4_string(value: str) -> bool:
 __all__ = [
     "DEFAULT_CONVERGENCE_THRESHOLD",
     "LOCKED_EVENT_KIND",
+    "VERSION",
     "ActorState",
     "GuardianshipGap",
     "H3CellRef",
