@@ -44,3 +44,12 @@ def test_schema_ethics_includes_no_real_geometry() -> None:
     ethics_def = schema["$defs"]["EthicsSpecV2"]
     assert "no_real_geometry" in ethics_def["properties"]
     assert ethics_def["properties"]["no_real_geometry"]["default"] is True
+
+
+def test_schema_ethics_includes_demographic_projection_and_pssdp_mode() -> None:
+    schema = scenario_v2_json_schema()
+    ethics_def = schema["$defs"]["EthicsSpecV2"]
+    assert "demographic_projection" in ethics_def["properties"]
+    assert ethics_def["properties"]["demographic_projection"]["default"] is False
+    assert "pssdp_mode" in ethics_def["properties"]
+    assert ethics_def["properties"]["pssdp_mode"]["default"] is False

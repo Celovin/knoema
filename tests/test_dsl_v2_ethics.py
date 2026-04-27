@@ -109,3 +109,65 @@ def test_disallowed_phrase_v2_rejected() -> None:
 def test_ethics_default_no_real_geometry_is_true() -> None:
     ethics = EthicsSpecV2()
     assert ethics.no_real_geometry is True
+
+
+def test_ethics_default_demographic_projection_is_false() -> None:
+    ethics = EthicsSpecV2()
+    assert ethics.demographic_projection is False
+    assert ethics.pssdp_mode is False
+
+
+def test_demographic_projection_requires_no_prediction() -> None:
+    scenario = _scenario(
+        ethics=EthicsSpecV2(
+            demographic_projection=True,
+            no_prediction=False,
+        ),
+    )
+    with pytest.raises(ValueError, match="demographic_projection"):
+        validate_scenario_v2(scenario)
+
+
+def test_demographic_projection_with_no_prediction_true_is_allowed() -> None:
+    scenario = _scenario(
+        ethics=EthicsSpecV2(
+            demographic_projection=True,
+            no_prediction=True,
+        ),
+    )
+    validate_scenario_v2(scenario)
+
+
+def test_pssdp_mode_requires_no_prediction() -> None:
+    scenario = _scenario(
+        ethics=EthicsSpecV2(
+            pssdp_mode=True,
+            no_prediction=False,
+        ),
+    )
+    with pytest.raises(ValueError, match="pssdp_mode"):
+        validate_scenario_v2(scenario)
+
+
+def test_pssdp_mode_requires_no_suspect_scoring() -> None:
+    scenario = _scenario(
+        ethics=EthicsSpecV2(
+            pssdp_mode=True,
+            no_prediction=True,
+            no_suspect_scoring=False,
+        ),
+    )
+    with pytest.raises(ValueError, match="pssdp_mode"):
+        validate_scenario_v2(scenario)
+
+
+def test_pssdp_mode_with_all_guardrails_active_is_allowed() -> None:
+    scenario = _scenario(
+        ethics=EthicsSpecV2(
+            pssdp_mode=True,
+            demographic_projection=True,
+            no_prediction=True,
+            no_suspect_scoring=True,
+        ),
+    )
+    validate_scenario_v2(scenario)

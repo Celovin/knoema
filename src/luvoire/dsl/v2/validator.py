@@ -64,6 +64,46 @@ def collect_validation_issues_v2(scenario: ScenarioV2) -> list[ValidationIssueV2
             )
         )
 
+    # demographic_projection / pssdp_mode interlock — these flags do NOT
+    # unlock prediction or suspect scoring; they only label aggregate
+    # demographic projection scenarios. Activating either while
+    # disabling no_prediction or no_suspect_scoring is a configuration
+    # mistake that we reject loudly.
+    if ethics.demographic_projection and not ethics.no_prediction:
+        issues.append(
+            _issue(
+                "ethics.demographic_projection",
+                (
+                    "demographic_projection=true requires no_prediction=true; "
+                    "demographic projection is counterfactual scenario "
+                    "exploration, not prediction."
+                ),
+            )
+        )
+    if ethics.pssdp_mode:
+        if not ethics.no_prediction:
+            issues.append(
+                _issue(
+                    "ethics.pssdp_mode",
+                    (
+                        "pssdp_mode=true requires no_prediction=true; "
+                        "Public Safety Service Demand Projection is "
+                        "decision-support, not a decision-system."
+                    ),
+                )
+            )
+        if not ethics.no_suspect_scoring:
+            issues.append(
+                _issue(
+                    "ethics.pssdp_mode",
+                    (
+                        "pssdp_mode=true requires no_suspect_scoring=true; "
+                        "PSSDP outputs aggregate service demand, never "
+                        "per-person risk or suspicion ranking."
+                    ),
+                )
+            )
+
     if ethics.no_real_geometry and scenario.environment.epsg is not None:
         epsg = scenario.environment.epsg
         if not epsg.startswith(SYNTHETIC_EPSG_PREFIX):

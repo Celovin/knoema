@@ -46,7 +46,25 @@ class EnvironmentSpecV2(BaseModel):
 
 
 class EthicsSpecV2(BaseModel):
-    """Ethics declarations extended with the ``no_real_geometry`` guardrail."""
+    """Ethics declarations extended with the ``no_real_geometry`` guardrail.
+
+    The new ``demographic_projection`` and ``pssdp_mode`` flags carve out
+    a narrow, ethics-coherent space for **aggregate demographic projection**
+    (KOSTAT 장래인구추계 style): they do *not* unlock prediction or suspect
+    scoring, they only label that this scenario is a counterfactual
+    long-horizon scenario at registered region-string aggregation. The
+    existing ``no_prediction`` / ``no_suspect_scoring`` / ``no_real_geometry``
+    guardrails remain in force and are validated independently.
+
+    - ``demographic_projection``: when true, declares that the scenario
+      uses :mod:`luvoire.demography` cohort-component projection over
+      registered 시군구 string labels; aggregate-only output, no
+      individual-level prediction. Defaults to ``False``.
+    - ``pssdp_mode``: Public Safety Service Demand Projection mode. When
+      true, declares that the scenario informs municipal-planning
+      decision *support* (학교·119·파출소 인프라 수요), not operational
+      LE decision *systems*. Defaults to ``False``.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -56,6 +74,8 @@ class EthicsSpecV2(BaseModel):
     no_suspect_scoring: bool = True
     no_real_geometry: bool = True
     sensitive_domain: bool = False
+    demographic_projection: bool = False
+    pssdp_mode: bool = False
     irb_notes: str | None = None
 
 
