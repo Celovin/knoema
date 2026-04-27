@@ -1,0 +1,35 @@
+schema_version: "1.0"
+scenario_id: v1_legacy_dorm
+title: Legacy v1 Dormitory
+domain: academic_research
+description: Legacy v1 fixture used to test deprecation upgrade path.
+seed: 20260427
+tick_duration_minutes: 30
+duration_days: 1
+environment:
+  start_time: "2026-04-27T09:00:00"
+  location_path:
+    - Synthetic World
+    - Dormitory
+  conditions:
+    weather: clear
+agents:
+  - agent_id: alice
+    name: Alice
+    age: 17
+    background: Introverted literature student in a synthetic dormitory.
+    personality:
+      openness: 0.8
+      conscientiousness: 0.6
+      extraversion: 0.2
+      agreeableness: 0.7
+      neuroticism: 0.4
+    values: [privacy, honesty]
+    goals: [finish a short story]
+    synthetic: true
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  sensitive_domain: false

@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 ### Added
+- Scenario DSL v2 (`luvoire.dsl.v2`) with variable 3-tier parameter system (Tier A theoretical constants, Tier B empirical priors with required source metadata, Tier C exploration knobs with required range plus default), optional GIS-readiness fields (`environment.h3_cell`, `environment.epsg`), and `ethics.no_real_geometry` guardrail. v1 scenarios continue to load via `load_scenario_v2` with a one-release-window deprecation warning.
+- `schemas/scenario_v2.json` exported via `luvoire.dsl.v2.scenario_v2_json_schema()`.
+- `scripts/lint_dsl_v2.py` enforces Tier A/B/C consistency for v2 YAML files with `--strict` exit-code mode.
+- `tests/fixtures/scenarios/v2_rat_baseline.yaml` and `v1_legacy.yaml` golden fixtures plus 42 new pytest cases across schema export, parameter validation, ethics guardrails, parser deprecation, and lint regression.
 - `luvoire.personas.lpi` defines Luvoire Persona Interface v1, a harmonized cross-country persona dataclass plus JSON schema.
 - `luvoire.personas.loaders` adds CC-BY-4.0 Nemotron-Personas loaders for USA, Japan, India, Brazil, Singapore, France, and Korea behind the `luvoire[personas]` extra.
 - `python -m luvoire.cli personas {list,sample,schema}` for country metadata, deterministic LPI sampling, and schema export.

@@ -33,7 +33,18 @@ from luvoire.distributed import (
     rebalance_hot_shards,
     shard_agents_by_location,
 )
-from luvoire.dsl import Scenario, load_scenario
+from luvoire.dsl import (
+    EnvironmentSpecV2,
+    EthicsSpecV2,
+    ParameterSpec,
+    Scenario,
+    ScenarioV2,
+    TierAParam,
+    TierBParam,
+    TierCParam,
+    load_scenario,
+    load_scenario_v2,
+)
 from luvoire.emotion import EmotionState, EmotionStimulus
 from luvoire.environment import Environment, EnvironmentContext
 from luvoire.evaluation import (
@@ -176,6 +187,8 @@ __all__ = [
     "EmotionStimulus",
     "Environment",
     "EnvironmentContext",
+    "EnvironmentSpecV2",
+    "EthicsSpecV2",
     "EvaluationSession",
     "FilterDecision",
     "GameSession",
@@ -205,6 +218,7 @@ __all__ = [
     "ObservedBehavior",
     "OllamaClient",
     "OpenAIClient",
+    "ParameterSpec",
     "Persona",
     "Personality",
     "PromptLanguage",
@@ -220,6 +234,7 @@ __all__ = [
     "SallyAnneBenchmarkResult",
     "SallyAnneCaseResult",
     "Scenario",
+    "ScenarioV2",
     "Shard",
     "ShardPlan",
     "ShortTermMemoryBuffer",
@@ -233,6 +248,9 @@ __all__ = [
     "TheoryOfMindContext",
     "TheoryOfMindEngine",
     "TheoryOfMindProfile",
+    "TierAParam",
+    "TierBParam",
+    "TierCParam",
     "TraceCriterionScore",
     "TraceGradeReport",
     "VLLMClient",
@@ -263,6 +281,7 @@ __all__ = [
     "load_config",
     "load_or_create_anonymous_id",
     "load_scenario",
+    "load_scenario_v2",
     "normalize_prompt_language",
     "query_run_parquet",
     "rebalance_hot_shards",

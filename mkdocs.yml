@@ -86,6 +86,9 @@ nav:
       - Social Learning: cognition/social_learning.md
       - Scenario DSL Tutorial: dsl/tutorial.md
       - Scenario DSL Reference: dsl/reference.md
+      - Scenario DSL v2 Reference: dsl/v2-reference.md
+      - Scenario DSL v1 to v2 Migration: dsl/migration-v1-to-v2.md
+      - Scenario DSL v2 Design Spec: dsl/v2-design-spec.md
   - API:
       - Persona: api/persona.md
       - Memory: api/memory.md

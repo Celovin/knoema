@@ -1,0 +1,81 @@
+schema_version: "2.0"
+scenario_id: rat_baseline_v2
+title: RAT Baseline Synthetic Plaza
+domain: academic_research
+description: Synthetic routine activity scenario in a fictional Seoul-style plaza.
+seed: 20260427
+tick_duration_minutes: 30
+duration_days: 1
+parameters:
+  opportunity_definition:
+    tier: A
+    ref: "code:luvoire.theory.rat.v1"
+  schedule_prior:
+    tier: B
+    source: "KOSTAT 2024 생활시간조사"
+    table_id: "T-08"
+    license: "KOGL Type 1"
+    value: 0.42
+    description: Time-use prior weight for a 30s urban commuter strata.
+  guardianship_density:
+    tier: C
+    range: [0.1, 0.9]
+    sweep: 9
+    default: 0.5
+    description: Place-level capable guardianship density (synthetic units).
+environment:
+  start_time: "2026-04-23T19:00:00"
+  location_path:
+    - Luvoire Demo World
+    - Seoul-style Synthetic Grid
+    - Plaza A
+  conditions:
+    weather: clear
+    crowd_level: high
+  h3_cell: "8830e1ad81fffff"
+  epsg: "luvoire-synthetic-v1"
+agents:
+  - agent_id: coordinator
+    name: Sora
+    age: 32
+    background: Synthetic coordinator helping participants find a meetup point.
+    personality:
+      openness: 0.59
+      conscientiousness: 0.76
+      extraversion: 0.63
+      agreeableness: 0.72
+      neuroticism: 0.24
+    values: [clarity, patience]
+    goals: [keep the queue visible, reduce confusion]
+    synthetic: true
+  - agent_id: commuter
+    name: Jiho
+    age: 27
+    background: Synthetic commuter navigating a crowded station exit.
+    personality:
+      openness: 0.48
+      conscientiousness: 0.58
+      extraversion: 0.41
+      agreeableness: 0.66
+      neuroticism: 0.33
+    values: [punctuality, courtesy]
+    goals: [find the group, avoid blocking the exit]
+    synthetic: true
+events:
+  - timestamp: "2026-04-23T19:00:00"
+    event_type: plaza.meetup_window
+    participants: [coordinator, commuter]
+    location: Luvoire Demo World > Seoul-style Synthetic Grid > Plaza A
+    description: Participants coordinate around a visible meetup sign during evening foot traffic.
+metrics:
+  - name: queue_visibility
+    kind: ratio
+    description: Share of actions that keep the waiting area legible.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  no_real_geometry: true
+  sensitive_domain: false
+local_response: '{"action_type": "observe", "target": null, "content": "maintains a clear meetup area."}'

@@ -1,0 +1,898 @@
+{
+  "$defs": {
+    "AgentSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "age": {
+          "exclusiveMinimum": 0,
+          "title": "Age",
+          "type": "integer"
+        },
+        "agent_id": {
+          "minLength": 1,
+          "title": "Agent Id",
+          "type": "string"
+        },
+        "background": {
+          "minLength": 1,
+          "title": "Background",
+          "type": "string"
+        },
+        "goals": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Goals",
+          "type": "array"
+        },
+        "location_path": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Location Path"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "personality": {
+          "$ref": "#/$defs/PersonalitySpec"
+        },
+        "routine": {
+          "items": {
+            "$ref": "#/$defs/RoutineSpec"
+          },
+          "title": "Routine",
+          "type": "array"
+        },
+        "synthetic": {
+          "default": true,
+          "title": "Synthetic",
+          "type": "boolean"
+        },
+        "values": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "agent_id",
+        "name",
+        "age",
+        "background",
+        "personality"
+      ],
+      "title": "AgentSpec",
+      "type": "object"
+    },
+    "EnvironmentSpecV2": {
+      "additionalProperties": false,
+      "description": "Environment with optional GIS-readiness fields.\n\n``h3_cell`` and ``epsg`` are optional in v2. When ``ethics.no_real_geometry``\nis true (the default), ``epsg`` must either be unset or use the\n``luvoire-synthetic-*`` prefix; runtime use as an analysis unit is rejected\nby :mod:`luvoire.dsl.v2.validator`.",
+      "properties": {
+        "conditions": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "title": "Conditions",
+          "type": "object"
+        },
+        "epsg": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Epsg"
+        },
+        "h3_cell": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{15}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "H3 Cell"
+        },
+        "location_path": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Location Path",
+          "type": "array"
+        },
+        "start_time": {
+          "format": "date-time",
+          "title": "Start Time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start_time",
+        "location_path"
+      ],
+      "title": "EnvironmentSpecV2",
+      "type": "object"
+    },
+    "EthicsSpecV2": {
+      "additionalProperties": false,
+      "description": "Ethics declarations extended with the ``no_real_geometry`` guardrail.",
+      "properties": {
+        "fictional": {
+          "default": true,
+          "title": "Fictional",
+          "type": "boolean"
+        },
+        "irb_notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Irb Notes"
+        },
+        "no_prediction": {
+          "default": true,
+          "title": "No Prediction",
+          "type": "boolean"
+        },
+        "no_real_geometry": {
+          "default": true,
+          "title": "No Real Geometry",
+          "type": "boolean"
+        },
+        "no_real_people": {
+          "default": true,
+          "title": "No Real People",
+          "type": "boolean"
+        },
+        "no_suspect_scoring": {
+          "default": true,
+          "title": "No Suspect Scoring",
+          "type": "boolean"
+        },
+        "sensitive_domain": {
+          "default": false,
+          "title": "Sensitive Domain",
+          "type": "boolean"
+        }
+      },
+      "title": "EthicsSpecV2",
+      "type": "object"
+    },
+    "EventSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "event_type": {
+          "minLength": 1,
+          "title": "Event Type",
+          "type": "string"
+        },
+        "location": {
+          "minLength": 1,
+          "title": "Location",
+          "type": "string"
+        },
+        "participants": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Participants",
+          "type": "array"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "title": "Timestamp",
+          "type": "string"
+        }
+      },
+      "required": [
+        "timestamp",
+        "event_type",
+        "participants",
+        "location",
+        "description"
+      ],
+      "title": "EventSpec",
+      "type": "object"
+    },
+    "MetricSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "count",
+            "ratio",
+            "score",
+            "latency"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "kind",
+        "description"
+      ],
+      "title": "MetricSpec",
+      "type": "object"
+    },
+    "PersonalitySpec": {
+      "additionalProperties": false,
+      "properties": {
+        "achievement": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Achievement",
+          "type": "number"
+        },
+        "agreeableness": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Agreeableness",
+          "type": "number"
+        },
+        "benevolence": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Benevolence",
+          "type": "number"
+        },
+        "binding_morals": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Binding Morals",
+          "type": "number"
+        },
+        "care_harm": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Care Harm",
+          "type": "number"
+        },
+        "conformity": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Conformity",
+          "type": "number"
+        },
+        "conscientiousness": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Conscientiousness",
+          "type": "number"
+        },
+        "extraversion": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Extraversion",
+          "type": "number"
+        },
+        "fairness": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Fairness",
+          "type": "number"
+        },
+        "faith_in_humanity": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Faith In Humanity",
+          "type": "number"
+        },
+        "hedonism": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Hedonism",
+          "type": "number"
+        },
+        "honesty_humility": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Honesty Humility",
+          "type": "number"
+        },
+        "humanism": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Humanism",
+          "type": "number"
+        },
+        "kantianism": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Kantianism",
+          "type": "number"
+        },
+        "locus_of_control": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Locus Of Control",
+          "type": "number"
+        },
+        "machiavellianism": {
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Machiavellianism",
+          "type": "number"
+        },
+        "narcissism": {
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Narcissism",
+          "type": "number"
+        },
+        "need_for_cognition": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Need For Cognition",
+          "type": "number"
+        },
+        "neuroticism": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Neuroticism",
+          "type": "number"
+        },
+        "openness": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Openness",
+          "type": "number"
+        },
+        "power": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Power",
+          "type": "number"
+        },
+        "psychopathy": {
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Psychopathy",
+          "type": "number"
+        },
+        "risk_tolerance": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Risk Tolerance",
+          "type": "number"
+        },
+        "sadism": {
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Sadism",
+          "type": "number"
+        },
+        "security": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Security",
+          "type": "number"
+        },
+        "self_direction": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Self Direction",
+          "type": "number"
+        },
+        "stimulation": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Stimulation",
+          "type": "number"
+        },
+        "tradition": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Tradition",
+          "type": "number"
+        },
+        "trait_empathy": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Trait Empathy",
+          "type": "number"
+        },
+        "universalism": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Universalism",
+          "type": "number"
+        }
+      },
+      "required": [
+        "openness",
+        "conscientiousness",
+        "extraversion",
+        "agreeableness",
+        "neuroticism"
+      ],
+      "title": "PersonalitySpec",
+      "type": "object"
+    },
+    "RoutineSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "default_action": {
+          "minLength": 1,
+          "title": "Default Action",
+          "type": "string"
+        },
+        "default_target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Default Target"
+        },
+        "end_hour": {
+          "maximum": 24,
+          "minimum": 0,
+          "title": "End Hour",
+          "type": "integer"
+        },
+        "location_path": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Location Path",
+          "type": "array"
+        },
+        "start_hour": {
+          "maximum": 24,
+          "minimum": 0,
+          "title": "Start Hour",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start_hour",
+        "end_hour",
+        "location_path",
+        "default_action"
+      ],
+      "title": "RoutineSpec",
+      "type": "object"
+    },
+    "TierAParam": {
+      "additionalProperties": false,
+      "description": "Locked theoretical constant. Only ``ref`` may be set.",
+      "properties": {
+        "ref": {
+          "pattern": "^code:[a-z_][a-z0-9_.]*\\.v\\d+$",
+          "title": "Ref",
+          "type": "string"
+        },
+        "tier": {
+          "const": "A",
+          "default": "A",
+          "title": "Tier",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "title": "TierAParam",
+      "type": "object"
+    },
+    "TierBParam": {
+      "additionalProperties": false,
+      "description": "Empirical prior with required source metadata.",
+      "properties": {
+        "default": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Default"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "distribution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Distribution"
+        },
+        "license": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License"
+        },
+        "range": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Range"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "table_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Table Id"
+        },
+        "tier": {
+          "const": "B",
+          "default": "B",
+          "title": "Tier",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "title": "TierBParam",
+      "type": "object"
+    },
+    "TierCParam": {
+      "additionalProperties": false,
+      "description": "Exploration knob with required range and default.",
+      "properties": {
+        "default": {
+          "title": "Default",
+          "type": "number"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "range": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Range",
+          "type": "array"
+        },
+        "sweep": {
+          "anyOf": [
+            {
+              "minimum": 2,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sweep"
+        },
+        "tier": {
+          "const": "C",
+          "default": "C",
+          "title": "Tier",
+          "type": "string"
+        }
+      },
+      "required": [
+        "range",
+        "default"
+      ],
+      "title": "TierCParam",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Scenario DSL v2 root object.",
+  "properties": {
+    "agents": {
+      "items": {
+        "$ref": "#/$defs/AgentSpec"
+      },
+      "minItems": 1,
+      "title": "Agents",
+      "type": "array"
+    },
+    "description": {
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "domain": {
+      "enum": [
+        "game",
+        "public_safety_research",
+        "academic_research"
+      ],
+      "title": "Domain",
+      "type": "string"
+    },
+    "duration_days": {
+      "default": 1,
+      "minimum": 1,
+      "title": "Duration Days",
+      "type": "integer"
+    },
+    "environment": {
+      "$ref": "#/$defs/EnvironmentSpecV2"
+    },
+    "ethics": {
+      "$ref": "#/$defs/EthicsSpecV2"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/EventSpec"
+      },
+      "title": "Events",
+      "type": "array"
+    },
+    "local_response": {
+      "default": "{\"action_type\": \"observe\", \"target\": null, \"content\": \"records the scenario state.\"}",
+      "title": "Local Response",
+      "type": "string"
+    },
+    "metrics": {
+      "items": {
+        "$ref": "#/$defs/MetricSpec"
+      },
+      "title": "Metrics",
+      "type": "array"
+    },
+    "parameters": {
+      "additionalProperties": {
+        "discriminator": {
+          "mapping": {
+            "A": "#/$defs/TierAParam",
+            "B": "#/$defs/TierBParam",
+            "C": "#/$defs/TierCParam"
+          },
+          "propertyName": "tier"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/TierAParam"
+          },
+          {
+            "$ref": "#/$defs/TierBParam"
+          },
+          {
+            "$ref": "#/$defs/TierCParam"
+          }
+        ]
+      },
+      "title": "Parameters",
+      "type": "object"
+    },
+    "scenario_id": {
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9_-]*$",
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "seed": {
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "tick_duration_minutes": {
+      "default": 60,
+      "minimum": 1,
+      "title": "Tick Duration Minutes",
+      "type": "integer"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "scenario_id",
+    "title",
+    "domain",
+    "description",
+    "seed",
+    "environment",
+    "agents"
+  ],
+  "title": "ScenarioV2",
+  "type": "object"
+}
