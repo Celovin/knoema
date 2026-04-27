@@ -1,0 +1,104 @@
+schema_version: "2.0"
+scenario_id: seoul_demography_30y
+title: 30-Year Synthetic Demographic Scenario over a Seoul-Style Grid
+domain: academic_research
+description: >-
+  Long-horizon counterfactual demographic projection over a Seoul-style
+  synthetic 5x5 grid. Combines luvoire.demography cohort-component
+  projection with luvoire.demography.synthesis cell-level allocation
+  and the locked luvoire.theory.rat v1 convergence rule. Three
+  fertility scenarios (low / medium / high) produce parallel
+  trajectories at year 30, used for aggregate cell-level distribution
+  comparison only. This is a demographic projection scenario, not a
+  prediction; output is decision-support for municipal-planning, not
+  a decision-system for law-enforcement.
+seed: 20260428
+tick_duration_minutes: 60
+duration_days: 1
+parameters:
+  opportunity_definition:
+    tier: A
+    ref: "code:luvoire.theory.rat.v1"
+  demographic_method:
+    tier: A
+    ref: "code:luvoire.demography.cohort_component.v1"
+  baseline_tfr:
+    tier: B
+    source: "KOSIS 출생통계"
+    table_id: "1B36E27"
+    license: "KOGL Type 1"
+    revision: "2024"
+    value: 0.72
+    description: >-
+      Aggregate baseline total fertility rate, KOSTAT 2024 reference. The
+      cohort-component projector consumes single-year ASFR; this scalar
+      is the metadata reference for downstream tooling.
+  baseline_life_expectancy:
+    tier: B
+    source: "KOSIS 생명표"
+    table_id: "1B40E04"
+    license: "KOGL Type 1"
+    revision: "2024"
+    value: 83.5
+    description: Aggregate baseline life expectancy at birth, both sexes.
+  fertility_scale_sweep:
+    tier: C
+    range: [0.85, 1.15]
+    sweep: 3
+    default: 1.00
+    description: >-
+      Multiplier applied to baseline ASFR within reproductive ages.
+      KOSTAT-style low / medium / high scenario reference triple.
+  num_cells:
+    tier: C
+    range: [4, 100]
+    default: 25
+    description: Number of synthetic-grid cells the regional cohort is allocated to.
+  horizon_years:
+    tier: C
+    range: [10, 50]
+    default: 30
+    description: Projection horizon in years (KOSTAT 장래인구추계 standard ~30y).
+environment:
+  start_time: "2026-04-28T08:00:00"
+  location_path:
+    - Luvoire Demo World
+    - Seoul-style Synthetic Grid
+    - 5x5 Lattice
+    - 30-Year Demographic Horizon
+  conditions:
+    weather: clear
+    crowd_level: medium
+  h3_cell: null
+  epsg: "luvoire-synthetic-v1"
+agents:
+  - agent_id: synthetic_resident_a
+    name: Synthetic Resident A
+    age: 30
+    background: >-
+      Synthetic aggregate placeholder; this scenario operates at
+      aggregate cell level and does not simulate per-person agents.
+    personality:
+      openness: 0.5
+      conscientiousness: 0.5
+      extraversion: 0.5
+      agreeableness: 0.5
+      neuroticism: 0.5
+    synthetic: true
+events: []
+metrics: []
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  no_real_geometry: true
+  sensitive_domain: false
+  demographic_projection: true
+  pssdp_mode: true
+  irb_notes: >-
+    Aggregate-only synthetic demographic projection. KOSIS Tier B references
+    are KOGL Type 1 public statistics (no microdata loaded). Output is
+    cell-level aggregate counts for distribution-comparison only — never
+    per-person, never operational LE input.
+local_response: '{"action_type": "observe", "target": null, "content": "records the scenario state."}'

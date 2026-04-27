@@ -36,6 +36,12 @@ def _run_crimemind_compare() -> dict[str, Any]:
     return compare.run()
 
 
+def _run_seoul_demography_30y() -> dict[str, Any]:
+    from scenarios.seoul_demography_30y import run_scenario
+
+    return run_scenario.run()
+
+
 def _committed_summary(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -60,6 +66,15 @@ def main() -> int:
             / "crimemind_compare"
             / "results"
             / "comparison_summary.json",
+        ),
+        (
+            "seoul_demography_30y",
+            _run_seoul_demography_30y,
+            ROOT
+            / "scenarios"
+            / "seoul_demography_30y"
+            / "results"
+            / "demography_summary.json",
         ),
     )
     for label, builder, committed_path in targets:

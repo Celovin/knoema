@@ -51,6 +51,12 @@ from luvoire.demography.region import (
     lookup_region,
     regions_by_sido,
 )
+from luvoire.demography.synthesis import (
+    CellPopulation,
+    aggregate_cells_to_pyramid,
+    cell_populations_total,
+    synthesize_cell_populations,
+)
 
 __all__ = [
     "DEFAULT_MAX_AGE",
@@ -60,6 +66,7 @@ __all__ = [
     "REGISTERED_REGIONS",
     "REPRODUCTIVE_AGE_HI",
     "REPRODUCTIVE_AGE_LO",
+    "CellPopulation",
     "CohortComponentProjector",
     "CohortPopulation",
     "CounterfactualScenarioEngine",
@@ -71,8 +78,11 @@ __all__ = [
     "ScenarioKind",
     "ScenarioResult",
     "Sex",
+    "aggregate_cells_to_pyramid",
+    "cell_populations_total",
     "lookup_kosis_table",
     "lookup_region",
     "regions_by_sido",
+    "synthesize_cell_populations",
     "tables_by_kind",
 ]
