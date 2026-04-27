@@ -21,12 +21,32 @@ Civilian Use Policy alignment
   KOSTAT 저위/중위/고위 scenario practice.
 """
 
+from luvoire.demography.byod import (
+    MIN_AGGREGATION_FLOOR,
+    REQUIRED_COLUMNS,
+    ByodValidationIssue,
+    assert_aggregate_byod,
+    validate_aggregate_byod,
+)
 from luvoire.demography.counterfactual import (
     KOSTAT_REFERENCE_TRIPLE,
     CounterfactualScenarioEngine,
     RatePerturbation,
     ScenarioKind,
     ScenarioResult,
+)
+from luvoire.demography.dp import (
+    DpBudget,
+    DpMechanism,
+    add_dp_noise,
+    gaussian_noise_sigma,
+    laplace_noise_scale,
+)
+from luvoire.demography.federated import (
+    FederatedRequest,
+    FederatedResponse,
+    LocalAggregator,
+    run_federated_local_only,
 )
 from luvoire.demography.kosis import (
     REGISTERED_KOSIS_TABLES,
@@ -62,27 +82,41 @@ __all__ = [
     "DEFAULT_MAX_AGE",
     "DEFAULT_SEX_RATIO_AT_BIRTH",
     "KOSTAT_REFERENCE_TRIPLE",
+    "MIN_AGGREGATION_FLOOR",
     "REGISTERED_KOSIS_TABLES",
     "REGISTERED_REGIONS",
     "REPRODUCTIVE_AGE_HI",
     "REPRODUCTIVE_AGE_LO",
+    "REQUIRED_COLUMNS",
+    "ByodValidationIssue",
     "CellPopulation",
     "CohortComponentProjector",
     "CohortPopulation",
     "CounterfactualScenarioEngine",
     "DemographicRates",
+    "DpBudget",
+    "DpMechanism",
+    "FederatedRequest",
+    "FederatedResponse",
     "KosisDataKind",
     "KosisTable",
+    "LocalAggregator",
     "RatePerturbation",
     "RegionLabel",
     "ScenarioKind",
     "ScenarioResult",
     "Sex",
+    "add_dp_noise",
     "aggregate_cells_to_pyramid",
+    "assert_aggregate_byod",
     "cell_populations_total",
+    "gaussian_noise_sigma",
+    "laplace_noise_scale",
     "lookup_kosis_table",
     "lookup_region",
     "regions_by_sido",
+    "run_federated_local_only",
     "synthesize_cell_populations",
     "tables_by_kind",
+    "validate_aggregate_byod",
 ]
