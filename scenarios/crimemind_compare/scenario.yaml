@@ -1,0 +1,87 @@
+schema_version: "2.0"
+scenario_id: crimemind_compare_v1
+title: CrimeMind RAT-prompt comparison PoC
+domain: academic_research
+description: Patterns-level comparison harness for the CrimeMind RAT-prompt agent design, re-implemented over the synthetic Luvoire grid.
+seed: 20260427
+tick_duration_minutes: 60
+duration_days: 1
+parameters:
+  opportunity_definition:
+    tier: A
+    ref: "code:luvoire.theory.rat.v1"
+  motivation_weight:
+    tier: C
+    range: [0.1, 1.0]
+    sweep: 4
+    default: 1.0
+    description: Per-component multiplicative weight on the motivation slot in the RAT prompt schema (synthetic units).
+  exposure_weight:
+    tier: C
+    range: [0.1, 1.0]
+    sweep: 4
+    default: 1.0
+    description: Per-component multiplicative weight on the target-exposure slot in the RAT prompt schema.
+  guardian_gap_weight:
+    tier: C
+    range: [0.1, 1.0]
+    sweep: 4
+    default: 1.0
+    description: Per-component multiplicative weight on the guardian-gap slot in the RAT prompt schema.
+environment:
+  start_time: "2026-04-27T18:00:00"
+  location_path:
+    - Luvoire Demo World
+    - Synthetic Urban Block
+    - 6x6 Lattice
+  conditions:
+    weather: clear
+    crowd_level: medium
+  h3_cell: null
+  epsg: "luvoire-synthetic-v1"
+agents:
+  - agent_id: actor_a
+    name: Sora
+    age: 31
+    background: Synthetic actor A in the CrimeMind comparison harness.
+    personality:
+      openness: 0.5
+      conscientiousness: 0.6
+      extraversion: 0.5
+      agreeableness: 0.6
+      neuroticism: 0.4
+    values: [punctuality]
+    goals: [navigate the block]
+    synthetic: true
+  - agent_id: actor_b
+    name: Jiho
+    age: 28
+    background: Synthetic actor B in the CrimeMind comparison harness.
+    personality:
+      openness: 0.55
+      conscientiousness: 0.6
+      extraversion: 0.55
+      agreeableness: 0.6
+      neuroticism: 0.35
+    values: [efficiency]
+    goals: [navigate the block]
+    synthetic: true
+events: []
+metrics:
+  - name: events_under_equal_weights
+    kind: count
+    description: Synthetic opportunity-event count under the equal-weight Tier C regime.
+  - name: events_under_motivation_heavy
+    kind: count
+    description: Synthetic opportunity-event count under a motivation-heavy Tier C regime.
+  - name: events_under_guardian_heavy
+    kind: count
+    description: Synthetic opportunity-event count under a guardian-heavy Tier C regime.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  no_real_geometry: true
+  sensitive_domain: false
+local_response: '{"action_type": "observe", "target": null, "content": "moves through the synthetic block."}'

@@ -1,0 +1,31 @@
+{
+  "grid_cols": 6,
+  "grid_rows": 6,
+  "regimes": [
+    {
+      "events": 13,
+      "exposure_weight": 1.0,
+      "guardian_gap_weight": 1.0,
+      "motivation_weight": 1.0,
+      "name": "equal_weights"
+    },
+    {
+      "events": 0,
+      "exposure_weight": 0.5,
+      "guardian_gap_weight": 0.5,
+      "motivation_weight": 1.0,
+      "name": "motivation_heavy"
+    },
+    {
+      "events": 0,
+      "exposure_weight": 0.5,
+      "guardian_gap_weight": 1.0,
+      "motivation_weight": 0.5,
+      "name": "guardian_heavy"
+    }
+  ],
+  "scenario_id": "crimemind_compare_v1",
+  "seed": 20260427,
+  "summary_sha256": "ca46bbbc8f9cba136be1ac1e8a56a54cae0ca35d6c5da7131ba96447412981ec",
+  "threshold": 0.125
+}
