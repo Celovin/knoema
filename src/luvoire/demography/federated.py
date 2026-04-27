@@ -124,16 +124,23 @@ class FederatedRequest:
         if self.dp_seed is not None:
             if not isinstance(self.dp_seed, int) or isinstance(self.dp_seed, bool):
                 raise TypeError("dp_seed must be int")
-            # numpy.random.default_rng requires non-negative seed; we also
-            # cap at uint63 - 1 so dp_seed + 1 cannot overflow when the
-            # federated runner pairs male/female under different streams.
+            # numpy.random.default_rng requires non-negative seed.
+            # We additionally cap at 2**63 - 1 as a defensive safety
+            # margin so the federated runner's ``dp_seed + 1`` pairing
+            # for male / female streams stays well within the uint64
+            # range numpy uses internally — note this is a margin, not
+            # a strict numpy overflow point (numpy SeedSequence actually
+            # accepts seeds up to uint64 max), but pinning a 63-bit
+            # ceiling keeps us portable to any future SeedSequence
+            # change without renegotiating downstream state.
             if self.dp_seed < 0:
                 raise ValueError(
                     f"dp_seed must be non-negative (got {self.dp_seed})"
                 )
             if self.dp_seed >= (1 << 63) - 1:
                 raise ValueError(
-                    "dp_seed must be < 2**63 - 1 to keep dp_seed + 1 in range"
+                    "dp_seed must be < 2**63 - 1 (defensive ceiling for "
+                    "the dp_seed + 1 pairing in run_federated_local_only)"
                 )
         object.__setattr__(self, "male_by_age", male)
         object.__setattr__(self, "female_by_age", female)
@@ -206,8 +213,8 @@ def run_federated_local_only(
         # because that trace can carry file paths or schema fragments
         # from raw input. We surface a redacted boundary error instead.
         return FederatedResponse(
-            admin_code="00000",
-            year=0,
+            admin_code="!!!!!",
+            year=1900,
             accepted=False,
             validation_errors=(
                 f"aggregator raised {type(exc).__name__} during aggregate()",
@@ -216,8 +223,8 @@ def run_federated_local_only(
         )
     if not isinstance(request, FederatedRequest):
         return FederatedResponse(
-            admin_code="00000",
-            year=0,
+            admin_code="!!!!!",
+            year=1900,
             accepted=False,
             validation_errors=(
                 f"aggregator.aggregate() must return FederatedRequest "

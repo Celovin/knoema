@@ -211,17 +211,47 @@ def _split_column_tokens(column: str) -> set[str]:
     return out
 
 
+_CRITICAL_PREFIX_TOKENS: frozenset[str] = frozenset(
+    {
+        # Technical / legal acronyms unlikely to false-positive in
+        # benign aggregate column names. Any column whose merged form
+        # starts with one of these is rejected even if a 1-character
+        # suffix has been appended (e.g. ``rrnx``, ``wkt0``,
+        # ``imeino``, ``passportcode``). Common English words such as
+        # ``address`` / ``phone`` / ``email`` are deliberately kept
+        # off this list to avoid false-positives like ``addressbook``.
+        "rrn",
+        "ssn",
+        "passport",
+        "imei",
+        "udid",
+        "wkt",
+        "wkb",
+        "epsg",
+        "geohash",
+        "pluscode",
+    }
+)
+
+
 def _has_forbidden_token(column: str, tokens: Iterable[str]) -> bool:
     """Return True when *column* matches any forbidden token.
 
-    Matching is performed against two views of the column name:
+    Matching is performed in three layers:
 
-    1. The set of split tokens (separators + camelCase boundaries).
-    2. The lowercased / non-alphanumeric-stripped concatenation. This
-       catches compound tokens like ``firstname`` / ``lastname`` /
-       ``buildingno`` / ``zipcode`` whose camelCase split decomposes
-       into individually-too-broad tokens (``first``, ``no``, ``code``)
-       that we deliberately do not list.
+    1. **Split-token exact match** — column is split on separators and
+       camelCase boundaries; each token is compared to the forbidden
+       set.
+    2. **Merged-form exact match** — the lowercased, non-alphanumeric-
+       stripped concatenation is compared to the set, so compound
+       tokens like ``firstname`` / ``buildingno`` / ``zipcode``
+       still match even when their camelCase split decomposes into
+       individually-too-broad tokens.
+    3. **Critical-prefix match** — any token in
+       :data:`_CRITICAL_PREFIX_TOKENS` that is a prefix of the merged
+       form (or of any split token) triggers rejection. This closes
+       the 1-character-suffix bypass attack (``rrnx``, ``wkt0``,
+       ``imeino``) on the most sensitive PII / geometry acronyms.
     """
 
     column_tokens = _split_column_tokens(column)
@@ -229,7 +259,17 @@ def _has_forbidden_token(column: str, tokens: Iterable[str]) -> bool:
     token_set = set(tokens)
     if any(token in column_tokens for token in token_set):
         return True
-    return bool(merged and merged in token_set)
+    if merged and merged in token_set:
+        return True
+    # Critical-prefix layer (defence-in-depth against suffix bypass).
+    critical_active = _CRITICAL_PREFIX_TOKENS & token_set
+    if critical_active:
+        if any(merged.startswith(prefix) for prefix in critical_active):
+            return True
+        for tok in column_tokens:
+            if any(tok.startswith(prefix) for prefix in critical_active):
+                return True
+    return False
 
 
 def _is_finite_real(value: float | int) -> bool:
@@ -241,6 +281,27 @@ def _is_finite_real(value: float | int) -> bool:
     """
 
     return math.isfinite(float(value))
+
+
+def _is_numeric_scalar(value: object) -> bool:
+    """Return ``True`` when ``value`` is an int or float, including
+    ``numpy`` scalar types but excluding ``bool``.
+
+    Pandas / numpy ingestion paths frequently produce ``numpy.int64`` /
+    ``numpy.float64`` which do not satisfy ``isinstance(value, (int,
+    float))`` on Python 3.13+. We accept anything whose ``__class__``
+    declares numeric duck-typing via ``__index__`` or ``__float__``
+    while still rejecting ``bool`` (a subclass of ``int`` we never
+    want to treat as a population count).
+    """
+
+    if isinstance(value, bool):
+        return False
+    if isinstance(value, (int, float)):
+        return True
+    return (hasattr(value, "__float__") and hasattr(value, "__index__")) or hasattr(
+        value, "__float__"
+    )
 
 
 def validate_aggregate_byod(
@@ -337,7 +398,7 @@ def validate_aggregate_byod(
                 )
         if pop_column is not None:
             pop_value = record.get(pop_column)
-            if not isinstance(pop_value, (int, float)) or isinstance(pop_value, bool):
+            if not _is_numeric_scalar(pop_value):
                 issues.append(
                     ByodValidationIssue(
                         code="invalid_population",
@@ -349,7 +410,7 @@ def validate_aggregate_byod(
                         ),
                     )
                 )
-            elif not _is_finite_real(pop_value):
+            elif not _is_finite_real(pop_value):  # type: ignore[arg-type]
                 issues.append(
                     ByodValidationIssue(
                         code="invalid_population",
@@ -361,7 +422,7 @@ def validate_aggregate_byod(
                         ),
                     )
                 )
-            elif pop_value < min_aggregation_floor:
+            elif float(pop_value) < min_aggregation_floor:  # type: ignore[arg-type]
                 issues.append(
                     ByodValidationIssue(
                         code="below_aggregation_floor",

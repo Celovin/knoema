@@ -331,3 +331,87 @@ def test_population_negative_inf_is_rejected() -> None:
         i.code == "invalid_population" and "finite" in i.message
         for i in issues
     )
+
+
+# --- Audit-2 hardening: critical-prefix bypass + numpy scalar -----------
+
+
+@pytest.mark.parametrize(
+    "suffix_col",
+    [
+        "rrnx",
+        "rrn0",
+        "rrnno",
+        "ssnno",
+        "passportcode",
+        "imeino",
+        "imei0",
+        "udid0",
+    ],
+)
+def test_critical_prefix_individual_suffix_bypass_blocked(suffix_col: str) -> None:
+    """1-character / digit suffix on rrn / ssn / imei / udid / passport
+    must not bypass the forbidden-individual filter.
+    """
+
+    record = _valid_record()
+    record[suffix_col] = "blocked"
+    issues = validate_aggregate_byod([record])
+    assert any(
+        i.code == "forbidden_individual_column" and i.column == suffix_col
+        for i in issues
+    ), f"suffix-bypass column {suffix_col!r} must still be rejected"
+
+
+@pytest.mark.parametrize(
+    "suffix_col",
+    [
+        "wkt0",
+        "wktline",
+        "wkbblob",
+        "epsg0",
+        "geohashbin",
+        "pluscodearea",
+    ],
+)
+def test_critical_prefix_geometry_suffix_bypass_blocked(suffix_col: str) -> None:
+    """1-character / suffix bypass on wkt / wkb / epsg / geohash / pluscode
+    must not bypass the forbidden-geometry filter.
+    """
+
+    record = _valid_record()
+    record[suffix_col] = "blocked"
+    issues = validate_aggregate_byod([record])
+    assert any(
+        i.code == "forbidden_geometry_column" and i.column == suffix_col
+        for i in issues
+    ), f"suffix-bypass column {suffix_col!r} must still be rejected"
+
+
+def test_population_numpy_int64_is_accepted() -> None:
+    """numpy.int64 scalars (common from pandas DataFrame.to_dict)
+    must be accepted as numeric population values.
+    """
+
+    np = pytest.importorskip("numpy")
+    record = _valid_record(population=np.int64(540_000))
+    issues = validate_aggregate_byod([record])
+    assert all(i.code != "invalid_population" for i in issues)
+    assert all(i.code != "below_aggregation_floor" for i in issues)
+
+
+def test_population_numpy_float64_is_accepted() -> None:
+    np = pytest.importorskip("numpy")
+    record = _valid_record(population=np.float64(540_000.0))
+    issues = validate_aggregate_byod([record])
+    assert all(i.code != "invalid_population" for i in issues)
+
+
+def test_population_numpy_nan_is_rejected() -> None:
+    np = pytest.importorskip("numpy")
+    record = _valid_record(population=np.float64(float("nan")))
+    issues = validate_aggregate_byod([record])
+    assert any(
+        i.code == "invalid_population" and "finite" in i.message
+        for i in issues
+    )

@@ -21,6 +21,7 @@ Civilian Use Policy alignment
   KOSTAT 저위/중위/고위 scenario practice.
 """
 
+from luvoire.demography import cohort_component as cohort_component
 from luvoire.demography.byod import (
     MIN_AGGREGATION_FLOOR,
     REQUIRED_COLUMNS,
@@ -142,6 +143,7 @@ __all__ = [
     "aggregate_cells_to_pyramid",
     "assert_aggregate_byod",
     "cell_populations_total",
+    "cohort_component",
     "gaussian_noise_sigma",
     "laplace_noise_scale",
     "lookup_kosis_table",
