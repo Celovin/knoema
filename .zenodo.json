@@ -19,7 +19,10 @@
     "game NPC",
     "synthetic replay",
     "reproducible research",
-    "social simulation"
+    "social simulation",
+    "routine activity theory",
+    "auditable replay",
+    "sensitivity analysis"
   ],
   "related_identifiers": [
     {
@@ -33,5 +36,5 @@
       "resource_type": "publication-preprint"
     }
   ],
-  "notes": "Release metadata prepared for the Luvoire v0.3.0 rename. A version DOI is assigned only after the GitHub release archive is ingested by Zenodo under the Celovin account."
+  "notes": "Release metadata prepared for the Luvoire v0.3.0 rename. A version DOI is assigned only after the GitHub release archive is ingested by Zenodo under the Celovin account. Unreleased additions on top of v0.3.0 include Scenario DSL v2 (variable 3-tier with no_real_geometry guardrail), the locked luvoire.theory.rat.v1 convergence module, a deterministic Saltelli/Sobol estimator, the rat_sensitivity Sobol experiment, the four-panel ASC 2026 methodology poster figure set, and the EN/KO abstract pair tracked at paper/asc2026_poster/."
 }
