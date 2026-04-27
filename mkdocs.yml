@@ -89,6 +89,8 @@ nav:
       - Scenario DSL v2 Reference: dsl/v2-reference.md
       - Scenario DSL v1 to v2 Migration: dsl/migration-v1-to-v2.md
       - Scenario DSL v2 Design Spec: dsl/v2-design-spec.md
+      - Routine Activity Theory v1 Reference: theory/rat-v1-reference.md
+      - Routine Activity Theory v1 Design Spec: theory/rat-v1-design-spec.md
   - API:
       - Persona: api/persona.md
       - Memory: api/memory.md

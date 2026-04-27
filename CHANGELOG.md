@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 ### Added
+- `luvoire.theory.rat` v1 — locked routine activity theory convergence rule (`ActorState`, `TargetExposure`, `GuardianshipGap`, `OpportunityEvent`, `opportunity_event`). Tier A scenario references of the form `code:luvoire.theory.rat.v1` now resolve to a real module. Multiplicative convergence formula, tick-equality, cell-adjacency, and the `rat_v1_synthetic_opportunity` event kind are locked; threshold and input distributions remain Tier B/C YAML parameters.
+- `tests/test_theory_rat_v1.py` adds 13 unit tests covering convergence above/below threshold, tick mismatches, cell adjacency, synthetic-grid behaviour, threshold override, immutability, and h3-py-optional adjacency.
+- `docs/theory/rat-v1-design-spec.md` and `docs/theory/rat-v1-reference.md` document the module and its locked vs adjustable surface.
 - Scenario DSL v2 (`luvoire.dsl.v2`) with variable 3-tier parameter system (Tier A theoretical constants, Tier B empirical priors with required source metadata, Tier C exploration knobs with required range plus default), optional GIS-readiness fields (`environment.h3_cell`, `environment.epsg`), and `ethics.no_real_geometry` guardrail. v1 scenarios continue to load via `load_scenario_v2` with a one-release-window deprecation warning.
 - `schemas/scenario_v2.json` exported via `luvoire.dsl.v2.scenario_v2_json_schema()`.
 - `scripts/lint_dsl_v2.py` enforces Tier A/B/C consistency for v2 YAML files with `--strict` exit-code mode.
