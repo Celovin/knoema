@@ -1,0 +1,23 @@
+{
+  "version": "v1",
+  "priors": [
+    {
+      "strata": {"day_type": "weekday", "age_band": "adult", "occupation": "employed"},
+      "weights": {
+        "sleep": 0.32, "work_or_school": 0.34, "commute": 0.06,
+        "meals": 0.08, "leisure": 0.13, "care": 0.04, "other": 0.03
+      },
+      "source": "synthetic-luvoire-fixture",
+      "revision": "2026-04-27"
+    },
+    {
+      "strata": {"day_type": "weekend", "age_band": "youth", "occupation": "student"},
+      "weights": {
+        "sleep": 0.36, "work_or_school": 0.04, "commute": 0.02,
+        "meals": 0.10, "leisure": 0.40, "care": 0.04, "other": 0.04
+      },
+      "source": "synthetic-luvoire-fixture",
+      "revision": "2026-04-27"
+    }
+  ]
+}
