@@ -6,7 +6,10 @@ from luvoire.scaling.city_scale import (
     CityScaleResult,
     CityScaleRunner,
     CityScaleShardResult,
+    CityScaleTickAggregate,
     CityScaleTraceFrame,
+    CityScaleTraceMode,
+    city_scale_aggregate_output_hash,
     city_scale_output_hash,
 )
 
@@ -16,6 +19,9 @@ __all__ = [
     "CityScaleResult",
     "CityScaleRunner",
     "CityScaleShardResult",
+    "CityScaleTickAggregate",
     "CityScaleTraceFrame",
+    "CityScaleTraceMode",
+    "city_scale_aggregate_output_hash",
     "city_scale_output_hash",
 ]

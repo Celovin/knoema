@@ -18,6 +18,22 @@ python benchmarks/city_scale_1k.py --output tmp/city_scale
 
 The benchmark runs 1000 agents for 100 ticks across three repetitions with no live API calls. The generated report is `benchmarks/city_scale_1k_report.md`, and the JSON/JSONL traces are written under `tmp/city_scale`.
 
+Run the 100K aggregate proof:
+
+```powershell
+$env:PYTHONPATH = "src"
+python benchmarks/city_scale_100k.py --output tmp/city_scale_100k
+```
+
+```bash
+PYTHONPATH=src python benchmarks/city_scale_100k.py --output tmp/city_scale_100k
+```
+
+The 100K path uses `trace_mode="aggregate"` so it does not keep every per-agent
+frame in memory. It writes per-tick aggregate rows to JSONL and Parquet, plus
+sampled per-agent frames for inspection. This is still an offline deterministic
+benchmark; it does not imply 100K live LLM calls.
+
 Comparison rows for Concordia and Mesa are marked `not-measured` unless those frameworks are actually run with equivalent adapters. The report does not fabricate external throughput numbers.
 
 ## Offline Replay
@@ -108,7 +124,8 @@ The runner is intentionally simple. For larger replay work, keep the same constr
 - preserve deterministic seeds and output hashing;
 - keep inter-shard messages coordinator-routed;
 - avoid shared mutable state in worker code;
-- emit compact frame deltas instead of full snapshots;
+- use aggregate trace mode beyond 10K agents instead of retaining all frames;
+- emit compact frame deltas or sampled frames instead of full snapshots;
 - benchmark external frameworks only when equivalent adapters actually run.
 
 For live LLM scenarios, use replay-only deterministic traces for stakeholder demos and reserve live calls for smaller controlled experiments.

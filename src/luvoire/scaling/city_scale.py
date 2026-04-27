@@ -7,10 +7,11 @@ import importlib.util
 import json
 import multiprocessing
 import time
-from collections import defaultdict
+from collections import Counter, defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timedelta
+from importlib import import_module
 from pathlib import Path
 from typing import Literal
 
@@ -21,6 +22,7 @@ except Exception:  # pragma: no cover
 
 
 CityScaleBackend = Literal["single", "multiprocessing", "ray"]
+CityScaleTraceMode = Literal["full", "aggregate"]
 CityRole = Literal["general", "motivated_offender", "guardian"]
 
 
@@ -34,6 +36,8 @@ class CityScaleConfig:
     seed: int = 20260421
     workers: int | None = None
     backend: CityScaleBackend = "multiprocessing"
+    trace_mode: CityScaleTraceMode = "full"
+    sample_agent_count: int = 0
     grid_width: int = 20
     grid_height: int = 20
     tick_minutes: int = 1
@@ -48,6 +52,8 @@ class CityScaleConfig:
             raise ValueError("repetitions must be positive")
         if self.workers is not None and self.workers < 1:
             raise ValueError("workers must be positive when provided")
+        if self.sample_agent_count < 0:
+            raise ValueError("sample_agent_count must be non-negative")
         if self.grid_width < 2 or self.grid_height < 2:
             raise ValueError("grid dimensions must be at least 2x2")
         if self.tick_minutes < 1:
@@ -122,6 +128,34 @@ class CityScaleTraceFrame:
 
 
 @dataclass(frozen=True, slots=True)
+class CityScaleTickAggregate:
+    """Compact per-tick summary for large deterministic city-scale runs."""
+
+    tick: int
+    agent_count: int
+    role_counts: tuple[tuple[str, int], ...]
+    status_counts: tuple[tuple[str, int], ...]
+    occupied_cells: int
+    memory_delta_count: int
+    message_count: int
+    event_count: int
+    position_hash: str
+
+    def to_json_dict(self) -> dict[str, object]:
+        return {
+            "tick": self.tick,
+            "agent_count": self.agent_count,
+            "role_counts": dict(self.role_counts),
+            "status_counts": dict(self.status_counts),
+            "occupied_cells": self.occupied_cells,
+            "memory_delta_count": self.memory_delta_count,
+            "message_count": self.message_count,
+            "event_count": self.event_count,
+            "position_hash": self.position_hash,
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class CityScaleShardResult:
     """A pure shard step result returned to the coordinator."""
 
@@ -129,6 +163,7 @@ class CityScaleShardResult:
     agents: tuple[CityAgentState, ...]
     frames: tuple[CityScaleTraceFrame, ...]
     outbox: tuple[CityScaleMessage, ...]
+    memory_delta_count: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -141,9 +176,12 @@ class CityScaleResult:
     wall_clock_seconds: float
     peak_rss_mb: float
     frames: tuple[CityScaleTraceFrame, ...]
+    aggregates: tuple[CityScaleTickAggregate, ...]
     events: tuple[dict[str, object], ...]
     final_agents: tuple[CityAgentState, ...]
     inter_shard_messages: int
+    frame_count_total: int
+    event_count_total: int
     output_hash: str
 
     @property
@@ -161,10 +199,15 @@ class CityScaleResult:
             "throughput_agent_ticks_per_second": self.throughput_agent_ticks_per_second,
             "inter_shard_messages": self.inter_shard_messages,
             "output_hash": self.output_hash,
-            "event_count": len(self.events),
+            "frame_count": self.frame_count_total,
+            "stored_frame_count": len(self.frames),
+            "event_count": self.event_count_total,
+            "stored_event_count": len(self.events),
+            "aggregate_count": len(self.aggregates),
         }
         if include_frames:
             payload["frames"] = [frame.to_json_dict() for frame in self.frames]
+            payload["aggregates"] = [aggregate.to_json_dict() for aggregate in self.aggregates]
             payload["events"] = list(self.events)
         return payload
 
@@ -174,6 +217,22 @@ class CityScaleResult:
         with output_path.open("w", encoding="utf-8") as file:
             for frame in self.frames:
                 file.write(json.dumps(frame.to_json_dict(), sort_keys=True) + "\n")
+
+    def write_aggregate_jsonl(self, path: str | Path) -> None:
+        output_path = Path(path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with output_path.open("w", encoding="utf-8") as file:
+            for aggregate in self.aggregates:
+                file.write(json.dumps(aggregate.to_json_dict(), sort_keys=True) + "\n")
+
+    def write_aggregate_parquet(self, path: str | Path) -> None:
+        pyarrow = import_module("pyarrow")
+        parquet = import_module("pyarrow.parquet")
+        output_path = Path(path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        rows = [aggregate.to_json_dict() for aggregate in self.aggregates]
+        table = pyarrow.Table.from_pylist(rows)
+        parquet.write_table(table, output_path)
 
 
 class CityScaleRunner:
@@ -189,8 +248,11 @@ class CityScaleRunner:
         inbox_by_shard: dict[int, tuple[CityScaleMessage, ...]] = dict.fromkeys(range(len(shards)), ())
         agent_to_shard = _agent_to_shard(shards)
         frames: list[CityScaleTraceFrame] = []
+        aggregates: list[CityScaleTickAggregate] = []
         events: list[dict[str, object]] = []
         inter_shard_messages = 0
+        frame_count_total = 0
+        event_count_total = 0
         peak_rss_mb = _rss_mb()
         start = time.perf_counter()
 
@@ -210,7 +272,21 @@ class CityScaleRunner:
                     agent_to_shard = _agent_to_shard(shards)
                     for result in sorted(results, key=lambda item: item.shard_id):
                         frames.extend(result.frames)
-                    events.extend(_convergence_events(tick, shards, config))
+                    tick_events = _convergence_events(tick, shards, config)
+                    events.extend(tick_events)
+                    event_count_total += len(tick_events)
+                    frame_count_total += config.agent_count
+                    if config.trace_mode == "aggregate":
+                        aggregates.append(
+                            _tick_aggregate(
+                                tick,
+                                shards,
+                                config,
+                                message_count=tick_messages,
+                                event_count=len(tick_events),
+                                memory_delta_count=sum(result.memory_delta_count for result in results),
+                            )
+                        )
                     inter_shard_messages += tick_messages
                     peak_rss_mb = max(peak_rss_mb, _rss_mb())
         else:
@@ -229,7 +305,21 @@ class CityScaleRunner:
                 agent_to_shard = _agent_to_shard(shards)
                 for result in sorted(results, key=lambda item: item.shard_id):
                     frames.extend(result.frames)
-                events.extend(_convergence_events(tick, shards, config))
+                tick_events = _convergence_events(tick, shards, config)
+                events.extend(tick_events)
+                event_count_total += len(tick_events)
+                frame_count_total += config.agent_count
+                if config.trace_mode == "aggregate":
+                    aggregates.append(
+                        _tick_aggregate(
+                            tick,
+                            shards,
+                            config,
+                            message_count=tick_messages,
+                            event_count=len(tick_events),
+                            memory_delta_count=sum(result.memory_delta_count for result in results),
+                        )
+                    )
                 inter_shard_messages += tick_messages
                 peak_rss_mb = max(peak_rss_mb, _rss_mb())
 
@@ -241,8 +331,17 @@ class CityScaleRunner:
             )
         )
         sorted_frames = tuple(sorted(frames, key=lambda frame: (frame.tick, frame.agent_id)))
+        sorted_aggregates = tuple(sorted(aggregates, key=lambda aggregate: aggregate.tick))
         sorted_events = tuple(sorted(events, key=_event_sort_key))
-        output_hash = city_scale_output_hash(sorted_frames, sorted_events, config)
+        if config.trace_mode == "aggregate":
+            output_hash = city_scale_aggregate_output_hash(
+                sorted_aggregates,
+                sorted_frames,
+                sorted_events,
+                config,
+            )
+        else:
+            output_hash = city_scale_output_hash(sorted_frames, sorted_events, config)
         return CityScaleResult(
             config=config,
             backend=config.backend,
@@ -250,9 +349,12 @@ class CityScaleRunner:
             wall_clock_seconds=round(elapsed, 6),
             peak_rss_mb=round(peak_rss_mb, 3),
             frames=sorted_frames,
+            aggregates=sorted_aggregates,
             events=sorted_events,
             final_agents=final_agents,
             inter_shard_messages=inter_shard_messages,
+            frame_count_total=frame_count_total,
+            event_count_total=event_count_total,
             output_hash=output_hash,
         )
 
@@ -275,6 +377,34 @@ def city_scale_output_hash(
             "start_time_iso": config.start_time_iso,
         },
         "frames": [frame.to_json_dict() for frame in frames],
+        "events": list(events),
+    }
+    encoded = json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def city_scale_aggregate_output_hash(
+    aggregates: tuple[CityScaleTickAggregate, ...],
+    sampled_frames: tuple[CityScaleTraceFrame, ...],
+    events: tuple[dict[str, object], ...],
+    config: CityScaleConfig,
+) -> str:
+    """Hash deterministic aggregate-mode outputs without full per-agent traces."""
+
+    canonical = {
+        "config": {
+            "agent_count": config.agent_count,
+            "tick_count": config.tick_count,
+            "seed": config.seed,
+            "grid_width": config.grid_width,
+            "grid_height": config.grid_height,
+            "tick_minutes": config.tick_minutes,
+            "start_time_iso": config.start_time_iso,
+            "trace_mode": config.trace_mode,
+            "sample_agent_count": config.sample_agent_count,
+        },
+        "aggregates": [aggregate.to_json_dict() for aggregate in aggregates],
+        "sampled_frames": [frame.to_json_dict() for frame in sampled_frames],
         "events": list(events),
     }
     encoded = json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -356,22 +486,25 @@ def _process_shard_tick(
     updated_agents: list[CityAgentState] = []
     frames: list[CityScaleTraceFrame] = []
     outbox: list[CityScaleMessage] = []
+    memory_delta_count = 0
     for agent in agents:
         x, y = _move_agent(agent, tick, config)
         memory_delta_ids = _memory_delta_ids(agent, tick, inbox_by_agent.get(agent.agent_id, []))
+        memory_delta_count += len(memory_delta_ids)
         memory_ids = (*agent.memory_ids, *memory_delta_ids)[-6:]
         status_flags = _status_flags(agent.role, x, y, config)
         updated = replace(agent, x=x, y=y, memory_ids=memory_ids, status_flags=status_flags)
         updated_agents.append(updated)
-        frames.append(
-            CityScaleTraceFrame(
-                tick=tick,
-                agent_id=agent.agent_id,
-                position=(x, y),
-                status_flags=status_flags,
-                memory_delta_ids=memory_delta_ids,
+        if _should_store_frame(agent.agent_id, config):
+            frames.append(
+                CityScaleTraceFrame(
+                    tick=tick,
+                    agent_id=agent.agent_id,
+                    position=(x, y),
+                    status_flags=status_flags,
+                    memory_delta_ids=memory_delta_ids,
+                )
             )
-        )
         if tick % 7 == 0:
             target_index = (_agent_index(agent.agent_id) + tick + 1) % config.agent_count
             outbox.append(
@@ -387,6 +520,7 @@ def _process_shard_tick(
         agents=tuple(updated_agents),
         frames=tuple(frames),
         outbox=tuple(outbox),
+        memory_delta_count=memory_delta_count,
     )
 
 
@@ -452,23 +586,26 @@ def _convergence_events(
     config: CityScaleConfig,
 ) -> tuple[dict[str, object], ...]:
     agents = tuple(agent for shard in shards.values() for agent in shard)
-    guardians = [agent for agent in agents if agent.role == "guardian"]
-    targets = [agent for agent in agents if agent.role == "general"]
+    guardians_by_cell: set[tuple[int, int]] = set()
+    targets_by_cell: dict[tuple[int, int], list[CityAgentState]] = defaultdict(list)
+    target_order: dict[str, int] = {}
+    offenders: list[CityAgentState] = []
+    for order, agent in enumerate(agents):
+        if agent.role == "guardian":
+            guardians_by_cell.add((agent.x, agent.y))
+        elif agent.role == "general":
+            targets_by_cell[(agent.x, agent.y)].append(agent)
+            target_order[agent.agent_id] = order
+        elif agent.role == "motivated_offender":
+            offenders.append(agent)
     events: list[dict[str, object]] = []
-    for offender in (agent for agent in agents if agent.role == "motivated_offender"):
-        nearby_target = next(
-            (
-                target
-                for target in targets
-                if abs(target.x - offender.x) <= 1 and abs(target.y - offender.y) <= 1
-            ),
-            None,
-        )
+    for offender in offenders:
+        nearby_target = _first_nearby_target(offender, targets_by_cell, target_order, config)
         if nearby_target is None:
             continue
         guardian_present = any(
-            abs(guardian.x - offender.x) <= 1 and abs(guardian.y - offender.y) <= 1
-            for guardian in guardians
+            cell in guardians_by_cell
+            for cell in _neighbor_cells(offender.x, offender.y, config)
         )
         if not guardian_present:
             events.append(
@@ -485,6 +622,66 @@ def _convergence_events(
     return tuple(events)
 
 
+def _first_nearby_target(
+    offender: CityAgentState,
+    targets_by_cell: dict[tuple[int, int], list[CityAgentState]],
+    target_order: dict[str, int],
+    config: CityScaleConfig,
+) -> CityAgentState | None:
+    candidates: list[CityAgentState] = []
+    for cell in _neighbor_cells(offender.x, offender.y, config):
+        candidates.extend(targets_by_cell.get(cell, ()))
+    if not candidates:
+        return None
+    return min(candidates, key=lambda agent: target_order[agent.agent_id])
+
+
+def _neighbor_cells(x: int, y: int, config: CityScaleConfig) -> tuple[tuple[int, int], ...]:
+    cells: list[tuple[int, int]] = []
+    for dx in (-1, 0, 1):
+        for dy in (-1, 0, 1):
+            candidate_x = x + dx
+            candidate_y = y + dy
+            if 0 <= candidate_x < config.grid_width and 0 <= candidate_y < config.grid_height:
+                cells.append((candidate_x, candidate_y))
+    return tuple(cells)
+
+
+def _tick_aggregate(
+    tick: int,
+    shards: dict[int, tuple[CityAgentState, ...]],
+    config: CityScaleConfig,
+    *,
+    message_count: int,
+    event_count: int,
+    memory_delta_count: int,
+) -> CityScaleTickAggregate:
+    role_counts: Counter[str] = Counter()
+    status_counts: Counter[str] = Counter()
+    occupied_cells: set[tuple[int, int]] = set()
+    position_hasher = hashlib.sha256()
+    agents = sorted(
+        (agent for shard in shards.values() for agent in shard),
+        key=lambda agent: agent.agent_id,
+    )
+    for agent in agents:
+        role_counts[agent.role] += 1
+        status_counts.update(agent.status_flags)
+        occupied_cells.add((agent.x, agent.y))
+        position_hasher.update(f"{agent.agent_id}:{agent.x}:{agent.y}:{','.join(agent.status_flags)}\n".encode())
+    return CityScaleTickAggregate(
+        tick=tick,
+        agent_count=len(agents),
+        role_counts=tuple(sorted(role_counts.items())),
+        status_counts=tuple(sorted(status_counts.items())),
+        occupied_cells=len(occupied_cells),
+        memory_delta_count=memory_delta_count,
+        message_count=message_count,
+        event_count=event_count,
+        position_hash=position_hasher.hexdigest(),
+    )
+
+
 def _status_flags(role: CityRole, x: int, y: int, config: CityScaleConfig) -> tuple[str, ...]:
     flags: list[str] = [role]
     if 7 <= x <= 13 and 7 <= y <= 13:
@@ -492,6 +689,14 @@ def _status_flags(role: CityRole, x: int, y: int, config: CityScaleConfig) -> tu
     if x in {0, config.grid_width - 1} or y in {0, config.grid_height - 1}:
         flags.append("edge")
     return tuple(flags)
+
+
+def _should_store_frame(agent_id: str, config: CityScaleConfig) -> bool:
+    if config.trace_mode == "full":
+        return True
+    if config.sample_agent_count <= 0:
+        return False
+    return _agent_index(agent_id) < config.sample_agent_count
 
 
 def _step_toward(
@@ -546,7 +751,10 @@ __all__ = [
     "CityScaleResult",
     "CityScaleRunner",
     "CityScaleShardResult",
+    "CityScaleTickAggregate",
     "CityScaleTraceFrame",
+    "CityScaleTraceMode",
+    "city_scale_aggregate_output_hash",
     "city_scale_output_hash",
     "replay_timestamp",
 ]
