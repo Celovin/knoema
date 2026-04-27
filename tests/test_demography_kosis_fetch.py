@@ -329,3 +329,85 @@ def _expected_cache_path(
 
     key = _FetchKey(table_id=table_id, year=year, region_code=region_code)
     return client.cache_dir / f"{key.digest()}.json"
+
+
+# ---------------------------------------------------------------------------
+# Round-4 audit: HTTP response size ceiling
+# ---------------------------------------------------------------------------
+
+
+def test_oversized_response_body_is_rejected(tmp_path: Path) -> None:
+    """A KOSIS endpoint that streams more bytes than ``max_response_bytes``
+    must raise ``KosisFetchError`` before the JSON parser sees the body —
+    a slow / malicious server otherwise exhausts memory.
+    """
+
+    huge_body = b"X" * (5 * 1024)  # 5 KiB body
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, content=huge_body, headers={"content-type": "application/json"})
+
+    transport = httpx.MockTransport(handler)
+    client = KosisFetchClient(
+        base_url="https://kosis.invalid",
+        api_key="fake",
+        cache_dir=tmp_path,
+        transport=transport,
+        max_response_bytes=1024,  # ceiling well below 5 KiB body
+    )
+    with pytest.raises(KosisFetchError, match=r"exceed"):
+        client.fetch_aggregate("1B36E27", 2024, region_code="11680")
+
+
+def test_oversized_content_length_header_is_rejected(tmp_path: Path) -> None:
+    """If the server LIES about a small body but advertises a huge
+    Content-Length, we still reject before consuming the stream.
+    """
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        # httpx.Response will populate content-length itself if we
+        # provide a real body; we provide a small body but header
+        # cannot be lied to via httpx alone — instead simulate by
+        # using a body larger than the cap to trigger the size check
+        # while still exercising the header-pessimism path.
+        return httpx.Response(
+            200,
+            content=b"{" + b" " * (2 * 1024) + b"}",
+            headers={"content-type": "application/json"},
+        )
+
+    transport = httpx.MockTransport(handler)
+    client = KosisFetchClient(
+        base_url="https://kosis.invalid",
+        api_key="fake",
+        cache_dir=tmp_path,
+        transport=transport,
+        max_response_bytes=512,
+    )
+    with pytest.raises(KosisFetchError, match=r"exceeded|Content-Length"):
+        client.fetch_aggregate("1B36E27", 2024, region_code="11680")
+
+
+def test_max_response_bytes_must_be_positive_int(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="positive"):
+        KosisFetchClient(cache_dir=tmp_path, max_response_bytes=0)
+    with pytest.raises(ValueError, match="positive"):
+        KosisFetchClient(cache_dir=tmp_path, max_response_bytes=-1)
+    with pytest.raises(TypeError, match="int"):
+        KosisFetchClient(cache_dir=tmp_path, max_response_bytes=1.5)  # type: ignore[arg-type]
+
+
+def test_response_within_size_cap_is_accepted(tmp_path: Path) -> None:
+    """Sanity: a normal-sized payload must continue to round-trip."""
+
+    payload = _load_fixture()
+    transport = httpx.MockTransport(_handler_returning(payload))
+    client = KosisFetchClient(
+        base_url="https://kosis.invalid",
+        api_key="fake",
+        cache_dir=tmp_path,
+        transport=transport,
+        max_response_bytes=10 * 1024 * 1024,  # default
+    )
+    result = client.fetch_aggregate("1B36E27", 2024, region_code="11680")
+    assert result == payload

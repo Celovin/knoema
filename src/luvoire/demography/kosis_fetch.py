@@ -37,6 +37,17 @@ DEFAULT_CACHE_DIR = Path("tmp/kosis_cache")
 
 _DEFAULT_TIMEOUT_SECONDS = 10.0
 
+_DEFAULT_MAX_RESPONSE_BYTES: int = 10 * 1024 * 1024
+"""Default cap on a single KOSIS response body (10 MiB).
+
+Without this cap a slow / malicious server (or a MITM that stripped TLS
+on a misconfigured network) could stream gigabytes into ``response.json``
+and exhaust memory on a low-resource scenario runner. The KOSIS aggregate
+endpoints we use return well under 1 MiB for any single (table, year)
+fetch in the registry; a 10 MiB ceiling leaves a wide safety margin
+without truncating legitimate payloads.
+"""
+
 _FORBIDDEN_AGGREGATION_LEVELS: frozenset[str] = frozenset({"동", "읍", "면"})
 """Sub-시군구 administrative units that violate the aggregate-only floor."""
 
@@ -122,14 +133,20 @@ class KosisFetchClient:
         timeout: float = _DEFAULT_TIMEOUT_SECONDS,
         cache_dir: Path | str = DEFAULT_CACHE_DIR,
         transport: httpx.HTTPTransport | httpx.MockTransport | None = None,
+        max_response_bytes: int = _DEFAULT_MAX_RESPONSE_BYTES,
     ) -> None:
         if timeout <= 0:
             raise ValueError("timeout must be positive")
+        if not isinstance(max_response_bytes, int) or isinstance(max_response_bytes, bool):
+            raise TypeError("max_response_bytes must be an int")
+        if max_response_bytes <= 0:
+            raise ValueError("max_response_bytes must be positive")
 
         self._base_url = (base_url or "").rstrip("/") or None
         self._api_key = api_key or os.environ.get("LUVOIRE_KOSIS_API_KEY") or None
         self._timeout = float(timeout)
         self._cache_dir = _coerce_cache_dir(cache_dir)
+        self._max_response_bytes = max_response_bytes
 
         # We construct the httpx.Client lazily on first network use so that
         # purely cache-hit workflows do not even allocate a transport. The
@@ -301,6 +318,35 @@ class KosisFetchClient:
         if response.status_code != 200:
             raise KosisFetchError(
                 f"KOSIS returned HTTP {response.status_code} for table {key.table_id!r}"
+            )
+
+        # Pre-body Content-Length check: when the server advertises a
+        # body larger than our cap, abort BEFORE accessing ``response.content``
+        # (which would force httpx to buffer the entire stream into RAM).
+        # Round-2 audit moved this check ahead of ``.content`` to truly
+        # bound memory rather than only bound JSON-parser exposure.
+        declared = response.headers.get("content-length")
+        if declared is not None:
+            try:
+                declared_int = int(declared)
+            except ValueError:
+                declared_int = None
+            if declared_int is not None and declared_int > self._max_response_bytes:
+                raise KosisFetchError(
+                    f"KOSIS Content-Length {declared_int} exceeds "
+                    f"{self._max_response_bytes} for table {key.table_id!r}"
+                )
+
+        # Defense-in-depth: a server that omits Content-Length (chunked
+        # encoding) can still over-deliver. ``.content`` does buffer the
+        # body, but we re-check the actual length post-buffer so the
+        # subsequent JSON parse doesn't double the memory footprint.
+        body = response.content
+        if len(body) > self._max_response_bytes:
+            raise KosisFetchError(
+                f"KOSIS response for table {key.table_id!r} exceeded "
+                f"{self._max_response_bytes} bytes "
+                f"(got {len(body)}); refusing to parse"
             )
 
         try:

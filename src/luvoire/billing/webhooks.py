@@ -6,6 +6,7 @@ import hmac
 import json
 import queue
 import threading
+import time as _time
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from hashlib import sha256
@@ -15,6 +16,13 @@ from urllib import request
 
 from luvoire.observability.metrics import record_webhook_dispatch
 from luvoire.safety.audit_log import CommercialAuditLogger, NoOpAuditLog
+
+DEFAULT_REPLAY_WINDOW_SECONDS: int = 5 * 60
+"""Default replay window for ``verify_signature_with_window``. Stripe and
+GitHub use 5 minutes; we follow the same convention so a captured
+delivery cannot be replayed indefinitely. Receivers SHOULD validate the
+``timestamp`` field of every envelope against this window.
+"""
 
 WebhookEvent = str
 HttpPoster = Callable[[str, bytes, Mapping[str, str], float], int]
@@ -101,7 +109,14 @@ class WebhookDispatcher:
     def deliver_now(self, event_type: WebhookEvent, payload: dict[str, object]) -> WebhookResult:
         """Deliver an event synchronously with retry/backoff."""
 
-        envelope = {"event": event_type, "payload": payload}
+        # ``timestamp`` is a unix-epoch integer signed inside the body so
+        # receivers can reject replays via :func:`verify_signature_with_window`.
+        # See Stripe's webhook signing convention for prior art.
+        envelope = {
+            "event": event_type,
+            "payload": payload,
+            "timestamp": int(_time.time()),
+        }
         body = canonical_payload(envelope)
         delivery_id = _delivery_id(event_type, body, self.endpoint_url)
         url_hash = _url_hash(self.endpoint_url)
@@ -180,6 +195,44 @@ def verify_signature(secret: str, payload: bytes, signature_header: str) -> bool
     return hmac.compare_digest(expected, signature_header)
 
 
+def verify_signature_with_window(
+    secret: str,
+    payload: bytes,
+    signature_header: str,
+    *,
+    window_seconds: int = DEFAULT_REPLAY_WINDOW_SECONDS,
+    now_unix: int | None = None,
+) -> bool:
+    """Verify HMAC AND reject deliveries whose envelope ``timestamp``
+    falls outside a rolling window. Returns ``False`` for any of:
+
+    - HMAC mismatch
+    - body is not a JSON object with an integer ``timestamp`` field
+    - timestamp delta ``|now - timestamp| > window_seconds``
+
+    Use this in receiver-side webhook handlers so a captured signed
+    delivery cannot be replayed indefinitely. Defense matches the
+    Stripe / GitHub convention: a 5-minute window with constant-time
+    HMAC verification first.
+    """
+
+    if not verify_signature(secret, payload, signature_header):
+        return False
+    try:
+        envelope = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return False
+    if not isinstance(envelope, dict):
+        return False
+    timestamp = envelope.get("timestamp")
+    if not isinstance(timestamp, int) or isinstance(timestamp, bool):
+        return False
+    if window_seconds <= 0:
+        return False
+    current = int(_time.time()) if now_unix is None else int(now_unix)
+    return abs(current - timestamp) <= window_seconds
+
+
 def _delivery_id(event_type: str, body: bytes, endpoint_url: str) -> str:
     seed = event_type.encode("utf-8") + b"\0" + body + b"\0" + endpoint_url.encode("utf-8")
     return sha256(seed).hexdigest()[:24]
@@ -204,6 +257,7 @@ def _urllib_post(endpoint_url: str, body: bytes, headers: Mapping[str, str], tim
 
 __all__ = [
     "DEFAULT_EVENTS",
+    "DEFAULT_REPLAY_WINDOW_SECONDS",
     "RETRY_DELAYS",
     "WebhookDelivery",
     "WebhookDispatcher",
@@ -211,4 +265,5 @@ __all__ = [
     "canonical_payload",
     "sign_payload",
     "verify_signature",
+    "verify_signature_with_window",
 ]

@@ -64,3 +64,53 @@ def test_openai_synthesis_uses_cache(monkeypatch, tmp_path) -> None:
     assert len(client.audio.speech.calls) == 2
     assert client.audio.speech.calls[0]["model"] == "tts-1"
     assert client.audio.speech.calls[0]["voice"] == "shimmer"
+
+
+# --- Round-4 audit: silent fallback now logs at WARNING ---------------
+
+
+class _FailingSpeech:
+    def create(self, **_kwargs: object) -> bytes:
+        raise RuntimeError("openai went bang")
+
+
+class _FailingAudio:
+    def __init__(self) -> None:
+        self.speech = _FailingSpeech()
+
+
+class _FailingOpenAIClient:
+    def __init__(self) -> None:
+        self.audio = _FailingAudio()
+
+
+def test_openai_failure_logs_warning_and_falls_back(monkeypatch, tmp_path, caplog) -> None:
+    """When the OpenAI call raises, ``synthesize`` must still return a
+    silent WAV (preserving caller UX) but ALSO emit a WARNING-level
+    log record so operators can detect persistent breakage. Round-4
+    audit fix.
+    """
+
+    import logging
+
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    profile = VoiceProfile(agent_id="ari", voice_id="alloy")
+
+    with caplog.at_level(logging.WARNING, logger="luvoire.multimodal.tts"):
+        result = synthesize(
+            "fail this call",
+            profile,
+            cache_dir=tmp_path,
+            client=_FailingOpenAIClient(),
+        )
+
+    assert isinstance(result, bytes)
+    assert len(result) > 0
+    # The original silent WAV is still produced as the fallback.
+    with wave.open(BytesIO(result), "rb") as wav_file:
+        assert wav_file.getnchannels() == 1
+    # ... and the failure path emitted a warning naming the exception type.
+    warnings = [rec for rec in caplog.records if rec.levelname == "WARNING"]
+    assert any("RuntimeError" in rec.getMessage() for rec in warnings), (
+        "expected a WARNING log mentioning RuntimeError after fallback"
+    )

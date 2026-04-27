@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import os
 import tempfile
 import wave
@@ -13,6 +14,8 @@ from pathlib import Path
 from typing import Any, Final
 
 from luvoire.config import get_env
+
+_LOGGER = logging.getLogger(__name__)
 
 OPENAI_TTS_VOICES: Final[tuple[str, ...]] = (
     "alloy",
@@ -99,7 +102,22 @@ def synthesize(
     else:
         try:
             audio = _openai_speech_bytes(normalized_text, profile, client=client)
-        except Exception:
+        except Exception as exc:
+            # Falling back to silent WAV preserves caller UX, but the
+            # exception itself MUST be logged — without this an OpenAI
+            # auth failure / quota exhaustion / network outage would
+            # never reach an operator dashboard. Emit at WARNING so the
+            # offline mode keeps working for tests / air-gapped runs but
+            # operators can detect persistent breakage. Avoid logging
+            # ``exc`` arguments verbatim to keep API keys / request
+            # bodies out of stderr.
+            _LOGGER.warning(
+                "tts.synthesize: OpenAI speech call failed; falling back to "
+                "silent WAV (provider=%s voice=%s exc_type=%s)",
+                profile.provider,
+                profile.voice_id,
+                type(exc).__name__,
+            )
             audio = _silent_wav_bytes()
 
     _atomic_write_bytes(cache_path, audio)

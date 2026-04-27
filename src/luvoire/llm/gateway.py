@@ -48,6 +48,19 @@ class LLMCacheStats:
         return self.hits / self.requests
 
 
+_DEFAULT_FALLBACK_DEADLINE_SECONDS: float = 120.0
+"""Default cumulative deadline across the provider fallback loop.
+
+Each individual provider already enforces its own per-call timeout (via
+``httpx`` defaults inside the SDK), but if every provider in the chain
+hangs at its own timeout the caller-visible wait is the **sum** of those
+timeouts. This deadline bounds that sum so a misconfigured cluster of
+slow providers cannot turn a single ``complete()`` call into a 10-minute
+hang on the request-handling thread. 120s leaves headroom for the
+typical Anthropic/OpenAI tail latency on a long-context completion.
+"""
+
+
 class LLMGateway:
     """Try providers in order and keep lightweight usage records."""
 
@@ -56,11 +69,15 @@ class LLMGateway:
         providers: Sequence[tuple[str, LLMClient]],
         *,
         replay_cache: ReplayCache | None = None,
+        fallback_deadline_seconds: float = _DEFAULT_FALLBACK_DEADLINE_SECONDS,
     ) -> None:
         if not providers:
             raise ValueError("providers must not be empty")
+        if fallback_deadline_seconds <= 0:
+            raise ValueError("fallback_deadline_seconds must be positive")
         self._providers = list(providers)
         self._replay_cache = replay_cache if replay_cache is not None else replay_cache_from_env()
+        self._fallback_deadline_seconds = float(fallback_deadline_seconds)
         self.records: list[LLMCallRecord] = []
 
     def complete(self, messages: Sequence[Message], **kwargs: object) -> str:
@@ -76,7 +93,14 @@ class LLMGateway:
         prompt_tokens: int,
     ) -> str:
         last_error: Exception | None = None
+        deadline = perf_counter() + self._fallback_deadline_seconds
         for provider_name, provider in self._providers:
+            if perf_counter() >= deadline:
+                raise TimeoutError(
+                    "LLMGateway provider fallback exceeded "
+                    f"{self._fallback_deadline_seconds:.1f}s deadline; "
+                    "remaining providers skipped to bound caller wait"
+                ) from last_error
             started_at = perf_counter()
             model = _provider_model(provider_name, provider)
             with trace_span(
@@ -142,7 +166,14 @@ class LLMGateway:
         prompt = _messages_to_prompt(messages)
         seed = _seed_from_kwargs(kwargs)
         sampling = _sampling_from_kwargs(kwargs)
+        deadline = perf_counter() + self._fallback_deadline_seconds
         for provider_name, provider in self._providers:
+            if perf_counter() >= deadline:
+                raise TimeoutError(
+                    "LLMGateway provider fallback exceeded "
+                    f"{self._fallback_deadline_seconds:.1f}s deadline; "
+                    "remaining replay-cache providers skipped"
+                ) from last_error
             model = _provider_model(provider_name, provider)
             cache_key = self._replay_cache.key(
                 model=model,
