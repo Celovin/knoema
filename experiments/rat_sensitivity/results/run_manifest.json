@@ -1,0 +1,14 @@
+{
+  "estimator": "saltelli2002_jansen1999_saltelli2010",
+  "experiment": "rat_sensitivity",
+  "model_evaluations": 20480,
+  "module_version": "luvoire.theory.rat.v1",
+  "n": 4096,
+  "seed": 20260427,
+  "threshold": 0.125,
+  "variables": [
+    "motivation",
+    "exposure",
+    "gap"
+  ]
+}

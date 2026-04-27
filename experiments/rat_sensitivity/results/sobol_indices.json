@@ -1,0 +1,20 @@
+{
+  "model_evaluations": 20480,
+  "n": 4096,
+  "seed": 20260427,
+  "threshold": 0.125,
+  "variables": {
+    "exposure": {
+      "first_order": 0.23118694444025215,
+      "total_order": 0.5394362036939216
+    },
+    "gap": {
+      "first_order": 0.21406198559282605,
+      "total_order": 0.5212409349185314
+    },
+    "motivation": {
+      "first_order": 0.23546818415210866,
+      "total_order": 0.5453229082977243
+    }
+  }
+}

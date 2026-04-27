@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 ### Added
+- `luvoire.sensitivity.sobol` — deterministic Saltelli/Sobol sensitivity helpers (radial design, Jansen 1999 first-order, Saltelli 2010 total-order). Pure numpy; no SALib runtime dependency.
+- `experiments/rat_sensitivity/` — committed Sobol sweep over the three RAT inputs with `results/sobol_indices.json`, `sobol_indices.md`, and `run_manifest.json`. Default seed 20260427, n=4096, 20480 evaluations. Indices are near-symmetric across motivation/exposure/gap (multiplicative model) and total-order ≈ 0.5 vs first-order ≈ 0.23 confirms strong interaction effects.
+- `tests/test_sensitivity_sobol.py` (13 tests) and `tests/test_rat_sensitivity_experiment.py` (6 tests) lock determinism, manifest invariants, near-symmetric indices, and total > first inequality.
 - `luvoire.theory.rat` v1 — locked routine activity theory convergence rule (`ActorState`, `TargetExposure`, `GuardianshipGap`, `OpportunityEvent`, `opportunity_event`). Tier A scenario references of the form `code:luvoire.theory.rat.v1` now resolve to a real module. Multiplicative convergence formula, tick-equality, cell-adjacency, and the `rat_v1_synthetic_opportunity` event kind are locked; threshold and input distributions remain Tier B/C YAML parameters.
 - `tests/test_theory_rat_v1.py` adds 13 unit tests covering convergence above/below threshold, tick mismatches, cell adjacency, synthetic-grid behaviour, threshold override, immutability, and h3-py-optional adjacency.
 - `docs/theory/rat-v1-design-spec.md` and `docs/theory/rat-v1-reference.md` document the module and its locked vs adjustable surface.
