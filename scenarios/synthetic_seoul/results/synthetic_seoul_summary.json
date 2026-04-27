@@ -1,0 +1,49 @@
+{
+  "activity_sample": [
+    "work_or_school",
+    "commute",
+    "sleep",
+    "other",
+    "sleep"
+  ],
+  "cells_with_events": 7,
+  "grid_cols": 5,
+  "grid_rows": 5,
+  "per_cell_events": {
+    "synthetic-grid-r0c0": 0,
+    "synthetic-grid-r0c1": 0,
+    "synthetic-grid-r0c2": 0,
+    "synthetic-grid-r0c3": 0,
+    "synthetic-grid-r0c4": 0,
+    "synthetic-grid-r1c0": 0,
+    "synthetic-grid-r1c1": 1,
+    "synthetic-grid-r1c2": 0,
+    "synthetic-grid-r1c3": 1,
+    "synthetic-grid-r1c4": 0,
+    "synthetic-grid-r2c0": 0,
+    "synthetic-grid-r2c1": 1,
+    "synthetic-grid-r2c2": 1,
+    "synthetic-grid-r2c3": 0,
+    "synthetic-grid-r2c4": 0,
+    "synthetic-grid-r3c0": 0,
+    "synthetic-grid-r3c1": 1,
+    "synthetic-grid-r3c2": 0,
+    "synthetic-grid-r3c3": 1,
+    "synthetic-grid-r3c4": 0,
+    "synthetic-grid-r4c0": 1,
+    "synthetic-grid-r4c1": 0,
+    "synthetic-grid-r4c2": 0,
+    "synthetic-grid-r4c3": 0,
+    "synthetic-grid-r4c4": 0
+  },
+  "prior_strata": {
+    "age_band": "adult",
+    "day_type": "weekday",
+    "occupation": "employed"
+  },
+  "scenario_id": "synthetic_seoul_5x5",
+  "seed": 20260427,
+  "summary_sha256": "8dd4c65315c4d7cc22705a01f99d8690025a325bda1d6809a9e518c8bd7cd204",
+  "threshold": 0.125,
+  "total_opportunity_events": 7
+}

@@ -1,0 +1,80 @@
+schema_version: "2.0"
+scenario_id: synthetic_seoul_5x5
+title: Synthetic Seoul-style 5x5 Grid
+domain: academic_research
+description: Fictional 5x5 urban grid combining geo, timeuse, and RAT v1 modules.
+seed: 20260427
+tick_duration_minutes: 60
+duration_days: 1
+parameters:
+  opportunity_definition:
+    tier: A
+    ref: "code:luvoire.theory.rat.v1"
+  schedule_prior:
+    tier: B
+    source: "synthetic-luvoire-fixture"
+    table_id: "timeuse_v1"
+    license: "synthetic"
+    revision: "2026-04-27"
+    value: 0.42
+    description: Synthetic empirical prior over the seven activity codes.
+  convergence_threshold:
+    tier: C
+    range: [0.05, 0.5]
+    sweep: 5
+    default: 0.125
+    description: Convergence threshold sweep around the RAT v1 default.
+environment:
+  start_time: "2026-04-27T08:00:00"
+  location_path:
+    - Luvoire Demo World
+    - Seoul-style Synthetic Grid
+    - 5x5 Lattice
+  conditions:
+    weather: clear
+    crowd_level: medium
+  h3_cell: null
+  epsg: "luvoire-synthetic-v1"
+agents:
+  - agent_id: commuter_a
+    name: Sora
+    age: 32
+    background: Synthetic commuter A on the 5x5 grid.
+    personality:
+      openness: 0.55
+      conscientiousness: 0.7
+      extraversion: 0.5
+      agreeableness: 0.65
+      neuroticism: 0.3
+    values: [punctuality]
+    goals: [reach destination]
+    synthetic: true
+  - agent_id: commuter_b
+    name: Jiho
+    age: 27
+    background: Synthetic commuter B on the 5x5 grid.
+    personality:
+      openness: 0.5
+      conscientiousness: 0.65
+      extraversion: 0.55
+      agreeableness: 0.6
+      neuroticism: 0.35
+    values: [efficiency]
+    goals: [coordinate movement]
+    synthetic: true
+events: []
+metrics:
+  - name: opportunity_event_count
+    kind: count
+    description: Total RAT v1 synthetic opportunity events across the grid.
+  - name: cells_with_events
+    kind: count
+    description: Number of distinct cells where at least one event was emitted.
+ethics:
+  fictional: true
+  no_real_people: true
+  no_prediction: true
+  no_suspect_scoring: true
+  no_real_geometry: true
+  sensitive_domain: false
+local_response: '{"action_type": "observe", "target": null, "content": "moves through the synthetic grid."}'
