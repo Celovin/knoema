@@ -49,3 +49,35 @@ def test_build_panels_module_imports() -> None:
     assert callable(build_panels.panel_theory_rat)
     assert callable(build_panels.panel_sensitivity_sobol)
     assert callable(build_panels.panel_replay_hash)
+
+
+def test_pdf_panels_are_byte_deterministic_across_reruns() -> None:
+    """Panels reproduce byte-identical PDFs after the savefig metadata fix."""
+
+    import hashlib
+    import importlib
+
+    import paper.asc2026_poster.build_panels as build_panels
+
+    pdf_names = [
+        "panel_method_3tier.pdf",
+        "panel_theory_rat.pdf",
+        "panel_sensitivity_sobol.pdf",
+        "panel_replay_hash.pdf",
+    ]
+    importlib.reload(build_panels)
+    build_panels.main()
+    first = {
+        name: hashlib.sha256((POSTER_DIR / name).read_bytes()).hexdigest()
+        for name in pdf_names
+    }
+    importlib.reload(build_panels)
+    build_panels.main()
+    second = {
+        name: hashlib.sha256((POSTER_DIR / name).read_bytes()).hexdigest()
+        for name in pdf_names
+    }
+    assert first == second, (
+        "panels are not byte-deterministic across reruns; "
+        "check savefig metadata stripping"
+    )

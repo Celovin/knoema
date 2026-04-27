@@ -1,6 +1,6 @@
 """Build the four-panel ASC 2026 methodology poster figure set.
 
-Outputs deterministic PDFs (and matching SVGs) into ``paper/asc2026_poster/``:
+Outputs PDFs (and matching SVGs) into ``paper/asc2026_poster/``:
 
 1. ``panel_method_3tier.pdf`` — Scenario DSL v2 variable 3-tier exposure.
 2. ``panel_theory_rat.pdf`` — RAT three-component spatio-temporal convergence.
@@ -13,10 +13,14 @@ Run:
 
     python paper/asc2026_poster/build_panels.py
 
-This module ships no external dependencies beyond matplotlib + numpy + pyyaml,
-all of which are already in ``[dev]``. The script is fully deterministic and
-produces byte-identical PDFs across reruns when matplotlib's font cache is
-warm.
+The script is content-deterministic — figure data and layout are reproduced
+identically across reruns. PDF byte-identity is achieved by stripping
+matplotlib's automatic ``CreationDate`` and ``ModDate`` metadata in
+``fig.savefig`` (matplotlib 3.5+); SVGs include only the matplotlib version
+header and are byte-identical across reruns by default.
+
+Dependencies: matplotlib + numpy + pyyaml, all in ``[dev]``. No new runtime
+dependency.
 """
 
 from __future__ import annotations
@@ -52,11 +56,19 @@ PALETTE_RAT = {
 }
 
 
+_DETERMINISTIC_PDF_METADATA = {
+    "CreationDate": None,
+    "ModDate": None,
+    "Producer": "Luvoire ASC2026 panel builder",
+}
+_DETERMINISTIC_SVG_METADATA = {"Date": None}
+
+
 def _save(fig: plt.Figure, name: str) -> None:
     pdf_path = OUT_DIR / f"{name}.pdf"
     svg_path = OUT_DIR / f"{name}.svg"
-    fig.savefig(pdf_path, bbox_inches="tight")
-    fig.savefig(svg_path, bbox_inches="tight")
+    fig.savefig(pdf_path, bbox_inches="tight", metadata=_DETERMINISTIC_PDF_METADATA)
+    fig.savefig(svg_path, bbox_inches="tight", metadata=_DETERMINISTIC_SVG_METADATA)
     plt.close(fig)
 
 

@@ -109,15 +109,25 @@ def opportunity_event(
 ) -> OpportunityEvent | None:
     """Detect a synthetic opportunity-event at ``(tick, cell)``.
 
-    Returns an :class:`OpportunityEvent` when:
+    The function returns an :class:`OpportunityEvent` if and only if:
 
-    1. all three inputs are observed at the same ``tick``,
-    2. all three inputs sit in the same or adjacent cell to ``cell``,
+    1. all three inputs report the same ``tick`` as the requested ``tick``;
+    2. each input cell is the same as ``cell`` or adjacent to ``cell``
+       (adjacency is judged independently for each component against
+       ``cell``, not pairwise between components — three components in
+       three cells that are each adjacent to ``cell`` all pass);
     3. the multiplicative convergence score
        ``actor_state.motivation * target.exposure * guardianship.gap``
        reaches or exceeds ``threshold``.
 
-    Returns ``None`` otherwise.
+    Otherwise returns ``None``.
+
+    Note:
+        The independent-against-``cell`` adjacency rule means the three
+        components form a star graph centred on ``cell``, not necessarily
+        a triangle. This is the synthetic spatial convergence interpretation
+        adopted by RAT v1; future theory modules may impose pairwise
+        adjacency or radial distance instead.
     """
 
     if actor_state.tick != tick or target.tick != tick or guardianship.tick != tick:

@@ -25,6 +25,21 @@ class ValidationIssueV2:
 
 
 def collect_validation_issues_v2(scenario: ScenarioV2) -> list[ValidationIssueV2]:
+    """Collect ethics, geometry, and disallowed-purpose validation issues.
+
+    Note:
+        Per-parameter tier-shape validation (Tier A ``ref`` pattern, Tier B
+        ``source`` requirement, Tier C ``range`` + ``default`` invariants) is
+        delegated to the Pydantic model validators on
+        :class:`luvoire.dsl.v2.parameters.TierAParam`,
+        :class:`~luvoire.dsl.v2.parameters.TierBParam`, and
+        :class:`~luvoire.dsl.v2.parameters.TierCParam`. Those validators run
+        at scenario-construction time, before this function is called.
+        Cross-parameter checks (e.g., asserting that a Tier A reference
+        actually resolves to an importable module) are intentionally left to
+        :mod:`scripts.lint_dsl_v2`, not to this runtime validator.
+    """
+
     issues: list[ValidationIssueV2] = []
     ethics = scenario.ethics
     if not ethics.fictional:
