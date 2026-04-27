@@ -176,3 +176,27 @@ def test_evaluate_three_gates_returns_three_results() -> None:
     assert results[0].pattern_id == "G1"
     assert results[2].pattern_id == "G3"
     assert results[2].ks_distance == pytest.approx(0.0, abs=1e-12)
+
+
+def test_ks_distance_degenerate_simulated_vs_spread_target() -> None:
+    """Audit-coverage: simulated samples collapse to bin 0 vs spread target."""
+
+    spread = _uniform_pattern(5, pattern_id="spread")
+    point_samples = np.zeros(40, dtype=float)
+    config = GateConfig(pattern=spread, ks_threshold=0.9)
+    result = evaluate_gate(point_samples, config)
+    # All-mass-in-bin-0 vs uniform-over-5-bins gives KS = 4/5 = 0.8.
+    assert result.ks_distance == pytest.approx(0.8, abs=1e-9)
+    assert result.passed is True
+
+
+def test_gate_passes_when_distance_equals_threshold() -> None:
+    """Audit-coverage: gate boundary is inclusive (distance == threshold passes)."""
+
+    pattern = _uniform_pattern(2, pattern_id="boundary")
+    point_samples = np.zeros(8, dtype=float)
+    # KS distance for all-mass-bin-0 vs uniform-over-2 is exactly 0.5.
+    config = GateConfig(pattern=pattern, ks_threshold=0.5)
+    result = evaluate_gate(point_samples, config)
+    assert result.ks_distance == pytest.approx(0.5, abs=1e-9)
+    assert result.passed is True

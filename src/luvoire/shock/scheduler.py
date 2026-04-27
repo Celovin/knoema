@@ -72,12 +72,21 @@ class ShockScheduler:
     ) -> float:
         """Return guardianship gap for *cell_id* at *tick* after shocks.
 
-        Infrastructure changes apply their signed ``magnitude`` directly to
-        the gap; the CPTED helpers in :mod:`luvoire.shock.cpted` use a
-        negative magnitude so installing lighting/CCTV/natural surveillance
-        reduces the gap. Policy changes likewise apply their signed
-        magnitude directly. Other shock kinds do not touch guardianship.
-        Result is clamped to ``[0.0, 1.0]``.
+        Sign convention (important and counter-intuitive):
+
+        - ``infrastructure_change`` and ``policy_change`` shocks **add**
+          their signed ``magnitude`` directly to the gap.
+        - A **positive** magnitude therefore **opens** the gap (weakens
+          guardianship); a **negative** magnitude **closes** it.
+        - The CPTED helpers in :mod:`luvoire.shock.cpted` deliberately
+          use **negative** magnitudes so installing lighting / CCTV /
+          natural surveillance closes the gap.
+        - To model a guardianship-weakening policy change, use a
+          **positive** magnitude; to model a guardianship-strengthening
+          policy change, use a **negative** magnitude.
+
+        Other shock kinds do not touch guardianship. Result is clamped to
+        ``[0.0, 1.0]``.
         """
 
         gap = float(base_gap)

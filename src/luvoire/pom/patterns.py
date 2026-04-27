@@ -23,6 +23,14 @@ from dataclasses import dataclass
 import numpy as np
 
 _TOLERANCE = 1e-6
+"""Sum tolerance for ``Pattern.target_distribution``.
+
+``1e-6`` is loose enough to absorb a few ulps of accumulated rounding from
+hand-normalised histograms with up to ~1000 bins. Inputs that drift further
+than this are likely the result of a missing renormalisation step on the
+caller's side, not floating-point error -- factories below renormalise
+explicitly so well-formed inputs always pass.
+"""
 
 
 @dataclass(frozen=True, slots=True)
@@ -122,14 +130,28 @@ def pattern_from_samples(
     )
 
 
+def _renormalise(target: np.ndarray) -> np.ndarray:
+    arr = np.asarray(target, dtype=float)
+    if arr.size == 0:
+        raise ValueError("target must contain at least one bin")
+    if np.any(arr < 0.0):
+        raise ValueError("target entries must be non-negative")
+    total = float(arr.sum())
+    if not np.isfinite(total) or total <= 0.0:
+        raise ValueError("target must have a positive finite sum")
+    return arr / total
+
+
 def time_of_day_pattern(target: np.ndarray) -> Pattern:
     """G1: time-of-day distribution.
 
-    ``target`` must already be a normalised histogram (e.g. 24 hourly bins).
-    Use :func:`pattern_from_samples` if you only have raw timestamps.
+    ``target`` is the reference histogram (e.g. 24 hourly bins). The factory
+    renormalises the input to sum to 1.0 so callers can pass either raw counts
+    or a pre-normalised histogram; sub-tolerance drift is absorbed
+    automatically.
     """
 
-    arr = np.asarray(target, dtype=float)
+    arr = _renormalise(target)
     return Pattern(
         pattern_id="G1_time_of_day",
         description="Time-of-day activity distribution (binned histogram).",
@@ -142,11 +164,11 @@ def activity_diversity_pattern(target: np.ndarray) -> Pattern:
     """G2: activity-diversity distribution.
 
     ``target`` is the reference histogram of distinct-activity counts (or any
-    ordinal diversity measure) per agent/day. The shape is what matters; the
-    POM gate only compares CDFs.
+    ordinal diversity measure) per agent/day. The factory renormalises so
+    callers can pass either raw counts or a pre-normalised histogram.
     """
 
-    arr = np.asarray(target, dtype=float)
+    arr = _renormalise(target)
     return Pattern(
         pattern_id="G2_activity_diversity",
         description="Activity-diversity distribution (binned histogram).",
@@ -162,9 +184,11 @@ def hotspot_distribution_pattern(target: np.ndarray) -> Pattern:
     power-law or Zipf-like shape) and must never be derived from real human
     mobility traces. The POM gate validates that the simulator reproduces
     the expected concentration of activity onto a small number of cells.
+    The factory renormalises so callers can pass either raw counts or a
+    pre-normalised histogram.
     """
 
-    arr = np.asarray(target, dtype=float)
+    arr = _renormalise(target)
     return Pattern(
         pattern_id="G3_hotspot_distribution",
         description="Synthetic hotspot distribution (structural reference only).",

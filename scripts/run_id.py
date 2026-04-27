@@ -8,10 +8,20 @@ where ``code_tree_sha`` is computed over the contents of ``src/luvoire`` (no
 __pycache__, no .pyc), ``scenario_yaml_sha`` is the SHA-256 of the loaded
 scenario YAML bytes, and ``pyversion`` is ``sys.version_info`` joined with dots.
 
-This is the lightest practical replacement for a per-release uv/pixi lockfile
-when those tools are unavailable in the working environment. It does not pin
-third-party package versions; for that, use ``pip freeze`` output piped into
-the ``--env`` flag.
+**Scope and known limitations**:
+
+- The hash covers ``src/luvoire/**/*.py`` only. It deliberately does **not**
+  walk ``tests/``, ``pyproject.toml``, ``CHANGELOG.md``, or any other
+  repo-root files; a developer who modifies a test fixture or a dependency
+  spec without changing source code will produce the same ``run_id``.
+  Capture dependency-version drift via ``pip freeze`` piped into ``--env``.
+- Third-party package versions are not pinned automatically. Use ``--env``
+  to fold a ``pip freeze`` output into ``run_id`` via :func:`env_sha`.
+- The hash is stable across machines as long as the ``src/luvoire`` tree
+  and the Python major.minor.patch version are identical.
+
+This is the lightest practical replacement for a per-release uv/pixi
+lockfile when those tools are unavailable in the working environment.
 """
 
 from __future__ import annotations

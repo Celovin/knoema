@@ -16,6 +16,17 @@ import numpy as np
 from luvoire.timeuse.priors import ACTIVITY_CODES, ActivityCode
 
 _ROW_SUM_TOL = 1e-6
+"""Per-row sum tolerance for ``TransitionMatrix`` validation.
+
+``1e-6`` allows a few ulps of accumulated rounding when callers normalise
+each row by hand from a histogram with up to ~10 entries (i.e. the seven
+canonical activity codes leave plenty of headroom). Inputs that drift
+further than this are likely the result of a missing renormalisation step
+on the caller's side, not floating-point error, so we reject them
+explicitly rather than silently re-renormalise. Callers normalising from
+a much larger bin count should renormalise once before constructing the
+matrix.
+"""
 _N_ACTIVITIES = len(ACTIVITY_CODES)
 
 
@@ -24,9 +35,9 @@ class TransitionMatrix:
     """A 7x7 row-stochastic transition matrix.
 
     Rows are indexed by the *current* activity, columns by the *next*. Each
-    row must sum to 1.0 within ``1e-6`` and all entries must lie in
-    ``[0, 1]``. The matrix is stored as a tuple-of-tuples of floats so the
-    structure stays hashable and trivially serialisable.
+    row must sum to 1.0 within ``_ROW_SUM_TOL`` (=1e-6) and all entries must
+    lie in ``[0, 1]``. The matrix is stored as a tuple-of-tuples of floats
+    so the structure stays hashable and trivially serialisable.
     """
 
     matrix: tuple[tuple[float, ...], ...]

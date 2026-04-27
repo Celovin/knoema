@@ -5,7 +5,14 @@ The cache is intentionally tiny and dependency-free. It stores
 deterministic string (see :func:`luvoire.routing.osrm_client.cache_key`).
 
 Thread-safety is **not** required: the urban-grid simulation runs each route
-lookup serially per agent and the cache is local to a single process.
+lookup serially per agent and the cache is local to a single process. If a
+caller mutates the cache from multiple threads, the ``OrderedDict.popitem``
+loop in :meth:`LruCache.set` is **not** atomic with the surrounding
+``move_to_end`` operations; callers MUST serialise access (e.g. with a
+``threading.Lock``) or wrap the cache in their own thread-safe adapter.
+The eviction loop is bounded by ``max_size`` so it cannot run forever, but
+it can drop the wrong entries if a concurrent ``move_to_end`` reorders the
+underlying ``OrderedDict`` mid-iteration.
 """
 
 from __future__ import annotations

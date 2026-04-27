@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from typing import Any, Literal, cast
 
@@ -71,6 +72,11 @@ class RouteRequest:
             if len(point) != 2:
                 raise ValueError(f"{label} must be a (lat, lon) pair")
             lat, lon = point
+            # Reject NaN / inf explicitly. The bound checks below also reject
+            # them (any comparison with NaN is False) but we want a clearer
+            # error message for the audit trail.
+            if not (math.isfinite(lat) and math.isfinite(lon)):
+                raise ValueError(f"{label} must contain finite coordinates")
             if not (-90.0 <= lat <= 90.0):
                 raise ValueError(f"{label} latitude must be in [-90, 90]")
             if not (-180.0 <= lon <= 180.0):

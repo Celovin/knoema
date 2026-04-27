@@ -78,6 +78,14 @@ class Shock:
                 f"start_tick must be <= end_tick, got "
                 f"start_tick={self.start_tick} end_tick={self.end_tick}"
             )
+        if not isinstance(self.affected_cells, tuple):
+            # Type hint ``tuple[str, ...]`` is not enforced at runtime.
+            # Reject lists / generators so external mutation cannot leak
+            # into a frozen Shock instance shared across catalogs.
+            raise TypeError(
+                f"affected_cells must be a tuple, got "
+                f"{type(self.affected_cells).__name__}"
+            )
         if not self.affected_cells:
             raise ValueError("affected_cells must be non-empty")
         if not -1.0 <= self.magnitude <= 1.0:

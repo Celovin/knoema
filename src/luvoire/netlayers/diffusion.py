@@ -66,7 +66,15 @@ class DeGrootPropagator:
         return dict(self._layer_weights)
 
     def step(self, state: Mapping[str, float]) -> dict[str, float]:
-        """Compute a single DeGroot update."""
+        """Compute a single DeGroot update.
+
+        Each output opinion is clamped to ``[0, 1]`` after the additive
+        gaussian jitter so multi-step trajectories cannot drift outside the
+        unit interval. Convergence properties: under the equal-layer-weights
+        default and a connected aggregate graph, repeated :meth:`step`
+        applications drive the state toward a consensus value scaled by the
+        edge weights; isolated nodes retain their opinion modulo jitter.
+        """
 
         nodes = sorted(state)
         next_state: dict[str, float] = {}
@@ -75,7 +83,9 @@ class DeGrootPropagator:
             mixed = self._mix_neighbours(node, state)
             updated = current if mixed is None else mixed
             jitter = float(self._rng.normal(loc=0.0, scale=_JITTER_SCALE))
-            next_state[node] = updated + jitter
+            # Clamp to the unit interval so multi-step trajectories cannot
+            # drift outside [0, 1] under accumulated jitter.
+            next_state[node] = min(1.0, max(0.0, updated + jitter))
         return next_state
 
     def propagate(

@@ -65,6 +65,8 @@ def allocate_attention(
             budget=budget,
             seed=seed,
         )
+    # All branches preserve the original ``items`` order in the returned
+    # tuples so callers can rely on a stable ordering across budget regimes.
     if budget == 0:
         return AttentionDecision(
             selected_ids=(),

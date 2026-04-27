@@ -85,9 +85,12 @@ def render_bias_prefix(
 
     The biases are rendered in canonical order (the order in
     :data:`CANONICAL_BIASES`), regardless of the input order, so two callers
-    requesting the same set always get the same prefix string. ``seed`` is
-    threaded into the fingerprint so callers can audit which prefix was
-    actually presented to the LLM in a given run.
+    requesting the same set always get the same prefix string. ``seed``
+    affects only :attr:`BiasPrefix.fingerprint` (an audit hash); the
+    rendered :attr:`BiasPrefix.prefix_text` is **invariant** under ``seed``
+    so the same biases always produce the same human-readable prefix. Use
+    the fingerprint to record which prefix was presented to the LLM in a
+    given run.
 
     Raises:
         ValueError: When an unknown bias name is requested or the input is

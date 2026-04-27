@@ -54,13 +54,29 @@ class AffectiveContagion:
         return self._susceptibility
 
     def step(self, emotion_state: Mapping[str, float]) -> dict[str, float]:
+        """Compute one Bosse-style affective contagion update.
+
+        Convergence behaviour:
+
+        - With ``decay < 1.0`` (the default 0.95) emotions dissipate
+          exponentially toward zero in the absence of new neighbour input;
+          this is the recommended regime.
+        - With ``decay = 1.0`` and ``susceptibility = 1.0`` the update
+          reduces to ``own + neighbour_mean`` and the state is unbounded;
+          the unit-clamp below keeps the output in ``[0, 1]`` but the
+          trajectory effectively saturates rather than converging to a
+          dissipation fixed point. Callers should prefer ``decay < 1.0``.
+
+        Output is clamped to ``[0, 1]`` after the additive gaussian jitter.
+        """
+
         next_state: dict[str, float] = {}
         for node in sorted(emotion_state):
             own = float(emotion_state[node])
             neighbour_mean = self._neighbour_mean(node, emotion_state)
             mixed = self._decay * own + self._susceptibility * neighbour_mean
             jitter = float(self._rng.normal(loc=0.0, scale=_JITTER_SCALE))
-            next_state[node] = mixed + jitter
+            next_state[node] = min(1.0, max(0.0, mixed + jitter))
         return next_state
 
     def simulate(
