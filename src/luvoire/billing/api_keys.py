@@ -144,10 +144,29 @@ class APIKeyManager:
         )
         return True
 
-    def rotate(self, key_id: str) -> tuple[str, str]:
+    def rotate(
+        self,
+        key_id: str,
+        *,
+        grace_period: timedelta = timedelta(hours=1),
+    ) -> tuple[str, str]:
+        """Rotate ``key_id`` and return ``(new_key_id, new_token)``.
+
+        The old key remains valid for ``grace_period`` (default 1 hour)
+        so deployed clients can pick up the new credential without an
+        immediate cutover. The previous default was 24 hours, which is
+        too long when rotation is triggered by a suspected leak — an
+        attacker holding the old key keeps access for the full grace
+        window. 1 hour matches the GitHub / GCP convention for
+        operator-driven rotation. Callers handling a known compromise
+        SHOULD pass ``grace_period=timedelta(0)`` for an immediate cut.
+        """
+
         old_record = self.store.get(key_id)
         if old_record is None:
             raise KeyError(key_id)
+        if grace_period < timedelta(0):
+            raise ValueError("grace_period must be non-negative")
         new_key_id, new_token = self.issue(
             old_record.tenant_id,
             old_record.scope,
@@ -155,7 +174,7 @@ class APIKeyManager:
             api_key_source=old_record.api_key_source,
             issuer="system",
         )
-        grace_expires_at = datetime.now(UTC) + timedelta(hours=24)
+        grace_expires_at = datetime.now(UTC) + grace_period
         self.store.update(
             replace(
                 old_record,
@@ -172,6 +191,8 @@ class APIKeyManager:
                 "new_api_key_id": new_key_id,
                 "tier": old_record.tier,
                 "grace_expires_at": grace_expires_at.isoformat(),
+                "grace_period_seconds": int(grace_period.total_seconds()),
+                "severity": "high",
             },
         )
         return new_key_id, new_token
@@ -229,12 +250,20 @@ def revoke_key(key_id: str, *, reason: str | None = None) -> bool:
     return revoke(key_id, reason=reason)
 
 
-def rotate(key_id: str) -> tuple[str, str]:
-    return _DEFAULT_MANAGER.rotate(key_id)
+def rotate(
+    key_id: str,
+    *,
+    grace_period: timedelta = timedelta(hours=1),
+) -> tuple[str, str]:
+    return _DEFAULT_MANAGER.rotate(key_id, grace_period=grace_period)
 
 
-def rotate_key(key_id: str) -> tuple[str, str]:
-    return rotate(key_id)
+def rotate_key(
+    key_id: str,
+    *,
+    grace_period: timedelta = timedelta(hours=1),
+) -> tuple[str, str]:
+    return rotate(key_id, grace_period=grace_period)
 
 
 def constant_time_equals(left: str, right: str) -> bool:

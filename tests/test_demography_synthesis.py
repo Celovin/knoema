@@ -202,3 +202,54 @@ def test_cell_id_prefix_overridable() -> None:
     )
     for cell in cells:
         assert cell.cell_id.startswith("custom-test-r")
+
+
+# --- Round-5 audit: CellPopulation arrays are read-only ---------------
+
+
+def test_cell_population_arrays_are_writeable_false() -> None:
+    """The frozen-dataclass invariant must extend to the underlying
+    numpy buffer — otherwise a caller can mutate counts via
+    ``cell.male[0] = 9999`` without triggering AttributeError.
+    Round-5 audit hardening.
+    """
+
+    cell = CellPopulation(
+        cell_id="synthetic-grid-r0c0",
+        male=np.array([1, 2, 3], dtype=np.int64),
+        female=np.array([4, 5, 6], dtype=np.int64),
+    )
+    assert cell.male.flags.writeable is False
+    assert cell.female.flags.writeable is False
+    with pytest.raises(ValueError, match="read-only"):
+        cell.male[0] = 9999
+
+
+def test_cell_population_buffer_lock_is_independent_of_caller_array() -> None:
+    """Locking the CellPopulation buffer must NOT freeze the caller's
+    source array — else passing the same array into two CellPopulation
+    instances would break the second construction or the caller's
+    ability to keep using the source.
+    """
+
+    source = np.array([10, 20, 30], dtype=np.int64)
+    CellPopulation(
+        cell_id="synthetic-grid-r0c0",
+        male=source,
+        female=source,
+    )
+    # Source must remain writeable after CellPopulation construction.
+    assert source.flags.writeable is True
+    source[0] = 99  # must not raise
+    assert source[0] == 99
+
+
+def test_cell_population_synthesize_output_is_read_only() -> None:
+    """End-to-end: synthesize_cell_populations output buffers are also
+    locked, not just direct CellPopulation construction."""
+
+    pop = _baseline_population()
+    cells = synthesize_cell_populations(pop, num_cells=4, seed=1)
+    for cell in cells:
+        assert cell.male.flags.writeable is False
+        assert cell.female.flags.writeable is False

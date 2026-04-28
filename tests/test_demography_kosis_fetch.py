@@ -411,3 +411,63 @@ def test_response_within_size_cap_is_accepted(tmp_path: Path) -> None:
     )
     result = client.fetch_aggregate("1B36E27", 2024, region_code="11680")
     assert result == payload
+
+
+# ---------------------------------------------------------------------------
+# Round-5 audit: corrupted cache files are auto-purged
+# ---------------------------------------------------------------------------
+
+
+def test_corrupted_cache_file_is_purged_and_raises(tmp_path: Path) -> None:
+    """A cache file with malformed JSON must be DELETED so the next
+    call falls through to refetch — without purge, a single corrupted
+    file would wedge the table forever. Round-5 audit fix.
+    """
+
+    client = KosisFetchClient(cache_dir=tmp_path)
+    cache_path = _expected_cache_path(client, "1B36E27", 2024, "11680")
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache_path.write_text("not-json", encoding="utf-8")
+
+    with pytest.raises(KosisFetchError, match="purged"):
+        client.fetch_aggregate("1B36E27", 2024, region_code="11680")
+    assert not cache_path.exists(), "corrupted cache file must have been purged"
+
+
+def test_non_object_cache_file_is_purged_and_raises(tmp_path: Path) -> None:
+    """JSON parses but yields a non-dict (e.g. a list) — must also be
+    purged, not raised forever.
+    """
+
+    client = KosisFetchClient(cache_dir=tmp_path)
+    cache_path = _expected_cache_path(client, "1B36E27", 2024, "11680")
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache_path.write_text("[1, 2, 3]", encoding="utf-8")
+
+    with pytest.raises(KosisFetchError, match="purged"):
+        client.fetch_aggregate("1B36E27", 2024, region_code="11680")
+    assert not cache_path.exists()
+
+
+def test_purge_then_refetch_succeeds(tmp_path: Path) -> None:
+    """After auto-purge of a corrupted file, the next fetch with a
+    working transport must succeed cleanly.
+    """
+
+    payload = _load_fixture()
+    transport = httpx.MockTransport(_handler_returning(payload))
+    client = KosisFetchClient(
+        base_url="https://kosis.invalid",
+        api_key="fake",
+        cache_dir=tmp_path,
+        transport=transport,
+    )
+    cache_path = _expected_cache_path(client, "1B36E27", 2024, "11680")
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache_path.write_text("garbage", encoding="utf-8")
+
+    with pytest.raises(KosisFetchError, match="purged"):
+        client.fetch_aggregate("1B36E27", 2024, region_code="11680")
+    # Second call: cache is gone, refetch from transport.
+    result = client.fetch_aggregate("1B36E27", 2024, region_code="11680")
+    assert result == payload

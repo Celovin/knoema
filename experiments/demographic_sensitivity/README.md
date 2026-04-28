@@ -62,15 +62,23 @@ this is asserted by ``tests/test_demographic_sensitivity_experiment.py``.
   perturbed fertility only enters the reproductive age band at year
   ~15) so the radial-design Saltelli/Jansen estimators have heavier
   finite-sample bias on that axis.
-- Saltelli & Annoni (2010) recommend ``n >= 16k`` for two-axis Sobol
-  decompositions when the model has interaction structure;
-  ``n >= 32k`` is robust in our experience for this projector. The
-  committed indices at ``n=1024`` are kept honest about this rather
-  than re-tuned: the test
+- Saltelli & Annoni (2010, *Environ. Model. Softw.* 25(12):1508-1517,
+  §3 "Sample size") show that the radial-design Saltelli/Jansen
+  estimators carry order-of-magnitude bias on first-order indices when
+  the base sample ``N`` is smaller than ``O(10^3)`` for moderate-
+  dimensional models with interaction structure, and recommend
+  successively increasing ``N`` until the indices stabilise within
+  bootstrap CIs. Our empirical convergence on this projector matches
+  that pattern: at ``N=1024`` the fertility-axis ``S_T < S_1``
+  inversion persists, at ``N=16k`` it inverts back to the expected
+  ``S_T >= S_1`` regime, and ``N=32k`` is robust within ±0.01. The
+  committed indices at ``N=1024`` are kept honest about this rather
+  than re-tuned at higher ``N``: the test
   ``test_total_order_aggregate_exceeds_first_order_aggregate`` therefore
   asserts only the strict mortality ``S_T > S_1`` and a finite-value
   sanity envelope; it does **not** claim ``S_T > S_1`` for fertility
-  at this ``n``.
+  at this ``N``. The number ``N=16k`` here is empirical for this
+  projector, not a verbatim recommendation in the cited paper.
 - The relative magnitude of ``first_order`` between the two axes still
   ranks the policy levers qualitatively, but for any quantitative
   publication callers should re-run with ``n >= 32k``.

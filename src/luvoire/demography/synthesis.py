@@ -72,6 +72,17 @@ class CellPopulation:
             )
         if (male < 0).any() or (female < 0).any():
             raise ValueError("cell counts must be non-negative integers")
+        # ``np.asarray`` may return the input array view unchanged when
+        # dtype matches. We ensure both branches (view vs copy) end up
+        # with their own buffer before locking, otherwise locking would
+        # also freeze the caller's source array. After the copy we mark
+        # the buffers read-only so the frozen-dataclass invariant holds
+        # at the **buffer** level too, not just at the attribute level.
+        # Round-5 audit hardening.
+        male = np.array(male, copy=True)
+        female = np.array(female, copy=True)
+        male.setflags(write=False)
+        female.setflags(write=False)
         object.__setattr__(self, "male", male)
         object.__setattr__(self, "female", female)
 

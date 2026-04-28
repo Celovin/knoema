@@ -21,6 +21,7 @@ file talks to the real network on its own.
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
 import math
@@ -193,12 +194,29 @@ class KosisFetchClient:
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError) as exc:
+            # A corrupted cache file (interrupted write on Windows, disk
+            # bit-rot, hand-edit) would otherwise wedge fetch_aggregate
+            # forever — every subsequent call rereads the same broken
+            # JSON and re-raises. Auto-purge the file so the next call
+            # falls through to the network refetch path. We only delete
+            # the specific corrupted file (not the whole cache dir) and
+            # we still re-raise so the immediate caller sees the failure
+            # mode; the next call will succeed if upstream is reachable.
+            # If unlink itself fails (permission error, locked file) we
+            # let the original parse error propagate without masking it
+            # — caller still sees the broken cache.
+            with contextlib.suppress(OSError):
+                path.unlink(missing_ok=True)
             raise KosisFetchError(
-                f"failed to read KOSIS cache file {path}: {exc}"
+                f"failed to read KOSIS cache file {path}: {exc} "
+                "(corrupted cache entry has been purged; retry to refetch)"
             ) from exc
         if not isinstance(data, dict):
+            with contextlib.suppress(OSError):
+                path.unlink(missing_ok=True)
             raise KosisFetchError(
-                f"KOSIS cache file {path} did not contain a JSON object"
+                f"KOSIS cache file {path} did not contain a JSON object "
+                "(corrupted cache entry has been purged; retry to refetch)"
             )
         return data
 

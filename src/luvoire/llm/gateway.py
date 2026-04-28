@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -18,6 +19,35 @@ from luvoire.core.replay_cache import (
 )
 from luvoire.observability.tracing import genai_attributes, trace_span
 from luvoire.protocols import LLMClient, Message
+
+# Regex patterns for credential strings that may surface inside provider
+# exception messages (auth failure, billing errors). Matched substrings
+# are replaced with ``***`` before the error string is stored in
+# :class:`LLMCallRecord.error`. Adding a new provider key format means
+# adding it here AND covering the case in ``test_llm_gateway_redaction``.
+_SECRET_REDACTION_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"sk-[A-Za-z0-9_\-]{16,}"),  # OpenAI / Anthropic / generic sk-* keys
+    re.compile(r"sk_(?:test|live)_[A-Za-z0-9]{16,}"),  # Stripe-style
+    re.compile(r"luvoire_ak[a-f0-9]+_[A-Za-z0-9_\-]{16,}"),  # Luvoire tenant tokens
+    re.compile(r"Bearer\s+[A-Za-z0-9_\-\.=]{16,}", re.IGNORECASE),  # bearer headers
+    re.compile(r"xox[baprs]-[A-Za-z0-9\-]{8,}"),  # Slack tokens (defence-in-depth)
+)
+
+
+def _redact_secrets(message: str) -> str:
+    """Replace credential-looking substrings with ``***``.
+
+    Provider SDKs sometimes include the offending API key inside
+    ``AuthenticationError``-style messages. Those exceptions reach
+    :class:`LLMCallRecord.error` as ``str(exc)``, which can be exported
+    to logs / traces / metrics. We scrub before storage so a downstream
+    log shipper cannot re-emit a live key. Round-5 audit hardening.
+    """
+
+    redacted = message
+    for pattern in _SECRET_REDACTION_PATTERNS:
+        redacted = pattern.sub("***", redacted)
+    return redacted
 
 
 @dataclass(slots=True)
@@ -129,7 +159,7 @@ class LLMGateway:
                             estimated_cost_usd=0.0,
                             elapsed_seconds=elapsed,
                             success=False,
-                            error=str(exc),
+                            error=_redact_secrets(str(exc)),
                         )
                     )
                     continue
@@ -250,7 +280,7 @@ class LLMGateway:
                             estimated_cost_usd=0.0,
                             elapsed_seconds=elapsed,
                             success=False,
-                            error=str(exc),
+                            error=_redact_secrets(str(exc)),
                         )
                     )
                     continue
