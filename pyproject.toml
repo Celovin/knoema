@@ -223,6 +223,17 @@ markers = [
     "slow: opt-in tests that require live external services or large downloads",
     "hf_live: opt-in tests that require live Hugging Face dataset access",
 ]
+# Suppress noise from C-extension SWIG bindings whose Python 3.13
+# metadata is incomplete (faiss-cpu in particular). The warnings fire
+# at import time inside ``importlib._bootstrap`` and have no
+# actionable fix on our side until the upstream package ships
+# updated wheels for 3.13. Keeping the filter narrow to the
+# specific message text avoids hiding any real DeprecationWarning.
+filterwarnings = [
+    "ignore:builtin type SwigPyPacked has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type SwigPyObject has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning",
+]
 
 [tool.coverage.run]
 source = ["src/luvoire"]

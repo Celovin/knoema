@@ -8771,10 +8771,13 @@ def build_app() -> gr.Blocks:
     deposit_defaults = _deposit_defaults("ko")
     simulation_defaults = _simulation_template_defaults()
 
+    # Gradio 6 routes ``css`` / ``head`` through ``launch(...)``; passing
+    # them to ``gr.Blocks(...)`` works via ``**kwargs`` but emits a
+    # UserWarning. We attach them at launch time below to keep the
+    # warnings summary clean. The compat guard already whitelists the
+    # deprecated kwargs so this migration is forward-only.
     with gr.Blocks(
         title="Luvoire Playground",
-        css=FOOTER_CSS,
-        head=APP_HEAD,
         analytics_enabled=False,
     ) as demo:
         with gr.Row(elem_id="topbar-row"):
@@ -10593,4 +10596,6 @@ if __name__ == "__main__":
         share=False,
         ssr_mode=False,
         show_error=True,
+        css=FOOTER_CSS,
+        head=APP_HEAD,
     )
