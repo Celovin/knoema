@@ -12,6 +12,29 @@ import gradio as gr
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TARGET_FILE = REPO_ROOT / "playground" / "app.py"
 
+# Kwargs that Gradio moves between ``Blocks`` constructor and ``launch``
+# across major versions but keeps accepting on the OLD location with a
+# deprecation warning. The guard treats these as compatible (the runtime
+# does not raise) so a deprecation does not become a CI hard fail. List
+# is keyed by the call shape they are passed to.
+_DEPRECATED_BLOCKS_KWARGS: frozenset[str] = frozenset({"css", "head"})
+
+
+def _accepts_var_keyword(signature: inspect.Signature) -> bool:
+    """Return ``True`` when the callable accepts ``**kwargs``.
+
+    Gradio 6 routes ``css`` / ``head`` through ``**kwargs`` on the
+    ``Blocks`` constructor (with a deprecation warning at runtime).
+    Treating any VAR_KEYWORD-accepting signature as 'permissive on the
+    deprecated kwarg list' lets the guard keep catching genuine typos
+    without false-flagging the deprecation path.
+    """
+
+    return any(
+        param.kind is inspect.Parameter.VAR_KEYWORD
+        for param in signature.parameters.values()
+    )
+
 
 @dataclass(frozen=True, slots=True)
 class CompatibilityIssue:
@@ -54,7 +77,16 @@ def _keyword_issues(
 
 
 def _blocks_issues(tree: ast.AST) -> list[CompatibilityIssue]:
-    allowed_keywords = set(inspect.signature(gr.Blocks).parameters)
+    blocks_sig = inspect.signature(gr.Blocks)
+    allowed_keywords = set(blocks_sig.parameters)
+    # Gradio 6 routed the historical ``css`` / ``head`` constructor
+    # kwargs through ``**kwargs`` with a deprecation warning. The guard
+    # accepts these so the existing main playground app does not regress
+    # against the live Gradio signature; a future major Gradio release
+    # that drops the deprecation entirely will surface here as a real
+    # incompat.
+    if _accepts_var_keyword(blocks_sig):
+        allowed_keywords |= _DEPRECATED_BLOCKS_KWARGS
     issues: list[CompatibilityIssue] = []
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):

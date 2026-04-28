@@ -80,6 +80,14 @@ dev = [
     "httpx>=0.28",
     "jupyter>=1.1",
     "pypdf>=6.0",
+    # Observability tests need the OTel SDK + FastAPI instrumentation;
+    # without them the relevant 3 tests fail at collection-time. Pinning
+    # here keeps a single ``pip install -e .[dev]`` invocation enough
+    # to run the full test suite.
+    "opentelemetry-api>=1.25,<2",
+    "opentelemetry-sdk>=1.25,<2",
+    "opentelemetry-instrumentation-fastapi>=0.45b0",
+    "opentelemetry-exporter-otlp-proto-http>=1.25,<2",
 ]
 api = [
     "fastapi>=0.115",

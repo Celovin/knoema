@@ -13,18 +13,20 @@ from dataclasses import dataclass
 from statistics import NormalDist, fmean
 from typing import Any, TypedDict
 
+import numpy as np
+
 _SMF: Any | None
 _PM: Any | None
 
 try:  # pragma: no cover - optional dependency
-    import statsmodels.formula.api as _smf  # type: ignore[import-not-found]
+    import statsmodels.formula.api as _smf  # type: ignore[import-not-found,import-untyped,unused-ignore]
 except ImportError:  # pragma: no cover - optional dependency
     _SMF = None
 else:  # pragma: no cover - optional dependency
     _SMF = _smf
 
 try:  # pragma: no cover - optional dependency
-    import pymc as _pm  # type: ignore[import-not-found]
+    import pymc as _pm  # type: ignore[import-not-found,import-untyped,unused-ignore]
 except ImportError:  # pragma: no cover - optional dependency
     _PM = None
 else:  # pragma: no cover - optional dependency
@@ -93,11 +95,20 @@ def summarize_seed_tick_effect(
     if len(observations) < 4:
         return None
 
-    mixed_summary = (
-        _statsmodels_summary(observations)
-        if _SMF is not None
-        else _analytic_mixed_summary(observations)
-    )
+    # statsmodels raises ``numpy.linalg.LinAlgError`` (Singular matrix)
+    # when within-group variance collapses in the test fixture data,
+    # and may also raise ``ValueError`` / ``ConvergenceWarning``-shaped
+    # errors on degenerate inputs. Fall back to the analytic summary
+    # rather than failing the whole research pipeline — the analytic
+    # path returns the same shape of dict and downstream code works
+    # against either backend.
+    if _SMF is None:
+        mixed_summary = _analytic_mixed_summary(observations)
+    else:
+        try:
+            mixed_summary = _statsmodels_summary(observations)
+        except (np.linalg.LinAlgError, ValueError, RuntimeError):
+            mixed_summary = _analytic_mixed_summary(observations)
 
     if _PM is not None:
         posterior_summary = _pymc_posterior(observations)

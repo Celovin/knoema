@@ -2,8 +2,35 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 from pathlib import Path
+
+import pytest
+
+
+def _have_swift_toolchain() -> bool:
+    return shutil.which("swift") is not None
+
+
+def _have_android_gradle() -> bool:
+    """Return ``True`` only when the Android Gradle wrapper can actually
+    build — needs JAVA_HOME (or Java on PATH), ANDROID_HOME / ANDROID_SDK_ROOT
+    pointing at an Android SDK install, AND the wrapper script itself.
+    CI / dev machines without the Android toolchain should skip rather
+    than fail; this matches the existing iOS test which skips on no
+    swift toolchain.
+    """
+
+    wrapper_dir = Path("sdk/android")
+    wrapper = (
+        wrapper_dir / ("gradlew.bat" if os.name == "nt" else "gradlew")
+    )
+    if not wrapper.exists():
+        return False
+    if shutil.which("java") is None and not os.environ.get("JAVA_HOME"):
+        return False
+    return bool(os.environ.get("ANDROID_HOME") or os.environ.get("ANDROID_SDK_ROOT"))
 
 
 def test_phase60_mobile_sdk_files_exist() -> None:
@@ -26,6 +53,10 @@ def test_phase60_mobile_sdk_files_exist() -> None:
         assert Path(path).exists()
 
 
+@pytest.mark.skipif(
+    not _have_swift_toolchain(),
+    reason="``swift`` not on PATH — iOS build needs the Swift toolchain",
+)
 def test_phase60_swift_package_builds_and_tests() -> None:
     subprocess.run(
         ["swift", "build", "--package-path", "sdk/ios/LuvoireMobile"],
@@ -39,6 +70,10 @@ def test_phase60_swift_package_builds_and_tests() -> None:
     )
 
 
+@pytest.mark.skipif(
+    not _have_android_gradle(),
+    reason="Android Gradle wrapper or Java toolchain unavailable",
+)
 def test_phase60_android_wrapper_build_validates_module_shape() -> None:
     command = ["cmd", "/c", "gradlew.bat", "build"] if os.name == "nt" else ["./gradlew", "build"]
     result = subprocess.run(
