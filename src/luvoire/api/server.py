@@ -10,6 +10,7 @@ from fastapi import FastAPI
 
 from luvoire.api.rate_limit import RateLimiter
 from luvoire.api.routes import agents, events, simulations, unity, ws
+from luvoire.api.routes import stripe_webhook as stripe_webhook_route
 from luvoire.api.schemas import HealthResponse
 from luvoire.api.service import SimulationService
 from luvoire.api.tier_rate_limit import TierRateLimiter
@@ -45,6 +46,7 @@ def create_app(
     api_key_manager: APIKeyManager | None = None,
     usage_meter: UsageMeter | None = None,
     tier_rate_limiter: TierRateLimiter | None = None,
+    stripe_webhook_handler: stripe_webhook_route.StripeWebhookHandler | None = None,
 ) -> FastAPI:
     service = simulation_service or SimulationService()
     unity_service = unity_runtime_service or UnityRuntimeService()
@@ -52,6 +54,11 @@ def create_app(
     tenant_keys = api_key_manager or TenantRegistry().key_manager()
     meter = usage_meter or UsageMeter()
     tenant_limiter = tier_rate_limiter or TierRateLimiter()
+    # The Stripe handler stays unconfigured (secret=None) by default so
+    # ``create_app()`` keeps working in air-gapped CI; the webhook
+    # endpoint will return 503 until ``STRIPE_WEBHOOK_SECRET`` is set
+    # OR an explicit handler is injected here.
+    stripe_handler = stripe_webhook_handler or stripe_webhook_route.StripeWebhookHandler()
     otel_exporter = _optional_env("LUVOIRE_OTEL_EXPORTER", "KNOEMA_OTEL_EXPORTER")
     metrics_enabled = _env_flag("LUVOIRE_METRICS_ENABLED", "KNOEMA_METRICS_ENABLED")
 
@@ -63,6 +70,7 @@ def create_app(
         app.state.api_key_manager = tenant_keys
         app.state.usage_meter = meter
         app.state.tier_rate_limiter = tenant_limiter
+        app.state.stripe_webhook_handler = stripe_handler
         app.state.observability = {
             "metrics_enabled": metrics_enabled,
             "otel_exporter": otel_exporter or "none",
@@ -103,6 +111,7 @@ def create_app(
     app.include_router(events.router)
     app.include_router(unity.router)
     app.include_router(ws.router)
+    app.include_router(stripe_webhook_route.router)
     return app
 
 

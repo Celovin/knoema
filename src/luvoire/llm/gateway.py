@@ -385,9 +385,70 @@ class _PendingCall:
     error: Exception | None = None
 
 
+_TIKTOKEN_ENCODING_NAME = "cl100k_base"
+"""Default ``tiktoken`` encoding (used by GPT-4 / Claude 3+ via litellm).
+
+We only consult tiktoken when it is actually installed; otherwise we
+fall back to the historical ``len(text) // 4`` heuristic so air-gapped
+environments and minimal-deps installs keep working. The encoding name
+is locked here rather than per-model because Luvoire's billing meter
+treats prompt tokens as a coarse estimate at the floor — the exact
+tokenizer used by Anthropic / OpenAI for billing is privileged and not
+publicly auditable, so a single ``cl100k_base`` measurement gives
+better fidelity than ``len/4`` without claiming exact agreement.
+"""
+
+_tiktoken_encoder: object | None = None
+_tiktoken_attempted: bool = False
+
+
+def _get_tiktoken_encoder() -> object | None:
+    """Lazy-load the tiktoken encoder; cache the result (or ``None``).
+
+    Returns the encoder on success, ``None`` if tiktoken is not
+    installed or the encoding could not be resolved. The result is
+    cached after the first attempt so repeated ``estimate_tokens``
+    calls do not pay the import cost.
+    """
+
+    global _tiktoken_encoder, _tiktoken_attempted
+    if _tiktoken_attempted:
+        return _tiktoken_encoder
+    _tiktoken_attempted = True
+    try:
+        import tiktoken  # type: ignore[import-not-found,unused-ignore]
+    except ImportError:
+        return None
+    try:
+        _tiktoken_encoder = tiktoken.get_encoding(_TIKTOKEN_ENCODING_NAME)
+    except Exception:
+        # Pinned encoding not available (e.g. tiktoken_ext data missing
+        # in a minimal install); silently fall back to the heuristic.
+        _tiktoken_encoder = None
+    return _tiktoken_encoder
+
+
 def estimate_tokens(text: str) -> int:
+    """Estimate token count for ``text``.
+
+    Uses ``tiktoken`` (``cl100k_base``) when available so the meter
+    floor reflects realistic token counts on Latin / mixed-script
+    Korean text — the legacy ``len(text) // 4`` heuristic over-counts
+    Hangul and under-counts code-heavy prompts. Falls back to the
+    heuristic when tiktoken is not installed so the billing layer
+    keeps working in air-gapped CI / minimal deployments.
+    """
+
     if not text:
         return 0
+    encoder = _get_tiktoken_encoder()
+    if encoder is not None:
+        try:
+            return max(1, len(encoder.encode(text)))  # type: ignore[attr-defined]
+        except Exception:
+            # Defence-in-depth: any tokenizer error falls back to the
+            # heuristic so a corrupt encoder cannot wedge the meter.
+            pass
     return max(1, len(text) // 4)
 
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -12,27 +13,116 @@ from luvoire.billing.api_keys import APIKeyManager, APIKeyRecord, InMemoryAPIKey
 from luvoire.billing.tiers import ApiKeySource, TierName
 from luvoire.safety.audit_log import CommercialAuditLogger
 
+_FERNET_PREFIX = b"luvoire-tenants-v1\n"
+"""Magic prefix that distinguishes Fernet-encrypted registry files from
+plain JSON. Encrypted files begin with this header followed by the
+Fernet token; plain JSON files begin with ``{``. The prefix lets
+:meth:`TenantRegistry.load` auto-detect format without an explicit flag.
+"""
+
+
+def _fernet_key_from_env() -> str | None:
+    """Return the configured Fernet key, or ``None`` when unset.
+
+    Reads ``LUVOIRE_TENANT_REGISTRY_KEY`` and treats empty / whitespace
+    as unset so accidental ``KEY=""`` deploys cannot silently switch the
+    registry into plaintext mode.
+    """
+
+    raw = os.environ.get("LUVOIRE_TENANT_REGISTRY_KEY", "").strip()
+    return raw or None
+
 
 class TenantRegistry:
-    """Simple JSON tenant registry for the commercial PoC."""
+    """JSON tenant registry with optional Fernet encryption-at-rest.
 
-    def __init__(self, path: Path = Path("var/billing/tenants.json")) -> None:
+    When the ``LUVOIRE_TENANT_REGISTRY_KEY`` environment variable is set
+    to a valid Fernet key (44 base64-url chars from
+    ``cryptography.fernet.Fernet.generate_key()``), the on-disk file is
+    encrypted with AES-128-CBC + HMAC-SHA256 (Fernet's standard
+    construction). Without the variable the registry falls back to
+    plaintext JSON for development and existing deployments — encryption
+    is opt-in to avoid silently breaking on-disk fixtures.
+
+    The registry stores only API key **hashes**, never raw secrets, so
+    encryption-at-rest is defense-in-depth: even hash exfiltration is
+    prevented if the host disk is read by an attacker without the
+    runtime key.
+    """
+
+    def __init__(
+        self,
+        path: Path = Path("var/billing/tenants.json"),
+        *,
+        encryption_key: str | None = None,
+    ) -> None:
         self.path = path
+        # Explicit kwarg wins over env so tests can pin a key without
+        # touching the global environment.
+        self._encryption_key = encryption_key or _fernet_key_from_env()
+
+    @property
+    def encryption_enabled(self) -> bool:
+        return self._encryption_key is not None
+
+    def _fernet(self) -> Any:
+        if self._encryption_key is None:
+            raise RuntimeError("encryption is not configured")
+        try:
+            from cryptography.fernet import Fernet
+        except ImportError as exc:
+            raise RuntimeError(
+                "tenant registry encryption requested but the "
+                "``cryptography`` package is not installed"
+            ) from exc
+        return Fernet(self._encryption_key.encode("utf-8"))
 
     def load(self) -> dict[str, Any]:
         if not self.path.exists():
             return {"tenants": {}}
-        payload = json.loads(self.path.read_text(encoding="utf-8"))
+        raw = self.path.read_bytes()
+        # Auto-detect format: encrypted files begin with our prefix,
+        # plain JSON files begin with ``{``. This lets the same registry
+        # path coexist across encrypted-mode and plaintext-mode deploys
+        # during a rollout.
+        if raw.startswith(_FERNET_PREFIX):
+            if self._encryption_key is None:
+                raise RuntimeError(
+                    f"tenant registry {self.path} is Fernet-encrypted but no "
+                    "LUVOIRE_TENANT_REGISTRY_KEY is configured"
+                )
+            token = raw[len(_FERNET_PREFIX):]
+            try:
+                plaintext_bytes = self._fernet().decrypt(token)
+            except Exception as exc:
+                raise ValueError(
+                    f"failed to decrypt tenant registry {self.path}: "
+                    f"{type(exc).__name__}"
+                ) from exc
+            payload = json.loads(plaintext_bytes.decode("utf-8"))
+        else:
+            payload = json.loads(raw.decode("utf-8"))
         if not isinstance(payload, dict) or not isinstance(payload.get("tenants"), dict):
             raise ValueError(f"invalid tenant registry: {self.path}")
         return payload
 
     def save(self, payload: dict[str, Any]) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(
-            json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
+        plaintext = (
+            json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+        ).encode("utf-8")
+        if self.encryption_enabled:
+            token = self._fernet().encrypt(plaintext)
+            # Atomic-write: stage to a sibling tmp path then rename.
+            # Without this, an interrupted write would leave a half-
+            # finished encrypted file that fails to decrypt on next
+            # load (Fernet's HMAC catches the truncation but the
+            # tenant registry stays wedged until manually purged).
+            tmp = self.path.with_suffix(self.path.suffix + ".tmp")
+            tmp.write_bytes(_FERNET_PREFIX + token)
+            tmp.replace(self.path)
+        else:
+            self.path.write_text(plaintext.decode("utf-8"), encoding="utf-8")
 
     def create_tenant(self, tenant_id: str, tier: TierName, display_name: str) -> bool:
         payload = self.load()
