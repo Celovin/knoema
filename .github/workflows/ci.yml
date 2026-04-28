@@ -63,6 +63,21 @@ jobs:
       - name: Mypy
         run: mypy src
 
+      - name: Install security scanners
+        run: pip install bandit pip-audit
+
+      - name: Bandit (medium+ severity)
+        run: bandit -q -r src/luvoire -ll
+
+      - name: pip-audit (advisory; non-blocking)
+        # Audit failures should NOT block PRs because upstream CVE
+        # backports lag and a new CVE on a transitive dep would
+        # otherwise lock the queue. The job runs and prints the
+        # report so reviewers can see it; ``|| true`` keeps it
+        # advisory until we triage in a follow-up.
+        run: pip-audit || true
+        continue-on-error: true
+
       - name: Install Playwright browser
         run: python -m playwright install --with-deps chromium
 

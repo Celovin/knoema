@@ -148,11 +148,14 @@ def load_community_manifest(
 ) -> tuple[CommunityScenario, ...]:
     """Fetch and validate a GitHub-hosted community scenario manifest."""
 
+    from luvoire.safety.url_scheme import require_http_url
+
+    safe_url = require_http_url(url)
     now = time.time()
-    cached = _CACHE.get(url)
+    cached = _CACHE.get(safe_url)
     if cached is not None and now - cached[0] < cache_ttl_seconds:
         return cached[1]
-    with request.urlopen(url, timeout=timeout_seconds) as response:
+    with request.urlopen(safe_url, timeout=timeout_seconds) as response:  # nosec B310 - scheme validated by require_http_url above
         payload = json.loads(response.read().decode("utf-8"))
     if not isinstance(payload, Mapping):
         raise ValueError("community manifest root must be a mapping")

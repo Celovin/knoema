@@ -250,8 +250,15 @@ def _payload_subject(payload: Mapping[str, object]) -> str:
 
 
 def _urllib_post(endpoint_url: str, body: bytes, headers: Mapping[str, str], timeout: float) -> int:
-    req = request.Request(endpoint_url, data=body, headers=dict(headers), method="POST")
-    with request.urlopen(req, timeout=timeout) as response:
+    # Defense-in-depth: validate the scheme before letting urlopen run.
+    # Without this, an operator who mistypes the endpoint or a
+    # compromised config substitution could redirect deliveries to
+    # ``file://`` (local-file leak) or ``gopher://`` (protocol smuggle).
+    from luvoire.safety.url_scheme import require_http_url
+
+    safe_url = require_http_url(endpoint_url)
+    req = request.Request(safe_url, data=body, headers=dict(headers), method="POST")
+    with request.urlopen(req, timeout=timeout) as response:  # nosec B310 - scheme validated by require_http_url above
         return int(response.status)
 
 

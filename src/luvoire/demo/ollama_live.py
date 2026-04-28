@@ -43,8 +43,14 @@ def available_ollama_models(
     base_url: str = DEFAULT_BASE_URL,
     timeout: float = 2.0,
 ) -> list[str]:
+    from luvoire.safety.url_scheme import UrlSchemeError, require_http_url
+
     try:
-        with request.urlopen(f"{base_url.rstrip('/')}/api/tags", timeout=timeout) as response:
+        safe_url = require_http_url(f"{base_url.rstrip('/')}/api/tags")
+    except UrlSchemeError as exc:
+        raise LocalLLMError(f"invalid Ollama base_url {base_url!r}: {exc}") from exc
+    try:
+        with request.urlopen(safe_url, timeout=timeout) as response:  # nosec B310 - scheme validated by require_http_url above
             payload = json.loads(response.read().decode("utf-8"))
     except error.URLError as exc:  # pragma: no cover - depends on local server state
         raise LocalLLMError(f"could not reach Ollama at {base_url}: {exc}") from exc

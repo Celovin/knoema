@@ -22,14 +22,20 @@ class TelemetryTransport(Protocol):
 
 class UrlLibTelemetryTransport:
     def post(self, endpoint: str, payload: dict[str, object], *, timeout_seconds: float) -> None:
+        from luvoire.safety.url_scheme import require_http_url
+
+        # Defense-in-depth: a misconfigured ``LUVOIRE_TELEMETRY_ENDPOINT``
+        # could otherwise let urllib follow ``file://`` for a local-file
+        # leak or ``gopher://`` for protocol smuggling.
+        safe_endpoint = require_http_url(endpoint)
         body = json.dumps(payload).encode("utf-8")
         http_request = request.Request(
-            endpoint,
+            safe_endpoint,
             data=body,
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with request.urlopen(http_request, timeout=timeout_seconds) as response:
+        with request.urlopen(http_request, timeout=timeout_seconds) as response:  # nosec B310 - scheme validated by require_http_url above
             response.read()
 
 

@@ -31,13 +31,19 @@ def post_json(
     timeout: float,
     headers: Mapping[str, str] | None = None,
 ) -> dict[str, Any]:
+    from luvoire.safety.url_scheme import UrlSchemeError, require_http_url
+
+    try:
+        safe_url = require_http_url(url)
+    except UrlSchemeError as exc:
+        raise LocalLLMError(f"invalid local LLM URL {url!r}: {exc}") from exc
     encoded = json.dumps(payload).encode("utf-8")
     request_headers = {"Content-Type": "application/json"}
     if headers:
         request_headers.update(headers)
-    http_request = request.Request(url, data=encoded, headers=request_headers, method="POST")
+    http_request = request.Request(safe_url, data=encoded, headers=request_headers, method="POST")
     try:
-        with request.urlopen(http_request, timeout=timeout) as response:
+        with request.urlopen(http_request, timeout=timeout) as response:  # nosec B310 - scheme validated by require_http_url above
             body = response.read().decode("utf-8")
     except error.URLError as exc:  # pragma: no cover - server availability varies
         raise LocalLLMError(f"local LLM request failed: {exc}") from exc
