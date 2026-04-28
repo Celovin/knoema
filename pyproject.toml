@@ -63,7 +63,12 @@ dev = [
     "pytest-asyncio>=0.24",
     "pytest-cov>=5.0",
     "duckdb>=1.5",
-    "gradio==5.31.0",
+    # Gradio 6.0 split ``css`` / ``head`` to ``launch`` and reshaped a few
+    # component kwargs. Tests + ops panel + main playground are
+    # compatible with both 5.31+ and 6.x. Pinning to a major-range
+    # avoids forcing 5.31.0 exactly while still rejecting an unforeseen
+    # 7.x with breaking changes.
+    "gradio>=5.31,<7",
     "huggingface_hub>=0.24,<1.0",
     "playwright>=1.58,<1.59",
     "plotly>=5.24",

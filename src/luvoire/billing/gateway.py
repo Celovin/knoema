@@ -401,7 +401,7 @@ def completion_text_hash(content: str) -> str:
 
 
 def _litellm_completion(**kwargs: object) -> object:
-    from litellm import completion
+    from litellm import completion  # type: ignore[import-not-found,unused-ignore]
 
     return completion(**kwargs)
 

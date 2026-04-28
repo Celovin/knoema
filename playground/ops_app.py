@@ -19,7 +19,7 @@ from pathlib import Path
 from luvoire.api.rate_limit import RateLimiter
 from luvoire.api.routes.stripe_webhook import StripeWebhookHandler
 from luvoire.billing.tenant_registry import TenantRegistry
-from playground.ops_panel import build_ops_app
+from playground.ops_panel import OPS_CSS, OPS_HEAD, build_ops_app
 
 
 def _default_tenant_registry() -> TenantRegistry:
@@ -50,6 +50,8 @@ def main() -> None:
         server_name=os.environ.get("LUVOIRE_OPS_SERVER_NAME", "127.0.0.1"),
         server_port=int(os.environ.get("LUVOIRE_OPS_SERVER_PORT", "7861")),
         share=False,
+        css=OPS_CSS,
+        head=OPS_HEAD,
     )
 
 

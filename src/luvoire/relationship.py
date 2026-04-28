@@ -121,7 +121,7 @@ class RelationshipGraph:
         return self._graph.copy()
 
     def __len__(self) -> int:
-        return self._graph.number_of_nodes()
+        return int(self._graph.number_of_nodes())
 
     @staticmethod
     def _outcome_delta(outcome: InteractionOutcome | float) -> float:

@@ -361,10 +361,14 @@ def build_ops_app(
     empty-state copy that explains the missing binding.
     """
 
+    # Gradio 6 moved ``css`` / ``head`` to the ``launch`` method;
+    # passing them to ``Blocks`` raises a deprecation warning. We
+    # still expose ``OPS_CSS`` / ``OPS_HEAD`` so ``ops_app.launch``
+    # can wire them at start time. Tests that only build the Blocks
+    # (without launch) intentionally render unstyled — the rendered
+    # HTML payload tested per-panel does not depend on CSS.
     with gr.Blocks(
         title="Luvoire Operations",
-        css=_OPS_CSS,
-        head=_OPS_HEAD,
         analytics_enabled=False,
         elem_id="ops-app",
     ) as demo:
@@ -466,7 +470,13 @@ def build_ops_app(
     return _cast(gr.Blocks, demo)
 
 
+OPS_CSS = _OPS_CSS
+OPS_HEAD = _OPS_HEAD
+
+
 __all__ = [
+    "OPS_CSS",
+    "OPS_HEAD",
     "build_ops_app",
     "render_rate_limit_panel",
     "render_stripe_panel",

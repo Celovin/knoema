@@ -38,7 +38,7 @@ class StripeUsageAdapter:
                 timestamp=timestamp,
             )
 
-        import stripe
+        import stripe  # type: ignore[import-not-found,unused-ignore]
 
         stripe.api_key = self._stripe_secret_key
         response = stripe.SubscriptionItem.create_usage_record(
