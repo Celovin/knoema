@@ -182,6 +182,25 @@ Space deploy helper:
 python scripts/deploy_playground_space.py
 ```
 
+## Operations panel
+
+A separate operator-facing Gradio app surfaces the commercial /
+billing surface of a running deployment: live tiktoken counter
+(precise token billing), tenant-registry encryption-at-rest status,
+rate-limit health (in-memory or Redis-backed), and the inbound
+Stripe webhook inbox. Runs on `127.0.0.1:7861` by default with
+`share=False` enforced — this is an admin surface, never a public URL.
+
+```bash
+python -m playground.ops_app
+```
+
+When invoked in the same process as the API server it observes the
+live `app.state` rate-limiter and Stripe webhook handler. Run
+standalone to inspect the file-backed `TenantRegistry`. See
+[`playground/ops_panel.py`](playground/ops_panel.py) for state-
+sharing trade-offs and the per-panel empty-state copy.
+
 ## Website
 
 ```bash

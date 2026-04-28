@@ -105,10 +105,30 @@ def summarize_seed_tick_effect(
     if _SMF is None:
         mixed_summary = _analytic_mixed_summary(observations)
     else:
-        try:
-            mixed_summary = _statsmodels_summary(observations)
-        except (np.linalg.LinAlgError, ValueError, RuntimeError):
-            mixed_summary = _analytic_mixed_summary(observations)
+        # statsmodels emits two distinct UserWarnings ("Random effects
+        # covariance is singular" / "MLE may be on the boundary") on
+        # degenerate within-group variance, then either returns a
+        # garbage fit OR raises ``LinAlgError``. Both paths point at
+        # the same condition; we silence the warnings (we already
+        # handle the failure mode below) so the pytest output stops
+        # repeating them per failing fixture, and fall back to the
+        # analytic backend on any of the documented exception types.
+        import warnings as _warnings
+
+        with _warnings.catch_warnings():
+            _warnings.filterwarnings("ignore", category=UserWarning, module="statsmodels.*")
+            try:
+                from statsmodels.tools.sm_exceptions import (  # type: ignore[import-untyped,unused-ignore]
+                    ConvergenceWarning,
+                )
+
+                _warnings.filterwarnings("ignore", category=ConvergenceWarning)
+            except ImportError:  # pragma: no cover - older statsmodels
+                pass
+            try:
+                mixed_summary = _statsmodels_summary(observations)
+            except (np.linalg.LinAlgError, ValueError, RuntimeError):
+                mixed_summary = _analytic_mixed_summary(observations)
 
     if _PM is not None:
         posterior_summary = _pymc_posterior(observations)
