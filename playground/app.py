@@ -3630,7 +3630,7 @@ def _relationship_graph_placeholder_html(language: str = "en") -> str:
         '<div class="luvoire-force-graph-shell" data-luvoire-force-graph="0">'
         '<div style="min-height: 620px; display: flex; align-items: center; justify-content: center;'
         ' border: 1px solid rgba(100, 116, 139, 0.25); border-radius: 8px;'
-        ' background: rgba(248,250,252,1); color: #0f172a; padding: 24px; text-align: center;">'
+        ' background: rgba(148, 163, 184, 0.12); color: inherit; padding: 24px; text-align: center;">'
         f'<div><strong>{escape(title)}</strong><div style="margin-top: 12px;">{escape(empty_msg)}</div></div>'
         "</div></div>"
     )
