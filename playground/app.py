@@ -7155,6 +7155,8 @@ def _action_chart_figure(
             height=ACTION_CHART_HEIGHT_PX,
             margin={"l": 0, "r": 0, "t": 40, "b": 0},
             annotations=[{"text": empty_text, "showarrow": False}],
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
         )
         return figure
 
@@ -8540,6 +8542,8 @@ def _relationship_figure(
             annotations=[{"text": empty_msg, "showarrow": False}],
             height=GRAPH_HEIGHT_PX,
             margin={"l": 0, "r": 0, "t": 40, "b": 0},
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
         )
         return figure
 
