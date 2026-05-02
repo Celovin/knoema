@@ -7672,8 +7672,8 @@ def _fairness_heatmap_figure(report: FairnessAuditReport, *, language: str = "en
         height=420,
         margin={"l": 0, "r": 0, "t": 52, "b": 0},
         annotations=annotations,
-        paper_bgcolor="rgba(255,255,255,1)",
-        plot_bgcolor="rgba(255,255,255,1)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     figure.update_xaxes(title_text="Action type")
     figure.update_yaxes(title_text="Trait")
@@ -8525,7 +8525,7 @@ def _relationship_figure(
         "xaxis": {"visible": False, "showbackground": False},
         "yaxis": {"visible": False, "showbackground": False},
         "zaxis": {"visible": False, "showbackground": False},
-        "bgcolor": "rgba(248,250,252,1)",
+        "bgcolor": "rgba(0,0,0,0)",
         "camera": {
             "eye": {"x": 1.25, "y": 1.25, "z": 0.85},
             "projection": {"type": "perspective"},
