@@ -7189,8 +7189,8 @@ def _action_chart_figure(
         xaxis={"title": xaxis_title},
         yaxis={"title": yaxis_title},
         legend={"title": {"text": legend_title}},
-        plot_bgcolor="rgba(248,250,252,1)",
-        paper_bgcolor="rgba(248,250,252,1)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
     )
     return figure
 
@@ -7357,8 +7357,8 @@ def _emotion_trajectory_figure(
             height=160,
             margin={"l": 0, "r": 0, "t": 48, "b": 0},
             annotations=[{"text": empty_text, "showarrow": False}],
-            paper_bgcolor="rgba(248,250,252,1)",
-            plot_bgcolor="rgba(248,250,252,1)",
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
         )
         return figure
 
@@ -7445,8 +7445,8 @@ def _emotion_trajectory_figure(
         height=max(180, 120 * len(selected_agents)),
         margin={"l": 0, "r": 0, "t": 64, "b": 0},
         legend={"orientation": "h", "y": 1.08},
-        paper_bgcolor="rgba(248,250,252,1)",
-        plot_bgcolor="rgba(248,250,252,1)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     return figure
 
@@ -7571,7 +7571,7 @@ def _spatial_heatmap_figure(
         title=title,
         height=380,
         margin={"l": 0, "r": 0, "t": 48, "b": 0},
-        paper_bgcolor="rgba(248,250,252,1)",
+        paper_bgcolor="rgba(0,0,0,0)",
     )
     return figure
 
@@ -7583,8 +7583,8 @@ def _spatial_heatmap_empty_figure(title: str, message: str) -> go.Figure:
         height=220,
         margin={"l": 0, "r": 0, "t": 48, "b": 0},
         annotations=[{"text": message, "showarrow": False}],
-        paper_bgcolor="rgba(248,250,252,1)",
-        plot_bgcolor="rgba(248,250,252,1)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     return figure
 
@@ -7596,8 +7596,8 @@ def _fairness_empty_figure(title: str, message: str) -> go.Figure:
         height=360,
         margin={"l": 0, "r": 0, "t": 52, "b": 0},
         annotations=[{"text": message, "showarrow": False}],
-        paper_bgcolor="rgba(248,250,252,1)",
-        plot_bgcolor="rgba(248,250,252,1)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     return figure
 
@@ -7920,7 +7920,7 @@ def _action_flow_figure(jsonl_text: str, *, language: str = "en") -> go.Figure:
         title=title,
         height=420,
         margin={"l": 0, "r": 0, "t": 48, "b": 0},
-        paper_bgcolor="rgba(248,250,252,1)",
+        paper_bgcolor="rgba(0,0,0,0)",
     )
     return figure
 
@@ -7940,8 +7940,8 @@ def _action_flow_empty_figure(title: str, message: str) -> go.Figure:
         height=220,
         margin={"l": 0, "r": 0, "t": 48, "b": 0},
         annotations=[{"text": message, "showarrow": False}],
-        paper_bgcolor="rgba(248,250,252,1)",
-        plot_bgcolor="rgba(248,250,252,1)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     return figure
 
@@ -8062,8 +8062,8 @@ def _mini_map_figure(jsonl_text: str, tick: int, language: str = "en") -> go.Fig
         margin={"l": 0, "r": 0, "t": 48, "b": 8},
         xaxis={"visible": False},
         yaxis={"visible": False, "scaleanchor": "x", "scaleratio": 1},
-        plot_bgcolor="rgba(248,250,252,1)",
-        paper_bgcolor="rgba(248,250,252,1)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
         showlegend=False,
     )
     return figure
@@ -8076,8 +8076,8 @@ def _mini_map_empty_figure(title: str, message: str) -> go.Figure:
         height=220,
         margin={"l": 0, "r": 0, "t": 48, "b": 0},
         annotations=[{"text": message, "showarrow": False}],
-        paper_bgcolor="rgba(248,250,252,1)",
-        plot_bgcolor="rgba(248,250,252,1)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     return figure
 
